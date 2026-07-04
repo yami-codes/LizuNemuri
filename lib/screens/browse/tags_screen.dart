@@ -4,6 +4,7 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/presentation/viewmodels/tags_viewmodel.dart';
 import 'package:xuro/screens/browse/widgets/browse_search_bar.dart';
 import 'package:xuro/screens/browse/widgets/browse_grid_item.dart';
+import 'package:xuro/utils/i18n_name_resolver.dart';
 
 class TagsScreen extends StatelessWidget {
   const TagsScreen({super.key});
@@ -69,7 +70,11 @@ class TagsScreen extends StatelessWidget {
         itemCount: viewModel.tags.length,
         itemBuilder: (context, index) {
           final tag = viewModel.tags[index];
-          final displayName = tag.i18n?.zhCn?.name ?? tag.name ?? '';
+          final displayName = I18nNameResolver.resolve(
+            tag.i18n,
+            locale: Localizations.localeOf(context),
+            fallback: tag.name ?? '',
+          );
           final searchName = tag.name ?? '';
           return BrowseGridItem(
             name: displayName,

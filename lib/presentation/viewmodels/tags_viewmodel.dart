@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:xuro/data/models/tags/tag_item.dart';
 import 'package:xuro/data/services/api_service.dart';
+import 'package:xuro/utils/i18n_name_resolver.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:get_it/get_it.dart';
 
@@ -55,13 +56,10 @@ class TagsViewModel extends ChangeNotifier {
       final lowerQuery = _searchQuery.toLowerCase();
       _filteredTags = _allTags.where((tag) {
         final name = tag.name?.toLowerCase() ?? '';
-        final zhName = tag.i18n?.zhCn?.name?.toLowerCase() ?? '';
-        final enName = tag.i18n?.enUs?.name?.toLowerCase() ?? '';
-        final jaName = tag.i18n?.jaJp?.name?.toLowerCase() ?? '';
-        return name.contains(lowerQuery) ||
-            zhName.contains(lowerQuery) ||
-            enName.contains(lowerQuery) ||
-            jaName.contains(lowerQuery);
+        final localized = I18nNameResolver.searchableNames(tag.i18n)
+            .map((n) => n.toLowerCase())
+            .any((n) => n.contains(lowerQuery));
+        return name.contains(lowerQuery) || localized;
       }).toList();
     }
   }

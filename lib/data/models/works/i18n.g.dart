@@ -13,6 +13,9 @@ _$I18nImpl _$$I18nImplFromJson(Map<String, dynamic> json) => _$I18nImpl(
       jaJp: json['ja-jp'] == null
           ? null
           : JaJp.fromJson(json['ja-jp'] as Map<String, dynamic>),
+      thTh: json['th-th'] == null
+          ? null
+          : ThTh.fromJson(json['th-th'] as Map<String, dynamic>),
       zhCn: json['zh-cn'] == null
           ? null
           : ZhCn.fromJson(json['zh-cn'] as Map<String, dynamic>),
@@ -22,5 +25,6 @@ Map<String, dynamic> _$$I18nImplToJson(_$I18nImpl instance) =>
     <String, dynamic>{
       'en-us': instance.enUs,
       'ja-jp': instance.jaJp,
+      'th-th': instance.thTh,
       'zh-cn': instance.zhCn,
     };

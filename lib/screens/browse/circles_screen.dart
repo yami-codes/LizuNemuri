@@ -4,6 +4,7 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/presentation/viewmodels/circles_viewmodel.dart';
 import 'package:xuro/screens/browse/widgets/browse_search_bar.dart';
 import 'package:xuro/screens/browse/widgets/browse_grid_item.dart';
+import 'package:xuro/utils/i18n_name_resolver.dart';
 
 class CirclesScreen extends StatelessWidget {
   const CirclesScreen({super.key});
@@ -69,7 +70,11 @@ class CirclesScreen extends StatelessWidget {
         itemCount: viewModel.circles.length,
         itemBuilder: (context, index) {
           final circle = viewModel.circles[index];
-          final name = circle.name ?? '';
+          final name = I18nNameResolver.resolve(
+            circle.i18n,
+            locale: Localizations.localeOf(context),
+            fallback: circle.name ?? '',
+          );
           return BrowseGridItem(
             name: name,
             count: circle.count ?? 0,

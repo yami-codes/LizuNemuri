@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/data/models/works/work.dart';
 import 'package:xuro/data/models/works/tag.dart';
+import 'package:xuro/utils/i18n_name_resolver.dart';
 
 class WorkTagsPanel extends StatelessWidget {
   final Work work;
@@ -11,12 +12,12 @@ class WorkTagsPanel extends StatelessWidget {
     required this.work,
   });
 
-  String _getLocalizedTagName(Tag tag) {
-    final zhName = tag.i18n?.zhCn?.name;
-    if (zhName != null) return zhName;
-    final jaName = tag.i18n?.jaJp?.name;
-    if (jaName != null) return jaName;
-    return tag.name ?? '';
+  String _getLocalizedTagName(BuildContext context, Tag tag) {
+    return I18nNameResolver.resolve(
+      tag.i18n,
+      locale: Localizations.localeOf(context),
+      fallback: tag.name ?? '',
+    );
   }
 
   @override
@@ -80,7 +81,7 @@ class WorkTagsPanel extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        _getLocalizedTagName(tag),
+                        _getLocalizedTagName(context, tag),
                         style: TextStyle(
                           fontSize: 10,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,

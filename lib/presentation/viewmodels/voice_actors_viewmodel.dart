@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:xuro/data/models/vas/voice_actor.dart';
 import 'package:xuro/data/services/api_service.dart';
+import 'package:xuro/utils/i18n_name_resolver.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:get_it/get_it.dart';
 
@@ -55,7 +56,10 @@ class VoiceActorsViewModel extends ChangeNotifier {
       final lowerQuery = _searchQuery.toLowerCase();
       _filteredVoiceActors = _allVoiceActors.where((va) {
         final name = va.name?.toLowerCase() ?? '';
-        return name.contains(lowerQuery);
+        final localized = I18nNameResolver.searchableNames(va.i18n)
+            .map((n) => n.toLowerCase())
+            .any((n) => n.contains(lowerQuery));
+        return name.contains(lowerQuery) || localized;
       }).toList();
     }
   }
