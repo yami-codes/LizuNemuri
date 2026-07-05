@@ -1,0 +1,59 @@
+name: Build Windows Only
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*-win'
+
+env:
+  FLUTTER_VERSION: '3.27.0'
+
+jobs:
+  build-windows:
+    runs-on: windows-2022
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Clean Windows CMake cache
+        shell: pwsh
+        run: |
+          if (Test-Path build/windows) { Remove-Item -Recurse -Force build/windows }
+
+      - name: Build Windows
+        run: flutter build windows --release
+        env:
+          CMAKE_GENERATOR: Visual Studio 17 2022
+          CMAKE_GENERATOR_PLATFORM: x64
+
+      - name: Package Windows
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build/windows/x64/runner/Release/* `
+            -DestinationPath xuro-windows.zip -Force
+
+      - name: Upload to release (tag push)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: xuro-windows.zip
+          fail_on_unmatched_files: false
+
+      - name: Upload artifact (manual dispatch)
+        if: startsWith(github.ref, 'refs/tags/') == false
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: xuro-windows.zip
