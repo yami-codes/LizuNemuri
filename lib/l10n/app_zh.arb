@@ -103,6 +103,20 @@
   "downloadSuccess": "下载完成",
   "downloadToLocalTooltip": "下载到本地（离线播放）",
   "downloading": "正在下载...",
+  "downloadsEmpty": "暂无下载。可在作品文件列表中下载音频以便离线播放。",
+  "downloadsFileCountSummary": "{count} 个文件 · {size}",
+  "@downloadsFileCountSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadsPlayA11y": "播放已下载音频",
+  "downloadsTitle": "下载",
   "drawerSectionContent": "内容",
   "drawerSectionDiscover": "发现",
   "drawerSectionSystem": "系统",
@@ -322,6 +336,9 @@
   "subtitlePreviewTitle": "字幕预览",
   "subtitleRemoved": "已移除导入字幕",
   "tabFavorites": "收藏",
+  "tabHot": "热门",
+  "tabLibrary": "资料库",
+  "tabSearch": "搜索",
   "tags": "标签",
   "telegramChannel": "Telegram 频道",
   "themeAutoDesc": "自动切换深浅色模式",
@@ -423,6 +440,7 @@
   "logLoadRecommendFailed": "加载推荐列表失败",
   "logLoadSimilarFailed": "加载相关推荐失败",
   "logLoadFavoritesFailed": "加载收藏列表失败",
+  "logLoadDownloadsFailed": "加载下载列表失败",
   "logLoadPlaylistsFailed": "加载播放列表失败",
   "logLoadPlaylistWorksFailed": "加载播放列表作品失败",
   "logLoadWorkPlaylistsFailed": "加载收藏夹列表失败",

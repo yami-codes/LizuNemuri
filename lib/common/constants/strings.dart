@@ -88,6 +88,11 @@ class Strings {
   static String get downloadSuccess => _l10n.downloadSuccess;
   static String get downloadToLocalTooltip => _l10n.downloadToLocalTooltip;
   static String get downloading => _l10n.downloading;
+  static String get downloadsEmpty => _l10n.downloadsEmpty;
+  static String downloadsFileCountSummary(int count, String size) =>
+      _l10n.downloadsFileCountSummary(count, size);
+  static String get downloadsPlayA11y => _l10n.downloadsPlayA11y;
+  static String get downloadsTitle => _l10n.downloadsTitle;
   static String get drawerSectionContent => _l10n.drawerSectionContent;
   static String get drawerSectionDiscover => _l10n.drawerSectionDiscover;
   static String get drawerSectionSystem => _l10n.drawerSectionSystem;
@@ -244,6 +249,9 @@ class Strings {
   static String get subtitlePreviewTitle => _l10n.subtitlePreviewTitle;
   static String get subtitleRemoved => _l10n.subtitleRemoved;
   static String get tabFavorites => _l10n.tabFavorites;
+  static String get tabHot => _l10n.tabHot;
+  static String get tabLibrary => _l10n.tabLibrary;
+  static String get tabSearch => _l10n.tabSearch;
   static String get tags => _l10n.tags;
   static String get telegramChannel => _l10n.telegramChannel;
   static String get themeAutoDesc => _l10n.themeAutoDesc;

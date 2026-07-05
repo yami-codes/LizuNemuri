@@ -103,6 +103,20 @@
   "downloadSuccess": "ดาวน์โหลดเสร็จสิ้น",
   "downloadToLocalTooltip": "ดาวน์โหลดเพื่อเล่นออฟไลน์",
   "downloading": "กำลังดาวน์โหลด...",
+  "downloadsEmpty": "ยังไม่มีไฟล์ดาวน์โหลด ดาวน์โหลดเสียงจากรายการไฟล์ของผลงานเพื่อฟังออฟไลน์",
+  "downloadsFileCountSummary": "{count} ไฟล์ · {size}",
+  "@downloadsFileCountSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadsPlayA11y": "เล่นเสียงที่ดาวน์โหลดแล้ว",
+  "downloadsTitle": "ดาวน์โหลด",
   "drawerSectionContent": "เนื้อหา",
   "drawerSectionDiscover": "ค้นพบ",
   "drawerSectionSystem": "ระบบ",
@@ -322,6 +336,9 @@
   "subtitlePreviewTitle": "ตัวอย่างคำบรรยาย",
   "subtitleRemoved": "ลบคำบรรยายที่นำเข้าแล้ว",
   "tabFavorites": "รายการโปรด",
+  "tabHot": "มาแรง",
+  "tabLibrary": "คลัง",
+  "tabSearch": "ค้นหา",
   "tags": "แท็ก",
   "telegramChannel": "ช่อง Telegram",
   "themeAutoDesc": "สลับโหมดสว่าง/มืดอัตโนมัติ",
@@ -423,6 +440,7 @@
   "logLoadRecommendFailed": "โหลดคำแนะนำล้มเหลว",
   "logLoadSimilarFailed": "โหลดผลงานที่คล้ายกันล้มเหลว",
   "logLoadFavoritesFailed": "โหลดรายการโปรดล้มเหลว",
+  "logLoadDownloadsFailed": "โหลดรายการดาวน์โหลดล้มเหลว",
   "logLoadPlaylistsFailed": "โหลดเพลย์ลิสต์ล้มเหลว",
   "logLoadPlaylistWorksFailed": "โหลดผลงานในเพลย์ลิสต์ล้มเหลว",
   "logLoadWorkPlaylistsFailed": "โหลดเพลย์ลิสต์ของผลงานล้มเหลว",

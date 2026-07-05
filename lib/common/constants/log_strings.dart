@@ -68,6 +68,7 @@ class LogStrings {
   static String get logLoadCacheSizeFailed => _l10n.logLoadCacheSizeFailed;
   static String get logLoadCirclesFailed => _l10n.logLoadCirclesFailed;
   static String get logLoadFavoritesFailed => _l10n.logLoadFavoritesFailed;
+  static String get logLoadDownloadsFailed => _l10n.logLoadDownloadsFailed;
   static String get logLoadFilesFailed => _l10n.logLoadFilesFailed;
   static String get logLoadFilterStateFailed => _l10n.logLoadFilterStateFailed;
   static String get logLoadLocalSubtitleFailed5afd7 => _l10n.logLoadLocalSubtitleFailed5afd7;
