@@ -299,6 +299,9 @@ jobs:
         with:
           prerelease: true
           draft: false
+          make_latest: false
+          allow_updates: true
+          omit_body: false
           body: |
             ## 🚧 Pre-release Version
 
