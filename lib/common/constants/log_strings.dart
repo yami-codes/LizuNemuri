@@ -100,6 +100,7 @@ class LogStrings {
   static String get logNotificationChannelName => _l10n.logNotificationChannelName;
   static String get logNotificationServiceInitFailef5f41 => _l10n.logNotificationServiceInitFailef5f41;
   static String get logNotificationServiceInitializc2ef2 => _l10n.logNotificationServiceInitializc2ef2;
+  static String get logNotificationServiceSkipped => _l10n.logNotificationServiceSkipped;
   static String get logOpAudioPlayerInit => _l10n.logOpAudioPlayerInit;
   static String get logOpClearPlaybackState => _l10n.logOpClearPlaybackState;
   static String get logOpLoadPlaybackState => _l10n.logOpLoadPlaybackState;

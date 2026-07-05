@@ -765,6 +765,7 @@
   },
   "logNotificationServiceInitializc2ef2": "Notification service initialized",
   "logNotificationServiceInitFailef5f41": "Notification service init failed",
+  "logNotificationServiceSkipped": "Notification service skipped on this platform",
   "logPlaybackStateSaved8075d": "Playback state saved",
   "logSavePlaybackStateFailed48c3d": "Save playback state failed",
   "logPlaybackStateCleareda68e0": "Playback state cleared",

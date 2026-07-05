@@ -13,14 +13,16 @@ import 'package:provider/provider.dart';
 import 'screens/main_screen.dart';
 import 'package:xuro/core/theme/app_theme.dart';
 import 'package:xuro/core/theme/theme_controller.dart';
+import 'package:xuro/core/database/database_bootstrap.dart';
 import 'screens/search_screen.dart';
 
 void main() async {
   final startupStopwatch = kDebugMode ? (Stopwatch()..start()) : null;
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 内存图片缓存预算上限（配合各封面组件的 memCacheWidth 降采样解码，
-  // 避免高分辨率封面把缓存撑爆）。
+  await bootstrapDatabaseFactory();
+
+  // 内存图片缓存预算上限
   PaintingBinding.instance.imageCache.maximumSizeBytes = 100 << 20; // 100 MiB
 
   // 初始化服务定位器。仅保留首帧必需：prefs + 已保存鉴权态——

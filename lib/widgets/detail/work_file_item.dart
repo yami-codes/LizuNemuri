@@ -3,6 +3,7 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/data/models/files/child.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:xuro/utils/file_size_formatter.dart';
+import 'package:xuro/utils/platform_capabilities.dart';
 import 'package:xuro/common/constants/log_strings.dart';
 
 class WorkFileItem extends StatelessWidget {
@@ -80,13 +81,13 @@ class WorkFileItem extends StatelessWidget {
                       ? Colors.orange
                       : Colors.blue,
         ),
-        trailing: isAudio && onFileDownload != null
+        trailing: PlatformCapabilities.supportsLocalDownloads && isAudio && onFileDownload != null
             ? IconButton(
                 icon: const Icon(Icons.download_outlined, size: 20),
                 tooltip: Strings.downloadToLocalTooltip,
                 onPressed: () => onFileDownload!.call(file),
               )
-            : isVideo
+            : PlatformCapabilities.supportsLocalDownloads && isVideo
                 ? const Icon(Icons.download_outlined, size: 20)
                 : null,
         dense: true,

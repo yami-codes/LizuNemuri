@@ -4,6 +4,7 @@ import 'package:xuro/data/models/files/files.dart';
 import 'package:xuro/data/models/files/child.dart';
 import 'package:xuro/widgets/detail/work_folder_item.dart';
 import 'package:xuro/widgets/detail/work_file_item.dart';
+import 'package:xuro/utils/platform_capabilities.dart';
 
 class WorkFilesList extends StatelessWidget {
   final Files files;
@@ -41,7 +42,8 @@ class WorkFilesList extends StatelessWidget {
                         ),
                   ),
                 ),
-                if (onFolderDownload != null)
+                if (onFolderDownload != null &&
+                    PlatformCapabilities.supportsLocalDownloads)
                   TextButton.icon(
                     onPressed: () => onFolderDownload!.call(null),
                     icon: const Icon(Icons.download_for_offline_outlined,

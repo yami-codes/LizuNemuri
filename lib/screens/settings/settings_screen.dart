@@ -16,6 +16,7 @@ import 'package:xuro/core/theme/app_spacing.dart';
 import 'package:xuro/screens/settings/widgets/settings_group.dart';
 import 'package:xuro/screens/settings/widgets/settings_tile.dart';
 import 'package:xuro/screens/settings/widgets/settings_theme.dart';
+import 'package:xuro/utils/platform_capabilities.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -49,8 +50,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: AppSpacing.space24),
             _playbackSection(),
             const SizedBox(height: AppSpacing.space24),
-            _lyricOverlaySection(),
-            const SizedBox(height: AppSpacing.space24),
+            if (PlatformCapabilities.supportsFloatingLyrics) ...[
+              _lyricOverlaySection(),
+              const SizedBox(height: AppSpacing.space24),
+            ],
             _storageSection(context),
           ],
         ),

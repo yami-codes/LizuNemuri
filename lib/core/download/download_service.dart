@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:xuro/utils/platform_capabilities.dart';
 import 'package:xuro/common/constants/log_strings.dart';
 
 import 'package:crypto/crypto.dart';
@@ -134,7 +135,7 @@ class DownloadService {
   /// 下载根目录：Android 优先外部应用专属目录（电脑可见、免权限），
   /// 取不到则回退内部私有目录；非 Android 仅用内部目录。
   Future<Directory> _baseDir() async {
-    if (Platform.isAndroid) {
+    if (PlatformCapabilities.isAndroid) {
       try {
         final ext = await getExternalStorageDirectory();
         if (ext != null) return ext;

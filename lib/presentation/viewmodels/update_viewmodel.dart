@@ -1,4 +1,5 @@
-import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart';
+import 'package:xuro/utils/platform_capabilities.dart';
 import 'package:xuro/common/constants/log_strings.dart';
 
 import 'package:flutter/foundation.dart';
@@ -76,7 +77,7 @@ class UpdateViewModel extends ChangeNotifier {
     final info = _latest;
     if (info == null) return false;
 
-    final preferApk = Platform.isAndroid && info.apkDownloadUrl != null;
+    final preferApk = PlatformCapabilities.isAndroid && info.apkDownloadUrl != null;
     final target = preferApk ? info.apkDownloadUrl! : info.htmlUrl;
 
     try {

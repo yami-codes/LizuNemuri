@@ -6,6 +6,7 @@ import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
 import 'package:xuro/core/theme/app_spacing.dart';
 import 'package:xuro/widgets/player/player_controls.dart';
 import 'package:xuro/widgets/player/waveform_progress.dart';
+import 'package:xuro/utils/platform_capabilities.dart';
 import 'package:xuro/widgets/player/circular_cover.dart';
 import 'package:xuro/screens/detail_screen.dart';
 import 'package:xuro/widgets/lyrics/components/player_lyric_view.dart';
@@ -310,7 +311,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
               );
             },
           ),
-          _LyricOverlayAction(manager: lyricManager),
+          if (PlatformCapabilities.supportsFloatingLyrics)
+            _LyricOverlayAction(manager: lyricManager),
           ListenableBuilder(
             listenable: wakeLockController,
             builder: (context, _) {

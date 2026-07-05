@@ -7,6 +7,7 @@ import 'package:xuro/common/constants/log_strings.dart';
 import 'package:xuro/widgets/detail/work_file_item.dart';
 import 'package:xuro/core/audio/models/file_path.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:xuro/utils/platform_capabilities.dart';
 
 class WorkFolderItem extends StatelessWidget {
   final Child folder;
@@ -86,7 +87,8 @@ class WorkFolderItem extends StatelessWidget {
                   ),
                 ),
               ),
-              if (onFolderDownload != null)
+              if (onFolderDownload != null &&
+                  PlatformCapabilities.supportsLocalDownloads)
                 IconButton(
                   icon: const Icon(Icons.download_for_offline_outlined,
                       size: 20),

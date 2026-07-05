@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:xuro/core/audio/events/playback_event_hub.dart';
 import 'package:xuro/core/subtitle/i_subtitle_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/utils/platform_capabilities.dart';
 import '../models/audio_track_info.dart';
 import '../audio_player_handler.dart';
 import 'package:xuro/common/constants/log_strings.dart';
@@ -33,6 +35,10 @@ class AudioNotificationService {
   );
 
   Future<void> init() async {
+    if (!PlatformCapabilities.supportsMediaNotification) {
+      AppLogger.debug(LogStrings.logNotificationServiceSkipped);
+      return;
+    }
     try {
       // Request notification permission (Android 13+)
       final status = await Permission.notification.status;
@@ -54,6 +60,7 @@ class AudioNotificationService {
       AppLogger.debug(LogStrings.logNotificationServiceInitializc2ef2);
     } catch (e) {
       AppLogger.error(LogStrings.logNotificationServiceInitFailef5f41, e);
+      if (!PlatformCapabilities.supportsMediaNotification) return;
       rethrow;
     }
   }

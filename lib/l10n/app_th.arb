@@ -765,6 +765,7 @@
   },
   "logNotificationServiceInitializc2ef2": "通知栏服务初始化สำเร็จ",
   "logNotificationServiceInitFailef5f41": "通知栏服务初始化ล้มเหลว",
+  "logNotificationServiceSkipped": "ข้ามบริการแจ้งเตือนบนแพลตฟอร์มนี้",
   "logPlaybackStateSaved8075d": "播放สถานะ已保存",
   "logSavePlaybackStateFailed48c3d": "保存播放สถานะล้มเหลว",
   "logPlaybackStateCleareda68e0": "播放สถานะ已清除",

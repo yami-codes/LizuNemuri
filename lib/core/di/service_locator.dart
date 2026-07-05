@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:xuro/utils/platform_capabilities.dart';
 import 'package:dio/dio.dart';
 import 'package:xuro/data/services/interceptors/retry_interceptor.dart';
 import 'package:xuro/data/services/interceptors/auth_interceptor.dart';
@@ -169,7 +169,7 @@ void setupSubtitleServices() {
     dio.interceptors.add(AuthInterceptor());
     return SubtitleLoader(dio: dio);
   });
-  if (Platform.isAndroid) {
+  if (PlatformCapabilities.isAndroid) {
     getIt.registerLazySingleton<ILyricOverlayController>(() => LyricOverlayController());
   } else {
     getIt.registerLazySingleton<ILyricOverlayController>(() => DummyLyricOverlayController());

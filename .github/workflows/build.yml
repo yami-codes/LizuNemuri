@@ -296,6 +296,8 @@ jobs:
             ### 📱 Compatibility
             - Minimum Android SDK: 21 (Android 5.0)
             - Target Android SDK: 33 (Android 13)
+            - Web: modern Chromium / Firefox / Safari (self-host `xuro-web.zip`)
+            - Windows: Windows 10+ x64 desktop (`xuro.exe` in `xuro-windows.zip`)
 
             > **Note:** Please report any issues or bugs through the GitHub issue tracker.
           files: |
