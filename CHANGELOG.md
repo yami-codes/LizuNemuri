@@ -8,6 +8,14 @@
 
 ---
 
+## v2.0.0-rc.6 — 2026-07-05
+
+### 修复 / Fixed
+- **Android CI signing**: PKCS12 keystores fail GNU `base64 -d` — CI now decodes via `openssl base64 -d -A` and sets `storeType=pkcs12` for Gradle.
+- **Signing passwords with special chars**: `key.properties` is written via env vars (safe for `!@` etc.).
+
+---
+
 ## v2.0.0-rc.5 — 2026-07-05
 
 ### 工程 / Internal
