@@ -53,6 +53,9 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Generate localizations
+        run: flutter gen-l10n
+
       - name: Create key.properties
         run: |
           echo "storePassword=${{ secrets.KEY_STORE_PASSWORD }}" >> android/key.properties
@@ -112,6 +115,9 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Generate localizations
+        run: flutter gen-l10n
+
       - name: Build iOS
         run: flutter build ios --release --no-codesign
 
@@ -155,6 +161,9 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Generate localizations
+        run: flutter gen-l10n
+
       - name: Build Web
         run: flutter build web --release
 
@@ -195,6 +204,9 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get
+
+      - name: Generate localizations
+        run: flutter gen-l10n
 
       - name: Clean Windows CMake cache
         shell: pwsh

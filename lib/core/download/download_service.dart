@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'package:universal_io/io.dart';
 import 'package:lizunemu/utils/platform_capabilities.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
