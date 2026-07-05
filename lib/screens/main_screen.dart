@@ -40,7 +40,7 @@ class _MainScreenState extends State<MainScreen> {
   late final RecommendViewModel _recommendViewModel;
   late final FavoritesViewModel _favoritesViewModel;
 
-  final _titles = const [
+  final _titles = [
     Strings.tabFavorites,
     Strings.home,
     Strings.homeTitleRecommend,
@@ -173,7 +173,7 @@ class _MainScreenState extends State<MainScreen> {
                   elevation: 0,
                   selectedIndex: _currentIndex,
                   onDestinationSelected: _onTabTapped,
-                  destinations: const [
+                  destinations: [
                     NavigationDestination(
                       icon: Icon(Icons.favorite_outline),
                       selectedIcon: Icon(Icons.favorite),

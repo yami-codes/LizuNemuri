@@ -85,7 +85,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
       AppLogger.info('RegisterDialog: 注册成功，关闭对话框');
       Navigator.of(context).pop();
       messenger.showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(Strings.registerSuccess),
           behavior: SnackBarBehavior.floating,
           duration: Duration(seconds: 2),
@@ -110,7 +110,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text(Strings.registerTitle),
+      title: Text(Strings.registerTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -179,7 +179,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
               alignment: Alignment.centerLeft,
               child: TextButton(
                 onPressed: _switchToLogin,
-                child: const Text(Strings.haveAccountCta),
+                child: Text(Strings.haveAccountCta),
               ),
             ),
           ],
@@ -188,7 +188,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text(Strings.cancel),
+          child: Text(Strings.cancel),
         ),
         Consumer<AuthViewModel>(
           builder: (context, authVM, _) {
@@ -201,7 +201,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text(Strings.register),
+                  : Text(Strings.register),
             );
           },
         ),

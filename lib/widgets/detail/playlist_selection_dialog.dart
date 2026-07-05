@@ -99,7 +99,7 @@ class _PlaylistSelectionDialogState extends State<PlaylistSelectionDialog> {
               const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: widget.onRetry,
-                child: const Text(Strings.retry),
+                child: Text(Strings.retry),
               ),
             ],
           ],
@@ -108,7 +108,7 @@ class _PlaylistSelectionDialogState extends State<PlaylistSelectionDialog> {
     }
 
     if (widget.playlists == null || widget.playlists!.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(Strings.playlistEmpty),
       );
     }

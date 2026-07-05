@@ -33,7 +33,7 @@ class _AboutScreenState extends State<AboutScreen> {
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(Strings.cannotOpenLink)),
+          SnackBar(content: Text(Strings.cannotOpenLink)),
         );
       }
     }
@@ -52,7 +52,7 @@ class _AboutScreenState extends State<AboutScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const BrandWordmark(
+          BrandWordmark(
             text: Strings.aboutAppName,
             iconSize: 36,
             fontSize: 28,
@@ -81,7 +81,7 @@ class _AboutScreenState extends State<AboutScreen> {
     final bgColor = SettingsTheme.pageBackground(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(Strings.aboutUs)),
+      appBar: AppBar(title: Text(Strings.aboutUs)),
       backgroundColor: bgColor,
       body: SettingsTheme.noSplashTheme(
         context: context,
@@ -144,7 +144,7 @@ class _AboutScreenState extends State<AboutScreen> {
                     ),
                   ],
                 ),
-                const AppFooter(text: Strings.aboutFooter),
+                AppFooter(text: Strings.aboutFooter),
               ],
             );
           },

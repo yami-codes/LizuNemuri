@@ -114,16 +114,16 @@ class LyricOverlayManager {
     return await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text(Strings.lyricOverlayPermTitle),
-        content: const Text(Strings.lyricOverlayPermContent),
+        title: Text(Strings.lyricOverlayPermTitle),
+        content: Text(Strings.lyricOverlayPermContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text(Strings.cancel),
+            child: Text(Strings.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text(Strings.dialogConfirm),
+            child: Text(Strings.dialogConfirm),
           ),
         ],
       ),

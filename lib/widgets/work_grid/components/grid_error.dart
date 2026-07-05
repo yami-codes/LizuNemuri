@@ -43,14 +43,14 @@ class GridError extends StatelessWidget {
             FilledButton.icon(
               onPressed: onLogin,
               icon: const Icon(Icons.login),
-              label: const Text(Strings.goLogin),
+              label: Text(Strings.goLogin),
             ),
           ] else if (onRetry != null) ...[
             const SizedBox(height: 16),
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text(Strings.retry),
+              label: Text(Strings.retry),
             ),
           ],
         ],

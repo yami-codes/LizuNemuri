@@ -55,15 +55,15 @@ class _LoginDialogState extends State<LoginDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text(Strings.loginAction),
+      title: Text(Strings.loginAction),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _nameController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: Strings.username,
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
             textInputAction: TextInputAction.next,
           ),
@@ -106,7 +106,7 @@ class _LoginDialogState extends State<LoginDialog> {
             alignment: Alignment.centerLeft,
             child: TextButton(
               onPressed: _switchToRegister,
-              child: const Text(Strings.registerCta),
+              child: Text(Strings.registerCta),
             ),
           ),
         ],
@@ -114,7 +114,7 @@ class _LoginDialogState extends State<LoginDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text(Strings.cancel),
+          child: Text(Strings.cancel),
         ),
         Consumer<AuthViewModel>(
           builder: (context, authVM, _) {
@@ -128,7 +128,7 @@ class _LoginDialogState extends State<LoginDialog> {
                         strokeWidth: 2,
                       ),
                     )
-                  : const Text(Strings.loginAction),
+                  : Text(Strings.loginAction),
             );
           },
         ),

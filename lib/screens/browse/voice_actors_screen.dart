@@ -14,7 +14,7 @@ class VoiceActorsScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => VoiceActorsViewModel(),
       child: Scaffold(
-        appBar: AppBar(title: const Text(Strings.browseAllVoiceActors)),
+        appBar: AppBar(title: Text(Strings.browseAllVoiceActors)),
         body: Consumer<VoiceActorsViewModel>(
           builder: (context, viewModel, _) {
             return Column(
@@ -48,14 +48,14 @@ class VoiceActorsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: viewModel.refresh,
-              child: const Text(Strings.retry),
+              child: Text(Strings.retry),
             ),
           ],
         ),
       );
     }
     if (viewModel.voiceActors.isEmpty) {
-      return const Center(child: Text(Strings.browseEmptyVoiceActors));
+      return Center(child: Text(Strings.browseEmptyVoiceActors));
     }
     return RefreshIndicator(
       onRefresh: viewModel.refresh,

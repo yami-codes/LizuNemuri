@@ -42,7 +42,7 @@ class _LyricOverlayActionState extends State<_LyricOverlayAction> {
     final messenger = ScaffoldMessenger.of(context);
     if (!widget.manager.isShowing) {
       messenger.showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(Strings.lyricOverlayEnterFirstHint),
           duration: Duration(seconds: 2),
         ),
@@ -292,17 +292,17 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     await _viewModel.removeImportedSubtitle();
                     if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text(Strings.subtitleRemoved)),
+                      SnackBar(content: Text(Strings.subtitleRemoved)),
                     );
                   }
                 },
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'import',
                     child: Text(Strings.importSubtitle),
                   ),
                   if (_viewModel.isUserImportedSubtitle)
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'remove',
                       child: Text(Strings.removeImportedSubtitle),
                     ),

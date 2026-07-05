@@ -1,0 +1,340 @@
+{
+  "@@locale": "zh",
+  "a11yUserAccount": "用户账户",
+  "about": "关于",
+  "aboutAppDescription": "Xuro 是一个第三方 ASMR.ONE 客户端，支持后台播放、字幕/悬浮歌词、播放列表与缓存。基于 CC BY-NC-SA 协议开源。",
+  "aboutAppName": "Xuro",
+  "aboutFooter": "© Xuro · 基于 CC BY-NC-SA 4.0 开源",
+  "aboutUs": "关于我们",
+  "actionChecking": "检查中",
+  "actionFavorite": "收藏",
+  "actionMark": "标记",
+  "actionNoRecommend": "暂无推荐",
+  "actionRate": "评分",
+  "addToPlaylist": "添加到收藏夹",
+  "appName": "asmr.one",
+  "appearance": "外观",
+  "audioCache": "音频缓存",
+  "audioDownloadPrompt": "将该音频下载到本地磁盘以便离线播放？",
+  "audioDownloadTitle": "下载音频",
+  "audioFormatHint": "拖拽调整优先级，排在前面的格式优先播放",
+  "audioFormatPreference": "音频格式偏好",
+  "backgroundPlay": "后台播放",
+  "backgroundPlayDesc": "关闭后切到后台自动暂停播放",
+  "batchDownloadCancelled": "已取消批量下载",
+  "batchDownloadConfirm": "将顺序下载 {count} 个音频（含匹配字幕），是否继续？",
+  "@batchDownloadConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "batchDownloadEmpty": "该目录下没有可下载的音频",
+  "batchDownloadProgress": "正在下载 {index}/{total}：{name}",
+  "@batchDownloadProgress": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "batchDownloadSummary": "下载完成：成功 {ok}，已存在 {skipped}，失败 {failed}",
+  "@batchDownloadSummary": {
+    "placeholders": {
+      "ok": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      }
+    }
+  },
+  "batchDownloadTitle": "批量下载",
+  "browseAllCircles": "全部社团",
+  "browseAllTags": "全部标签",
+  "browseAllVoiceActors": "全部声优",
+  "browseEmptyCircles": "暂无社团",
+  "browseEmptyTags": "暂无标签",
+  "browseEmptyVoiceActors": "暂无声优",
+  "browseSearchCirclesHint": "搜索社团...",
+  "browseSearchTagsHint": "搜索标签...",
+  "browseSearchVoiceActorsHint": "搜索声优...",
+  "cacheClean": "清理",
+  "cacheCleanAll": "清理全部",
+  "cacheExplainBody": "缓存用于存储最近播放的音频文件、字幕文件和图片，以提高加载速度。清理全部会同时清除所有类型的缓存数据。",
+  "cacheExplainTitle": "缓存说明",
+  "cacheManager": "缓存管理",
+  "cancel": "取消",
+  "cannotOpenLink": "无法打开链接",
+  "checkForUpdates": "检查更新",
+  "circles": "社团",
+  "colorVariantBlue": "蓝",
+  "colorVariantDesc": "切换 App 主色，深色 / 浅色模式独立生效",
+  "colorVariantGreen": "绿",
+  "colorVariantMono": "黑",
+  "colorVariantTitle": "主色调",
+  "comingSoon": "敬请期待",
+  "confirm": "确认",
+  "confirmLogout": "确认退出登录？",
+  "content": "内容",
+  "darkMode": "深色模式",
+  "darkModeMenu": "深色模式",
+  "detail": "音乐详情",
+  "detailPlaceholder": "音乐详细信息将在这里显示",
+  "dialogConfirm": "确定",
+  "dialogHint": "提示",
+  "downloadAllTooltip": "下载全部（含字幕）",
+  "downloadCancel": "取消",
+  "downloadCancelled": "已取消下载",
+  "downloadConfirm": "下载",
+  "downloadIoError": "下载失败，文件写入错误",
+  "downloadNetworkError": "下载失败，请检查网络（asmr.one 需连接 VPN）",
+  "downloadOpenFailed": "无法打开文件，请确认已安装可播放的应用",
+  "downloadSuccess": "下载完成",
+  "downloadToLocalTooltip": "下载到本地（离线播放）",
+  "downloading": "正在下载...",
+  "drawerSectionContent": "内容",
+  "drawerSectionDiscover": "发现",
+  "drawerSectionSystem": "系统",
+  "error": "出错了",
+  "favorites": "我的收藏",
+  "feedback": "问题反馈",
+  "fileList": "文件列表",
+  "filterOrderAllAges": "全年龄",
+  "filterOrderCreateDate": "收录时间",
+  "filterOrderDefault": "排序",
+  "filterOrderMyRating": "我的评价",
+  "filterOrderPrice": "价格",
+  "filterOrderRandom": "随机",
+  "filterOrderRating": "评价",
+  "filterOrderRelease": "发售日期",
+  "filterOrderReview": "评论数量",
+  "filterOrderRj": "RJ号",
+  "filterOrderSales": "销量",
+  "followSystem": "跟随系统",
+  "goLogin": "去登录",
+  "gridEmpty": "暂无内容",
+  "hasSubtitle": "有字幕",
+  "haveAccountCta": "已有账号？去登录",
+  "home": "主页",
+  "homeSearchHint": "搜索你喜欢的声音...",
+  "homeTitlePopular": "热门作品",
+  "homeTitleRecommend": "为你推荐",
+  "imageCache": "图片缓存",
+  "importFileTooLarge": "文件过大（最大 5MB）",
+  "importInvalidFormat": "不支持的字幕格式（仅支持 .vtt/.lrc）",
+  "importIoError": "文件读取失败",
+  "importParseFailed": "字幕解析失败，请检查文件内容",
+  "importSubtitle": "导入字幕文件",
+  "importSuccess": "字幕导入成功",
+  "languageChinese": "中文",
+  "languageEnglish": "English",
+  "languageSystem": "跟随系统",
+  "languageThai": "ไทย",
+  "languageTitle": "语言",
+  "lightMode": "浅色模式",
+  "loadFailed": "加载失败",
+  "loading": "加载中...",
+  "loggedInFallback": "已登录",
+  "loggedInSubtitle": "点击管理账户",
+  "loginAction": "登录",
+  "loginCta": "立即登录",
+  "loginCtaSubtitle": "同步收藏与记录",
+  "loginRequired": "请先登录",
+  "logout": "退出登录",
+  "lyricOverlayEditEntered": "已进入调整模式：上下拖动悬浮歌词；再次长按退出",
+  "lyricOverlayEditExited": "已退出调整模式，悬浮歌词恢复点穿",
+  "lyricOverlayEnterFirstHint": "请先开启悬浮歌词，再长按此按钮调整位置",
+  "lyricOverlayPermContent": "需要悬浮窗权限来显示歌词，是否授予权限？",
+  "lyricOverlayPermTitle": "开启悬浮歌词",
+  "lyricOverlaySection": "悬浮歌词",
+  "lyricOverlayTooltipEnable": "开启悬浮歌词",
+  "lyricOverlayTooltipExitEdit": "退出调整模式",
+  "lyricOverlayTooltipLongPressHint": "长按调整悬浮歌词位置",
+  "lyricOverlayUnlockDesc": "开启后可在悬浮歌词显示时上下拖动调整位置；关闭则锁定并点穿下层界面",
+  "lyricOverlayUnlockTitle": "解锁悬浮歌词位置",
+  "markFailed": "标记失败: {error}",
+  "@markFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "markedAs": "已标记为{label}",
+  "@markedAs": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "musicList": "音乐列表将在这里显示",
+  "nameTooShort": "用户名至少 5 位",
+  "navPopular": "热门",
+  "navRecommend": "推荐",
+  "network": "网络",
+  "networkVpnHint": "请先连接 VPN 服务",
+  "noLyrics": "无歌词",
+  "noWorks": "暂无作品",
+  "notPlaying": "未在播放",
+  "nowPlaying": "正在播放",
+  "openSourceLicenses": "开源许可",
+  "operationFailed": "操作失败: {error}",
+  "@operationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "originalRepo": "原作者仓库",
+  "password": "密码",
+  "passwordConfirm": "确认密码",
+  "passwordMismatch": "两次输入的密码不一致",
+  "passwordTooShort": "密码至少 5 位",
+  "playFailed": "播放失败: {error}",
+  "@playFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playback": "播放",
+  "playerNextTrack": "下一曲",
+  "playerPlaceholder": "播放器控件将在这里显示",
+  "playerPrevTrack": "上一曲",
+  "playerSeekBack10": "快退 10 秒",
+  "playerSeekForward10": "快进 10 秒",
+  "playlistEmpty": "暂无收藏夹",
+  "playlistLiked": "我喜欢的",
+  "playlistMarked": "我标记的",
+  "playlistToggleResultAdded": "添加成功: {name}",
+  "@playlistToggleResultAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistToggleResultRemoved": "移除成功: {name}",
+  "@playlistToggleResultRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ranking": "排行榜",
+  "recentPlay": "最近播放",
+  "register": "注册",
+  "registerCta": "没有账号？去注册",
+  "registerOkButLoginFailed": "注册成功，但自动登录失败，请用刚才的账号密码登录",
+  "registerSuccess": "注册成功，已自动登录",
+  "registerTitle": "注册账号",
+  "removeImportedSubtitle": "移除导入字幕",
+  "reset": "重置",
+  "retry": "重试",
+  "save": "保存",
+  "screenAwakeOff": "关闭屏幕常亮",
+  "screenAwakeOn": "开启屏幕常亮",
+  "screenKeepAwake": "屏幕常亮",
+  "screenKeepAwakeDesc": "播放时保持屏幕开启",
+  "search": "搜索",
+  "searchEmptyPrompt": "输入关键词开始搜索",
+  "searchInputHint": "搜索...",
+  "searchNoResults": "没有找到相关结果",
+  "serverMain": "主站 (asmr.one)",
+  "serverNode1": "节点1 (asmr-100.com)",
+  "serverNode2": "节点2 (asmr-200.com)",
+  "serverNode3": "节点3 (asmr-300.com)",
+  "settings": "设置",
+  "similarWorks": "相关推荐",
+  "sleepTimer": "睡眠定时",
+  "sleepTimerMinutes": "{minutes} 分钟",
+  "@sleepTimerMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "sleepTimerOff": "关闭",
+  "smartPath": "智能路径",
+  "smartPathDesc": "打开作品后，自动展开包含音频的文件夹",
+  "sortAscending": "升序",
+  "sortDescending": "降序",
+  "sortLabel": "排序",
+  "sortLatest": "最新收录",
+  "sortOldest": "最早收录",
+  "sortPriceAsc": "价格顺序",
+  "sortPriceDesc": "价格倒序",
+  "sortRandom": "随机排序",
+  "sortRatingDesc": "评价倒序",
+  "sortReleaseAsc": "发售日期顺序",
+  "sortReleaseDesc": "发售日期倒序",
+  "sortReviewDesc": "评论数量倒序",
+  "sortRjAsc": "RJ号顺序",
+  "sortRjDesc": "RJ号倒序",
+  "sortSalesAsc": "销量顺序",
+  "sortSalesDesc": "销量倒序",
+  "sourceCode": "源代码",
+  "storage": "存储",
+  "subtitleCache": "字幕缓存",
+  "subtitleChip": "字幕",
+  "subtitlePreviewEmpty": "该字幕没有可显示的内容",
+  "subtitlePreviewError": "字幕加载失败",
+  "subtitlePreviewLoading": "正在加载字幕...",
+  "subtitlePreviewRawNotice": "无法按时间轴解析，显示原始内容",
+  "subtitlePreviewTitle": "字幕预览",
+  "subtitleRemoved": "已移除导入字幕",
+  "tabFavorites": "收藏",
+  "tags": "标签",
+  "telegramChannel": "Telegram 频道",
+  "themeAutoDesc": "自动切换深浅色模式",
+  "themeModeDark": "深色",
+  "themeModeLight": "浅色",
+  "themeModeSystem": "系统",
+  "totalCacheSize": "总缓存大小",
+  "unknownArtist": "未知演员",
+  "unknownWork": "未知作品",
+  "unsupportedFileType": "暂不支持的文件类型",
+  "updateChecking": "正在检查更新...",
+  "updateCurrentVersionLabel": "当前版本",
+  "updateDownload": "立即下载",
+  "updateErrorInvalidPayload": "发布信息解析失败",
+  "updateErrorNetwork": "网络连接失败，请检查网络后重试",
+  "updateErrorNoRelease": "暂无可用发布",
+  "updateErrorNotFound": "未找到发布信息",
+  "updateErrorRateLimited": "GitHub 请求过于频繁，请稍后再试",
+  "updateErrorUnknown": "检查更新失败，请稍后再试",
+  "updateLater": "稍后",
+  "updateNewVersionTitle": "发现新版本",
+  "updateOk": "好的",
+  "updateUpToDate": "已是最新版本",
+  "username": "用户名",
+  "versionInfo": "版本信息",
+  "versionLabel": "版本",
+  "videoNeedsDownloadPrompt": "打开该视频需要下载到本地磁盘，是否同意？",
+  "videoNeedsDownloadTitle": "播放视频",
+  "voiceActors": "声优",
+  "worksCountLabel": "{count} 个作品",
+  "@worksCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

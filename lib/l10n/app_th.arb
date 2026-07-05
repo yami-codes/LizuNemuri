@@ -1,0 +1,340 @@
+{
+  "@@locale": "th",
+  "a11yUserAccount": "บัญชีผู้ใช้",
+  "about": "เกี่ยวกับ",
+  "aboutAppDescription": "Xuro เป็นไคลเอนต์ ASMR.ONE รองรับเล่นพื้นหลัง คำบรรยาย/เนื้อเพลงลอย เพลย์ลิสต์ และแคช โอเพนซอร์สภายใต้ CC BY-NC-SA",
+  "aboutAppName": "Xuro",
+  "aboutFooter": "© Xuro · CC BY-NC-SA 4.0",
+  "aboutUs": "เกี่ยวกับ",
+  "actionChecking": "กำลังตรวจสอบ",
+  "actionFavorite": "รายการโปรด",
+  "actionMark": "ทำเครื่องหมาย",
+  "actionNoRecommend": "ไม่มีคำแนะนำ",
+  "actionRate": "ให้คะแนน",
+  "addToPlaylist": "เพิ่มในเพลย์ลิสต์",
+  "appName": "asmr.one",
+  "appearance": "รูปลักษณ์",
+  "audioCache": "แคชเสียง",
+  "audioDownloadPrompt": "ดาวน์โหลดเสียงนี้เพื่อเล่นออฟไลน์?",
+  "audioDownloadTitle": "ดาวน์โหลดเสียง",
+  "audioFormatHint": "ลากเพื่อจัดลำดับความสำคัญ รูปแบบด้านบนจะถูกเลือกก่อน",
+  "audioFormatPreference": "ลำดับรูปแบบเสียง",
+  "backgroundPlay": "เล่นในพื้นหลัง",
+  "backgroundPlayDesc": "เมื่อปิด จะหยุดเล่นเมื่อไปพื้นหลัง",
+  "batchDownloadCancelled": "ยกเลิกการดาวน์โหลดเป็นชุด",
+  "batchDownloadConfirm": "ดาวน์โหลด {count} ไฟล์เสียง (พร้อมคำบรรยายที่จับคู่) ตามลำดับ?",
+  "@batchDownloadConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "batchDownloadEmpty": "ไม่มีไฟล์เสียงในโฟลเดอร์นี้",
+  "batchDownloadProgress": "กำลังดาวน์โหลด {index}/{total}: {name}",
+  "@batchDownloadProgress": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "batchDownloadSummary": "เสร็จสิ้น: สำเร็จ {ok} ข้าม {skipped} ล้มเหลว {failed}",
+  "@batchDownloadSummary": {
+    "placeholders": {
+      "ok": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      }
+    }
+  },
+  "batchDownloadTitle": "ดาวน์โหลดเป็นชุด",
+  "browseAllCircles": "เซอร์เคิลทั้งหมด",
+  "browseAllTags": "แท็กทั้งหมด",
+  "browseAllVoiceActors": "นักพากย์ทั้งหมด",
+  "browseEmptyCircles": "ไม่มีเซอร์เคิล",
+  "browseEmptyTags": "ไม่มีแท็ก",
+  "browseEmptyVoiceActors": "ไม่มีนักพากย์",
+  "browseSearchCirclesHint": "ค้นหาเซอร์เคิล...",
+  "browseSearchTagsHint": "ค้นหาแท็ก...",
+  "browseSearchVoiceActorsHint": "ค้นหานักพากย์...",
+  "cacheClean": "ล้าง",
+  "cacheCleanAll": "ล้างทั้งหมด",
+  "cacheExplainBody": "แคชเก็บไฟล์เสียง คำบรรยาย และรูปภาพที่เล่นล่าสุดเพื่อโหลดเร็วขึ้น การล้างทั้งหมดจะลบแคชทุกประเภท",
+  "cacheExplainTitle": "เกี่ยวกับแคช",
+  "cacheManager": "จัดการแคช",
+  "cancel": "ยกเลิก",
+  "cannotOpenLink": "เปิดลิงก์ไม่ได้",
+  "checkForUpdates": "ตรวจสอบอัปเดต",
+  "circles": "เซอร์เคิล",
+  "colorVariantBlue": "น้ำเงิน",
+  "colorVariantDesc": "เปลี่ยนสีหลักแยกในโหมดสว่างและมืด",
+  "colorVariantGreen": "เขียว",
+  "colorVariantMono": "ขาวดำ",
+  "colorVariantTitle": "สีหลัก",
+  "comingSoon": "เร็วๆ นี้",
+  "confirm": "ยืนยัน",
+  "confirmLogout": "ออกจากระบบ?",
+  "content": "เนื้อหา",
+  "darkMode": "โหมดมืด",
+  "darkModeMenu": "โหมดมืด",
+  "detail": "รายละเอียดผลงาน",
+  "detailPlaceholder": "รายละเอียดจะแสดงที่นี่",
+  "dialogConfirm": "ตกลง",
+  "dialogHint": "แจ้งเตือน",
+  "downloadAllTooltip": "ดาวน์โหลดทั้งหมด (พร้อมคำบรรยาย)",
+  "downloadCancel": "ยกเลิก",
+  "downloadCancelled": "ยกเลิกการดาวน์โหลด",
+  "downloadConfirm": "ดาวน์โหลด",
+  "downloadIoError": "ดาวน์โหลดไม่สำเร็จ: เขียนไฟล์ผิดพลาด",
+  "downloadNetworkError": "ดาวน์โหลดไม่สำเร็จ ตรวจสอบเครือข่าย (asmr.one ต้องใช้ VPN)",
+  "downloadOpenFailed": "เปิดไฟล์ไม่ได้ ติดตั้งแอปเล่นที่รองรับ",
+  "downloadSuccess": "ดาวน์โหลดเสร็จสิ้น",
+  "downloadToLocalTooltip": "ดาวน์โหลดเพื่อเล่นออฟไลน์",
+  "downloading": "กำลังดาวน์โหลด...",
+  "drawerSectionContent": "เนื้อหา",
+  "drawerSectionDiscover": "ค้นพบ",
+  "drawerSectionSystem": "ระบบ",
+  "error": "เกิดข้อผิดพลาด",
+  "favorites": "รายการโปรดของฉัน",
+  "feedback": "ข้อเสนอแนะ",
+  "fileList": "ไฟล์",
+  "filterOrderAllAges": "ทุกวัย",
+  "filterOrderCreateDate": "วันที่เพิ่ม",
+  "filterOrderDefault": "เรียง",
+  "filterOrderMyRating": "คะแนนของฉัน",
+  "filterOrderPrice": "ราคา",
+  "filterOrderRandom": "สุ่ม",
+  "filterOrderRating": "คะแนน",
+  "filterOrderRelease": "วันจำหน่าย",
+  "filterOrderReview": "จำนวนรีวิว",
+  "filterOrderRj": "RJ",
+  "filterOrderSales": "ยอดขาย",
+  "followSystem": "ตามระบบ",
+  "goLogin": "เข้าสู่ระบบ",
+  "gridEmpty": "ไม่มีเนื้อหา",
+  "hasSubtitle": "มีคำบรรยาย",
+  "haveAccountCta": "มีบัญชีแล้ว? เข้าสู่ระบบ",
+  "home": "หน้าแรก",
+  "homeSearchHint": "ค้นหาเสียงที่คุณชอบ...",
+  "homeTitlePopular": "ผลงานยอดนิยม",
+  "homeTitleRecommend": "แนะนำสำหรับคุณ",
+  "imageCache": "แคชรูปภาพ",
+  "importFileTooLarge": "ไฟล์ใหญ่เกินไป (สูงสุด 5 MB)",
+  "importInvalidFormat": "รูปแบบไม่รองรับ (เฉพาะ .vtt / .lrc)",
+  "importIoError": "อ่านไฟล์ไม่สำเร็จ",
+  "importParseFailed": "แยกวิเคราะห์คำบรรยายไม่สำเร็จ",
+  "importSubtitle": "นำเข้าไฟล์คำบรรยาย",
+  "importSuccess": "นำเข้าคำบรรยายสำเร็จ",
+  "languageChinese": "中文",
+  "languageEnglish": "English",
+  "languageSystem": "ตามระบบ",
+  "languageThai": "ไทย",
+  "languageTitle": "ภาษา",
+  "lightMode": "โหมดสว่าง",
+  "loadFailed": "โหลดไม่สำเร็จ",
+  "loading": "กำลังโหลด...",
+  "loggedInFallback": "เข้าสู่ระบบแล้ว",
+  "loggedInSubtitle": "แตะเพื่อจัดการบัญชี",
+  "loginAction": "เข้าสู่ระบบ",
+  "loginCta": "เข้าสู่ระบบเลย",
+  "loginCtaSubtitle": "ซิงก์รายการโปรดและประวัติ",
+  "loginRequired": "กรุณาเข้าสู่ระบบก่อน",
+  "logout": "ออกจากระบบ",
+  "lyricOverlayEditEntered": "โหมดปรับ: ลากเนื้อเพลงแนวตั้ง กดค้างอีกครั้งเพื่อออก",
+  "lyricOverlayEditExited": "ปิดโหมดปรับ เนื้อเพลงส่งต่อการสัมผัสอีกครั้ง",
+  "lyricOverlayEnterFirstHint": "เปิดเนื้อเพลงลอยก่อน แล้วกดค้างเพื่อปรับตำแหน่ง",
+  "lyricOverlayPermContent": "ต้องการสิทธิ์ overlay เพื่อแสดงเนื้อเพลงลอย อนุญาตหรือไม่?",
+  "lyricOverlayPermTitle": "เปิดเนื้อเพลงลอย",
+  "lyricOverlaySection": "เนื้อเพลงลอย",
+  "lyricOverlayTooltipEnable": "เปิดเนื้อเพลงลอย",
+  "lyricOverlayTooltipExitEdit": "ออกจากโหมดปรับ",
+  "lyricOverlayTooltipLongPressHint": "กดค้างเพื่อปรับตำแหน่งเนื้อเพลงลอย",
+  "lyricOverlayUnlockDesc": "เมื่อเปิด ลากเนื้อเพลงลอยได้ เมื่อปิด ล็อกและส่งต่อการสัมผัส",
+  "lyricOverlayUnlockTitle": "ปลดล็อกตำแหน่งเนื้อเพลงลอย",
+  "markFailed": "ทำเครื่องหมายไม่สำเร็จ: {error}",
+  "@markFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "markedAs": "ทำเครื่องหมายเป็น {label}",
+  "@markedAs": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "musicList": "รายการเพลงจะแสดงที่นี่",
+  "nameTooShort": "ชื่อผู้ใช้ต้องมีอย่างน้อย 5 ตัวอักษร",
+  "navPopular": "ยอดนิยม",
+  "navRecommend": "แนะนำ",
+  "network": "เครือข่าย",
+  "networkVpnHint": "กรุณาเชื่อมต่อ VPN ก่อน",
+  "noLyrics": "ไม่มีเนื้อเพลง",
+  "noWorks": "ไม่มีผลงาน",
+  "notPlaying": "ไม่ได้เล่น",
+  "nowPlaying": "กำลังเล่น",
+  "openSourceLicenses": "ใบอนุญาตโอเพนซอร์ส",
+  "operationFailed": "ดำเนินการไม่สำเร็จ: {error}",
+  "@operationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "originalRepo": "ที่เก็บต้นฉบับ",
+  "password": "รหัสผ่าน",
+  "passwordConfirm": "ยืนยันรหัสผ่าน",
+  "passwordMismatch": "รหัสผ่านไม่ตรงกัน",
+  "passwordTooShort": "รหัสผ่านต้องมีอย่างน้อย 5 ตัวอักษร",
+  "playFailed": "เล่นไม่สำเร็จ: {error}",
+  "@playFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playback": "การเล่น",
+  "playerNextTrack": "แทร็กถัดไป",
+  "playerPlaceholder": "ตัวควบคุมเครื่องเล่นจะแสดงที่นี่",
+  "playerPrevTrack": "แทร็กก่อนหน้า",
+  "playerSeekBack10": "ถอยหลัง 10 วินาที",
+  "playerSeekForward10": "ไปข้างหน้า 10 วินาที",
+  "playlistEmpty": "ไม่มีเพลย์ลิสต์",
+  "playlistLiked": "ที่ชอบ",
+  "playlistMarked": "ที่ทำเครื่องหมาย",
+  "playlistToggleResultAdded": "เพิ่มสำเร็จ: {name}",
+  "@playlistToggleResultAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistToggleResultRemoved": "ลบสำเร็จ: {name}",
+  "@playlistToggleResultRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ranking": "อันดับ",
+  "recentPlay": "เล่นล่าสุด",
+  "register": "สมัคร",
+  "registerCta": "ไม่มีบัญชี? สมัคร",
+  "registerOkButLoginFailed": "สมัครสำเร็จ แต่เข้าสู่ระบบอัตโนมัติไม่สำเร็จ กรุณาเข้าสู่ระบบด้วยบัญชีใหม่",
+  "registerSuccess": "สมัครและเข้าสู่ระบบแล้ว",
+  "registerTitle": "สร้างบัญชี",
+  "removeImportedSubtitle": "ลบคำบรรยายที่นำเข้า",
+  "reset": "รีเซ็ต",
+  "retry": "ลองอีกครั้ง",
+  "save": "บันทึก",
+  "screenAwakeOff": "ปิดหน้าจอค้าง",
+  "screenAwakeOn": "เปิดหน้าจอค้าง",
+  "screenKeepAwake": "หน้าจอค้าง",
+  "screenKeepAwakeDesc": "เปิดหน้าจอค้างขณะเล่น",
+  "search": "ค้นหา",
+  "searchEmptyPrompt": "ป้อนคำค้นหา",
+  "searchInputHint": "ค้นหา...",
+  "searchNoResults": "ไม่พบผลลัพธ์",
+  "serverMain": "หลัก (asmr.one)",
+  "serverNode1": "มิเรอร์ 1 (asmr-100.com)",
+  "serverNode2": "มิเรอร์ 2 (asmr-200.com)",
+  "serverNode3": "มิเรอร์ 3 (asmr-300.com)",
+  "settings": "การตั้งค่า",
+  "similarWorks": "ที่เกี่ยวข้อง",
+  "sleepTimer": "ตัวจับเวลานอน",
+  "sleepTimerMinutes": "{minutes} นาที",
+  "@sleepTimerMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "sleepTimerOff": "ปิด",
+  "smartPath": "เส้นทางอัจฉริยะ",
+  "smartPathDesc": "ขยายโฟลเดอร์ที่มีเสียงอัตโนมัติเมื่อเปิดผลงาน",
+  "sortAscending": "น้อยไปมาก",
+  "sortDescending": "มากไปน้อย",
+  "sortLabel": "เรียง",
+  "sortLatest": "เพิ่มล่าสุด",
+  "sortOldest": "เพิ่มเก่าสุด",
+  "sortPriceAsc": "ราคา (น้อยไปมาก)",
+  "sortPriceDesc": "ราคา (มากไปน้อย)",
+  "sortRandom": "สุ่ม",
+  "sortRatingDesc": "คะแนน (มากไปน้อย)",
+  "sortReleaseAsc": "วันจำหน่าย (เก่าสุด)",
+  "sortReleaseDesc": "วันจำหน่าย (ใหม่สุด)",
+  "sortReviewDesc": "รีวิว (มากไปน้อย)",
+  "sortRjAsc": "RJ (น้อยไปมาก)",
+  "sortRjDesc": "RJ (มากไปน้อย)",
+  "sortSalesAsc": "ยอดขาย (น้อยไปมาก)",
+  "sortSalesDesc": "ยอดขาย (มากไปน้อย)",
+  "sourceCode": "ซอร์สโค้ด",
+  "storage": "พื้นที่จัดเก็บ",
+  "subtitleCache": "แคชคำบรรยาย",
+  "subtitleChip": "คำบรรยาย",
+  "subtitlePreviewEmpty": "ไม่มีเนื้อหาคำบรรยาย",
+  "subtitlePreviewError": "โหลดคำบรรยายไม่สำเร็จ",
+  "subtitlePreviewLoading": "กำลังโหลดคำบรรยาย...",
+  "subtitlePreviewRawNotice": "แยกไทม์ไลน์ไม่ได้ แสดงเนื้อหาดิบ",
+  "subtitlePreviewTitle": "ตัวอย่างคำบรรยาย",
+  "subtitleRemoved": "ลบคำบรรยายที่นำเข้าแล้ว",
+  "tabFavorites": "รายการโปรด",
+  "tags": "แท็ก",
+  "telegramChannel": "ช่อง Telegram",
+  "themeAutoDesc": "สลับโหมดสว่าง/มืดอัตโนมัติ",
+  "themeModeDark": "มืด",
+  "themeModeLight": "สว่าง",
+  "themeModeSystem": "ระบบ",
+  "totalCacheSize": "ขนาดแคชทั้งหมด",
+  "unknownArtist": "นักพากย์ไม่ทราบ",
+  "unknownWork": "ผลงานไม่ทราบ",
+  "unsupportedFileType": "ประเภทไฟล์ไม่รองรับ",
+  "updateChecking": "กำลังตรวจสอบอัปเดต...",
+  "updateCurrentVersionLabel": "เวอร์ชันปัจจุบัน",
+  "updateDownload": "ดาวน์โหลดเลย",
+  "updateErrorInvalidPayload": "แยกวิเคราะห์ข้อมูลเผยแพร่ไม่สำเร็จ",
+  "updateErrorNetwork": "เชื่อมต่อเครือข่ายไม่สำเร็จ ลองอีกครั้ง",
+  "updateErrorNoRelease": "ไม่มีเวอร์ชันเผยแพร่",
+  "updateErrorNotFound": "ไม่พบข้อมูลเผยแพร่",
+  "updateErrorRateLimited": "GitHub จำกัดคำขอ ลองใหม่ภายหลัง",
+  "updateErrorUnknown": "ตรวจสอบอัปเดตไม่สำเร็จ ลองใหม่ภายหลัง",
+  "updateLater": "ภายหลัง",
+  "updateNewVersionTitle": "พบเวอร์ชันใหม่",
+  "updateOk": "ตกลง",
+  "updateUpToDate": "เป็นเวอร์ชันล่าสุดแล้ว",
+  "username": "ชื่อผู้ใช้",
+  "versionInfo": "ข้อมูลเวอร์ชัน",
+  "versionLabel": "เวอร์ชัน",
+  "videoNeedsDownloadPrompt": "ต้องดาวน์โหลดวิดีโอนี้ก่อน ดำเนินการต่อหรือไม่?",
+  "videoNeedsDownloadTitle": "เล่นวิดีโอ",
+  "voiceActors": "นักพากย์",
+  "worksCountLabel": "{count} ผลงาน",
+  "@worksCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

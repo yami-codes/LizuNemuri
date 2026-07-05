@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/core/audio/cache/audio_cache_manager.dart';
 import 'package:xuro/core/cache/cache_lifecycle_manager.dart';
@@ -73,6 +74,9 @@ class MyApp extends StatelessWidget {
           final variant = settings.colorVariant;
           return MaterialApp(
             title: Strings.appName,
+            locale: settings.materialLocale,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             theme: AppTheme.light(variant),
             darkTheme: AppTheme.dark(variant),
             themeMode: themeController.themeMode,

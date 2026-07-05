@@ -1,0 +1,340 @@
+{
+  "@@locale": "en",
+  "a11yUserAccount": "User account",
+  "about": "About",
+  "aboutAppDescription": "Xuro is a third-party ASMR.ONE client with background playback, subtitles/floating lyrics, playlists, and caching. Open source under CC BY-NC-SA.",
+  "aboutAppName": "Xuro",
+  "aboutFooter": "© Xuro · CC BY-NC-SA 4.0",
+  "aboutUs": "About",
+  "actionChecking": "Checking",
+  "actionFavorite": "Favorite",
+  "actionMark": "Mark",
+  "actionNoRecommend": "No recommendations",
+  "actionRate": "Rate",
+  "addToPlaylist": "Add to playlist",
+  "appName": "asmr.one",
+  "appearance": "Appearance",
+  "audioCache": "Audio cache",
+  "audioDownloadPrompt": "Download this audio for offline playback?",
+  "audioDownloadTitle": "Download audio",
+  "audioFormatHint": "Drag to set priority. Formats higher in the list are preferred.",
+  "audioFormatPreference": "Audio format preference",
+  "backgroundPlay": "Background play",
+  "backgroundPlayDesc": "When off, playback pauses in background",
+  "batchDownloadCancelled": "Batch download cancelled",
+  "batchDownloadConfirm": "Download {count} audio files (with matched subtitles) in order?",
+  "@batchDownloadConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "batchDownloadEmpty": "No audio files in this folder",
+  "batchDownloadProgress": "Downloading {index}/{total}: {name}",
+  "@batchDownloadProgress": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "batchDownloadSummary": "Done: {ok} succeeded, {skipped} skipped, {failed} failed",
+  "@batchDownloadSummary": {
+    "placeholders": {
+      "ok": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      }
+    }
+  },
+  "batchDownloadTitle": "Batch download",
+  "browseAllCircles": "All circles",
+  "browseAllTags": "All tags",
+  "browseAllVoiceActors": "All voice actors",
+  "browseEmptyCircles": "No circles",
+  "browseEmptyTags": "No tags",
+  "browseEmptyVoiceActors": "No voice actors",
+  "browseSearchCirclesHint": "Search circles...",
+  "browseSearchTagsHint": "Search tags...",
+  "browseSearchVoiceActorsHint": "Search voice actors...",
+  "cacheClean": "Clear",
+  "cacheCleanAll": "Clear all",
+  "cacheExplainBody": "Cache stores recently played audio, subtitles, and images to speed up loading. Clearing all removes every cache type.",
+  "cacheExplainTitle": "About cache",
+  "cacheManager": "Cache manager",
+  "cancel": "Cancel",
+  "cannotOpenLink": "Could not open link",
+  "checkForUpdates": "Check for updates",
+  "circles": "Circles",
+  "colorVariantBlue": "Blue",
+  "colorVariantDesc": "Changes the app accent in light and dark mode independently",
+  "colorVariantGreen": "Green",
+  "colorVariantMono": "Mono",
+  "colorVariantTitle": "Accent color",
+  "comingSoon": "Coming soon",
+  "confirm": "Confirm",
+  "confirmLogout": "Log out?",
+  "content": "Content",
+  "darkMode": "Dark mode",
+  "darkModeMenu": "Dark mode",
+  "detail": "Work details",
+  "detailPlaceholder": "Work details will appear here",
+  "dialogConfirm": "OK",
+  "dialogHint": "Notice",
+  "downloadAllTooltip": "Download all (with subtitles)",
+  "downloadCancel": "Cancel",
+  "downloadCancelled": "Download cancelled",
+  "downloadConfirm": "Download",
+  "downloadIoError": "Download failed: file write error",
+  "downloadNetworkError": "Download failed. Check network (asmr.one requires VPN).",
+  "downloadOpenFailed": "Could not open file. Install a compatible player app.",
+  "downloadSuccess": "Download complete",
+  "downloadToLocalTooltip": "Download for offline playback",
+  "downloading": "Downloading...",
+  "drawerSectionContent": "Content",
+  "drawerSectionDiscover": "Discover",
+  "drawerSectionSystem": "System",
+  "error": "Something went wrong",
+  "favorites": "My favorites",
+  "feedback": "Feedback",
+  "fileList": "Files",
+  "filterOrderAllAges": "All ages",
+  "filterOrderCreateDate": "Date added",
+  "filterOrderDefault": "Sort",
+  "filterOrderMyRating": "My rating",
+  "filterOrderPrice": "Price",
+  "filterOrderRandom": "Random",
+  "filterOrderRating": "Rating",
+  "filterOrderRelease": "Release date",
+  "filterOrderReview": "Review count",
+  "filterOrderRj": "RJ number",
+  "filterOrderSales": "Sales",
+  "followSystem": "Follow system",
+  "goLogin": "Log in",
+  "gridEmpty": "Nothing here",
+  "hasSubtitle": "Has subtitles",
+  "haveAccountCta": "Have an account? Log in",
+  "home": "Home",
+  "homeSearchHint": "Search for sounds you like...",
+  "homeTitlePopular": "Popular works",
+  "homeTitleRecommend": "Recommended for you",
+  "imageCache": "Image cache",
+  "importFileTooLarge": "File too large (max 5 MB)",
+  "importInvalidFormat": "Unsupported format (only .vtt / .lrc)",
+  "importIoError": "Failed to read file",
+  "importParseFailed": "Failed to parse subtitle",
+  "importSubtitle": "Import subtitle file",
+  "importSuccess": "Subtitle imported",
+  "languageChinese": "中文",
+  "languageEnglish": "English",
+  "languageSystem": "Follow system",
+  "languageThai": "ไทย",
+  "languageTitle": "Language",
+  "lightMode": "Light mode",
+  "loadFailed": "Failed to load",
+  "loading": "Loading...",
+  "loggedInFallback": "Logged in",
+  "loggedInSubtitle": "Tap to manage account",
+  "loginAction": "Log in",
+  "loginCta": "Log in now",
+  "loginCtaSubtitle": "Sync favorites and history",
+  "loginRequired": "Please log in first",
+  "logout": "Log out",
+  "lyricOverlayEditEntered": "Adjust mode: drag lyrics vertically; long-press again to exit",
+  "lyricOverlayEditExited": "Adjust mode off; lyrics pass touches through again",
+  "lyricOverlayEnterFirstHint": "Enable floating lyrics first, then long-press to adjust position",
+  "lyricOverlayPermContent": "Overlay permission is required to show floating lyrics. Grant it?",
+  "lyricOverlayPermTitle": "Enable floating lyrics",
+  "lyricOverlaySection": "Floating lyrics",
+  "lyricOverlayTooltipEnable": "Enable floating lyrics",
+  "lyricOverlayTooltipExitEdit": "Exit adjust mode",
+  "lyricOverlayTooltipLongPressHint": "Long-press to adjust floating lyric position",
+  "lyricOverlayUnlockDesc": "When on, drag floating lyrics vertically; when off, they stay locked and pass touches through.",
+  "lyricOverlayUnlockTitle": "Unlock floating lyric position",
+  "markFailed": "Mark failed: {error}",
+  "@markFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "markedAs": "Marked as {label}",
+  "@markedAs": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "musicList": "Music list will appear here",
+  "nameTooShort": "Username must be at least 5 characters",
+  "navPopular": "Popular",
+  "navRecommend": "For you",
+  "network": "Network",
+  "networkVpnHint": "Please connect to a VPN first",
+  "noLyrics": "No lyrics",
+  "noWorks": "No works",
+  "notPlaying": "Not playing",
+  "nowPlaying": "Now playing",
+  "openSourceLicenses": "Open source licenses",
+  "operationFailed": "Operation failed: {error}",
+  "@operationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "originalRepo": "Original repository",
+  "password": "Password",
+  "passwordConfirm": "Confirm password",
+  "passwordMismatch": "Passwords do not match",
+  "passwordTooShort": "Password must be at least 5 characters",
+  "playFailed": "Playback failed: {error}",
+  "@playFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playback": "Playback",
+  "playerNextTrack": "Next track",
+  "playerPlaceholder": "Player controls will appear here",
+  "playerPrevTrack": "Previous track",
+  "playerSeekBack10": "Rewind 10 seconds",
+  "playerSeekForward10": "Forward 10 seconds",
+  "playlistEmpty": "No playlists",
+  "playlistLiked": "Liked",
+  "playlistMarked": "Marked",
+  "playlistToggleResultAdded": "Added: {name}",
+  "@playlistToggleResultAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistToggleResultRemoved": "Removed: {name}",
+  "@playlistToggleResultRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ranking": "Rankings",
+  "recentPlay": "Recent",
+  "register": "Register",
+  "registerCta": "No account? Register",
+  "registerOkButLoginFailed": "Registered, but auto-login failed. Please log in with your new credentials.",
+  "registerSuccess": "Registered and logged in",
+  "registerTitle": "Create account",
+  "removeImportedSubtitle": "Remove imported subtitle",
+  "reset": "Reset",
+  "retry": "Retry",
+  "save": "Save",
+  "screenAwakeOff": "Allow screen sleep",
+  "screenAwakeOn": "Keep screen on",
+  "screenKeepAwake": "Keep screen awake",
+  "screenKeepAwakeDesc": "Keep the screen on while playing",
+  "search": "Search",
+  "searchEmptyPrompt": "Enter a keyword to search",
+  "searchInputHint": "Search...",
+  "searchNoResults": "No results found",
+  "serverMain": "Main (asmr.one)",
+  "serverNode1": "Mirror 1 (asmr-100.com)",
+  "serverNode2": "Mirror 2 (asmr-200.com)",
+  "serverNode3": "Mirror 3 (asmr-300.com)",
+  "settings": "Settings",
+  "similarWorks": "Related",
+  "sleepTimer": "Sleep timer",
+  "sleepTimerMinutes": "{minutes} min",
+  "@sleepTimerMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "sleepTimerOff": "Off",
+  "smartPath": "Smart path",
+  "smartPathDesc": "Auto-expand folders that contain audio when opening a work",
+  "sortAscending": "Ascending",
+  "sortDescending": "Descending",
+  "sortLabel": "Sort",
+  "sortLatest": "Newest added",
+  "sortOldest": "Oldest added",
+  "sortPriceAsc": "Price (low to high)",
+  "sortPriceDesc": "Price (high to low)",
+  "sortRandom": "Random",
+  "sortRatingDesc": "Rating (high to low)",
+  "sortReleaseAsc": "Release date (oldest)",
+  "sortReleaseDesc": "Release date (newest)",
+  "sortReviewDesc": "Reviews (high to low)",
+  "sortRjAsc": "RJ number (low to high)",
+  "sortRjDesc": "RJ number (high to low)",
+  "sortSalesAsc": "Sales (low to high)",
+  "sortSalesDesc": "Sales (high to low)",
+  "sourceCode": "Source code",
+  "storage": "Storage",
+  "subtitleCache": "Subtitle cache",
+  "subtitleChip": "Subtitles",
+  "subtitlePreviewEmpty": "No subtitle content to show",
+  "subtitlePreviewError": "Failed to load subtitle",
+  "subtitlePreviewLoading": "Loading subtitle...",
+  "subtitlePreviewRawNotice": "Could not parse timeline; showing raw content",
+  "subtitlePreviewTitle": "Subtitle preview",
+  "subtitleRemoved": "Imported subtitle removed",
+  "tabFavorites": "Favorites",
+  "tags": "Tags",
+  "telegramChannel": "Telegram channel",
+  "themeAutoDesc": "Automatically switch light/dark mode",
+  "themeModeDark": "Dark",
+  "themeModeLight": "Light",
+  "themeModeSystem": "System",
+  "totalCacheSize": "Total cache size",
+  "unknownArtist": "Unknown artist",
+  "unknownWork": "Unknown work",
+  "unsupportedFileType": "Unsupported file type",
+  "updateChecking": "Checking for updates...",
+  "updateCurrentVersionLabel": "Current version",
+  "updateDownload": "Download now",
+  "updateErrorInvalidPayload": "Failed to parse release info",
+  "updateErrorNetwork": "Network error. Check your connection and try again.",
+  "updateErrorNoRelease": "No release available",
+  "updateErrorNotFound": "Release not found",
+  "updateErrorRateLimited": "GitHub rate limit reached. Try again later.",
+  "updateErrorUnknown": "Update check failed. Try again later.",
+  "updateLater": "Later",
+  "updateNewVersionTitle": "Update available",
+  "updateOk": "OK",
+  "updateUpToDate": "You are up to date",
+  "username": "Username",
+  "versionInfo": "Version info",
+  "versionLabel": "Version",
+  "videoNeedsDownloadPrompt": "This video must be downloaded locally first. Continue?",
+  "videoNeedsDownloadTitle": "Play video",
+  "voiceActors": "Voice actors",
+  "worksCountLabel": "{count} works",
+  "@worksCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

@@ -27,7 +27,7 @@ class SleepTimerDialog extends StatelessWidget {
     }
 
     return AlertDialog(
-      title: const Text(Strings.sleepTimer),
+      title: Text(Strings.sleepTimer),
       content: SizedBox(
         width: double.maxFinite,
         child: Column(
@@ -42,7 +42,7 @@ class SleepTimerDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text(Strings.cancel),
+          child: Text(Strings.cancel),
         ),
       ],
     );

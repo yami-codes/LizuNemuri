@@ -23,7 +23,7 @@ class _AudioFormatOrderDialogState extends State<AudioFormatOrderDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text(Strings.audioFormatPreference),
+      title: Text(Strings.audioFormatPreference),
       content: SizedBox(
         width: double.maxFinite,
         height: 300,
@@ -71,18 +71,18 @@ class _AudioFormatOrderDialogState extends State<AudioFormatOrderDialog> {
               _formats = List.from(AppSettingsService.defaultAudioFormatOrder);
             });
           },
-          child: const Text(Strings.reset),
+          child: Text(Strings.reset),
         ),
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text(Strings.cancel),
+          child: Text(Strings.cancel),
         ),
         FilledButton(
           onPressed: () {
             widget.settings.setAudioFormatOrder(_formats);
             Navigator.pop(context);
           },
-          child: const Text(Strings.save),
+          child: Text(Strings.save),
         ),
       ],
     );

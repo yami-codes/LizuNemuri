@@ -46,7 +46,7 @@ class WorkFilesList extends StatelessWidget {
                     onPressed: () => onFolderDownload!.call(null),
                     icon: const Icon(Icons.download_for_offline_outlined,
                         size: 18),
-                    label: const Text(Strings.downloadAllTooltip),
+                    label: Text(Strings.downloadAllTooltip),
                   ),
               ],
             ),

@@ -14,7 +14,7 @@ class TagsScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => TagsViewModel(),
       child: Scaffold(
-        appBar: AppBar(title: const Text(Strings.browseAllTags)),
+        appBar: AppBar(title: Text(Strings.browseAllTags)),
         body: Consumer<TagsViewModel>(
           builder: (context, viewModel, _) {
             return Column(
@@ -48,14 +48,14 @@ class TagsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: viewModel.refresh,
-              child: const Text(Strings.retry),
+              child: Text(Strings.retry),
             ),
           ],
         ),
       );
     }
     if (viewModel.tags.isEmpty) {
-      return const Center(child: Text(Strings.browseEmptyTags));
+      return Center(child: Text(Strings.browseEmptyTags));
     }
     return RefreshIndicator(
       onRefresh: viewModel.refresh,

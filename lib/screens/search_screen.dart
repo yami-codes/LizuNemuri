@@ -162,7 +162,7 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                       // 字幕选项
                       Consumer<SearchViewModel>(
                         builder: (context, viewModel, _) => FilterChip(
-                          label: const Text(Strings.subtitleChip),
+                          label: Text(Strings.subtitleChip),
                           selected: viewModel.hasSubtitle,
                           onSelected: (_) => viewModel.toggleSubtitle(),
                           showCheckmark: true,
@@ -181,47 +181,47 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                             onDeleted: null,
                           ),
                           itemBuilder: (context) => [
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: ('create_date', 'desc'),
                               child: Text(Strings.sortLatest),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: ('release', 'desc'),
                               child: Text(Strings.sortReleaseDesc),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: ('release', 'asc'),
                               child: Text(Strings.sortReleaseAsc),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: ('dl_count', 'desc'),
                               child: Text(Strings.sortSalesDesc),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: ('price', 'asc'),
                               child: Text(Strings.sortPriceAsc),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: ('price', 'desc'),
                               child: Text(Strings.sortPriceDesc),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: ('rate_average_2dp', 'desc'),
                               child: Text(Strings.sortRatingDesc),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: ('review_count', 'desc'),
                               child: Text(Strings.sortReviewDesc),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: ('id', 'desc'),
                               child: Text(Strings.sortRjDesc),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: ('id', 'asc'),
                               child: Text(Strings.sortRjAsc),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: ('random', 'desc'),
                               child: Text(Strings.sortRandom),
                             ),
@@ -241,11 +241,11 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
               builder: (context, viewModel, child) {
                 Widget? emptyWidget;
                 if (viewModel.works.isEmpty && viewModel.keyword.isEmpty) {
-                  emptyWidget = const Center(
+                  emptyWidget = Center(
                     child: Text(Strings.searchEmptyPrompt),
                   );
                 } else if (viewModel.works.isEmpty) {
-                  emptyWidget = const Center(
+                  emptyWidget = Center(
                     child: Text(Strings.searchNoResults),
                   );
                 }

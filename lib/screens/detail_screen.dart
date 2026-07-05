@@ -135,26 +135,26 @@ class DetailScreen extends StatelessWidget {
                           final open =
                               await OpenFilex.open(result.localPath!);
                           if (open.type != ResultType.done) {
-                            messenger.showSnackBar(const SnackBar(
+                            messenger.showSnackBar(SnackBar(
                               content: Text(Strings.downloadOpenFailed),
                             ));
                           }
                         } else {
-                          messenger.showSnackBar(const SnackBar(
+                          messenger.showSnackBar(SnackBar(
                             content: Text(Strings.downloadSuccess),
                           ));
                         }
                       } else if (result.status == DownloadStatus.cancelled) {
-                        messenger.showSnackBar(const SnackBar(
+                        messenger.showSnackBar(SnackBar(
                           content: Text(Strings.downloadCancelled),
                         ));
                       } else if (result.status ==
                           DownloadStatus.networkError) {
-                        messenger.showSnackBar(const SnackBar(
+                        messenger.showSnackBar(SnackBar(
                           content: Text(Strings.downloadNetworkError),
                         ));
                       } else {
-                        messenger.showSnackBar(const SnackBar(
+                        messenger.showSnackBar(SnackBar(
                           content: Text(Strings.downloadIoError),
                         ));
                       }
@@ -226,7 +226,7 @@ class DetailScreen extends StatelessWidget {
                           return;
                         }
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text(Strings.unsupportedFileType),
                           ),
                         );

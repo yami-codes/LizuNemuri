@@ -18,13 +18,14 @@ class MediaDownloadDialog extends StatefulWidget {
     void Function(double progress) onProgress,
   ) download;
 
-  const MediaDownloadDialog({
+  MediaDownloadDialog({
     super.key,
     required this.fileName,
     required this.download,
-    this.titleText = Strings.videoNeedsDownloadTitle,
-    this.promptText = Strings.videoNeedsDownloadPrompt,
-  });
+    String? titleText,
+    String? promptText,
+  })  : titleText = titleText ?? Strings.videoNeedsDownloadTitle,
+        promptText = promptText ?? Strings.videoNeedsDownloadPrompt;
 
   @override
   State<MediaDownloadDialog> createState() => _MediaDownloadDialogState();
@@ -66,11 +67,11 @@ class _MediaDownloadDialogState extends State<MediaDownloadDialog> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text(Strings.downloadCancel),
+            child: Text(Strings.downloadCancel),
           ),
           TextButton(
             onPressed: _start,
-            child: const Text(Strings.downloadConfirm),
+            child: Text(Strings.downloadConfirm),
           ),
         ],
       );
@@ -80,7 +81,7 @@ class _MediaDownloadDialogState extends State<MediaDownloadDialog> {
     return PopScope(
       canPop: false,
       child: AlertDialog(
-        title: const Text(Strings.downloading),
+        title: Text(Strings.downloading),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,7 +103,7 @@ class _MediaDownloadDialogState extends State<MediaDownloadDialog> {
         actions: [
           TextButton(
             onPressed: () => _cancelToken?.cancel(),
-            child: const Text(Strings.downloadCancel),
+            child: Text(Strings.downloadCancel),
           ),
         ],
       ),

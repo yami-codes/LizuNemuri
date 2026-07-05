@@ -90,7 +90,7 @@ class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(Strings.subtitlePreviewTitle),
+        title: Text(Strings.subtitlePreviewTitle),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(24),
           child: Padding(
@@ -113,12 +113,12 @@ class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
 
   Widget _buildBody(BuildContext context) {
     if (_loading) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 12),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 12),
             Text(Strings.subtitlePreviewLoading),
           ],
         ),
@@ -132,7 +132,7 @@ class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
           children: [
             Text(_error!),
             const SizedBox(height: 12),
-            TextButton(onPressed: _load, child: const Text(Strings.retry)),
+            TextButton(onPressed: _load, child: Text(Strings.retry)),
           ],
         ),
       );
@@ -141,7 +141,7 @@ class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
     final parsed = _parsed;
     if (parsed != null) {
       if (parsed.subtitles.isEmpty) {
-        return const Center(child: Text(Strings.subtitlePreviewEmpty));
+        return Center(child: Text(Strings.subtitlePreviewEmpty));
       }
       final colorScheme = Theme.of(context).colorScheme;
       return ListView.separated(

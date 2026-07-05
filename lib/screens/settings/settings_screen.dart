@@ -7,6 +7,7 @@ import 'package:xuro/core/platform/wakelock_controller.dart';
 import 'package:xuro/core/platform/sleep_timer_controller.dart';
 import 'package:xuro/core/platform/lyric_overlay_manager.dart';
 import 'package:xuro/screens/settings/sleep_timer_dialog.dart';
+import 'package:xuro/core/settings/app_language.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/screens/settings/cache_manager_screen.dart';
 import 'package:xuro/screens/settings/audio_format_order_dialog.dart';
@@ -29,7 +30,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final bgColor = SettingsTheme.pageBackground(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(Strings.settings)),
+      appBar: AppBar(title: Text(Strings.settings)),
       backgroundColor: bgColor,
       body: SettingsTheme.noSplashTheme(
         context: context,
@@ -37,6 +38,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.space16),
           children: [
             _appearanceSection(),
+            const SizedBox(height: AppSpacing.space24),
+            _languageSection(),
             const SizedBox(height: AppSpacing.space24),
             _colorVariantSection(),
             const SizedBox(height: AppSpacing.space24),
@@ -93,6 +96,59 @@ class _SettingsScreenState extends State<SettingsScreen> {
         : AppColors.lightSchemeFor(v).primary;
   }
 
+  Widget _languageSection() {
+    return Builder(builder: (context) {
+      final settings = GetIt.I<AppSettingsService>();
+      return ListenableBuilder(
+        listenable: settings,
+        builder: (context, _) => SettingsGroup(
+          header: Strings.languageTitle,
+          children: [
+            SettingsTile.selection(
+              title: Strings.languageSystem,
+              leading: Icons.translate_outlined,
+              selected: settings.appLanguage == AppLanguage.system,
+              onTap: () => settings.setAppLanguage(AppLanguage.system),
+            ),
+            SettingsTile.selection(
+              title: Strings.languageChinese,
+              leading: Icons.language_outlined,
+              selected: settings.appLanguage == AppLanguage.zh,
+              onTap: () => settings.setAppLanguage(AppLanguage.zh),
+            ),
+            SettingsTile.selection(
+              title: Strings.languageEnglish,
+              leading: Icons.language_outlined,
+              selected: settings.appLanguage == AppLanguage.en,
+              onTap: () => settings.setAppLanguage(AppLanguage.en),
+            ),
+            SettingsTile.selection(
+              title: Strings.languageThai,
+              leading: Icons.language_outlined,
+              selected: settings.appLanguage == AppLanguage.th,
+              onTap: () => settings.setAppLanguage(AppLanguage.th),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  String _serverLabel(String url) {
+    switch (url) {
+      case AppSettingsService.defaultServerUrl:
+        return Strings.serverMain;
+      case 'https://api.asmr-100.com/api':
+        return Strings.serverNode1;
+      case 'https://api.asmr-200.com/api':
+        return Strings.serverNode2;
+      case 'https://api.asmr-300.com/api':
+        return Strings.serverNode3;
+      default:
+        return url;
+    }
+  }
+
   Widget _colorVariantSection() {
     return Builder(builder: (context) {
       final settings = GetIt.I<AppSettingsService>();
@@ -136,13 +192,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         listenable: settings,
         builder: (context, _) => SettingsGroup(
           header: Strings.network,
-          children: AppSettingsService.serverOptions.entries.map((entry) {
+          children: AppSettingsService.serverUrls.map((url) {
             return SettingsTile.selection(
-              title: entry.value,
-              subtitle: entry.key,
+              title: _serverLabel(url),
+              subtitle: url,
               leading: Icons.lan_outlined,
-              selected: settings.serverUrl == entry.key,
-              onTap: () => settings.setServerUrl(entry.key),
+              selected: settings.serverUrl == url,
+              onTap: () => settings.setServerUrl(url),
             );
           }).toList(),
         ),

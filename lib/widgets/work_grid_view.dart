@@ -52,13 +52,13 @@ class WorkGridView extends StatelessWidget {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: onLogin,
-                child: const Text(Strings.goLogin),
+                child: Text(Strings.goLogin),
               ),
             ] else if (onRetry != null) ...[
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: onRetry,
-                child: const Text(Strings.retry),
+                child: Text(Strings.retry),
               ),
             ],
           ],

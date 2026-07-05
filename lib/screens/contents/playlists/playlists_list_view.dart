@@ -30,7 +30,7 @@ class PlaylistsListView extends StatelessWidget {
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: viewModel.refresh,
-                  child: const Text(Strings.retry),
+                  child: Text(Strings.retry),
                 ),
               ],
             ),

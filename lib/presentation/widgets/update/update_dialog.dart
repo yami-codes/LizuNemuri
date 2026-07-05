@@ -28,7 +28,7 @@ class _UpdateDialogBody extends StatelessWidget {
     return Consumer<UpdateViewModel>(
       builder: (context, vm, _) {
         if (vm.isChecking) {
-          return const AlertDialog(
+          return AlertDialog(
             title: Text(Strings.checkForUpdates),
             content: Row(
               mainAxisSize: MainAxisSize.min,
@@ -47,16 +47,16 @@ class _UpdateDialogBody extends StatelessWidget {
 
         if (vm.error != null) {
           return AlertDialog(
-            title: const Text(Strings.checkForUpdates),
+            title: Text(Strings.checkForUpdates),
             content: Text(vm.error!),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text(Strings.cancel),
+                child: Text(Strings.cancel),
               ),
               FilledButton(
                 onPressed: () => vm.check(),
-                child: const Text(Strings.retry),
+                child: Text(Strings.retry),
               ),
             ],
           );
@@ -65,7 +65,7 @@ class _UpdateDialogBody extends StatelessWidget {
         final info = vm.latest;
         if (!vm.hasUpdate || info == null) {
           return AlertDialog(
-            title: const Text(Strings.checkForUpdates),
+            title: Text(Strings.checkForUpdates),
             content: Text(
               '${Strings.updateUpToDate}'
               '${vm.currentVersion.isEmpty ? '' : '（${Strings.updateCurrentVersionLabel} ${vm.currentVersion}）'}',
@@ -73,7 +73,7 @@ class _UpdateDialogBody extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text(Strings.updateOk),
+                child: Text(Strings.updateOk),
               ),
             ],
           );
@@ -108,11 +108,11 @@ class _UpdateDialogBody extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text(Strings.updateLater),
+              child: Text(Strings.updateLater),
             ),
             FilledButton(
               onPressed: () => _download(context, vm),
-              child: const Text(Strings.updateDownload),
+              child: Text(Strings.updateDownload),
             ),
           ],
         );
@@ -128,7 +128,7 @@ class _UpdateDialogBody extends StatelessWidget {
       navigator.pop();
     } else {
       messenger.showSnackBar(
-        const SnackBar(content: Text(Strings.cannotOpenLink)),
+        SnackBar(content: Text(Strings.cannotOpenLink)),
       );
     }
   }

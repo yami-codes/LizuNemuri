@@ -12,7 +12,7 @@ class CacheManagerScreen extends StatelessWidget {
       create: (_) => CacheManagerViewModel()..loadCacheSize(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(Strings.cacheManager),
+          title: Text(Strings.cacheManager),
         ),
         body: Consumer<CacheManagerViewModel>(
           builder: (context, viewModel, _) {
@@ -33,58 +33,58 @@ class CacheManagerScreen extends StatelessWidget {
               children: [
                 // 音频缓存
                 ListTile(
-                  title: const Text(Strings.audioCache),
+                  title: Text(Strings.audioCache),
                   subtitle: Text(viewModel.audioCacheSizeFormatted),
                   trailing: TextButton(
                     onPressed: viewModel.isLoading
                       ? null
                       : () => viewModel.clearAudioCache(),
-                    child: const Text(Strings.cacheClean),
+                    child: Text(Strings.cacheClean),
                   ),
                 ),
                 const Divider(),
                 
                 // 字幕缓存
                 ListTile(
-                  title: const Text(Strings.subtitleCache),
+                  title: Text(Strings.subtitleCache),
                   subtitle: Text(viewModel.subtitleCacheSizeFormatted),
                   trailing: TextButton(
                     onPressed: viewModel.isLoading
                       ? null
                       : () => viewModel.clearSubtitleCache(),
-                    child: const Text(Strings.cacheClean),
+                    child: Text(Strings.cacheClean),
                   ),
                 ),
                 const Divider(),
 
                 // 图片缓存
                 ListTile(
-                  title: const Text(Strings.imageCache),
+                  title: Text(Strings.imageCache),
                   subtitle: Text(viewModel.imageCacheSizeFormatted),
                   trailing: TextButton(
                     onPressed: viewModel.isLoading
                       ? null
                       : () => viewModel.clearImageCache(),
-                    child: const Text(Strings.cacheClean),
+                    child: Text(Strings.cacheClean),
                   ),
                 ),
                 const Divider(),
 
                 // 总缓存大小
                 ListTile(
-                  title: const Text(Strings.totalCacheSize),
+                  title: Text(Strings.totalCacheSize),
                   subtitle: Text(viewModel.totalCacheSizeFormatted),
                   trailing: TextButton(
                     onPressed: viewModel.isLoading
                       ? null
                       : () => viewModel.clearAllCache(),
-                    child: const Text(Strings.cacheCleanAll),
+                    child: Text(Strings.cacheCleanAll),
                   ),
                 ),
                 const Divider(),
                 
                 // 缓存说明
-                const ListTile(
+                ListTile(
                   title: Text(Strings.cacheExplainTitle),
                   subtitle: Text(Strings.cacheExplainBody),
                 ),
