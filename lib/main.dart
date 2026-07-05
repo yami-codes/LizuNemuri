@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/core/audio/cache/audio_cache_manager.dart';
 import 'package:xuro/core/cache/cache_lifecycle_manager.dart';
@@ -44,8 +45,9 @@ void main() async {
     if (kDebugMode) {
       startupStopwatch!.stop();
       debugPrint(
-        '[startup] main() → first frame: '
-        '${startupStopwatch.elapsedMilliseconds} ms',
+        LogStrings.logStartupFirstFrame(
+          startupStopwatch.elapsedMilliseconds.toString(),
+        ),
       );
     }
     initDeferredStartupServices();

@@ -194,6 +194,8 @@ class LogStrings {
   static String logAuthApiServerSwitchedSetting7985a(dynamic _settings) => _l10n.logAuthApiServerSwitchedSetting7985a(_settings.toString());
   static String logAuthFailedCode(dynamic code) => _l10n.logAuthFailedCode(code.toString());
   static String logAuthFailedStatuscode3531b(dynamic statusCode) => _l10n.logAuthFailedStatuscode3531b(statusCode.toString());
+  static String logAuthLoginSuccessDetail(dynamic token, dynamic loggedIn, dynamic name, dynamic group, dynamic email, dynamic recommenderUuid) => _l10n.logAuthLoginSuccessDetail(token.toString(), loggedIn.toString(), name.toString(), group.toString(), email.toString(), recommenderUuid.toString());
+  static String logAuthLogoutUserInfo(dynamic name, dynamic group, dynamic token) => _l10n.logAuthLogoutUserInfo(name.toString(), group.toString(), token.toString());
   static String logAuthMigrationFailedKeepPrefs5e139(dynamic e) => _l10n.logAuthMigrationFailedKeepPrefs5e139(e.toString());
   static String logCacheAddKey26f96(dynamic key) => _l10n.logCacheAddKey26f96(key.toString());
   static String logCacheAudioSourceFailedStreama308a(dynamic url) => _l10n.logCacheAudioSourceFailedStreama308a(url.toString());
@@ -336,6 +338,7 @@ class LogStrings {
   static String logStartLoginRequestNameNameBasa9cd2(dynamic _dio, dynamic name) => _l10n.logStartLoginRequestNameNameBasa9cd2(_dio.toString(), name.toString());
   static String logStartRegisterRequest(dynamic name, dynamic hasRecommender, dynamic baseUrl) => _l10n.logStartRegisterRequest(name.toString(), hasRecommender.toString(), baseUrl.toString());
   static String logStartResolvingFilePathTargetb9a7f(dynamic targetFile) => _l10n.logStartResolvingFilePathTargetb9a7f(targetFile.toString());
+  static String logStartupFirstFrame(dynamic ms) => _l10n.logStartupFirstFrame(ms.toString());
   static String logStateOperationFailed(dynamic operation) => _l10n.logStateOperationFailed(operation.toString());
   static String logSubtitleCacheExpiredUrle7fbb(dynamic url) => _l10n.logSubtitleCacheExpiredUrle7fbb(url.toString());
   static String logSubtitleCachedUrlec740(dynamic url) => _l10n.logSubtitleCachedUrlec740(url.toString());
@@ -372,6 +375,7 @@ class LogStrings {
   static String logTagPlayerStateStreamErrorb3257(dynamic _tag, dynamic error) => _l10n.logTagPlayerStateStreamErrorb3257(_tag.toString(), error.toString());
   static String logTagProgressStreamErrorErro5613a(dynamic _tag, dynamic error) => _l10n.logTagProgressStreamErrorErro5613a(_tag.toString(), error.toString());
   static String logTagRequestPermission021a2(dynamic _tag) => _l10n.logTagRequestPermission021a2(_tag.toString());
+  static String logTagSetEditable(dynamic _tag, dynamic editable) => _l10n.logTagSetEditable(_tag.toString(), editable.toString());
   static String logTagShowOverlay90227(dynamic _tag) => _l10n.logTagShowOverlay90227(_tag.toString());
   static String logTagSleepTimerPauseFailed9626d(dynamic _tag) => _l10n.logTagSleepTimerPauseFailed9626d(_tag.toString());
   static String logTagSubtitleStreamErrorErro296b9(dynamic _tag, dynamic error) => _l10n.logTagSubtitleStreamErrorErro296b9(_tag.toString(), error.toString());

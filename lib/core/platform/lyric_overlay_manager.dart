@@ -26,7 +26,7 @@ class LyricOverlayManager {
     await _controller.initialize();
     _subscription = _subtitleService.currentSubtitleStream.listen((subtitle) {
       if (_isShowing) {
-        _controller.updateLyric(subtitle?.text);
+        _controller.updateLyric(subtitle?.text ?? Strings.noLyrics);
       }
     });
     
@@ -54,9 +54,9 @@ class LyricOverlayManager {
     await _controller.show();
     _isShowing = true;
     final currentSubtitle = _subtitleService.currentSubtitleWithState;
-    if (currentSubtitle != null) {
-      await _controller.updateLyric(currentSubtitle.subtitle.text);
-    }
+    await _controller.updateLyric(
+      currentSubtitle?.subtitle.text ?? Strings.noLyrics,
+    );
     // 显示后统一以持久化偏好为准（锁定 / 解锁拖动）。
     await setEditable(_settings.lyricOverlayUnlocked);
   }

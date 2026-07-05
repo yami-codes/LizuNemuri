@@ -2141,5 +2141,61 @@
   },
   "logPageNameFavorites": "รายการโปรด",
   "logPageNameRecommend": "คำแนะนำ",
-  "logPageNameSimilar": "ผลงานที่คล้ายกัน"
+  "logPageNameSimilar": "ผลงานที่คล้ายกัน",
+  "logAuthLoginSuccessDetail": "เข้าสู่ระบบสำเร็จ ข้อมูลเต็ม: token={token}, loggedIn={loggedIn}, name={name}, group={group}, email={email}, recommenderUuid={recommenderUuid}",
+  "@logAuthLoginSuccessDetail": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      },
+      "loggedIn": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      },
+      "email": {
+        "type": "String"
+      },
+      "recommenderUuid": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthLogoutUserInfo": "ข้อมูลผู้ใช้เมื่อออกจากระบบ: name={name}, group={group}, token={token}",
+  "@logAuthLogoutUserInfo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      },
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagSetEditable": "[{_tag}] setEditable: {editable}",
+  "@logTagSetEditable": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "editable": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartupFirstFrame": "[startup] main() → เฟรมแรก: {ms} ms",
+  "@logStartupFirstFrame": {
+    "placeholders": {
+      "ms": {
+        "type": "String"
+      }
+    }
+  }
 }

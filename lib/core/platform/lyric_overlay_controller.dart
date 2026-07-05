@@ -65,7 +65,7 @@ class LyricOverlayController implements ILyricOverlayController {
 
   @override
   Future<void> setEditable(bool editable) async {
-    AppLogger.debug('[$_tag] setEditable: $editable');
+    AppLogger.debug(LogStrings.logTagSetEditable(_tag, editable.toString()));
     await _channel.invokeMethod('setEditable', {'editable': editable});
   }
 }

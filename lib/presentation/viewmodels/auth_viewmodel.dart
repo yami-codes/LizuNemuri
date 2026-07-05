@@ -43,15 +43,14 @@ class AuthViewModel extends ChangeNotifier {
       // 保存认证数据
       await _authRepository.saveAuthData(_authData!);
       
-      AppLogger.info('''
-登录成功，完整数据:
-- token: ${_authData?.token}
-- loggedIn: ${_authData?.user?.loggedIn}
-- name: ${_authData?.user?.name}
-- group: ${_authData?.user?.group}
-- email: ${_authData?.user?.email}
-- recommenderUuid: ${_authData?.user?.recommenderUuid}
-      ''');
+      AppLogger.info(LogStrings.logAuthLoginSuccessDetail(
+        _authData?.token ?? '',
+        _authData?.user?.loggedIn?.toString() ?? '',
+        _authData?.user?.name ?? '',
+        _authData?.user?.group ?? '',
+        _authData?.user?.email ?? '',
+        _authData?.user?.recommenderUuid ?? '',
+      ));
 
     } catch (e) {
       AppLogger.error(LogStrings.logAuthviewmodelLoginFailedbdfe4, e);
@@ -102,12 +101,11 @@ class AuthViewModel extends ChangeNotifier {
 
   Future<void> logout() async {
     AppLogger.info(LogStrings.logAuthviewmodelLogoute9158);
-    AppLogger.info('''
-登出用户信息:
-- name: ${_authData?.user?.name}
-- group: ${_authData?.user?.group}
-- token: ${_authData?.token}
-    ''');
+    AppLogger.info(LogStrings.logAuthLogoutUserInfo(
+      _authData?.user?.name ?? '',
+      _authData?.user?.group ?? '',
+      _authData?.token ?? '',
+    ));
     
     await _authRepository.clearAuthData();
     _authData = null;

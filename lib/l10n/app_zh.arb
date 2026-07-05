@@ -2141,5 +2141,61 @@
   },
   "logPageNameFavorites": "收藏列表",
   "logPageNameRecommend": "推荐列表",
-  "logPageNameSimilar": "相关推荐"
+  "logPageNameSimilar": "相关推荐",
+  "logAuthLoginSuccessDetail": "登录成功，完整数据: token={token}, loggedIn={loggedIn}, name={name}, group={group}, email={email}, recommenderUuid={recommenderUuid}",
+  "@logAuthLoginSuccessDetail": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      },
+      "loggedIn": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      },
+      "email": {
+        "type": "String"
+      },
+      "recommenderUuid": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthLogoutUserInfo": "登出用户信息: name={name}, group={group}, token={token}",
+  "@logAuthLogoutUserInfo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      },
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagSetEditable": "[{_tag}] setEditable: {editable}",
+  "@logTagSetEditable": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "editable": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartupFirstFrame": "[startup] main() → 首帧: {ms} ms",
+  "@logStartupFirstFrame": {
+    "placeholders": {
+      "ms": {
+        "type": "String"
+      }
+    }
+  }
 }
