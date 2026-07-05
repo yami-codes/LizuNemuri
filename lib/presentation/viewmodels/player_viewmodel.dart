@@ -43,6 +43,7 @@ class PlayerViewModel extends ChangeNotifier {
   String? _translationStatus;
   SubtitleList? _subtitleSourceList;
   int _loadVersion = 0;
+  int _translationEpoch = 0;
   Duration? _position;
   Duration? _duration;
   Subtitle? _currentSubtitle;
@@ -84,6 +85,12 @@ class PlayerViewModel extends ChangeNotifier {
     final message = _translationFeedback;
     _translationFeedback = null;
     return message;
+  }
+
+  void _cancelActiveTranslation() {
+    _translationEpoch++;
+    _isTranslating = false;
+    _translationStatus = null;
   }
 
   void _onLlmSettingsChanged() {
@@ -422,19 +429,37 @@ class PlayerViewModel extends ChangeNotifier {
     int? version,
     bool forceRefresh = false,
   }) async {
+    final epoch = _translationEpoch;
+    bool isStale() =>
+        epoch != _translationEpoch ||
+        (version != null && _loadVersion != version);
+
     _isTranslating = true;
     _translationStatus = Strings.llmTranslationStatusStarting;
     notifyListeners();
 
     void onProgress(SubtitleTranslationProgress p) {
+      if (isStale()) return;
       _translationStatus = switch (p.phase) {
         SubtitleTranslationPhase.checkingCache =>
           Strings.llmTranslationStatusCheckingCache,
-        SubtitleTranslationPhase.translating =>
-          Strings.llmTranslationStatusTranslating(
-            p.batchIndex ?? 1,
-            p.batchTotal ?? 1,
+        SubtitleTranslationPhase.resuming =>
+          Strings.llmTranslationStatusResuming(
+            p.linesTranslated ?? 0,
+            p.linesTotal ?? source.subtitles.length,
           ),
+        SubtitleTranslationPhase.translating =>
+          p.linesTranslated != null && p.linesTotal != null
+              ? Strings.llmTranslationStatusStreaming(
+                  p.linesTranslated!,
+                  p.linesTotal!,
+                  p.batchIndex ?? 1,
+                  p.batchTotal ?? 1,
+                )
+              : Strings.llmTranslationStatusTranslating(
+                  p.batchIndex ?? 1,
+                  p.batchTotal ?? 1,
+                ),
         SubtitleTranslationPhase.saving =>
           Strings.llmTranslationStatusSaving,
         SubtitleTranslationPhase.cached =>
@@ -447,22 +472,53 @@ class PlayerViewModel extends ChangeNotifier {
       notifyListeners();
     }
 
+    Future<void> onPartial(
+      SubtitleList partial,
+      int translatedCount,
+      int totalCount,
+    ) async {
+      if (isStale()) return;
+      await _subtitleService.loadSubtitleFromContent(partial);
+      _isLlmTranslated = translatedCount > 0;
+      _translationStatus = Strings.llmTranslationStatusStreaming(
+        translatedCount,
+        totalCount,
+        1,
+        1,
+      );
+      notifyListeners();
+    }
+
     final result = auto
         ? await _translationService.translateIfEnabled(
             source: source,
             context: context,
             onProgress: onProgress,
+            onPartial: onPartial,
           )
         : await _translationService.translateNow(
             source: source,
             context: context,
             forceRefresh: forceRefresh,
             onProgress: onProgress,
+            onPartial: onPartial,
           );
+
+    if (isStale()) return null;
 
     _isTranslating = false;
     _translationStatus = null;
-    if (version != null && _loadVersion != version) return null;
+
+    if (result.isPartial) {
+      await _subtitleService.loadSubtitleFromContent(result.list);
+      _isLlmTranslated = result.translated;
+      notifyListeners();
+      return result.error?.userMessage ??
+          Strings.llmTranslationPartialSaved(
+            result.translatedCount ?? 0,
+            result.totalCount ?? source.subtitles.length,
+          );
+    }
 
     if (result.isFailure) {
       await _subtitleService.loadSubtitleFromContent(source);
@@ -486,6 +542,12 @@ class PlayerViewModel extends ChangeNotifier {
 
   Future<void> _loadSubtitleIfAvailable(PlaybackContext context) async {
     final version = ++_loadVersion;
+    _cancelActiveTranslation();
+    _subtitleSourceList = null;
+    _isLlmTranslated = false;
+    _subtitleService.clearSubtitle();
+    notifyListeners();
+
     final workId = context.work.id?.toString();
     final fileName = context.currentFile.title;
 

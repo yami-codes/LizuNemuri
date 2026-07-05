@@ -6,6 +6,9 @@ class SubtitleTranslationResult {
   final SubtitleList list;
   final bool translated;
   final bool fromCache;
+  final bool partial;
+  final int? translatedCount;
+  final int? totalCount;
   final LlmTranslationException? error;
   final bool skipped;
 
@@ -13,6 +16,9 @@ class SubtitleTranslationResult {
     required this.list,
     this.translated = false,
     this.fromCache = false,
+    this.partial = false,
+    this.translatedCount,
+    this.totalCount,
     this.error,
     this.skipped = false,
   });
@@ -37,5 +43,22 @@ class SubtitleTranslationResult {
   ) =>
       SubtitleTranslationResult._(list: source, error: error);
 
-  bool get isFailure => error != null;
+  /// Translation stopped early but [list] carries usable partial lines.
+  factory SubtitleTranslationResult.partial(
+    SubtitleList list, {
+    required int translatedCount,
+    required int totalCount,
+    LlmTranslationException? error,
+  }) =>
+      SubtitleTranslationResult._(
+        list: list,
+        translated: translatedCount > 0,
+        partial: true,
+        translatedCount: translatedCount,
+        totalCount: totalCount,
+        error: error,
+      );
+
+  bool get isFailure => error != null && !partial;
+  bool get isPartial => partial;
 }

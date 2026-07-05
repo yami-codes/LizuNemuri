@@ -8,6 +8,7 @@ enum LlmTranslationErrorType {
   rateLimited,
   network,
   invalidResponse,
+  contentBlocked,
   unknown,
 }
 
@@ -31,6 +32,8 @@ class LlmTranslationException implements Exception {
         return Strings.llmErrorNetwork;
       case LlmTranslationErrorType.invalidResponse:
         return Strings.llmErrorInvalidResponse;
+      case LlmTranslationErrorType.contentBlocked:
+        return Strings.llmErrorContentBlocked;
       case LlmTranslationErrorType.unknown:
         return Strings.llmErrorUnknown(message);
     }

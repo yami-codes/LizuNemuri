@@ -350,6 +350,7 @@ class Strings {
   static String get llmErrorRateLimited => _l10n.llmErrorRateLimited;
   static String get llmErrorNetwork => _l10n.llmErrorNetwork;
   static String get llmErrorInvalidResponse => _l10n.llmErrorInvalidResponse;
+  static String get llmErrorContentBlocked => _l10n.llmErrorContentBlocked;
   static String llmErrorUnknown(String message) => _l10n.llmErrorUnknown(message);
   static String get llmTranslateNow => _l10n.llmTranslateNow;
   static String get llmShowOriginal => _l10n.llmShowOriginal;
@@ -365,6 +366,42 @@ class Strings {
       _l10n.llmTranslationStatusTranslating(batch, total);
   static String get llmTranslationStatusSaving =>
       _l10n.llmTranslationStatusSaving;
+  static String llmTranslationStatusResuming(int done, int total) =>
+      _l10n.llmTranslationStatusResuming(done, total);
+  static String llmTranslationPartialSaved(int done, int total) =>
+      _l10n.llmTranslationPartialSaved(done, total);
+  static String llmTranslationStatusStreaming(
+    int done,
+    int total,
+    int batch,
+    int batches,
+  ) =>
+      _l10n.llmTranslationStatusStreaming(done, total, batch, batches);
+  static String get llmBatchSplitMode => _l10n.llmBatchSplitMode;
+  static String get llmBatchSplitNone => _l10n.llmBatchSplitNone;
+  static String get llmBatchSplitProvider => _l10n.llmBatchSplitProvider;
+  static String get llmBatchSplitManual => _l10n.llmBatchSplitManual;
+  static String get llmManualBatchSize => _l10n.llmManualBatchSize;
+  static String get llmStreamingEnabled => _l10n.llmStreamingEnabled;
+  static String get llmStreamingEnabledDesc => _l10n.llmStreamingEnabledDesc;
+  static String get llmUsageHistory => _l10n.llmUsageHistory;
+  static String get llmUsageHistoryTitle => _l10n.llmUsageHistoryTitle;
+  static String llmUsageTotalTokens(int count) =>
+      _l10n.llmUsageTotalTokens(count);
+  static String llmUsageTotalCost(String amount) =>
+      _l10n.llmUsageTotalCost(amount);
+  static String get llmUsageClearHistory => _l10n.llmUsageClearHistory;
+  static String get llmUsageHistoryEmpty => _l10n.llmUsageHistoryEmpty;
+  static String llmUsageRecordLine(int tokens, String cost) =>
+      _l10n.llmUsageRecordLine(tokens, cost);
+  static String get llmOpenRouterBalance => _l10n.llmOpenRouterBalance;
+  static String llmOpenRouterBalanceUsage(String amount) =>
+      _l10n.llmOpenRouterBalanceUsage(amount);
+  static String llmOpenRouterBalanceLimit(String amount) =>
+      _l10n.llmOpenRouterBalanceLimit(amount);
+  static String get llmUsageOperationSubtitle =>
+      _l10n.llmUsageOperationSubtitle;
+  static String get llmUsageOperationTitle => _l10n.llmUsageOperationTitle;
   static String get llmSubtitleDisplayMode => _l10n.llmSubtitleDisplayMode;
   static String get llmSubtitleDisplayDual => _l10n.llmSubtitleDisplayDual;
   static String get llmSubtitleDisplayDualDesc =>

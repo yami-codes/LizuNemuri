@@ -2295,6 +2295,7 @@
   "llmErrorRateLimited": "LLM API rate limited — try again later",
   "llmErrorNetwork": "Cannot reach LLM API — check network and endpoint",
   "llmErrorInvalidResponse": "LLM returned an unparseable translation",
+  "llmErrorContentBlocked": "Translation was blocked by the provider content filter",
   "llmErrorUnknown": "LLM translation failed: {message}",
   "@llmErrorUnknown": {
     "placeholders": {
@@ -2319,6 +2320,66 @@
     }
   },
   "llmTranslationStatusSaving": "Saving translation to cache…",
+  "llmTranslationStatusResuming": "Resuming translation ({done}/{total} already done)…",
+  "@llmTranslationStatusResuming": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "llmTranslationPartialSaved": "Saved partial translation ({done}/{total}). Tap translate again to resume.",
+  "@llmTranslationPartialSaved": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "llmTranslationStatusStreaming": "Translated {done}/{total} lines (batch {batch}/{batches})…",
+  "@llmTranslationStatusStreaming": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" },
+      "batch": { "type": "int" },
+      "batches": { "type": "int" }
+    }
+  },
+  "llmBatchSplitMode": "Batch split mode",
+  "llmBatchSplitNone": "No split (entire file)",
+  "llmBatchSplitProvider": "Auto (model context window)",
+  "llmBatchSplitManual": "Manual batch size",
+  "llmManualBatchSize": "Lines per batch",
+  "llmStreamingEnabled": "Stream translation",
+  "llmStreamingEnabledDesc": "Show translated lines as they arrive from the LLM (NDJSON).",
+  "llmUsageHistory": "Usage & cost history",
+  "llmUsageHistoryTitle": "LLM usage history",
+  "llmUsageTotalTokens": "Total tokens: {count}",
+  "@llmUsageTotalTokens": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "llmUsageTotalCost": "Recorded cost: {amount} USD",
+  "@llmUsageTotalCost": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "llmUsageClearHistory": "Clear history",
+  "llmUsageHistoryEmpty": "No LLM usage recorded yet.",
+  "llmUsageRecordLine": "{tokens} tokens · {cost}",
+  "@llmUsageRecordLine": {
+    "placeholders": {
+      "tokens": { "type": "int" },
+      "cost": { "type": "String" }
+    }
+  },
+  "llmOpenRouterBalance": "OpenRouter account",
+  "llmOpenRouterBalanceUsage": "Lifetime usage: {amount} USD",
+  "@llmOpenRouterBalanceUsage": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "llmOpenRouterBalanceLimit": "Credit limit: {amount} USD",
+  "@llmOpenRouterBalanceLimit": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "llmUsageOperationSubtitle": "Subtitle translation",
+  "llmUsageOperationTitle": "Title translation",
   "llmSubtitleDisplayMode": "Subtitle display",
   "llmSubtitleDisplayDual": "Original + translation",
   "llmSubtitleDisplayDualDesc": "Stack the source line above the translation when LLM translation is active.",

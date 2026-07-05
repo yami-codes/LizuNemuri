@@ -2295,6 +2295,7 @@
   "llmErrorRateLimited": "LLM API 请求过于频繁，请稍后再试",
   "llmErrorNetwork": "无法连接 LLM API，请检查网络与端点",
   "llmErrorInvalidResponse": "LLM 返回了无法解析的翻译结果",
+  "llmErrorContentBlocked": "翻译被服务商内容安全策略拦截",
   "llmErrorUnknown": "LLM 翻译失败：{message}",
   "@llmErrorUnknown": {
     "placeholders": {
@@ -2319,6 +2320,66 @@
     }
   },
   "llmTranslationStatusSaving": "正在保存翻译到缓存…",
+  "llmTranslationStatusResuming": "正在续翻（已完成 {done}/{total}）…",
+  "@llmTranslationStatusResuming": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "llmTranslationPartialSaved": "已保存部分翻译（{done}/{total}）。再次点击翻译可续翻。",
+  "@llmTranslationPartialSaved": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "llmTranslationStatusStreaming": "已翻译 {done}/{total} 行（第 {batch}/{batches} 批）…",
+  "@llmTranslationStatusStreaming": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" },
+      "batch": { "type": "int" },
+      "batches": { "type": "int" }
+    }
+  },
+  "llmBatchSplitMode": "分批模式",
+  "llmBatchSplitNone": "不分批（整文件）",
+  "llmBatchSplitProvider": "自动（模型上下文窗口）",
+  "llmBatchSplitManual": "手动批次大小",
+  "llmManualBatchSize": "每批行数",
+  "llmStreamingEnabled": "流式翻译",
+  "llmStreamingEnabledDesc": "边接收 LLM 输出边显示已翻译行（NDJSON）。",
+  "llmUsageHistory": "用量与费用历史",
+  "llmUsageHistoryTitle": "LLM 用量历史",
+  "llmUsageTotalTokens": "总 token：{count}",
+  "@llmUsageTotalTokens": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "llmUsageTotalCost": "已记录费用：{amount} USD",
+  "@llmUsageTotalCost": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "llmUsageClearHistory": "清空历史",
+  "llmUsageHistoryEmpty": "尚无 LLM 用量记录。",
+  "llmUsageRecordLine": "{tokens} token · {cost}",
+  "@llmUsageRecordLine": {
+    "placeholders": {
+      "tokens": { "type": "int" },
+      "cost": { "type": "String" }
+    }
+  },
+  "llmOpenRouterBalance": "OpenRouter 账户",
+  "llmOpenRouterBalanceUsage": "累计用量：{amount} USD",
+  "@llmOpenRouterBalanceUsage": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "llmOpenRouterBalanceLimit": "额度上限：{amount} USD",
+  "@llmOpenRouterBalanceLimit": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "llmUsageOperationSubtitle": "字幕翻译",
+  "llmUsageOperationTitle": "标题翻译",
   "llmSubtitleDisplayMode": "字幕显示",
   "llmSubtitleDisplayDual": "原文 + 译文",
   "llmSubtitleDisplayDualDesc": "启用 LLM 翻译后，每行上方显示原文、下方显示译文。",

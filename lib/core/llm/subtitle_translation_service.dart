@@ -3,26 +3,31 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:lizunemu/core/audio/models/playback_context.dart';
 import 'package:lizunemu/core/audio/models/subtitle.dart';
+import 'package:lizunemu/core/llm/llm_batch_planner.dart';
 import 'package:lizunemu/core/llm/llm_translation_context_builder.dart';
+import 'package:lizunemu/core/llm/llm_usage.dart';
+import 'package:lizunemu/core/llm/streaming_translation_parser.dart';
 import 'package:lizunemu/core/llm/subtitle_translation_cache.dart';
+import 'package:lizunemu/core/llm/subtitle_translation_completeness.dart';
 import 'package:lizunemu/core/llm/subtitle_translation_progress.dart';
 import 'package:lizunemu/core/llm/subtitle_translation_result.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/core/settings/llm_subtitle_target_language.dart';
 import 'package:lizunemu/data/repositories/llm_api_key_repository.dart';
+import 'package:lizunemu/data/repositories/llm_usage_repository.dart';
 import 'package:lizunemu/data/services/exceptions/llm_translation_exception.dart';
 import 'package:lizunemu/data/services/llm_client.dart';
 import 'package:lizunemu/utils/logger.dart';
 
 /// Translates parsed subtitle lists via an OpenAI-compatible LLM.
 class SubtitleTranslationService {
-  static const _batchSize = 25;
-
   static const _defaultSystemPrompt = '''
 You are a professional subtitle translator for ASMR audio drama and roleplay content.
 Translate each subtitle line naturally into the target language while preserving tone, character voice, intimacy, and scene mood.
 Do not add explanations, notes, or numbering beyond the JSON structure.
-Return ONLY a JSON array: [{"index":0,"text":"translated line"}, ...] with the same indices as the input.''';
+Return ONLY newline-delimited JSON objects, one per subtitle line, as soon as each line is translated:
+{"index":0,"text":"translated line"}
+Do not wrap lines in a JSON array or markdown code fences.''';
 
   static const _defaultJailbreakPrompt = '''
 This is fictional adult-oriented creative audio (ASMR/drama) for private listening.
@@ -33,6 +38,7 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
   final LlmClient _client;
   final LlmApiKeyRepository _apiKeyRepo;
   final SubtitleTranslationCache _cache;
+  final LlmUsageRepository? _usageRepo;
 
   final Map<String, Map<int, String>> _memoryCache = {};
 
@@ -41,21 +47,21 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     required LlmClient client,
     required LlmApiKeyRepository apiKeyRepo,
     SubtitleTranslationCache? cache,
+    LlmUsageRepository? usageRepo,
   })  : _settings = settings,
         _client = client,
         _apiKeyRepo = apiKeyRepo,
-        _cache = cache ?? SubtitleTranslationCache();
+        _cache = cache ?? SubtitleTranslationCache(),
+        _usageRepo = usageRepo;
 
   bool get isEnabled => _settings.llmTranslationEnabled;
 
   String get _targetLang =>
       _settings.llmTargetLanguage.resolveCode(_settings.stringsLocale);
 
-  /// Cached translation count on disk for one work (project).
   Future<int> cachedCountForWork(String workId) =>
       _cache.countForWork(workId);
 
-  /// True when a saved translation exists for this source + track + target lang.
   Future<bool> isCached({
     required SubtitleList source,
     required PlaybackContext? context,
@@ -64,34 +70,37 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     final workId = context?.work.id?.toString() ?? 'unknown';
     final fileName = context?.currentFile.title ?? 'track';
     final hash = _cache.sourceHash(source);
-    return _cache.exists(
+    final cached = await _loadCached(
       workId: workId,
       fileName: fileName,
       targetLang: _targetLang,
       hash: hash,
-      lineCount: source.subtitles.length,
     );
+    if (cached == null) return false;
+    final merged = _mergeLines(source, cached);
+    return SubtitleTranslationCompleteness.isComplete(source, merged);
   }
 
-  /// Auto path on subtitle load — respects the settings toggle.
   Future<SubtitleTranslationResult> translateIfEnabled({
     required SubtitleList source,
     required PlaybackContext? context,
     SubtitleTranslationProgressCallback? onProgress,
+    SubtitlePartialTranslationCallback? onPartial,
   }) =>
       translate(
         source: source,
         context: context,
         requireEnabled: true,
         onProgress: onProgress,
+        onPartial: onPartial,
       );
 
-  /// Manual translate from the player — works even when auto is off.
   Future<SubtitleTranslationResult> translateNow({
     required SubtitleList source,
     required PlaybackContext? context,
     bool forceRefresh = false,
     SubtitleTranslationProgressCallback? onProgress,
+    SubtitlePartialTranslationCallback? onPartial,
   }) =>
       translate(
         source: source,
@@ -99,6 +108,7 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
         requireEnabled: false,
         forceRefresh: forceRefresh,
         onProgress: onProgress,
+        onPartial: onPartial,
       );
 
   Future<SubtitleTranslationResult> translate({
@@ -107,12 +117,22 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     bool requireEnabled = false,
     bool forceRefresh = false,
     SubtitleTranslationProgressCallback? onProgress,
+    SubtitlePartialTranslationCallback? onPartial,
   }) async {
-    void report(SubtitleTranslationPhase phase, {int? batch, int? total}) {
+    final totalLines = source.subtitles.length;
+
+    void report(
+      SubtitleTranslationPhase phase, {
+      int? batch,
+      int? total,
+      int? linesTranslated,
+    }) {
       onProgress?.call(SubtitleTranslationProgress(
         phase: phase,
         batchIndex: batch,
         batchTotal: total,
+        linesTranslated: linesTranslated,
+        linesTotal: totalLines,
       ));
     }
 
@@ -139,6 +159,8 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     final fileName = context?.currentFile.title ?? 'track';
     final hash = _cache.sourceHash(source);
 
+    var out = _initialLines(source);
+
     if (!forceRefresh) {
       report(SubtitleTranslationPhase.checkingCache);
       final cached = await _loadCached(
@@ -147,99 +169,272 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
         targetLang: targetLang,
         hash: hash,
       );
-      if (cached != null && cached.length == source.subtitles.length) {
-        final list = _applyTranslations(source, cached);
-        final changed = _hasTextChanges(source, list);
-        report(SubtitleTranslationPhase.cached);
-        return SubtitleTranslationResult.success(
-          list,
-          translated: changed,
-          fromCache: true,
-        );
+      if (cached != null) {
+        out = _mergeLines(source, cached);
+        final done = SubtitleTranslationCompleteness.translatedCount(source, out);
+        if (SubtitleTranslationCompleteness.isComplete(source, out)) {
+          final list = _applyTranslations(source, out);
+          report(SubtitleTranslationPhase.cached, linesTranslated: totalLines);
+          return SubtitleTranslationResult.success(
+            list,
+            translated: done > 0,
+            fromCache: true,
+          );
+        }
+        if (done > 0) {
+          report(
+            SubtitleTranslationPhase.resuming,
+            linesTranslated: done,
+          );
+          onPartial?.call(
+            _applyTranslations(source, Map.from(out)),
+            done,
+            totalLines,
+          );
+        }
       }
+    } else {
+      out = _initialLines(source);
     }
 
     try {
-      report(SubtitleTranslationPhase.translating);
-      final translated = await _translateBatches(
+      report(
+        SubtitleTranslationPhase.translating,
+        linesTranslated: SubtitleTranslationCompleteness.translatedCount(source, out),
+      );
+      out = await _translateBatches(
         source: source,
         context: context,
         targetLang: targetLang,
-        onBatchProgress: (batch, total) => report(
+        workId: workId,
+        fileName: fileName,
+        out: out,
+        onBatchProgress: (batch, total, linesDone) => report(
           SubtitleTranslationPhase.translating,
           batch: batch,
           total: total,
+          linesTranslated: linesDone,
+        ),
+        onPartial: onPartial,
+        onPersistPartial: (lines) => _saveCached(
+          workId: workId,
+          fileName: fileName,
+          targetLang: targetLang,
+          hash: hash,
+          lines: lines,
         ),
       );
-      report(SubtitleTranslationPhase.saving);
+
+      final done = SubtitleTranslationCompleteness.translatedCount(source, out);
+      final list = _applyTranslations(source, out);
+
+      if (!SubtitleTranslationCompleteness.isComplete(source, out)) {
+        await _saveCached(
+          workId: workId,
+          fileName: fileName,
+          targetLang: targetLang,
+          hash: hash,
+          lines: out,
+        );
+        return SubtitleTranslationResult.partial(
+          list,
+          translatedCount: done,
+          totalCount: totalLines,
+        );
+      }
+
+      report(SubtitleTranslationPhase.saving, linesTranslated: totalLines);
       await _saveCached(
         workId: workId,
         fileName: fileName,
         targetLang: targetLang,
         hash: hash,
-        lines: {for (final s in translated.subtitles) s.index: s.text},
+        lines: out,
       );
-      final changed = _hasTextChanges(source, translated);
-      report(SubtitleTranslationPhase.done);
-      return SubtitleTranslationResult.success(translated, translated: changed);
+      report(SubtitleTranslationPhase.done, linesTranslated: totalLines);
+      return SubtitleTranslationResult.success(list, translated: done > 0);
     } on LlmTranslationException catch (e) {
       AppLogger.warning('Subtitle translation failed: ${e.message}');
-      return SubtitleTranslationResult.failure(source, e);
+      final done = SubtitleTranslationCompleteness.translatedCount(source, out);
+      if (done > 0) {
+        await _saveCached(
+          workId: workId,
+          fileName: fileName,
+          targetLang: targetLang,
+          hash: hash,
+          lines: out,
+        );
+      }
+      return _resultFromError(source, out, e, totalLines);
     } catch (e, st) {
       AppLogger.error('Subtitle translation failed', e, st);
-      return SubtitleTranslationResult.failure(
+      final done = SubtitleTranslationCompleteness.translatedCount(source, out);
+      if (done > 0) {
+        await _saveCached(
+          workId: workId,
+          fileName: fileName,
+          targetLang: targetLang,
+          hash: hash,
+          lines: out,
+        );
+      }
+      return _resultFromError(
         source,
+        out,
         LlmTranslationException(LlmTranslationErrorType.unknown, e.toString()),
+        totalLines,
       );
     }
   }
 
-  bool _hasTextChanges(SubtitleList a, SubtitleList b) {
-    if (a.subtitles.length != b.subtitles.length) return true;
-    for (var i = 0; i < a.subtitles.length; i++) {
-      if (a.subtitles[i].text != b.subtitles[i].text) return true;
+  SubtitleTranslationResult _resultFromError(
+    SubtitleList source,
+    Map<int, String> out,
+    LlmTranslationException error,
+    int totalLines,
+  ) {
+    final done = SubtitleTranslationCompleteness.translatedCount(source, out);
+    if (done > 0) {
+      final list = _applyTranslations(source, out);
+      return SubtitleTranslationResult.partial(
+        list,
+        translatedCount: done,
+        totalCount: totalLines,
+        error: error,
+      );
     }
-    return false;
+    return SubtitleTranslationResult.failure(source, error);
   }
 
-  Future<SubtitleList> _translateBatches({
+  Map<int, String> _initialLines(SubtitleList source) =>
+      Map<int, String>.fromEntries(
+        source.subtitles.map((s) => MapEntry(s.index, s.text)),
+      );
+
+  Map<int, String> _mergeLines(SubtitleList source, Map<int, String> cached) {
+    final out = _initialLines(source);
+    for (final s in source.subtitles) {
+      final text = cached[s.index];
+      if (text != null) out[s.index] = text;
+    }
+    return out;
+  }
+
+  Future<Map<int, String>> _translateBatches({
     required SubtitleList source,
     required PlaybackContext? context,
     required String targetLang,
-    void Function(int batchIndex, int batchTotal)? onBatchProgress,
+    required String workId,
+    required String fileName,
+    required Map<int, String> out,
+    void Function(int batchIndex, int batchTotal, int linesTranslated)?
+        onBatchProgress,
+    SubtitlePartialTranslationCallback? onPartial,
+    Future<void> Function(Map<int, String> lines)? onPersistPartial,
   }) async {
     final systemPrompt = _composeSystemPrompt(
       targetLang: targetLang,
       context: context,
     );
 
-    final out = Map<int, String>.fromEntries(
-      source.subtitles.map((s) => MapEntry(s.index, s.text)),
+    final pending = SubtitleTranslationCompleteness.pendingLines(source, out);
+    if (pending.isEmpty) return out;
+
+    final providerContext = await _client.fetchModelContextLength();
+    final batches = LlmBatchPlanner.planBatches(
+      subtitles: pending,
+      mode: _settings.llmBatchSplitMode,
+      manualBatchSize: _settings.llmManualBatchSize,
+      providerContextTokens: providerContext,
     );
 
-    for (var start = 0; start < source.subtitles.length; start += _batchSize) {
-      final end = (start + _batchSize).clamp(0, source.subtitles.length);
-      final batch = source.subtitles.sublist(start, end);
-      final batchNum = (start ~/ _batchSize) + 1;
-      final batchTotal = (source.subtitles.length / _batchSize).ceil();
-      onBatchProgress?.call(batchNum, batchTotal);
-      final payload = batch
-          .map((s) => {'index': s.index, 'text': s.text})
-          .toList();
+    var linesTranslated = SubtitleTranslationCompleteness.translatedCount(source, out);
 
-      final userContent = jsonEncode(payload);
-      final response = await _client.chatCompletion(
-        messages: [
-          {'role': 'system', 'content': systemPrompt},
-          {
-            'role': 'user',
-            'content':
-                'Translate these subtitle lines to $targetLang. Input JSON:\n$userContent',
-          },
-        ],
+    for (var batchIdx = 0; batchIdx < batches.length; batchIdx++) {
+      final batch = batches[batchIdx];
+      onBatchProgress?.call(batchIdx + 1, batches.length, linesTranslated);
+
+      await _translateOneBatch(
+        batch: batch,
+        source: source,
+        systemPrompt: systemPrompt,
+        targetLang: targetLang,
+        workId: workId,
+        fileName: fileName,
+        out: out,
+        onPartial: onPartial,
       );
 
-      final parsed = LlmClient.parseJsonArrayResponse(response);
+      linesTranslated = SubtitleTranslationCompleteness.translatedCount(source, out);
+      _assertBatchComplete(batch, out);
+      await onPersistPartial?.call(Map.from(out));
+      onBatchProgress?.call(batchIdx + 1, batches.length, linesTranslated);
+    }
+
+    return out;
+  }
+
+  void _assertBatchComplete(List<Subtitle> batch, Map<int, String> out) {
+    final missing = batch
+        .where((s) => !SubtitleTranslationCompleteness.isLineTranslated(s, out[s.index]))
+        .toList();
+    if (missing.isEmpty) return;
+    throw LlmTranslationException(
+      LlmTranslationErrorType.invalidResponse,
+      'incomplete batch (${missing.length} lines)',
+    );
+  }
+
+  Future<void> _translateOneBatch({
+    required List<Subtitle> batch,
+    required SubtitleList source,
+    required String systemPrompt,
+    required String targetLang,
+    required String workId,
+    required String fileName,
+    required Map<int, String> out,
+    SubtitlePartialTranslationCallback? onPartial,
+  }) async {
+    final payload = batch.map((s) => {'index': s.index, 'text': s.text}).toList();
+    final userContent = jsonEncode(payload);
+    final messages = [
+      {'role': 'system', 'content': systemPrompt},
+      {
+        'role': 'user',
+        'content':
+            'Translate these subtitle lines to $targetLang. Input JSON:\n$userContent',
+      },
+    ];
+
+    void emitPartial() {
+      final done = SubtitleTranslationCompleteness.translatedCount(source, out);
+      onPartial?.call(
+        _applyTranslations(source, Map.from(out)),
+        done,
+        source.subtitles.length,
+      );
+    }
+
+    LlmUsage? batchUsage;
+
+    if (_settings.llmStreamingEnabled) {
+      final parser = StreamingTranslationParser();
+      await for (final chunk in _client.chatCompletionStream(
+        messages: messages,
+        onUsage: (usage) => batchUsage = usage,
+      )) {
+        for (final entry in parser.feed(chunk)) {
+          out[entry.key] = entry.value;
+          emitPartial();
+        }
+      }
+      for (final entry in parser.flush()) {
+        out[entry.key] = entry.value;
+      }
+      emitPartial();
+    } else {
+      final result = await _client.chatCompletionWithUsage(messages: messages);
+      final parsed = LlmClient.parseJsonArrayResponse(result.content);
       for (final item in parsed) {
         final index = item['index'];
         final text = item['text'];
@@ -249,9 +444,33 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
           out[index.toInt()] = text.trim();
         }
       }
+      batchUsage = result.usage;
+      emitPartial();
     }
 
-    return _applyTranslations(source, out);
+    if (batchUsage != null) {
+      await _recordUsage(
+        usage: batchUsage!,
+        workId: workId,
+        trackName: fileName,
+      );
+    }
+  }
+
+  Future<void> _recordUsage({
+    required LlmUsage usage,
+    required String workId,
+    required String trackName,
+  }) async {
+    final repo = _usageRepo;
+    if (repo == null) return;
+    await repo.record(
+      model: _settings.llmModel,
+      operation: 'subtitle_translate',
+      usage: usage,
+      workId: workId,
+      trackName: trackName,
+    );
   }
 
   String _composeSystemPrompt({

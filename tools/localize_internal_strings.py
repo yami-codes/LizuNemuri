@@ -417,8 +417,8 @@ def build_log_strings_dart(entries: dict[str, dict]) -> str:
         "import 'dart:ui' show Locale;",
         "",
         "import 'package:flutter_gen/gen_l10n/app_localizations.dart';",
-        "import 'package:xuro/core/di/service_locator.dart';",
-        "import 'package:xuro/core/settings/app_settings_service.dart';",
+        "import 'package:lizunemu/core/di/service_locator.dart';",
+        "import 'package:lizunemu/core/settings/app_settings_service.dart';",
         "",
         "/// Localized logs, diagnostics, and internal exception copy.",
         "class LogStrings {",
@@ -464,7 +464,7 @@ def process_file(path: Path, entries: dict[str, dict]) -> bool:
 
     if text != orig:
         if "LogStrings." in text and "log_strings.dart" not in text:
-            imp = "import 'package:xuro/common/constants/log_strings.dart';\n"
+            imp = "import 'package:lizunemu/common/constants/log_strings.dart';\n"
             if imp not in text:
                 m = re.search(r"(import [^;]+;\n)+", text)
                 if m:

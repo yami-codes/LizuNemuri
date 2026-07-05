@@ -36,6 +36,7 @@ import 'package:lizunemu/core/subtitle/subtitle_import_service.dart';
 import 'package:lizunemu/core/download/storage/i_download_repository.dart';
 import 'package:lizunemu/core/download/storage/download_repository.dart';
 import 'package:lizunemu/data/repositories/llm_api_key_repository.dart';
+import 'package:lizunemu/data/repositories/llm_usage_repository.dart';
 import 'package:lizunemu/data/services/llm_client.dart';
 import 'package:lizunemu/core/llm/subtitle_translation_service.dart';
 import 'package:lizunemu/core/llm/work_title_translation_service.dart';
@@ -143,6 +144,10 @@ Future<void> setupServiceLocator() async {
     () => LlmApiKeyRepository(prefs),
   );
 
+  getIt.registerLazySingleton<LlmUsageRepository>(
+    () => LlmUsageRepository(prefs),
+  );
+
   getIt.registerLazySingleton<LlmClient>(
     () => LlmClient(getIt<AppSettingsService>(), getIt<LlmApiKeyRepository>()),
   );
@@ -152,6 +157,7 @@ Future<void> setupServiceLocator() async {
       settings: getIt<AppSettingsService>(),
       client: getIt<LlmClient>(),
       apiKeyRepo: getIt<LlmApiKeyRepository>(),
+      usageRepo: getIt<LlmUsageRepository>(),
     ),
   );
 
@@ -160,6 +166,7 @@ Future<void> setupServiceLocator() async {
       settings: getIt<AppSettingsService>(),
       client: getIt<LlmClient>(),
       apiKeyRepo: getIt<LlmApiKeyRepository>(),
+      usageRepo: getIt<LlmUsageRepository>(),
     ),
   );
 

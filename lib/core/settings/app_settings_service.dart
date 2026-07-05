@@ -3,6 +3,8 @@ import 'dart:ui' show Locale, PlatformDispatcher;
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lizunemu/core/settings/app_language.dart';
+import 'package:lizunemu/core/settings/llm_batch_split_mode.dart';
+import 'package:lizunemu/core/llm/llm_batch_planner.dart';
 import 'package:lizunemu/core/settings/llm_subtitle_display_mode.dart';
 import 'package:lizunemu/core/settings/playback_speed_presets.dart';
 import 'package:lizunemu/core/settings/llm_subtitle_target_language.dart';
@@ -34,6 +36,9 @@ class AppSettingsService extends ChangeNotifier {
   static const String _llmSystemPromptKey = 'llm_system_prompt';
   static const String _llmJailbreakPromptKey = 'llm_jailbreak_prompt';
   static const String _llmJailbreakAutoKey = 'llm_jailbreak_auto';
+  static const String _llmBatchSplitModeKey = 'llm_batch_split_mode';
+  static const String _llmManualBatchSizeKey = 'llm_manual_batch_size';
+  static const String _llmStreamingEnabledKey = 'llm_streaming_enabled';
   static const String _llmSubtitleDisplayModeKey = 'llm_subtitle_display_mode';
   static const String _playbackVolumeKey = 'playback_volume';
   static const String _playbackSpeedKey = 'playback_speed';
@@ -83,6 +88,9 @@ class AppSettingsService extends ChangeNotifier {
   late String _llmSystemPromptOverride;
   late String _llmJailbreakPrompt;
   late bool _llmJailbreakAuto;
+  late LlmBatchSplitMode _llmBatchSplitMode;
+  late int _llmManualBatchSize;
+  late bool _llmStreamingEnabled;
   late LlmSubtitleDisplayMode _llmSubtitleDisplayMode;
   late double _playbackVolume;
   late double _playbackSpeed;
@@ -123,6 +131,15 @@ class AppSettingsService extends ChangeNotifier {
     _llmSystemPromptOverride = _prefs.getString(_llmSystemPromptKey) ?? '';
     _llmJailbreakPrompt = _prefs.getString(_llmJailbreakPromptKey) ?? '';
     _llmJailbreakAuto = _prefs.getBool(_llmJailbreakAutoKey) ?? true;
+    final savedSplit = _prefs.getString(_llmBatchSplitModeKey);
+    _llmBatchSplitMode = LlmBatchSplitMode.values.firstWhere(
+      (v) => v.name == savedSplit,
+      orElse: () => LlmBatchSplitMode.provider,
+    );
+    _llmManualBatchSize =
+        _prefs.getInt(_llmManualBatchSizeKey) ??
+            LlmBatchPlanner.defaultManualBatchSize;
+    _llmStreamingEnabled = _prefs.getBool(_llmStreamingEnabledKey) ?? true;
     final savedDisplayMode = _prefs.getString(_llmSubtitleDisplayModeKey);
     _llmSubtitleDisplayMode = LlmSubtitleDisplayMode.values.firstWhere(
       (v) => v.name == savedDisplayMode,
@@ -329,6 +346,34 @@ class AppSettingsService extends ChangeNotifier {
     _llmJailbreakAuto = enabled;
     notifyListeners();
     await _prefs.setBool(_llmJailbreakAutoKey, enabled);
+  }
+
+  LlmBatchSplitMode get llmBatchSplitMode => _llmBatchSplitMode;
+
+  Future<void> setLlmBatchSplitMode(LlmBatchSplitMode mode) async {
+    if (_llmBatchSplitMode == mode) return;
+    _llmBatchSplitMode = mode;
+    notifyListeners();
+    await _prefs.setString(_llmBatchSplitModeKey, mode.name);
+  }
+
+  int get llmManualBatchSize => _llmManualBatchSize;
+
+  Future<void> setLlmManualBatchSize(int size) async {
+    final clamped = size.clamp(1, 500);
+    if (_llmManualBatchSize == clamped) return;
+    _llmManualBatchSize = clamped;
+    notifyListeners();
+    await _prefs.setInt(_llmManualBatchSizeKey, clamped);
+  }
+
+  bool get llmStreamingEnabled => _llmStreamingEnabled;
+
+  Future<void> setLlmStreamingEnabled(bool enabled) async {
+    if (_llmStreamingEnabled == enabled) return;
+    _llmStreamingEnabled = enabled;
+    notifyListeners();
+    await _prefs.setBool(_llmStreamingEnabledKey, enabled);
   }
 
   LlmSubtitleDisplayMode get llmSubtitleDisplayMode => _llmSubtitleDisplayMode;
