@@ -6,6 +6,25 @@
 
 ## 未发布 / Unreleased
 
+---
+
+## v2.0.0-rc.2 — 2026-07-05
+
+### 修复 / Fixed
+- **Library 标签页灰屏崩溃**：`LibraryTabContent` 在 `MultiProvider` 之外读取 `LocalLibraryViewModel`，导致 `ProviderNotFoundException`；AppBar 标题改为从 `Builder` 子上下文读取 Provider。
+- **Linux 桌面 SQLite 无法打开**：Ubuntu 等发行版仅提供 `libsqlite3.so.0`（无 `libsqlite3.so` 符号链接）；`database_bootstrap` 通过 `createDatabaseFactoryFfi` + `open.overrideFor` 增加 soname 回退，修复本地下载库 / 本地曲库初始化失败。
+- **Linux 窗口标题仍为 Xuro**：`linux/my_application.cc` 更新为 **Lizunemu**。
+
+### 工程 / Internal
+- 新增 `test/screens/contents/library_tab_content_test.dart` 回归测试（185 tests total）。
+- 任务文档：[`done/20260705-fix-broken-app-tabs.md`](docs/todos/done/20260705-fix-broken-app-tabs.md)。
+
+---
+
+## v2.0.0-rc.1 — 2026-07-05
+
+Lizunemu 2.0 首次 RC：Xuro → Lizunemu 重命名（`moe.lizu.nemu`）、Eara 里程碑 A–H、应用图标与 CI 产物更名。详见 [`done/20260705-lizunemu-2.0-rebrand.md`](docs/todos/done/20260705-lizunemu-2.0-rebrand.md)。
+
 ### 新增 / Added
 - **用户注册流程**（`POST /api/auth/reg`）：抽屉登录对话框新增「没有账号？去注册」入口；新对话框含用户名 / 密码 / 确认密码三字段，提交按钮按客户端校验状态自动启用。注册成功自动登录；服务端未返回 token 时回退到 `login` 兜底，账号创建成功但自动登录失败的边界场景通过 `RegisteredButNotLoggedInException` 单独提示。任务文档：[`done/20260515-user-registration.md`](docs/todos/done/20260515-user-registration.md)。
 - **3 种主色调可切换**（蓝 / 黑 / 绿，默认蓝）：设置页「外观」之后新增「主色调」分组，三选一持久化到 `AppSettingsService.colorVariant`。`AppColors` 重构为 `lightSchemeFor(variant)` / `darkSchemeFor(variant)` 工厂，6 套手写 ColorScheme 不依赖 `fromSeed`。任务文档：[`done/20260515-color-palette-simplification.md`](docs/todos/done/20260515-color-palette-simplification.md)。
