@@ -7,7 +7,7 @@ import 'package:xuro/data/models/works/work.dart';
 import 'package:xuro/presentation/viewmodels/similar_works_viewmodel.dart';
 import 'package:xuro/widgets/work_grid_view.dart';
 import 'package:xuro/presentation/layouts/work_layout_strategy.dart';
-import 'package:xuro/widgets/pagination_controls.dart';
+import 'package:xuro/widgets/common/back_leading.dart';
 
 class SimilarWorksScreen extends StatefulWidget {
   final Work work;
@@ -63,8 +63,8 @@ class _SimilarWorksScreenState extends State<SimilarWorksScreen> {
     return ChangeNotifierProvider.value(
       value: _viewModel,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(Strings.similarWorks),
+        appBar: PoppableAppBar(
+          title: Strings.similarWorks,
           actions: [
             Consumer<SimilarWorksViewModel>(
               builder: (context, viewModel, _) => IconButton(

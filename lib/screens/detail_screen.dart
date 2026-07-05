@@ -19,6 +19,7 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/screens/similar_works_screen.dart';
 import 'package:xuro/screens/subtitle_preview_screen.dart';
+import 'package:xuro/widgets/common/back_leading.dart';
 import 'package:open_filex/open_filex.dart';
 
 class DetailScreen extends StatelessWidget {
@@ -38,8 +39,8 @@ class DetailScreen extends StatelessWidget {
         work: work,
       )..loadInitialData(),
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(work.sourceId ?? ''),
+        appBar: PoppableAppBar(
+          title: work.sourceId ?? '',
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.only(bottom: MiniPlayer.height),
@@ -57,6 +58,24 @@ class DetailScreen extends StatelessWidget {
                 builder: (context, viewModel, _) => WorkInfo(
                   work: work,
                   workInfo: viewModel.workInfo,
+                  displayTitle: viewModel.displayTitle,
+                  isTitleTranslated: viewModel.isTitleTranslated,
+                  isTitleTranslating: viewModel.isTitleTranslating,
+                  canRestoreOriginalTitle: viewModel.canRestoreOriginalTitle,
+                  canShowTranslatedTitle: viewModel.canShowTranslatedTitle,
+                  onTranslateTitle: () async {
+                    final msg = await viewModel.translateWorkTitle();
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          msg ?? Strings.llmTitleTranslationDone,
+                        ),
+                      ),
+                    );
+                  },
+                  onShowOriginalTitle: viewModel.showOriginalTitle,
+                  onShowTranslatedTitle: viewModel.showTranslatedTitle,
                 ),
               ),
               Consumer<DetailViewModel>(
@@ -190,17 +209,30 @@ class DetailScreen extends StatelessWidget {
                     }
 
                     Future<void> runBulkTranslate(Child? folderNode) async {
-                      final selected =
-                          await showDialog<List<DownloadPair>>(
+                      final selection =
+                          await showDialog<BatchTranslateSelectionResult>(
                         context: context,
                         barrierDismissible: false,
                         builder: (_) => BatchTranslateSelectionDialog(
                           loadItems: () =>
                               viewModel.prepareTranslateSelection(folderNode),
                           cachedCount: viewModel.cachedTranslationCount,
+                          workTitle: work.title,
+                          isTitleCached: viewModel.isWorkTitleCached,
                         ),
                       );
-                      if (selected == null || selected.isEmpty || !context.mounted) {
+                      if (selection == null || !context.mounted) return;
+                      if (selection.translateTitle) {
+                        await viewModel.translateWorkTitle();
+                      }
+                      if (selection.pairs.isEmpty) {
+                        if (selection.translateTitle && context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(Strings.llmTitleTranslationDone),
+                            ),
+                          );
+                        }
                         return;
                       }
 
@@ -209,10 +241,10 @@ class DetailScreen extends StatelessWidget {
                         context: context,
                         barrierDismissible: false,
                         builder: (_) => BatchTranslateDialog(
-                          trackCount: selected.length,
+                          trackCount: selection.pairs.length,
                           skipConfirm: true,
                           translate: (ct, onP) => viewModel.translatePairs(
-                            items: selected,
+                            items: selection.pairs,
                             onProgress: onP,
                             cancelToken: ct,
                           ),

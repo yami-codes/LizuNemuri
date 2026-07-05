@@ -4,7 +4,7 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/presentation/viewmodels/circles_viewmodel.dart';
 import 'package:xuro/screens/browse/widgets/browse_search_bar.dart';
 import 'package:xuro/screens/browse/widgets/browse_grid_item.dart';
-import 'package:xuro/utils/i18n_name_resolver.dart';
+import 'package:xuro/widgets/common/back_leading.dart';
 
 class CirclesScreen extends StatelessWidget {
   const CirclesScreen({super.key});
@@ -14,7 +14,7 @@ class CirclesScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => CirclesViewModel(),
       child: Scaffold(
-        appBar: AppBar(title: Text(Strings.browseAllCircles)),
+        appBar: PoppableAppBar(title: Strings.browseAllCircles),
         body: Consumer<CirclesViewModel>(
           builder: (context, viewModel, _) {
             return Column(

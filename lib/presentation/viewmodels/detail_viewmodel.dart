@@ -22,6 +22,7 @@ import 'package:xuro/core/audio/models/file_path.dart';
 import 'package:xuro/core/subtitle/utils/subtitle_matcher.dart';
 import 'package:xuro/core/llm/subtitle_translation_service.dart';
 import 'package:xuro/core/llm/subtitle_translation_progress.dart';
+import 'package:xuro/core/llm/work_title_translation_service.dart';
 import 'package:xuro/core/subtitle/subtitle_loader.dart';
 import 'package:xuro/core/subtitle/subtitle_import_service.dart';
 import 'package:xuro/core/audio/models/subtitle.dart';
@@ -78,6 +79,7 @@ class DetailViewModel extends ChangeNotifier {
   late final IAudioPlayerService _audioService;
   late final DownloadService _downloadService;
   late final SubtitleTranslationService _translationService;
+  late final WorkTitleTranslationService _titleTranslationService;
   late final SubtitleLoader _subtitleLoader;
   late final SubtitleImportService _importService;
   final Work work;
@@ -107,6 +109,26 @@ class DetailViewModel extends ChangeNotifier {
   MarkStatus? _currentMarkStatus;
   MarkStatus? get currentMarkStatus => _currentMarkStatus;
 
+  String? _translatedTitle;
+  bool _isTitleTranslating = false;
+  bool _showOriginalTitle = false;
+
+  String get displayTitle =>
+      (!_showOriginalTitle && _translatedTitle != null)
+          ? _translatedTitle!
+          : (work.title ?? '');
+
+  bool get isTitleTranslated =>
+      _translatedTitle != null && !_showOriginalTitle;
+
+  bool get isTitleTranslating => _isTitleTranslating;
+
+  bool get canRestoreOriginalTitle =>
+      _translatedTitle != null && !_showOriginalTitle;
+
+  bool get canShowTranslatedTitle =>
+      _translatedTitle != null && _showOriginalTitle;
+
   bool _loadingMark = false;
   bool get loadingMark => _loadingMark;
 
@@ -120,6 +142,7 @@ class DetailViewModel extends ChangeNotifier {
     _apiService = GetIt.I<ApiService>();
     _downloadService = GetIt.I<DownloadService>();
     _translationService = GetIt.I<SubtitleTranslationService>();
+    _titleTranslationService = GetIt.I<WorkTitleTranslationService>();
     _subtitleLoader = GetIt.I<SubtitleLoader>();
     _importService = GetIt.I<SubtitleImportService>();
     _checkRecommendations();
@@ -175,6 +198,7 @@ class DetailViewModel extends ChangeNotifier {
     await Future.wait([
       _loadFilesInternal(),
       _loadWorkInfoInternal(),
+      _loadCachedTitle(),
     ]);
 
     if (!_disposed) {
@@ -395,6 +419,69 @@ class DetailViewModel extends ChangeNotifier {
       skipped: skipped,
       failed: failed,
       cancelled: cancelled,
+    );
+  }
+
+  Future<void> _loadCachedTitle() async {
+    final source = work.title?.trim();
+    final workId = work.id?.toString();
+    if (source == null || source.isEmpty || workId == null) return;
+    final cached = await _titleTranslationService.cachedTitle(
+      workId: workId,
+      sourceTitle: source,
+    );
+    if (_disposed) return;
+    if (cached != null) {
+      _translatedTitle = cached;
+      notifyListeners();
+    }
+  }
+
+  Future<String?> translateWorkTitle({bool forceRefresh = false}) async {
+    final source = work.title?.trim();
+    final workId = work.id?.toString();
+    if (source == null || source.isEmpty) return Strings.llmErrorNoTitle;
+    if (workId == null) return Strings.llmErrorNoTitle;
+
+    _isTitleTranslating = true;
+    _showOriginalTitle = false;
+    notifyListeners();
+
+    final result = await _titleTranslationService.translate(
+      workId: workId,
+      sourceTitle: source,
+      forceRefresh: forceRefresh,
+    );
+
+    _isTitleTranslating = false;
+    if (result.isFailure) {
+      notifyListeners();
+      return result.error!.userMessage;
+    }
+
+    _translatedTitle = result.title;
+    notifyListeners();
+    return result.fromCache ? Strings.llmTitleFromCache : null;
+  }
+
+  void showOriginalTitle() {
+    _showOriginalTitle = true;
+    notifyListeners();
+  }
+
+  void showTranslatedTitle() {
+    if (_translatedTitle == null) return;
+    _showOriginalTitle = false;
+    notifyListeners();
+  }
+
+  Future<bool> isWorkTitleCached() async {
+    final source = work.title?.trim();
+    final workId = work.id?.toString();
+    if (source == null || source.isEmpty || workId == null) return false;
+    return _titleTranslationService.isCached(
+      workId: workId,
+      sourceTitle: source,
     );
   }
 

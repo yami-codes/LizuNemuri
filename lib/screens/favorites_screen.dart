@@ -2,7 +2,7 @@ import 'package:xuro/core/theme/app_animations.dart';
 import 'package:xuro/common/constants/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/widgets/sidebar/sidebar_menu.dart';
+import 'package:xuro/widgets/common/back_leading.dart';
 import 'package:xuro/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:xuro/presentation/viewmodels/favorites_viewmodel.dart';
 import 'package:xuro/presentation/layouts/work_layout_strategy.dart';
@@ -70,9 +70,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       value: _viewModel,
       child: Scaffold(
         appBar: AppBar(
+          leading: const BackLeading(),
+          automaticallyImplyLeading: false,
           title: Text(Strings.favorites),
         ),
-        drawer: const SidebarMenu(),
         body: Consumer<FavoritesViewModel>(
           builder: (context, viewModel, child) {
             return Column(

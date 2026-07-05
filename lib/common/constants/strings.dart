@@ -368,6 +368,14 @@ class Strings {
       _l10n.batchTranslateSummary(translated, cached, failed);
   static String get batchTranslateCancelled =>
       _l10n.batchTranslateCancelled;
+  static String get llmTranslateTitle => _l10n.llmTranslateTitle;
+  static String get llmShowOriginalTitle => _l10n.llmShowOriginalTitle;
+  static String get llmShowTranslatedTitle => _l10n.llmShowTranslatedTitle;
+  static String get llmTitleTranslationDone => _l10n.llmTitleTranslationDone;
+  static String get llmTitleFromCache => _l10n.llmTitleFromCache;
+  static String get llmErrorNoTitle => _l10n.llmErrorNoTitle;
+  static String get batchTranslateIncludeTitle =>
+      _l10n.batchTranslateIncludeTitle;
 
   static String playlistToggleResult(bool added, String name) =>
       added ? _l10n.playlistToggleResultAdded(name) : _l10n.playlistToggleResultRemoved(name);

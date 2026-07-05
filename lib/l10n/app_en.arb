@@ -2308,5 +2308,12 @@
       "failed": { "type": "int" }
     }
   },
-  "batchTranslateCancelled": "Bulk translation cancelled"
+  "batchTranslateCancelled": "Bulk translation cancelled",
+  "llmTranslateTitle": "Translate project title",
+  "llmShowOriginalTitle": "Show original title",
+  "llmShowTranslatedTitle": "Show translated title",
+  "llmTitleTranslationDone": "Project title translated",
+  "llmTitleFromCache": "Loaded saved title translation from cache",
+  "llmErrorNoTitle": "This work has no title to translate",
+  "batchTranslateIncludeTitle": "Translate project title"
 }
