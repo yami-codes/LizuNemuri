@@ -271,6 +271,18 @@
     }
   },
   "sleepTimerOff": "Off",
+  "sleepTimerFadeOut": "Fade out before sleep",
+  "sleepTimerFadeOutDesc": "Linearly lower volume over the last 30 seconds, then pause.",
+  "sleepTimerDimScreen": "Sleep mode dim",
+  "sleepTimerDimScreenDesc": "Dim the player screen while the sleep timer is active.",
+  "sleepTimerActiveSummary": "{preset} min · {minutes}:{seconds} left",
+  "@sleepTimerActiveSummary": {
+    "placeholders": {
+      "preset": { "type": "int" },
+      "minutes": { "type": "int" },
+      "seconds": { "type": "int" }
+    }
+  },
   "smartPath": "Smart path",
   "smartPathDesc": "Auto-expand folders that contain audio when opening a work",
   "sortAscending": "Ascending",

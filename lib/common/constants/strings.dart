@@ -200,6 +200,16 @@ class Strings {
   static String get similarWorks => _l10n.similarWorks;
   static String get sleepTimer => _l10n.sleepTimer;
   static String get sleepTimerOff => _l10n.sleepTimerOff;
+  static String get sleepTimerFadeOut => _l10n.sleepTimerFadeOut;
+  static String get sleepTimerFadeOutDesc => _l10n.sleepTimerFadeOutDesc;
+  static String get sleepTimerDimScreen => _l10n.sleepTimerDimScreen;
+  static String get sleepTimerDimScreenDesc => _l10n.sleepTimerDimScreenDesc;
+  static String sleepTimerActiveSummary(int preset, Duration remaining) =>
+      _l10n.sleepTimerActiveSummary(
+        preset,
+        remaining.inMinutes,
+        remaining.inSeconds % 60,
+      );
   static String get smartPath => _l10n.smartPath;
   static String get smartPathDesc => _l10n.smartPathDesc;
   static String get sortAscending => _l10n.sortAscending;

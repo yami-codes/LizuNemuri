@@ -24,5 +24,5 @@ abstract class IAudioPlayerService {
 
   /// Output volume 0.0–1.0 (just_audio).
   double get volume;
-  Future<void> setVolume(double volume);
+  Future<void> setVolume(double volume, {bool persist = true});
 }

@@ -178,7 +178,10 @@ Future<void> setupServiceLocator() async {
 
   // 注册 SleepTimerController（会话级；到点 pause()，不持久化）
   getIt.registerLazySingleton(
-    () => SleepTimerController(getIt<IAudioPlayerService>()),
+    () => SleepTimerController(
+      getIt<IAudioPlayerService>(),
+      getIt<AppSettingsService>(),
+    ),
   );
 
   // 注册 BackgroundPlayController（后台播放开关执行端，main 中 initialize）

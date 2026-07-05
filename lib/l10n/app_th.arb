@@ -271,6 +271,18 @@
     }
   },
   "sleepTimerOff": "ปิด",
+  "sleepTimerFadeOut": "เฟดเสียงก่อนหลับ",
+  "sleepTimerFadeOutDesc": "ลดระดับเสียงแบบเส้นตรงในช่วง 30 วินาทีสุดท้าย แล้วหยุดชั่วคราว",
+  "sleepTimerDimScreen": "โหมดหลับมืดหน้าจอ",
+  "sleepTimerDimScreenDesc": "หรี่หน้าจอเครื่องเล่นขณะตั้งเวลาหลับทำงาน",
+  "sleepTimerActiveSummary": "{preset} นาที · เหลือ {minutes}:{seconds}",
+  "@sleepTimerActiveSummary": {
+    "placeholders": {
+      "preset": { "type": "int" },
+      "minutes": { "type": "int" },
+      "seconds": { "type": "int" }
+    }
+  },
   "smartPath": "เส้นทางอัจฉริยะ",
   "smartPathDesc": "ขยายโฟลเดอร์ที่มีเสียงอัตโนมัติเมื่อเปิดผลงาน",
   "sortAscending": "น้อยไปมาก",

@@ -160,11 +160,13 @@ class AudioPlayerService implements IAudioPlayerService {
   double get volume => _player.volume;
 
   @override
-  Future<void> setVolume(double volume) async {
+  Future<void> setVolume(double volume, {bool persist = true}) async {
     await ready;
     final clamped = volume.clamp(0.0, 1.0);
     await _player.setVolume(clamped);
-    await GetIt.I<AppSettingsService>().setPlaybackVolume(clamped);
+    if (persist) {
+      await GetIt.I<AppSettingsService>().setPlaybackVolume(clamped);
+    }
   }
 
   // 状态持久化

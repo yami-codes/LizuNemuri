@@ -271,6 +271,18 @@
     }
   },
   "sleepTimerOff": "关闭",
+  "sleepTimerFadeOut": "睡前淡出音量",
+  "sleepTimerFadeOutDesc": "在最后 30 秒线性降低音量，然后暂停播放。",
+  "sleepTimerDimScreen": "睡眠模式暗屏",
+  "sleepTimerDimScreenDesc": "睡眠定时器启用时调暗播放器画面。",
+  "sleepTimerActiveSummary": "{preset} 分钟 · 剩余 {minutes}:{seconds}",
+  "@sleepTimerActiveSummary": {
+    "placeholders": {
+      "preset": { "type": "int" },
+      "minutes": { "type": "int" },
+      "seconds": { "type": "int" }
+    }
+  },
   "smartPath": "智能路径",
   "smartPathDesc": "打开作品后，自动展开包含音频的文件夹",
   "sortAscending": "升序",

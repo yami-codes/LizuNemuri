@@ -35,6 +35,8 @@ class AppSettingsService extends ChangeNotifier {
   static const String _llmJailbreakAutoKey = 'llm_jailbreak_auto';
   static const String _llmSubtitleDisplayModeKey = 'llm_subtitle_display_mode';
   static const String _playbackVolumeKey = 'playback_volume';
+  static const String _sleepTimerFadeOutKey = 'sleep_timer_fade_out';
+  static const String _sleepTimerDimScreenKey = 'sleep_timer_dim_screen';
 
   static const String defaultServerUrl = 'https://api.asmr.one/api';
   static const String defaultLlmApiEndpoint = 'https://api.openai.com/v1';
@@ -73,6 +75,8 @@ class AppSettingsService extends ChangeNotifier {
   late bool _llmJailbreakAuto;
   late LlmSubtitleDisplayMode _llmSubtitleDisplayMode;
   late double _playbackVolume;
+  late bool _sleepTimerFadeOutEnabled;
+  late bool _sleepTimerDimScreenEnabled;
 
   AppSettingsService(this._prefs) {
     _serverUrl = _prefs.getString(_serverUrlKey) ?? defaultServerUrl;
@@ -111,6 +115,10 @@ class AppSettingsService extends ChangeNotifier {
       orElse: () => LlmSubtitleDisplayMode.dual,
     );
     _playbackVolume = _prefs.getDouble(_playbackVolumeKey) ?? 1.0;
+    _sleepTimerFadeOutEnabled =
+        _prefs.getBool(_sleepTimerFadeOutKey) ?? true;
+    _sleepTimerDimScreenEnabled =
+        _prefs.getBool(_sleepTimerDimScreenKey) ?? true;
   }
 
   // === UI Language ===
@@ -316,5 +324,23 @@ class AppSettingsService extends ChangeNotifier {
     _playbackVolume = clamped;
     notifyListeners();
     await _prefs.setDouble(_playbackVolumeKey, clamped);
+  }
+
+  bool get sleepTimerFadeOutEnabled => _sleepTimerFadeOutEnabled;
+
+  Future<void> setSleepTimerFadeOutEnabled(bool enabled) async {
+    if (_sleepTimerFadeOutEnabled == enabled) return;
+    _sleepTimerFadeOutEnabled = enabled;
+    notifyListeners();
+    await _prefs.setBool(_sleepTimerFadeOutKey, enabled);
+  }
+
+  bool get sleepTimerDimScreenEnabled => _sleepTimerDimScreenEnabled;
+
+  Future<void> setSleepTimerDimScreenEnabled(bool enabled) async {
+    if (_sleepTimerDimScreenEnabled == enabled) return;
+    _sleepTimerDimScreenEnabled = enabled;
+    notifyListeners();
+    await _prefs.setBool(_sleepTimerDimScreenKey, enabled);
   }
 }

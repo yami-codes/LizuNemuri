@@ -255,13 +255,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SettingsTile.navigation(
               title: Strings.sleepTimer,
               leading: Icons.bedtime_outlined,
-              value: sleepTimer.minutes == null
-                  ? Strings.sleepTimerOff
-                  : Strings.sleepTimerMinutes(sleepTimer.minutes!),
+              value: sleepTimer.isActive
+                  ? Strings.sleepTimerActiveSummary(
+                      sleepTimer.minutes!,
+                      sleepTimer.remaining ?? Duration.zero,
+                    )
+                  : Strings.sleepTimerOff,
               onTap: () => showDialog(
                 context: context,
                 builder: (_) => SleepTimerDialog(controller: sleepTimer),
               ),
+            ),
+            SettingsTile.toggle(
+              title: Strings.sleepTimerFadeOut,
+              subtitle: Strings.sleepTimerFadeOutDesc,
+              leading: Icons.volume_down_outlined,
+              value: settings.sleepTimerFadeOutEnabled,
+              onChanged: settings.setSleepTimerFadeOutEnabled,
+            ),
+            SettingsTile.toggle(
+              title: Strings.sleepTimerDimScreen,
+              subtitle: Strings.sleepTimerDimScreenDesc,
+              leading: Icons.brightness_4_outlined,
+              value: settings.sleepTimerDimScreenEnabled,
+              onChanged: settings.setSleepTimerDimScreenEnabled,
             ),
             SettingsTile.toggle(
               title: Strings.backgroundPlay,
