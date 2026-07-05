@@ -11,9 +11,10 @@ class WorkLayoutStrategy {
     return DeviceType.fromWidth(MediaQuery.of(context).size.width);
   }
 
-  /// 获取每行的列数
+  /// 获取每行的列数（宽度自适应，宽屏更多列、卡片更小）
   int getColumnsCount(BuildContext context) {
-    return WorkLayoutConfig.getColumnsCount(_getDeviceType(context));
+    final width = MediaQuery.sizeOf(context).width;
+    return WorkLayoutConfig.columnsForWidth(width);
   }
 
   /// 获取行间距

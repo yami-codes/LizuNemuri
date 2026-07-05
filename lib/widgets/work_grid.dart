@@ -31,6 +31,7 @@ class WorkGrid extends StatelessWidget {
                 bottom: index < rows.length - 1 ? rowSpacing : 0),
             child: WorkRow(
               works: rows[index],
+              columnCount: columnsCount,
               onWorkTap: onWorkTap,
               spacing: columnSpacing,
             ),
