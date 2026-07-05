@@ -12,6 +12,7 @@ import 'core/di/service_locator.dart';
 import 'package:provider/provider.dart';
 import 'screens/main_screen.dart';
 import 'package:xuro/core/theme/app_theme.dart';
+import 'package:xuro/core/audio/effects/audio_effects_controller.dart';
 import 'package:xuro/core/theme/dynamic_hue_controller.dart';
 import 'package:xuro/core/theme/theme_controller.dart';
 import 'package:xuro/core/database/database_bootstrap.dart';
@@ -75,6 +76,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider.value(
           value: getIt<DynamicHueController>(),
+        ),
+        ChangeNotifierProvider.value(
+          value: getIt<AudioEffectsController>(),
         ),
       ],
       child: Consumer2<ThemeController, DynamicHueController>(

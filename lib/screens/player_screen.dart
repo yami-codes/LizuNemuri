@@ -24,6 +24,7 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/screens/settings/llm_translation_settings_screen.dart';
 import 'package:xuro/core/subtitle/subtitle_import_service.dart';
+import 'package:xuro/widgets/player/player_equalizer_sheet.dart';
 
 class PlayerScreen extends StatefulWidget {
   const PlayerScreen({super.key});
@@ -337,6 +338,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                   actions: [
+                    if (PlatformCapabilities.supportsAndroidEqualizer)
+                      IconButton(
+                        icon: const Icon(Icons.equalizer),
+                        tooltip: Strings.equalizerTitle,
+                        onPressed: () => PlayerEqualizerSheet.show(context),
+                      ),
                     PlayerVolumeButton(viewModel: _viewModel),
                     PlayerSpeedButton(viewModel: _viewModel),
                     ListenableBuilder(

@@ -17,6 +17,7 @@ import 'package:xuro/screens/downloads_screen.dart';
 import 'package:xuro/screens/favorites_screen.dart';
 import 'package:xuro/screens/playlists_screen.dart';
 import 'package:xuro/screens/recommend_screen.dart';
+import 'package:xuro/screens/dlsite/dlsite_library_screen.dart';
 import 'package:xuro/screens/settings/settings_screen.dart';
 import 'package:xuro/widgets/common/brand_wordmark.dart';
 import 'package:xuro/widgets/sidebar/sidebar_decoration.dart';
@@ -219,6 +220,12 @@ class SidebarMenu extends StatelessWidget {
                         SidebarGroup(
                           header: Strings.drawerSectionDiscover,
                           children: [
+                            SidebarTile(
+                              icon: Icons.storefront_outlined,
+                              title: Strings.dlsiteLibraryTitle,
+                              onTap: () =>
+                                  _navigate(context, const DlsiteLibraryScreen()),
+                            ),
                             SidebarTile(
                               icon: CupertinoIcons.tag,
                               title: Strings.tags,

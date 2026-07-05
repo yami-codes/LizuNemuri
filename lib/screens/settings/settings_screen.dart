@@ -19,6 +19,7 @@ import 'package:xuro/screens/settings/widgets/settings_tile.dart';
 import 'package:xuro/screens/settings/widgets/settings_theme.dart';
 import 'package:xuro/screens/settings/llm_translation_settings_screen.dart';
 import 'package:xuro/utils/platform_capabilities.dart';
+import 'package:xuro/widgets/player/player_equalizer_sheet.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -277,6 +278,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             if (settings.playbackFadeEnabled)
               _PlaybackFadeDurationSlider(settings: settings),
+            if (PlatformCapabilities.supportsAndroidEqualizer)
+              SettingsTile.navigation(
+                title: Strings.equalizerTitle,
+                subtitle: Strings.equalizerDesc,
+                leading: Icons.equalizer,
+                value: '',
+                onTap: () => PlayerEqualizerSheet.show(context),
+              ),
             SettingsTile.toggle(
               title: Strings.backgroundPlay,
               subtitle: Strings.backgroundPlayDesc,

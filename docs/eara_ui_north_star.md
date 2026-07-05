@@ -117,17 +117,19 @@ You want Xuro to **feel like Eara**, not “Xuro with a blurred cover.” That i
 
 ---
 
-### Milestone G — **DLsite** (10C)
+### Milestone G — **DLsite** (10C) ✅
 
-- Login, Play library client or scraper (legal review), merge with asmr.one enrichment
+- Cookie auth + Play library list + stream play (`lib/core/dlsite/`, drawer entry)
+- **Deferred:** WebView login, scraper path, asmr.one RJ enrichment
 - **Eara refs:** `DlsiteLoginScreen.kt`, `DLSiteScraper.kt`, `DlsitePlayLibraryClient.kt`
 
 ---
 
-### Milestone H — **Audio plugin evaluation** (8C)
+### Milestone H — **Audio plugin evaluation** (8C) ✅
 
-- Spike: `just_audio` + `AndroidEqualizer` pipeline vs alternatives (`audio_service`, custom channel)
-- Deliver: recommendation doc + minimal EQ/balance prototype if feasible
+- **Decision:** `just_audio` `AndroidEqualizer` v1 — see `docs/audio_plugin_evaluation.md`
+- Shipped: `AudioEffectsController` + equalizer sheet (Android-gated)
+- **Deferred:** balance, spectrum, reverb (phase 2 Media3 spike)
 
 ---
 

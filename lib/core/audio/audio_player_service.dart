@@ -17,9 +17,12 @@ import './events/playback_event_hub.dart';
 import 'package:xuro/common/constants/log_strings.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/core/settings/playback_speed_presets.dart';
+import 'package:xuro/core/audio/effects/audio_effects_controller.dart';
+import 'package:xuro/utils/platform_capabilities.dart';
 
 class AudioPlayerService implements IAudioPlayerService {
   late final AudioPlayer _player;
+  AndroidEqualizer? _androidEqualizer;
   late final AudioNotificationService _notificationService;
   late final ConcatenatingAudioSource _playlist;
   late final PlaybackStateManager _stateManager;
@@ -55,7 +58,17 @@ class AudioPlayerService implements IAudioPlayerService {
 
   Future<void> _init() async {
     try {
-      _player = AudioPlayer();
+      if (PlatformCapabilities.supportsAndroidEqualizer) {
+        _androidEqualizer = AndroidEqualizer();
+        _player = AudioPlayer(
+          audioPipeline: AudioPipeline(
+            androidAudioEffects: [_androidEqualizer!],
+          ),
+        );
+        GetIt.I<AudioEffectsController>().bind(_androidEqualizer!);
+      } else {
+        _player = AudioPlayer();
+      }
       _notificationService = AudioNotificationService(
         _player,
         _eventHub,

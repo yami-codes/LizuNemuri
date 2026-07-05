@@ -93,6 +93,17 @@ class Strings {
       _l10n.downloadsFileCountSummary(count, size);
   static String get downloadsPlayA11y => _l10n.downloadsPlayA11y;
   static String get downloadsTitle => _l10n.downloadsTitle;
+  static String get equalizerDesc => _l10n.equalizerDesc;
+  static String get equalizerEnable => _l10n.equalizerEnable;
+  static String get equalizerTitle => _l10n.equalizerTitle;
+  static String get equalizerUnsupported => _l10n.equalizerUnsupported;
+  static String get dlsiteCookieHint => _l10n.dlsiteCookieHint;
+  static String get dlsiteCookieSave => _l10n.dlsiteCookieSave;
+  static String get dlsiteDisclaimer => _l10n.dlsiteDisclaimer;
+  static String get dlsiteLibraryTitle => _l10n.dlsiteLibraryTitle;
+  static String get dlsiteLoginRequired => _l10n.dlsiteLoginRequired;
+  static String get dlsiteLoginTitle => _l10n.dlsiteLoginTitle;
+  static String get dlsiteLogout => _l10n.dlsiteLogout;
   static String get librarySegmentBrowse => _l10n.librarySegmentBrowse;
   static String get librarySegmentLocal => _l10n.librarySegmentLocal;
   static String localLibraryTrackCount(int count) =>
