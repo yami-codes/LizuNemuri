@@ -39,6 +39,7 @@ class AppSettingsService extends ChangeNotifier {
   static const String _playbackSpeedKey = 'playback_speed';
   static const String _sleepTimerFadeOutKey = 'sleep_timer_fade_out';
   static const String _sleepTimerDimScreenKey = 'sleep_timer_dim_screen';
+  static const String _playerBackdropClarityKey = 'player_backdrop_clarity';
 
   static const String defaultServerUrl = 'https://api.asmr.one/api';
   static const String defaultLlmApiEndpoint = 'https://api.openai.com/v1';
@@ -49,6 +50,7 @@ class AppSettingsService extends ChangeNotifier {
   static const List<String> defaultAudioFormatOrder = [
     'mp3', 'flac', 'wav', 'opus', 'm4a', 'aac'
   ];
+  static const double defaultPlayerBackdropClarity = 0.35;
 
   /// Available API nodes (labels via [Strings.serverMain] etc. at UI layer).
   static const List<String> serverUrls = [
@@ -80,6 +82,7 @@ class AppSettingsService extends ChangeNotifier {
   late double _playbackSpeed;
   late bool _sleepTimerFadeOutEnabled;
   late bool _sleepTimerDimScreenEnabled;
+  late double _playerBackdropClarity;
 
   AppSettingsService(this._prefs) {
     _serverUrl = _prefs.getString(_serverUrlKey) ?? defaultServerUrl;
@@ -125,6 +128,9 @@ class AppSettingsService extends ChangeNotifier {
         _prefs.getBool(_sleepTimerFadeOutKey) ?? true;
     _sleepTimerDimScreenEnabled =
         _prefs.getBool(_sleepTimerDimScreenKey) ?? true;
+    _playerBackdropClarity = (_prefs.getDouble(_playerBackdropClarityKey) ??
+            defaultPlayerBackdropClarity)
+        .clamp(0.0, 1.0);
   }
 
   // === UI Language ===
@@ -358,5 +364,16 @@ class AppSettingsService extends ChangeNotifier {
     _sleepTimerDimScreenEnabled = enabled;
     notifyListeners();
     await _prefs.setBool(_sleepTimerDimScreenKey, enabled);
+  }
+
+  // === Player cover backdrop clarity (0.0–1.0) ===
+  double get playerBackdropClarity => _playerBackdropClarity;
+
+  Future<void> setPlayerBackdropClarity(double clarity) async {
+    final clamped = clarity.clamp(0.0, 1.0);
+    if (_playerBackdropClarity == clamped) return;
+    _playerBackdropClarity = clamped;
+    notifyListeners();
+    await _prefs.setDouble(_playerBackdropClarityKey, clamped);
   }
 }

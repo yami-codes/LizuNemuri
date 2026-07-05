@@ -2334,6 +2334,8 @@
   "llmErrorNoTitle": "This work has no title to translate",
   "batchTranslateIncludeTitle": "Translate project title",
   "playerVolume": "Volume",
+  "playerBackdropClarity": "Cover backdrop clarity",
+  "playerBackdropClarityDesc": "Higher values reveal more of the blurred cover art",
   "playerSpeed": "Playback speed",
   "playerSpeedLabel": "{speed}x",
   "@playerSpeedLabel": {

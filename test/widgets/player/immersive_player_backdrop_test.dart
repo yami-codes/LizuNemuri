@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xuro/core/di/service_locator.dart';
+import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/core/theme/player_hue_derivation.dart';
 import 'package:xuro/widgets/player/cover_artwork_backdrop_style.dart';
+import 'package:xuro/widgets/player/cover_artwork_background.dart';
 
 void main() {
   group('coverArtworkBackdropStyle', () {
@@ -51,6 +55,80 @@ void main() {
         fallback: Colors.black,
       );
       expect(color.computeLuminance(), greaterThan(0.5));
+    });
+  });
+
+  group('AppSettingsService.playerBackdropClarity', () {
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      await setupServiceLocator();
+    });
+
+    tearDown(() async {
+      await getIt.reset();
+    });
+
+    test('defaults to 0.35', () {
+      expect(
+        getIt<AppSettingsService>().playerBackdropClarity,
+        AppSettingsService.defaultPlayerBackdropClarity,
+      );
+    });
+
+    test('persists and clamps clarity', () async {
+      final settings = getIt<AppSettingsService>();
+      await settings.setPlayerBackdropClarity(0.8);
+      expect(settings.playerBackdropClarity, 0.8);
+
+      await settings.setPlayerBackdropClarity(1.5);
+      expect(settings.playerBackdropClarity, 1.0);
+
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getDouble('player_backdrop_clarity'), 1.0);
+    });
+  });
+
+  group('CoverArtworkBackground', () {
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      await setupServiceLocator();
+    });
+
+    tearDown(() async {
+      await getIt.reset();
+    });
+
+    testWidgets('rebuilds when clarity setting changes', (tester) async {
+      final settings = getIt<AppSettingsService>();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CoverArtworkBackground(
+              coverUrl: null,
+              enabled: true,
+              clarity: 0.35,
+              overlayBaseColor: Colors.white,
+              tintBaseColor: Colors.blue,
+              isDark: false,
+            ),
+          ),
+        ),
+      );
+
+      final lowStyle = coverArtworkBackdropStyle(
+        clarity: settings.playerBackdropClarity,
+        isDark: false,
+      );
+      expect(lowStyle.blurSigma, greaterThan(10));
+
+      await settings.setPlayerBackdropClarity(1.0);
+      await tester.pump();
+
+      final highStyle = coverArtworkBackdropStyle(
+        clarity: settings.playerBackdropClarity,
+        isDark: false,
+      );
+      expect(highStyle.blurSigma, 0);
     });
   });
 }

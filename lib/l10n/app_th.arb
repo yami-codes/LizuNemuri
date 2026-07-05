@@ -2334,6 +2334,8 @@
   "llmErrorNoTitle": "ผลงานนี้ไม่มีชื่อให้แปล",
   "batchTranslateIncludeTitle": "แปลชื่อผลงาน",
   "playerVolume": "ระดับเสียง",
+  "playerBackdropClarity": "ความชัดพื้นหลังปก",
+  "playerBackdropClarityDesc": "ค่ายิ่งสูง ภาพปกเบลอจะมองเห็นชัดขึ้น",
   "playerSpeed": "ความเร็วเล่น",
   "playerSpeedLabel": "{speed}x",
   "@playerSpeedLabel": {

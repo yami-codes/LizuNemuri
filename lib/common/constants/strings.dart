@@ -395,6 +395,8 @@ class Strings {
   static String get batchTranslateIncludeTitle =>
       _l10n.batchTranslateIncludeTitle;
   static String get playerVolume => _l10n.playerVolume;
+  static String get playerBackdropClarity => _l10n.playerBackdropClarity;
+  static String get playerBackdropClarityDesc => _l10n.playerBackdropClarityDesc;
   static String get playerSpeed => _l10n.playerSpeed;
   static String playerSpeedLabel(double speed) =>
       _l10n.playerSpeedLabel(_formatSpeedLabel(speed));

@@ -2,14 +2,55 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:xuro/core/di/service_locator.dart';
 import 'package:xuro/core/image/cache/image_cache_manager.dart';
+import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/widgets/common/skeleton_pulse.dart';
 import 'package:xuro/widgets/player/cover_artwork_backdrop_style.dart';
 
 /// Full-bleed blurred cover backdrop with Monet tint layers (Eara-style).
+///
+/// [clarity] is kept for call-site compatibility; live value comes from
+/// [AppSettingsService.playerBackdropClarity].
 class CoverArtworkBackground extends StatelessWidget {
   const CoverArtworkBackground({
     super.key,
+    required this.coverUrl,
+    required this.enabled,
+    required this.clarity,
+    required this.overlayBaseColor,
+    required this.tintBaseColor,
+    required this.isDark,
+  });
+
+  final String? coverUrl;
+  final bool enabled;
+  final double clarity;
+  final Color overlayBaseColor;
+  final Color tintBaseColor;
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = getIt<AppSettingsService>();
+    return ListenableBuilder(
+      listenable: settings,
+      builder: (context, _) {
+        return _CoverArtworkBackgroundBody(
+          coverUrl: coverUrl,
+          enabled: enabled,
+          clarity: settings.playerBackdropClarity,
+          overlayBaseColor: overlayBaseColor,
+          tintBaseColor: tintBaseColor,
+          isDark: isDark,
+        );
+      },
+    );
+  }
+}
+
+class _CoverArtworkBackgroundBody extends StatelessWidget {
+  const _CoverArtworkBackgroundBody({
     required this.coverUrl,
     required this.enabled,
     required this.clarity,
