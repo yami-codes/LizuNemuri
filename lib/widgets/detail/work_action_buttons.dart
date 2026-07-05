@@ -1,5 +1,6 @@
 import 'package:xuro/data/models/mark_status.dart';
 import 'package:xuro/common/constants/strings.dart';
+import 'package:xuro/utils/mark_status_strings.dart';
 import 'package:flutter/material.dart';
 
 class WorkActionButtons extends StatelessWidget {
@@ -39,7 +40,7 @@ class WorkActionButtons extends StatelessWidget {
           ),
           _ActionButton(
             icon: Icons.bookmark_border,
-            label: currentMarkStatus?.label ?? Strings.actionMark,
+            label: currentMarkStatus?.localizedLabel ?? Strings.actionMark,
             onTap: onMarkTap,
             loading: loadingMark,
           ),

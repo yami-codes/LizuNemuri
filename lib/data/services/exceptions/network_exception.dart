@@ -110,8 +110,14 @@ class NetworkException implements Exception {
         return Strings.networkVpnHint;
       case NetworkErrorType.authError:
         return Strings.loginRequired;
-      default:
-        return message;
+      case NetworkErrorType.cancelled:
+        return Strings.networkErrorCancelled;
+      case NetworkErrorType.serverError:
+        return Strings.networkErrorServer;
+      case NetworkErrorType.clientError:
+        return Strings.networkErrorClient;
+      case NetworkErrorType.unknown:
+        return Strings.networkErrorGeneric;
     }
   }
 

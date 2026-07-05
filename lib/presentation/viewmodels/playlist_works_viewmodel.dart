@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:xuro/data/models/works/work.dart';
 import 'package:xuro/data/models/works/pagination.dart';
 import 'package:xuro/data/services/api_service.dart';
+import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:get_it/get_it.dart';
 
@@ -46,7 +47,7 @@ class PlaylistWorksViewModel extends ChangeNotifier {
       AppLogger.info('第$page页播放列表作品加载成功: ${response.works.length}个作品');
     } catch (e) {
       AppLogger.error('加载播放列表作品失败', e);
-      _error = e.toString();
+      _error = userFacingError(e);
     } finally {
       _isLoading = false;
       notifyListeners();

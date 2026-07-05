@@ -2,7 +2,7 @@ import 'package:xuro/core/audio/events/playback_event.dart';
 import 'package:xuro/core/audio/models/audio_track_info.dart';
 import 'package:xuro/core/audio/models/playback_context.dart';
 import 'package:xuro/core/subtitle/i_subtitle_service.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/strings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:xuro/core/audio/i_audio_player_service.dart';
 import 'package:xuro/core/audio/models/subtitle.dart';
@@ -14,6 +14,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:xuro/core/subtitle/subtitle_import_service.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:xuro/utils/logger.dart';
 
 class PlayerViewModel extends ChangeNotifier {
   final IAudioPlayerService _audioService;
@@ -129,7 +130,7 @@ class PlayerViewModel extends ChangeNotifier {
     _subscriptions.add(
       _eventHub.errors.listen(
         (event) {
-          _errorMessage = '播放错误: ${event.operation}';
+          _errorMessage = Strings.playbackError(event.operation);
           AppLogger.error('播放错误事件: ${event.operation}', event.error, event.stackTrace);
           notifyListeners();
         },

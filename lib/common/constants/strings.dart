@@ -5,9 +5,6 @@ import 'package:xuro/core/di/service_locator.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
 
 /// Central UI copy — backed by generated [AppLocalizations].
-///
-/// Call sites keep `Strings.foo` without [BuildContext]. Locale comes from
-/// [AppSettingsService] (or platform locale before DI is ready).
 class Strings {
   Strings._();
 
@@ -261,6 +258,24 @@ class Strings {
   static String get videoNeedsDownloadPrompt => _l10n.videoNeedsDownloadPrompt;
   static String get videoNeedsDownloadTitle => _l10n.videoNeedsDownloadTitle;
   static String get voiceActors => _l10n.voiceActors;
+  static String get markStatusTitle => _l10n.markStatusTitle;
+  static String get markWantToListen => _l10n.markWantToListen;
+  static String get markListening => _l10n.markListening;
+  static String get markListened => _l10n.markListened;
+  static String get markRelistening => _l10n.markRelistening;
+  static String get markOnHold => _l10n.markOnHold;
+  static String get cacheLoadFailed => _l10n.cacheLoadFailed;
+  static String get cacheCleanFailed => _l10n.cacheCleanFailed;
+  static String get networkErrorGeneric => _l10n.networkErrorGeneric;
+  static String get networkErrorCancelled => _l10n.networkErrorCancelled;
+  static String get networkErrorServer => _l10n.networkErrorServer;
+  static String get networkErrorClient => _l10n.networkErrorClient;
+  static String get loginFailedGeneric => _l10n.loginFailedGeneric;
+  static String get registerFailedGeneric => _l10n.registerFailedGeneric;
+  static String unsupportedVideoFile(String title) =>
+      _l10n.unsupportedVideoFile(title);
+  static String get fileUrlMissing => _l10n.fileUrlMissing;
+  static String get fileListNotLoaded => _l10n.fileListNotLoaded;
 
   static String playlistToggleResult(bool added, String name) =>
       added ? _l10n.playlistToggleResultAdded(name) : _l10n.playlistToggleResultRemoved(name);
@@ -274,4 +289,6 @@ class Strings {
   static String playFailed(Object error) => _l10n.playFailed(error.toString());
   static String sleepTimerMinutes(int minutes) => _l10n.sleepTimerMinutes(minutes);
   static String worksCountLabel(int count) => _l10n.worksCountLabel(count);
+  static String workSalesCount(int count) => _l10n.workSalesCount(count);
+  static String playbackError(String operation) => _l10n.playbackError(operation);
 }

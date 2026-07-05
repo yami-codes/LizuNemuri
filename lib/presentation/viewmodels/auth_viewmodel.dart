@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/data/models/auth/auth_resp/auth_resp.dart';
 import 'package:xuro/data/services/auth_service.dart';
 import 'package:xuro/data/repositories/auth_repository.dart';
@@ -53,7 +54,7 @@ class AuthViewModel extends ChangeNotifier {
 
     } catch (e) {
       AppLogger.error('AuthViewModel: 登录失败', e);
-      _error = e.toString();
+      _error = Strings.loginFailedGeneric;
       _authData = null;
     } finally {
       _isLoading = false;
@@ -85,9 +86,12 @@ class AuthViewModel extends ChangeNotifier {
       AppLogger.info(
         '注册成功: name=${_authData?.user?.name}, group=${_authData?.user?.group}',
       );
+    } on RegisteredButNotLoggedInException {
+      _error = Strings.registerOkButLoginFailed;
+      _authData = null;
     } catch (e) {
       AppLogger.error('AuthViewModel: 注册失败', e);
-      _error = e.toString();
+      _error = Strings.registerFailedGeneric;
       _authData = null;
     } finally {
       _isLoading = false;

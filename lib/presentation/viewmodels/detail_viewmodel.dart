@@ -9,6 +9,9 @@ import 'package:xuro/data/models/works/work.dart';
 import 'package:xuro/data/services/api_service.dart';
 import 'package:xuro/core/audio/i_audio_player_service.dart';
 import 'package:xuro/core/download/download_service.dart';
+import 'package:xuro/utils/mark_status_strings.dart';
+import 'package:xuro/common/constants/strings.dart';
+import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:xuro/core/audio/models/playback_context.dart';
 import 'package:xuro/widgets/detail/playlist_selection_dialog.dart';
@@ -152,7 +155,7 @@ class DetailViewModel extends ChangeNotifier {
     } catch (e) {
       if (e is! DioException || e.type != DioExceptionType.cancel) {
         AppLogger.info('加载文件失败');
-        _error = e.toString();
+        _error = userFacingError(e);
       }
     } finally {
       _isLoading = false;
@@ -360,15 +363,17 @@ class DetailViewModel extends ChangeNotifier {
     // 用统一分类：错标 type=audio 的视频在这里被挡下，给清晰错误，
     // 而不是放进播放管线产生"播放列表为空"的误导性失败。
     if (!isAudioFile(file)) {
-      throw Exception('不支持的文件类型（疑似视频）: ${file.title}');
+      throw UserFacingException(
+        Strings.unsupportedVideoFile(file.title ?? ''),
+      );
     }
 
     if (file.mediaDownloadUrl == null) {
-      throw Exception('无法播放：文件URL不存在');
+      throw UserFacingException(Strings.fileUrlMissing);
     }
 
     if (_files == null) {
-      throw Exception('文件列表未加载');
+      throw UserFacingException(Strings.fileListNotLoaded);
     }
 
     try {
@@ -406,7 +411,7 @@ class DetailViewModel extends ChangeNotifier {
       AppLogger.info('收藏夹列表加载成功: ${_playlists?.length ?? 0}个收藏夹');
     } catch (e) {
       AppLogger.error('加载收藏夹列表失败', e);
-      _playlistsError = e.toString();
+      _playlistsError = userFacingError(e);
     } finally {
       _loadingPlaylists = false;
       notifyListeners();
@@ -437,7 +442,7 @@ class DetailViewModel extends ChangeNotifier {
             } catch (e) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(Strings.operationFailed(e))),
+                  SnackBar(content: Text(localizedOperationFailed(e))),
                 );
               }
             }
@@ -514,7 +519,7 @@ class DetailViewModel extends ChangeNotifier {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(Strings.markedAs(status.label)),
+                  content: Text(Strings.markedAs(status.localizedLabel)),
                   duration: const Duration(seconds: 2),
                   behavior: SnackBarBehavior.floating,
                 ),
@@ -523,7 +528,7 @@ class DetailViewModel extends ChangeNotifier {
           } catch (e) {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(Strings.markFailed(e))),
+                SnackBar(content: Text(localizedMarkFailed(e))),
               );
             }
           }

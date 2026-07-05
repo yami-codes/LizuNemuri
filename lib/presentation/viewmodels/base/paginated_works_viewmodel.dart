@@ -3,6 +3,7 @@ import 'package:xuro/data/models/works/work.dart';
 import 'package:xuro/data/models/works/pagination.dart';
 import 'package:xuro/data/services/api_service.dart';
 import 'package:xuro/data/services/exceptions/network_exception.dart';
+import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/utils/logger.dart';
 
 abstract class PaginatedWorksViewModel extends ChangeNotifier {
@@ -80,7 +81,7 @@ abstract class PaginatedWorksViewModel extends ChangeNotifier {
         _error = e.userMessage;
         _isLoginError = e.isAuthError;
       } else {
-        _error = e.toString();
+        _error = userFacingError(e);
         _isLoginError = false;
       }
     } finally {

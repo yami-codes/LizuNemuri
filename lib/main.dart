@@ -73,6 +73,7 @@ class MyApp extends StatelessWidget {
         builder: (context, themeController, settings, child) {
           final variant = settings.colorVariant;
           return MaterialApp(
+            key: ValueKey(settings.appLanguage),
             title: Strings.appName,
             locale: settings.materialLocale,
             localizationsDelegates: AppLocalizations.localizationsDelegates,

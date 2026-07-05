@@ -336,5 +336,45 @@
         "type": "int"
       }
     }
-  }
+  },
+  "markStatusTitle": "สถานะทำเครื่องหมาย",
+  "markWantToListen": "อยากฟัง",
+  "markListening": "กำลังฟัง",
+  "markListened": "ฟังแล้ว",
+  "markRelistening": "ฟังซ้ำ",
+  "markOnHold": "พักไว้",
+  "workSalesCount": "ยอดขาย {count}",
+  "@workSalesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cacheLoadFailed": "โหลดไม่สำเร็จ",
+  "cacheCleanFailed": "ล้างไม่สำเร็จ",
+  "networkErrorGeneric": "เครือข่ายผิดพลาด กรุณาลองใหม่",
+  "networkErrorCancelled": "ยกเลิกคำขอแล้ว",
+  "networkErrorServer": "เซิร์ฟเวอร์ผิดพลาด ลองใหม่ภายหลัง",
+  "networkErrorClient": "คำขอล้มเหลว กรุณาลองใหม่",
+  "loginFailedGeneric": "เข้าสู่ระบบไม่สำเร็จ ตรวจสอบชื่อผู้ใช้และรหัสผ่าน",
+  "registerFailedGeneric": "สมัครไม่สำเร็จ กรุณาลองใหม่ภายหลัง",
+  "playbackError": "เล่นไม่สำเร็จ: {operation}",
+  "@playbackError": {
+    "placeholders": {
+      "operation": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedVideoFile": "ประเภทไฟล์ไม่รองรับ (น่าจะเป็นวิดีโอ): {title}",
+  "@unsupportedVideoFile": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "fileUrlMissing": "เล่นไม่ได้: ไม่มี URL ของไฟล์",
+  "fileListNotLoaded": "ยังไม่ได้โหลดรายการไฟล์"
 }

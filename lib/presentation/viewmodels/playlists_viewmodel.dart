@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:xuro/data/models/my_lists/my_playlists/playlist.dart';
 import 'package:xuro/data/models/my_lists/my_playlists/pagination.dart';
 import 'package:xuro/data/services/api_service.dart';
+import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:get_it/get_it.dart';
 
@@ -62,7 +63,7 @@ class PlaylistsViewModel extends ChangeNotifier {
       AppLogger.info('第$page页播放列表加载成功: ${_playlists?.length ?? 0}个播放列表');
     } catch (e) {
       AppLogger.error('加载播放列表失败', e);
-      _error = e.toString();
+      _error = userFacingError(e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -117,7 +118,7 @@ class PlaylistsViewModel extends ChangeNotifier {
       AppLogger.info('第$page页播放列表作品加载成功: ${response.works.length}个作品');
     } catch (e) {
       AppLogger.error('加载播放列表作品失败', e);
-      _worksError = e.toString();
+      _worksError = userFacingError(e);
     } finally {
       _loadingWorks = false;
       notifyListeners();

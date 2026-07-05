@@ -336,5 +336,45 @@
         "type": "int"
       }
     }
-  }
+  },
+  "markStatusTitle": "Mark status",
+  "markWantToListen": "Want to listen",
+  "markListening": "Listening",
+  "markListened": "Listened",
+  "markRelistening": "Relistening",
+  "markOnHold": "On hold",
+  "workSalesCount": "Sales {count}",
+  "@workSalesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cacheLoadFailed": "Failed to load",
+  "cacheCleanFailed": "Failed to clear",
+  "networkErrorGeneric": "Network error, please retry",
+  "networkErrorCancelled": "Request cancelled",
+  "networkErrorServer": "Server error, try again later",
+  "networkErrorClient": "Request failed, please retry",
+  "loginFailedGeneric": "Login failed. Check your username and password",
+  "registerFailedGeneric": "Registration failed. Please try again later",
+  "playbackError": "Playback error: {operation}",
+  "@playbackError": {
+    "placeholders": {
+      "operation": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedVideoFile": "Unsupported file type (likely video): {title}",
+  "@unsupportedVideoFile": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "fileUrlMissing": "Cannot play: file URL is missing",
+  "fileListNotLoaded": "File list not loaded"
 }

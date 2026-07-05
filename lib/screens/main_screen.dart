@@ -40,12 +40,20 @@ class _MainScreenState extends State<MainScreen> {
   late final RecommendViewModel _recommendViewModel;
   late final FavoritesViewModel _favoritesViewModel;
 
-  final _titles = [
-    Strings.tabFavorites,
-    Strings.home,
-    Strings.homeTitleRecommend,
-    Strings.homeTitlePopular,
-  ];
+  String _pageTitle(int index) {
+    switch (index) {
+      case 0:
+        return Strings.tabFavorites;
+      case 1:
+        return Strings.home;
+      case 2:
+        return Strings.homeTitleRecommend;
+      case 3:
+        return Strings.homeTitlePopular;
+      default:
+        return Strings.home;
+    }
+  }
 
   // 页面内容列表
   // 注意：这些页面不应该创建自己的 ViewModel 实例
@@ -123,8 +131,8 @@ class _MainScreenState extends State<MainScreen> {
 
           // 构建标题文本
           final title = totalCount != null
-              ? '${_titles[_currentIndex]} ($totalCount)'
-              : _titles[_currentIndex];
+              ? '${_pageTitle(_currentIndex)} ($totalCount)'
+              : _pageTitle(_currentIndex);
 
           return Scaffold(
             appBar: AppBar(

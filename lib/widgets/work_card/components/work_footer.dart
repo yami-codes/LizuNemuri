@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/data/models/works/work.dart';
 
 class WorkFooter extends StatelessWidget {
@@ -21,7 +22,7 @@ class WorkFooter extends StatelessWidget {
               ),
         ),
         Text(
-          '销量 ${work.dlCount ?? 0}',
+          Strings.workSalesCount(work.dlCount ?? 0),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 fontSize: 10,
               ),
