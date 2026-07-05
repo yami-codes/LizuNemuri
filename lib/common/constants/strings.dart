@@ -204,6 +204,11 @@ class Strings {
   static String get sleepTimerFadeOutDesc => _l10n.sleepTimerFadeOutDesc;
   static String get sleepTimerDimScreen => _l10n.sleepTimerDimScreen;
   static String get sleepTimerDimScreenDesc => _l10n.sleepTimerDimScreenDesc;
+  static String get playbackFade => _l10n.playbackFade;
+  static String get playbackFadeDesc => _l10n.playbackFadeDesc;
+  static String get playbackFadeDuration => _l10n.playbackFadeDuration;
+  static String get playbackFadeDurationDesc => _l10n.playbackFadeDurationDesc;
+  static String playbackFadeDurationMs(int ms) => _l10n.playbackFadeDurationMs(ms);
   static String sleepTimerActiveSummary(int preset, Duration remaining) =>
       _l10n.sleepTimerActiveSummary(
         preset,

@@ -275,6 +275,16 @@
   "sleepTimerFadeOutDesc": "Linearly lower volume over the last 30 seconds, then pause.",
   "sleepTimerDimScreen": "Sleep mode dim",
   "sleepTimerDimScreenDesc": "Dim the player screen while the sleep timer is active.",
+  "playbackFade": "Play/pause fade",
+  "playbackFadeDesc": "Smoothly fade volume when pausing or resuming playback.",
+  "playbackFadeDuration": "Fade duration",
+  "playbackFadeDurationDesc": "How long the volume fade takes (milliseconds).",
+  "playbackFadeDurationMs": "{ms} ms",
+  "@playbackFadeDurationMs": {
+    "placeholders": {
+      "ms": { "type": "int" }
+    }
+  },
   "sleepTimerActiveSummary": "{preset} min · {minutes}:{seconds} left",
   "@sleepTimerActiveSummary": {
     "placeholders": {

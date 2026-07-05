@@ -275,6 +275,16 @@
   "sleepTimerFadeOutDesc": "在最后 30 秒线性降低音量，然后暂停播放。",
   "sleepTimerDimScreen": "睡眠模式暗屏",
   "sleepTimerDimScreenDesc": "睡眠定时器启用时调暗播放器画面。",
+  "playbackFade": "播放/暂停淡入淡出",
+  "playbackFadeDesc": "暂停或恢复播放时平滑调节音量。",
+  "playbackFadeDuration": "淡入淡出时长",
+  "playbackFadeDurationDesc": "音量渐变所用时间（毫秒）。",
+  "playbackFadeDurationMs": "{ms} 毫秒",
+  "@playbackFadeDurationMs": {
+    "placeholders": {
+      "ms": { "type": "int" }
+    }
+  },
   "sleepTimerActiveSummary": "{preset} 分钟 · 剩余 {minutes}:{seconds}",
   "@sleepTimerActiveSummary": {
     "placeholders": {

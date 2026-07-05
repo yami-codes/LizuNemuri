@@ -39,6 +39,8 @@ class AppSettingsService extends ChangeNotifier {
   static const String _playbackSpeedKey = 'playback_speed';
   static const String _sleepTimerFadeOutKey = 'sleep_timer_fade_out';
   static const String _sleepTimerDimScreenKey = 'sleep_timer_dim_screen';
+  static const String _playbackFadeEnabledKey = 'playback_fade_enabled';
+  static const String _playbackFadeMsKey = 'playback_fade_ms';
   static const String _playerBackdropClarityKey = 'player_backdrop_clarity';
 
   static const String defaultServerUrl = 'https://api.asmr.one/api';
@@ -51,6 +53,10 @@ class AppSettingsService extends ChangeNotifier {
     'mp3', 'flac', 'wav', 'opus', 'm4a', 'aac'
   ];
   static const double defaultPlayerBackdropClarity = 0.35;
+  static const bool defaultPlaybackFadeEnabled = true;
+  static const int defaultPlaybackFadeMs = 300;
+  static const int minPlaybackFadeMs = 100;
+  static const int maxPlaybackFadeMs = 1000;
 
   /// Available API nodes (labels via [Strings.serverMain] etc. at UI layer).
   static const List<String> serverUrls = [
@@ -82,6 +88,8 @@ class AppSettingsService extends ChangeNotifier {
   late double _playbackSpeed;
   late bool _sleepTimerFadeOutEnabled;
   late bool _sleepTimerDimScreenEnabled;
+  late bool _playbackFadeEnabled;
+  late int _playbackFadeMs;
   late double _playerBackdropClarity;
 
   AppSettingsService(this._prefs) {
@@ -128,6 +136,11 @@ class AppSettingsService extends ChangeNotifier {
         _prefs.getBool(_sleepTimerFadeOutKey) ?? true;
     _sleepTimerDimScreenEnabled =
         _prefs.getBool(_sleepTimerDimScreenKey) ?? true;
+    _playbackFadeEnabled =
+        _prefs.getBool(_playbackFadeEnabledKey) ?? defaultPlaybackFadeEnabled;
+    _playbackFadeMs = (_prefs.getInt(_playbackFadeMsKey) ??
+            defaultPlaybackFadeMs)
+        .clamp(minPlaybackFadeMs, maxPlaybackFadeMs);
     _playerBackdropClarity = (_prefs.getDouble(_playerBackdropClarityKey) ??
             defaultPlayerBackdropClarity)
         .clamp(0.0, 1.0);
@@ -364,6 +377,25 @@ class AppSettingsService extends ChangeNotifier {
     _sleepTimerDimScreenEnabled = enabled;
     notifyListeners();
     await _prefs.setBool(_sleepTimerDimScreenKey, enabled);
+  }
+
+  bool get playbackFadeEnabled => _playbackFadeEnabled;
+
+  Future<void> setPlaybackFadeEnabled(bool enabled) async {
+    if (_playbackFadeEnabled == enabled) return;
+    _playbackFadeEnabled = enabled;
+    notifyListeners();
+    await _prefs.setBool(_playbackFadeEnabledKey, enabled);
+  }
+
+  int get playbackFadeMs => _playbackFadeMs;
+
+  Future<void> setPlaybackFadeMs(int ms) async {
+    final clamped = ms.clamp(minPlaybackFadeMs, maxPlaybackFadeMs);
+    if (_playbackFadeMs == clamped) return;
+    _playbackFadeMs = clamped;
+    notifyListeners();
+    await _prefs.setInt(_playbackFadeMsKey, clamped);
   }
 
   // === Player cover backdrop clarity (0.0–1.0) ===

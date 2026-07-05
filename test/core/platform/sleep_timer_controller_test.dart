@@ -14,7 +14,7 @@ class _FakeAudioService implements IAudioPlayerService {
   double get volume => _volume;
 
   @override
-  Future<void> pause() async => pauseCount++;
+  Future<void> pause({bool fade = true}) async => pauseCount++;
 
   @override
   Future<void> setVolume(double volume, {bool persist = true}) async {

@@ -140,7 +140,7 @@ class SleepTimerController extends ChangeNotifier {
       if (restoreVolume != null) {
         await _audioService.setVolume(restoreVolume);
       }
-      await _audioService.pause();
+      await _audioService.pause(fade: false);
     }).catchError(
       (Object e) => AppLogger.error(
         LogStrings.logTagSleepTimerPauseFailed9626d(_tag),

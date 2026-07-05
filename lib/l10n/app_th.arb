@@ -275,6 +275,16 @@
   "sleepTimerFadeOutDesc": "ลดระดับเสียงแบบเส้นตรงในช่วง 30 วินาทีสุดท้าย แล้วหยุดชั่วคราว",
   "sleepTimerDimScreen": "โหมดหลับมืดหน้าจอ",
   "sleepTimerDimScreenDesc": "หรี่หน้าจอเครื่องเล่นขณะตั้งเวลาหลับทำงาน",
+  "playbackFade": "เฟดเสียงเมื่อเล่น/หยุดชั่วคราว",
+  "playbackFadeDesc": "ปรับระดับเสียงอย่างนุ่มนวลเมื่อหยุดชั่วคราวหรือเล่นต่อ",
+  "playbackFadeDuration": "ระยะเวลาเฟด",
+  "playbackFadeDurationDesc": "ระยะเวลาที่ใช้ในการเฟดระดับเสียง (มิลลิวินาที)",
+  "playbackFadeDurationMs": "{ms} มิลลิวินาที",
+  "@playbackFadeDurationMs": {
+    "placeholders": {
+      "ms": { "type": "int" }
+    }
+  },
   "sleepTimerActiveSummary": "{preset} นาที · เหลือ {minutes}:{seconds}",
   "@sleepTimerActiveSummary": {
     "placeholders": {

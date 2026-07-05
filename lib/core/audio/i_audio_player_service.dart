@@ -3,8 +3,8 @@ import './models/playback_context.dart';
 
 abstract class IAudioPlayerService {
   // 基础播放控制
-  Future<void> pause();
-  Future<void> resume();
+  Future<void> pause({bool fade = true});
+  Future<void> resume({bool fade = true});
   Future<void> stop();
   Future<void> seek(Duration position);
   Future<void> previous();

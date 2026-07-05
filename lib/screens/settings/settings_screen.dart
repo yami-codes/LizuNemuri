@@ -281,6 +281,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onChanged: settings.setSleepTimerDimScreenEnabled,
             ),
             SettingsTile.toggle(
+              title: Strings.playbackFade,
+              subtitle: Strings.playbackFadeDesc,
+              leading: Icons.graphic_eq_outlined,
+              value: settings.playbackFadeEnabled,
+              onChanged: settings.setPlaybackFadeEnabled,
+            ),
+            if (settings.playbackFadeEnabled)
+              _PlaybackFadeDurationSlider(settings: settings),
+            SettingsTile.toggle(
               title: Strings.backgroundPlay,
               subtitle: Strings.backgroundPlayDesc,
               leading: Icons.play_circle_outline,
@@ -367,6 +376,86 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _PlaybackFadeDurationSlider extends StatelessWidget {
+  const _PlaybackFadeDurationSlider({required this.settings});
+
+  final AppSettingsService settings;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final ms = settings.playbackFadeMs;
+    final min = AppSettingsService.minPlaybackFadeMs.toDouble();
+    final max = AppSettingsService.maxPlaybackFadeMs.toDouble();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.space16,
+        vertical: AppSpacing.space12,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              SizedBox(
+                width: AppSpacing.space40,
+                height: AppSpacing.space40,
+                child: Icon(
+                  Icons.timer_outlined,
+                  size: 20,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.space12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      Strings.playbackFadeDuration,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      Strings.playbackFadeDurationDesc,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.space8),
+              Text(
+                Strings.playbackFadeDurationMs(ms),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+              left: AppSpacing.space40 + AppSpacing.space12,
+            ),
+            child: Slider(
+              value: ms.toDouble(),
+              min: min,
+              max: max,
+              divisions: ((max - min) / 50).round(),
+              onChanged: (v) => settings.setPlaybackFadeMs(v.round()),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
