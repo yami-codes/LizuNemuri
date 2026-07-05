@@ -45,7 +45,9 @@
 - [x] **Step 3**：接入 `PlayerScreen` + 歌词可读色
   - 涉及文件：`lib/screens/player_screen.dart`, `lib/widgets/lyrics/components/lyric_line.dart`
   - 验证：analyze + test
-- [ ] **Step 4**：提交并开 PR
+- [x] **Step 4**：提交并开 PR
+  - PR: https://github.com/yami-codes/Xuro/pull/11
+  - commit: 4151944
   - 验证：CI 本地 analyze/test
 
 ## 5. 风险与回滚（Risks）
