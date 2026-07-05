@@ -8,6 +8,19 @@
 
 ---
 
+## v2.0.0-rc.3 — 2026-07-05
+
+### 修复 / Fixed
+- **Web CI compile**: rc.2 `database_bootstrap` imported `dart:ffi` / `dart:io` unconditionally — split into `database_bootstrap_stub.dart` (web) vs `database_bootstrap_io.dart` (mobile/desktop).
+- **Web `dart:io`**: migrated file/cache/download/subtitle imports to `universal_io` so `flutter build web` can compile the app graph.
+- **Android release**: ProGuard keep rules for `moe.lizu.nemu.**` lyric overlay after package rename.
+
+### 工程 / Internal
+- CI: explicit `flutter gen-l10n` before all platform builds.
+- Task doc: [`active/20260705-fix-android-web-ci.md`](docs/todos/active/20260705-fix-android-web-ci.md).
+
+---
+
 ## v2.0.0-rc.2 — 2026-07-05
 
 ### 修复 / Fixed

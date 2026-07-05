@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:universal_io/io.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
 import 'package:lizunemu/data/models/files/child.dart';

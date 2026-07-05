@@ -31,5 +31,8 @@
 -keep class com.google.android.exoplayer2.** { *; }
 -dontwarn com.google.android.exoplayer2.**
 
+## Lizunemu native lyric overlay (package rename moe.lizu.nemu)
+-keep class moe.lizu.nemu.** { *; }
+
 ## Cached network image
 -keep class com.bumptech.glide.** { *; }
