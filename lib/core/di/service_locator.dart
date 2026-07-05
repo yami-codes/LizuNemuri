@@ -1,8 +1,8 @@
-import 'package:xuro/utils/platform_capabilities.dart';
+import 'package:lizunemu/utils/platform_capabilities.dart';
 import 'package:dio/dio.dart';
-import 'package:xuro/data/services/interceptors/retry_interceptor.dart';
-import 'package:xuro/data/services/interceptors/auth_interceptor.dart';
-import 'package:xuro/core/platform/dummy_lyric_overlay_controller.dart';
+import 'package:lizunemu/data/services/interceptors/retry_interceptor.dart';
+import 'package:lizunemu/data/services/interceptors/auth_interceptor.dart';
+import 'package:lizunemu/core/platform/dummy_lyric_overlay_controller.dart';
 import 'package:get_it/get_it.dart';
 import '../audio/i_audio_player_service.dart';
 import '../audio/audio_player_service.dart';
@@ -26,21 +26,28 @@ import '../../core/platform/lyric_overlay_manager.dart';
 import '../../core/platform/wakelock_controller.dart';
 import '../../core/platform/sleep_timer_controller.dart';
 import '../../core/platform/background_play_controller.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/core/database/database_service.dart';
-import 'package:xuro/core/subtitle/storage/i_user_subtitle_repository.dart';
-import 'package:xuro/core/subtitle/storage/user_subtitle_repository.dart';
-import 'package:xuro/core/subtitle/import/i_file_picker_service.dart';
-import 'package:xuro/core/subtitle/import/file_picker_service.dart';
-import 'package:xuro/core/subtitle/subtitle_import_service.dart';
-import 'package:xuro/core/download/storage/i_download_repository.dart';
-import 'package:xuro/core/download/storage/download_repository.dart';
-import 'package:xuro/data/repositories/llm_api_key_repository.dart';
-import 'package:xuro/data/repositories/llm_usage_repository.dart';
-import 'package:xuro/data/services/llm_client.dart';
-import 'package:xuro/core/llm/subtitle_translation_service.dart';
-import 'package:xuro/core/llm/work_title_translation_service.dart';
-import 'package:xuro/core/download/download_service.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/database/database_service.dart';
+import 'package:lizunemu/core/subtitle/storage/i_user_subtitle_repository.dart';
+import 'package:lizunemu/core/subtitle/storage/user_subtitle_repository.dart';
+import 'package:lizunemu/core/subtitle/import/i_file_picker_service.dart';
+import 'package:lizunemu/core/subtitle/import/file_picker_service.dart';
+import 'package:lizunemu/core/subtitle/subtitle_import_service.dart';
+import 'package:lizunemu/core/download/storage/i_download_repository.dart';
+import 'package:lizunemu/core/download/storage/download_repository.dart';
+import 'package:lizunemu/data/repositories/llm_api_key_repository.dart';
+import 'package:lizunemu/data/repositories/llm_usage_repository.dart';
+import 'package:lizunemu/data/services/llm_client.dart';
+import 'package:lizunemu/core/llm/subtitle_translation_service.dart';
+import 'package:lizunemu/core/llm/work_title_translation_service.dart';
+import 'package:lizunemu/core/download/download_service.dart';
+import 'package:lizunemu/core/library/scan_roots_store.dart';
+import 'package:lizunemu/core/library/storage/local_library_repository.dart';
+import 'package:lizunemu/core/dlsite/auth/dlsite_auth_repository.dart';
+import 'package:lizunemu/core/dlsite/dlsite_play_library_service.dart';
+import 'package:lizunemu/core/dlsite/dlsite_play_work_service.dart';
+import 'package:lizunemu/core/theme/dynamic_hue_controller.dart';
+import 'package:lizunemu/core/audio/effects/audio_effects_controller.dart';
 
 final getIt = GetIt.instance;
 
@@ -100,6 +107,32 @@ Future<void> setupServiceLocator() async {
       eventHub: getIt(),
       subtitleService: getIt(),
     ),
+  );
+
+  getIt.registerLazySingleton<DynamicHueController>(
+    () => DynamicHueController(playerViewModel: getIt<PlayerViewModel>()),
+  );
+
+  getIt.registerLazySingleton<AudioEffectsController>(
+    () => AudioEffectsController(),
+  );
+
+  getIt.registerLazySingleton<ScanRootsStore>(
+    () => ScanRootsStore(prefs),
+  );
+
+  getIt.registerLazySingleton<LocalLibraryRepository>(
+    () => LocalLibraryRepository(getIt<DatabaseService>()),
+  );
+
+  getIt.registerLazySingleton<DlsiteAuthRepository>(
+    () => DlsiteAuthRepository(),
+  );
+  getIt.registerLazySingleton<DlsitePlayLibraryService>(
+    () => DlsitePlayLibraryService(getIt<DlsiteAuthRepository>()),
+  );
+  getIt.registerLazySingleton<DlsitePlayWorkService>(
+    () => DlsitePlayWorkService(getIt<DlsiteAuthRepository>()),
   );
 
   // 注册 AppSettingsService
@@ -185,7 +218,10 @@ Future<void> setupServiceLocator() async {
 
   // 注册 SleepTimerController（会话级；到点 pause()，不持久化）
   getIt.registerLazySingleton(
-    () => SleepTimerController(getIt<IAudioPlayerService>()),
+    () => SleepTimerController(
+      getIt<IAudioPlayerService>(),
+      getIt<AppSettingsService>(),
+    ),
   );
 
   // 注册 BackgroundPlayController（后台播放开关执行端，main 中 initialize）
@@ -213,6 +249,7 @@ void setupSubtitleServices() {
     controller: getIt(),
     subtitleService: getIt(),
     settings: getIt<AppSettingsService>(),
+    playerViewModel: getIt<PlayerViewModel>(),
   ));
 }
 

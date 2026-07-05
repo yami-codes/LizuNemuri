@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/data/models/works/work_info.dart';
-import 'package:xuro/widgets/common/tag_chip.dart';
-import 'package:xuro/widgets/detail/work_stats_info.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/data/models/works/work_info.dart';
+import 'package:lizunemu/widgets/common/tag_chip.dart';
+import 'package:lizunemu/widgets/detail/work_stats_info.dart';
+import 'package:lizunemu/utils/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class WorkInfoHeader extends StatelessWidget {
   final Work work;

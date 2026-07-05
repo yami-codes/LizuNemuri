@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/data/models/llm/llm_usage_record.dart';
-import 'package:xuro/data/repositories/llm_usage_repository.dart';
-import 'package:xuro/data/services/llm_client.dart';
-import 'package:xuro/screens/settings/widgets/settings_group.dart';
-import 'package:xuro/screens/settings/widgets/settings_theme.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/data/models/llm/llm_usage_record.dart';
+import 'package:lizunemu/data/repositories/llm_usage_repository.dart';
+import 'package:lizunemu/data/services/llm_client.dart';
+import 'package:lizunemu/screens/settings/widgets/settings_group.dart';
+import 'package:lizunemu/screens/settings/widgets/settings_theme.dart';
 
 /// Token / cost history for LLM subtitle and title translation.
 class LlmUsageHistoryScreen extends StatefulWidget {

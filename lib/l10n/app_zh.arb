@@ -2,9 +2,9 @@
   "@@locale": "zh",
   "a11yUserAccount": "用户账户",
   "about": "关于",
-  "aboutAppDescription": "Xuro 是一个第三方 ASMR.ONE 客户端，支持后台播放、字幕/悬浮歌词、播放列表与缓存。基于 CC BY-NC-SA 协议开源。",
-  "aboutAppName": "Xuro",
-  "aboutFooter": "© Xuro · 基于 CC BY-NC-SA 4.0 开源",
+  "aboutAppDescription": "Lizunemu 是一个第三方 ASMR.ONE 客户端，支持后台播放、字幕/悬浮歌词、播放列表与缓存。基于 CC BY-NC-SA 协议开源。",
+  "aboutAppName": "Lizunemu",
+  "aboutFooter": "© Lizunemu · 基于 CC BY-NC-SA 4.0 开源",
   "aboutUs": "关于我们",
   "actionChecking": "检查中",
   "actionFavorite": "收藏",
@@ -12,7 +12,7 @@
   "actionNoRecommend": "暂无推荐",
   "actionRate": "评分",
   "addToPlaylist": "添加到收藏夹",
-  "appName": "asmr.one",
+  "appName": "Lizunemu",
   "appearance": "外观",
   "audioCache": "音频缓存",
   "audioDownloadPrompt": "将该音频下载到本地磁盘以便离线播放？",
@@ -103,6 +103,47 @@
   "downloadSuccess": "下载完成",
   "downloadToLocalTooltip": "下载到本地（离线播放）",
   "downloading": "正在下载...",
+  "downloadsEmpty": "暂无下载。可在作品文件列表中下载音频以便离线播放。",
+  "downloadsFileCountSummary": "{count} 个文件 · {size}",
+  "@downloadsFileCountSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadsPlayA11y": "播放已下载音频",
+  "downloadsTitle": "下载",
+  "equalizerDesc": "Android 系统图形均衡器（just_audio）。左右声道平衡与频谱尚未支持。",
+  "equalizerEnable": "启用均衡器",
+  "equalizerTitle": "均衡器",
+  "equalizerUnsupported": "均衡器仅在本版本的 Android 上可用。",
+  "dlsiteCookieHint": "粘贴 play.dlsite.com 的 Cookie（请先在浏览器登录）",
+  "dlsiteCookieSave": "保存 Cookie",
+  "dlsiteDisclaimer": "非官方 DLsite Play 客户端。仅用于访问您已购买的作品库。Lizunemu 与 DLsite 无隶属关系。",
+  "dlsiteLibraryTitle": "DLsite 曲库",
+  "dlsiteLoginRequired": "请先登录 DLsite",
+  "dlsiteLoginTitle": "DLsite 登录",
+  "dlsiteLogout": "退出登录",
+  "librarySegmentBrowse": "浏览",
+  "librarySegmentLocal": "本地",
+  "localLibraryAddFolder": "添加文件夹",
+  "localLibraryEmpty": "添加音乐文件夹以建立离线曲库。",
+  "localLibraryNoAlbums": "扫描目录中未找到音频，请点「扫描」刷新。",
+  "localLibraryScan": "扫描",
+  "localLibraryScanFolders": "本地扫描目录",
+  "localLibraryTrackCount": "{count} 首",
+  "@localLibraryTrackCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "playlistsTitle": "播放列表",
   "drawerSectionContent": "内容",
   "drawerSectionDiscover": "发现",
   "drawerSectionSystem": "系统",
@@ -271,6 +312,28 @@
     }
   },
   "sleepTimerOff": "关闭",
+  "sleepTimerFadeOut": "睡前淡出音量",
+  "sleepTimerFadeOutDesc": "在最后 30 秒线性降低音量，然后暂停播放。",
+  "sleepTimerDimScreen": "睡眠模式暗屏",
+  "sleepTimerDimScreenDesc": "睡眠定时器启用时调暗播放器画面。",
+  "playbackFade": "播放/暂停淡入淡出",
+  "playbackFadeDesc": "暂停或恢复播放时平滑调节音量。",
+  "playbackFadeDuration": "淡入淡出时长",
+  "playbackFadeDurationDesc": "音量渐变所用时间（毫秒）。",
+  "playbackFadeDurationMs": "{ms} 毫秒",
+  "@playbackFadeDurationMs": {
+    "placeholders": {
+      "ms": { "type": "int" }
+    }
+  },
+  "sleepTimerActiveSummary": "{preset} 分钟 · 剩余 {minutes}:{seconds}",
+  "@sleepTimerActiveSummary": {
+    "placeholders": {
+      "preset": { "type": "int" },
+      "minutes": { "type": "int" },
+      "seconds": { "type": "int" }
+    }
+  },
   "smartPath": "智能路径",
   "smartPathDesc": "打开作品后，自动展开包含音频的文件夹",
   "sortAscending": "升序",
@@ -300,6 +363,9 @@
   "subtitlePreviewTitle": "字幕预览",
   "subtitleRemoved": "已移除导入字幕",
   "tabFavorites": "收藏",
+  "tabHot": "热门",
+  "tabLibrary": "资料库",
+  "tabSearch": "搜索",
   "tags": "标签",
   "telegramChannel": "Telegram 频道",
   "themeAutoDesc": "自动切换深浅色模式",
@@ -401,6 +467,7 @@
   "logLoadRecommendFailed": "加载推荐列表失败",
   "logLoadSimilarFailed": "加载相关推荐失败",
   "logLoadFavoritesFailed": "加载收藏列表失败",
+  "logLoadDownloadsFailed": "加载下载列表失败",
   "logLoadPlaylistsFailed": "加载播放列表失败",
   "logLoadPlaylistWorksFailed": "加载播放列表作品失败",
   "logLoadWorkPlaylistsFailed": "加载收藏夹列表失败",
@@ -2313,6 +2380,11 @@
   },
   "llmUsageOperationSubtitle": "字幕翻译",
   "llmUsageOperationTitle": "标题翻译",
+  "llmSubtitleDisplayMode": "字幕显示",
+  "llmSubtitleDisplayDual": "原文 + 译文",
+  "llmSubtitleDisplayDualDesc": "启用 LLM 翻译后，每行上方显示原文、下方显示译文。",
+  "llmSubtitleDisplayTranslationOnly": "仅显示译文",
+  "llmSubtitleDisplayTranslationOnlyDesc": "只显示一行（有译文时显示译文，否则显示原文）。",
   "batchTranslateTitle": "批量翻译字幕",
   "batchTranslateTooltip": "全部翻译",
   "batchTranslateEmpty": "此文件夹内没有可配对字幕的音频",
@@ -2378,6 +2450,15 @@
   "llmErrorNoTitle": "该作品没有可翻译的标题",
   "batchTranslateIncludeTitle": "翻译作品标题",
   "playerVolume": "音量",
+  "playerBackdropClarity": "封面背景清晰度",
+  "playerBackdropClarityDesc": "数值越高，模糊封面越清晰可见",
+  "playerSpeed": "播放速度",
+  "playerSpeedLabel": "{speed}倍",
+  "@playerSpeedLabel": {
+    "placeholders": {
+      "speed": { "type": "String" }
+    }
+  },
   "playerViewCover": "封面",
   "playerViewSubtitles": "字幕"
 }

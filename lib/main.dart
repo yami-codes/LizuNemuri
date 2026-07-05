@@ -1,19 +1,21 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:xuro/common/constants/log_strings.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/audio/cache/audio_cache_manager.dart';
-import 'package:xuro/core/cache/cache_lifecycle_manager.dart';
-import 'package:xuro/core/platform/background_play_controller.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/audio/cache/audio_cache_manager.dart';
+import 'package:lizunemu/core/cache/cache_lifecycle_manager.dart';
+import 'package:lizunemu/core/platform/background_play_controller.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/presentation/viewmodels/auth_viewmodel.dart';
 import 'core/di/service_locator.dart';
 import 'package:provider/provider.dart';
 import 'screens/main_screen.dart';
-import 'package:xuro/core/theme/app_theme.dart';
-import 'package:xuro/core/theme/theme_controller.dart';
-import 'package:xuro/core/database/database_bootstrap.dart';
+import 'package:lizunemu/core/theme/app_theme.dart';
+import 'package:lizunemu/core/audio/effects/audio_effects_controller.dart';
+import 'package:lizunemu/core/theme/dynamic_hue_controller.dart';
+import 'package:lizunemu/core/theme/theme_controller.dart';
+import 'package:lizunemu/core/database/database_bootstrap.dart';
 import 'screens/search_screen.dart';
 
 void main() async {
@@ -72,18 +74,23 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: getIt<AppSettingsService>(),
         ),
+        ChangeNotifierProvider.value(
+          value: getIt<DynamicHueController>(),
+        ),
+        ChangeNotifierProvider.value(
+          value: getIt<AudioEffectsController>(),
+        ),
       ],
-      child: Consumer2<ThemeController, AppSettingsService>(
-        builder: (context, themeController, settings, child) {
-          final variant = settings.colorVariant;
+      child: Consumer2<ThemeController, DynamicHueController>(
+        builder: (context, themeController, hueController, child) {
           return MaterialApp(
-            key: ValueKey(settings.appLanguage),
+            key: ValueKey(getIt<AppSettingsService>().appLanguage),
             title: Strings.appName,
-            locale: settings.materialLocale,
+            locale: getIt<AppSettingsService>().materialLocale,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            theme: AppTheme.light(variant),
-            darkTheme: AppTheme.dark(variant),
+            theme: AppTheme.fromColorScheme(hueController.lightScheme),
+            darkTheme: AppTheme.fromColorScheme(hueController.darkScheme),
             themeMode: themeController.themeMode,
             home: const MainScreen(),
             routes: {

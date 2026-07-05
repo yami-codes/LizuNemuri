@@ -1,4 +1,4 @@
-import 'package:xuro/core/audio/models/subtitle.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
 
 /// Phase of an in-flight LLM subtitle translation (single track).
 enum SubtitleTranslationPhase {

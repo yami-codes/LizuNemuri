@@ -1,17 +1,17 @@
 import 'dart:ui' show Locale;
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:xuro/core/di/service_locator.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/di/service_locator.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
 
 /// Central UI copy — backed by generated [AppLocalizations].
 class Strings {
   Strings._();
 
-  static const String feedbackUrl = 'https://github.com/WuMe-sicx/Xuro/issues';
-  static const String repoUrl = 'https://github.com/WuMe-sicx/Xuro';
+  static const String feedbackUrl = 'https://github.com/yami-codes/LizuNemu/issues';
+  static const String repoUrl = 'https://github.com/yami-codes/LizuNemu';
   static const String originalRepoUrl = 'https://github.com/asmroneapp/Yuro';
-  static const String telegramChannelUrl = 'https://t.me/XuroAsmr';
+  static const String telegramChannelUrl = 'https://t.me/LizuNemu';
 
   static AppLocalizations get _l10n {
     try {
@@ -88,6 +88,32 @@ class Strings {
   static String get downloadSuccess => _l10n.downloadSuccess;
   static String get downloadToLocalTooltip => _l10n.downloadToLocalTooltip;
   static String get downloading => _l10n.downloading;
+  static String get downloadsEmpty => _l10n.downloadsEmpty;
+  static String downloadsFileCountSummary(int count, String size) =>
+      _l10n.downloadsFileCountSummary(count, size);
+  static String get downloadsPlayA11y => _l10n.downloadsPlayA11y;
+  static String get downloadsTitle => _l10n.downloadsTitle;
+  static String get equalizerDesc => _l10n.equalizerDesc;
+  static String get equalizerEnable => _l10n.equalizerEnable;
+  static String get equalizerTitle => _l10n.equalizerTitle;
+  static String get equalizerUnsupported => _l10n.equalizerUnsupported;
+  static String get dlsiteCookieHint => _l10n.dlsiteCookieHint;
+  static String get dlsiteCookieSave => _l10n.dlsiteCookieSave;
+  static String get dlsiteDisclaimer => _l10n.dlsiteDisclaimer;
+  static String get dlsiteLibraryTitle => _l10n.dlsiteLibraryTitle;
+  static String get dlsiteLoginRequired => _l10n.dlsiteLoginRequired;
+  static String get dlsiteLoginTitle => _l10n.dlsiteLoginTitle;
+  static String get dlsiteLogout => _l10n.dlsiteLogout;
+  static String get librarySegmentBrowse => _l10n.librarySegmentBrowse;
+  static String get librarySegmentLocal => _l10n.librarySegmentLocal;
+  static String localLibraryTrackCount(int count) =>
+      _l10n.localLibraryTrackCount(count);
+  static String get localLibraryAddFolder => _l10n.localLibraryAddFolder;
+  static String get localLibraryEmpty => _l10n.localLibraryEmpty;
+  static String get localLibraryNoAlbums => _l10n.localLibraryNoAlbums;
+  static String get localLibraryScan => _l10n.localLibraryScan;
+  static String get localLibraryScanFolders => _l10n.localLibraryScanFolders;
+  static String get playlistsTitle => _l10n.playlistsTitle;
   static String get drawerSectionContent => _l10n.drawerSectionContent;
   static String get drawerSectionDiscover => _l10n.drawerSectionDiscover;
   static String get drawerSectionSystem => _l10n.drawerSectionSystem;
@@ -200,6 +226,21 @@ class Strings {
   static String get similarWorks => _l10n.similarWorks;
   static String get sleepTimer => _l10n.sleepTimer;
   static String get sleepTimerOff => _l10n.sleepTimerOff;
+  static String get sleepTimerFadeOut => _l10n.sleepTimerFadeOut;
+  static String get sleepTimerFadeOutDesc => _l10n.sleepTimerFadeOutDesc;
+  static String get sleepTimerDimScreen => _l10n.sleepTimerDimScreen;
+  static String get sleepTimerDimScreenDesc => _l10n.sleepTimerDimScreenDesc;
+  static String get playbackFade => _l10n.playbackFade;
+  static String get playbackFadeDesc => _l10n.playbackFadeDesc;
+  static String get playbackFadeDuration => _l10n.playbackFadeDuration;
+  static String get playbackFadeDurationDesc => _l10n.playbackFadeDurationDesc;
+  static String playbackFadeDurationMs(int ms) => _l10n.playbackFadeDurationMs(ms);
+  static String sleepTimerActiveSummary(int preset, Duration remaining) =>
+      _l10n.sleepTimerActiveSummary(
+        preset,
+        remaining.inMinutes,
+        remaining.inSeconds % 60,
+      );
   static String get smartPath => _l10n.smartPath;
   static String get smartPathDesc => _l10n.smartPathDesc;
   static String get sortAscending => _l10n.sortAscending;
@@ -229,6 +270,9 @@ class Strings {
   static String get subtitlePreviewTitle => _l10n.subtitlePreviewTitle;
   static String get subtitleRemoved => _l10n.subtitleRemoved;
   static String get tabFavorites => _l10n.tabFavorites;
+  static String get tabHot => _l10n.tabHot;
+  static String get tabLibrary => _l10n.tabLibrary;
+  static String get tabSearch => _l10n.tabSearch;
   static String get tags => _l10n.tags;
   static String get telegramChannel => _l10n.telegramChannel;
   static String get themeAutoDesc => _l10n.themeAutoDesc;
@@ -358,6 +402,14 @@ class Strings {
   static String get llmUsageOperationSubtitle =>
       _l10n.llmUsageOperationSubtitle;
   static String get llmUsageOperationTitle => _l10n.llmUsageOperationTitle;
+  static String get llmSubtitleDisplayMode => _l10n.llmSubtitleDisplayMode;
+  static String get llmSubtitleDisplayDual => _l10n.llmSubtitleDisplayDual;
+  static String get llmSubtitleDisplayDualDesc =>
+      _l10n.llmSubtitleDisplayDualDesc;
+  static String get llmSubtitleDisplayTranslationOnly =>
+      _l10n.llmSubtitleDisplayTranslationOnly;
+  static String get llmSubtitleDisplayTranslationOnlyDesc =>
+      _l10n.llmSubtitleDisplayTranslationOnlyDesc;
   static String get batchTranslateTitle => _l10n.batchTranslateTitle;
   static String get batchTranslateTooltip => _l10n.batchTranslateTooltip;
   static String get batchTranslateEmpty => _l10n.batchTranslateEmpty;
@@ -414,6 +466,18 @@ class Strings {
   static String get batchTranslateIncludeTitle =>
       _l10n.batchTranslateIncludeTitle;
   static String get playerVolume => _l10n.playerVolume;
+  static String get playerBackdropClarity => _l10n.playerBackdropClarity;
+  static String get playerBackdropClarityDesc => _l10n.playerBackdropClarityDesc;
+  static String get playerSpeed => _l10n.playerSpeed;
+  static String playerSpeedLabel(double speed) =>
+      _l10n.playerSpeedLabel(_formatSpeedLabel(speed));
+
+  static String _formatSpeedLabel(double speed) {
+    final t = speed.toStringAsFixed(2);
+    if (t.endsWith('00')) return speed.toStringAsFixed(1);
+    if (t.endsWith('0')) return t.substring(0, t.length - 1);
+    return t;
+  }
   static String get playerViewCover => _l10n.playerViewCover;
   static String get playerViewSubtitles => _l10n.playerViewSubtitles;
 

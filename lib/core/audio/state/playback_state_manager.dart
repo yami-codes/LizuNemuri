@@ -4,13 +4,13 @@ import '../models/audio_track_info.dart';
 import '../models/playback_context.dart';
 import '../utils/audio_error_handler.dart';
 import '../utils/track_info_creator.dart';
-import 'package:xuro/data/models/playback/playback_state.dart';
+import 'package:lizunemu/data/models/playback/playback_state.dart';
 import '../storage/i_playback_state_repository.dart';
 import '../events/playback_event.dart';
 import '../events/playback_event_hub.dart';
-import 'package:xuro/data/models/files/child.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 
 class PlaybackStateManager {

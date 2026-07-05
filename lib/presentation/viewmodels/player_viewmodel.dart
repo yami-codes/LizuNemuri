@@ -1,24 +1,26 @@
-import 'package:xuro/core/audio/events/playback_event.dart';
-import 'package:xuro/core/audio/models/audio_track_info.dart';
-import 'package:xuro/core/audio/models/playback_context.dart';
-import 'package:xuro/core/subtitle/i_subtitle_service.dart';
-import 'package:xuro/common/constants/strings.dart';
+import 'package:lizunemu/core/audio/events/playback_event.dart';
+import 'package:lizunemu/core/audio/models/audio_track_info.dart';
+import 'package:lizunemu/core/audio/models/playback_context.dart';
+import 'package:lizunemu/core/subtitle/i_subtitle_service.dart';
+import 'package:lizunemu/common/constants/strings.dart';
 import 'package:flutter/foundation.dart';
-import 'package:xuro/core/audio/i_audio_player_service.dart';
-import 'package:xuro/core/audio/models/subtitle.dart';
+import 'package:lizunemu/core/audio/i_audio_player_service.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
 import 'dart:async';
-import 'package:xuro/core/subtitle/subtitle_loader.dart';
-import 'package:xuro/core/download/download_service.dart';
-import 'package:xuro/core/audio/events/playback_event_hub.dart';
+import 'package:lizunemu/core/subtitle/subtitle_loader.dart';
+import 'package:lizunemu/core/download/download_service.dart';
+import 'package:lizunemu/core/audio/events/playback_event_hub.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:xuro/core/llm/subtitle_translation_service.dart';
-import 'package:xuro/core/llm/subtitle_translation_progress.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/core/subtitle/subtitle_import_service.dart';
+import 'package:lizunemu/core/llm/subtitle_translation_service.dart';
+import 'package:lizunemu/core/llm/subtitle_translation_progress.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/settings/llm_subtitle_display_mode.dart';
+import 'package:lizunemu/core/settings/playback_speed_presets.dart';
+import 'package:lizunemu/core/subtitle/subtitle_import_service.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class PlayerViewModel extends ChangeNotifier {
   final IAudioPlayerService _audioService;
@@ -46,6 +48,7 @@ class PlayerViewModel extends ChangeNotifier {
   Duration? _duration;
   Subtitle? _currentSubtitle;
   double _volume = 1.0;
+  double _playbackSpeed = PlaybackSpeedPresets.defaultSpeed;
 
   final List<StreamSubscription> _subscriptions = [];
 
@@ -66,11 +69,16 @@ class PlayerViewModel extends ChangeNotifier {
   bool get isLlmTranslated => _isLlmTranslated;
   bool get isTranslating => _isTranslating;
   String? get translationStatus => _translationStatus;
+  bool get showDualSubtitles =>
+      _settings.llmSubtitleDisplayMode == LlmSubtitleDisplayMode.dual &&
+      _isLlmTranslated &&
+      _subtitleSourceList != null;
   bool get hasSubtitles =>
       _subtitleService.subtitleList != null &&
       _subtitleService.subtitleList!.subtitles.isNotEmpty;
 
   double get volume => _volume;
+  double get playbackSpeed => _playbackSpeed;
 
   /// One-shot snackbar message for auto-translate failures (consumed by UI).
   String? takeTranslationFeedback() {
@@ -86,6 +94,8 @@ class PlayerViewModel extends ChangeNotifier {
   }
 
   void _onLlmSettingsChanged() {
+    notifyListeners();
+
     if (!_settings.llmTranslationEnabled || _isLlmTranslated || _isTranslating) {
       return;
     }
@@ -308,12 +318,18 @@ class PlayerViewModel extends ChangeNotifier {
   // 请求初始状态
   void _requestInitialState() {
     _volume = _settings.playbackVolume;
+    _playbackSpeed = _settings.playbackSpeed;
     Future.microtask(() async {
       _eventHub.emit(RequestInitialStateEvent());
       try {
         final v = _audioService.volume;
         if (v != _volume) {
           _volume = v;
+          notifyListeners();
+        }
+        final speed = _audioService.playbackSpeed;
+        if (speed != _playbackSpeed) {
+          _playbackSpeed = speed;
           notifyListeners();
         }
       } catch (_) {}
@@ -323,6 +339,12 @@ class PlayerViewModel extends ChangeNotifier {
   Future<void> setVolume(double volume) async {
     await _audioService.setVolume(volume);
     _volume = volume.clamp(0.0, 1.0);
+    notifyListeners();
+  }
+
+  Future<void> setPlaybackSpeed(double speed) async {
+    await _audioService.setPlaybackSpeed(speed);
+    _playbackSpeed = PlaybackSpeedPresets.clamp(speed);
     notifyListeners();
   }
 
@@ -375,6 +397,29 @@ class PlayerViewModel extends ChangeNotifier {
     _isLlmTranslated = false;
     notifyListeners();
     return null;
+  }
+
+  /// Original line text for dual display at [index], or null when unavailable.
+  String? originalSubtitleTextAt(int index) {
+    if (!showDualSubtitles) return null;
+    final source = _subtitleSourceList;
+    if (source == null || index < 0 || index >= source.subtitles.length) {
+      return null;
+    }
+    final original = source.subtitles[index].text.trim();
+    if (original.isEmpty) return null;
+    final translated =
+        _subtitleService.subtitleList?.subtitles[index].text.trim();
+    if (translated != null && translated == original) return null;
+    return original;
+  }
+
+  /// Overlay / notification friendly dual-line text.
+  String overlayTextForSubtitle(Subtitle? subtitle) {
+    if (subtitle == null) return Strings.noLyrics;
+    final secondary = originalSubtitleTextAt(subtitle.index);
+    if (secondary == null) return subtitle.text;
+    return '$secondary\n${subtitle.text}';
   }
 
   Future<String?> _runTranslation({

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/theme/app_colors.dart';
-import 'package:xuro/core/theme/app_radius.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
+import 'package:lizunemu/core/theme/app_colors.dart';
+import 'package:lizunemu/core/theme/app_radius.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
 
 /// 圆角搜索框（首页 / 浏览页通用）。规范 §2.2。
 ///
@@ -16,12 +16,14 @@ class AppSearchField extends StatelessWidget {
     this.onSubmitted,
     this.readOnly = false,
     this.onTap,
+    this.suffixIcon,
   });
 
   final String hintText;
   final TextEditingController? controller;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
+  final Widget? suffixIcon;
 
   /// 只读 + [onTap]：搜索框作为导航触发器（点击跳转到搜索页），
   /// 不在原地编辑。用于首页（对齐参考图）。
@@ -47,6 +49,7 @@ class AppSearchField extends StatelessWidget {
         hintText: hintText,
         hintStyle: TextStyle(color: cs.onSurfaceVariant),
         prefixIcon: Icon(Icons.search, color: cs.onSurfaceVariant),
+        suffixIcon: suffixIcon,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.space16,
           vertical: AppSpacing.space12,

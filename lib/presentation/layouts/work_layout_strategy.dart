@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/presentation/layouts/work_layout_config.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/presentation/layouts/work_layout_config.dart';
 
 /// 作品布局策略
 class WorkLayoutStrategy {

@@ -1,17 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:xuro/utils/platform_capabilities.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/utils/platform_capabilities.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:xuro/core/download/models/download_entry.dart';
-import 'package:xuro/core/download/storage/i_download_repository.dart';
-import 'package:xuro/data/models/files/child.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/core/download/models/download_entry.dart';
+import 'package:lizunemu/core/download/storage/i_download_repository.dart';
+import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/utils/logger.dart';
 
 enum DownloadStatus {
   success,
@@ -192,10 +192,21 @@ class DownloadService {
   }
 
   /// 若该文件已完整下载，返回本地路径（供离线播放走本地源）。
+  ///
+  /// 主路径按 [fileKey] 查 DB；下载中心离线播放等场景下 Child 可能无法
+  /// 还原原始 hash，则按 [Child.title] 与 [DownloadEntry.fileName] 回退匹配。
   Future<String?> localPathIfDownloaded(String workId, Child file) async {
     if (file.title == null) return null;
     final entry = await findCompleted(workId, fileKey(file));
-    return entry?.filePath;
+    if (entry != null) return entry.filePath;
+
+    final entries = await _repository.listByWork(workId);
+    for (final e in entries) {
+      if (e.fileName == file.title && await File(e.filePath).exists()) {
+        return e.filePath;
+      }
+    }
+    return null;
   }
 
   /// 下载一个文件（音频/视频/字幕）到本地下载目录（Android 为外部应用专属

@@ -1,4 +1,4 @@
-import 'package:xuro/data/models/files/child.dart';
+import 'package:lizunemu/data/models/files/child.dart';
 
 /// Shared audio vs video file classification for playback and detail UI.
 class AudioFileClassifier {

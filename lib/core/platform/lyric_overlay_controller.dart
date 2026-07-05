@@ -1,12 +1,12 @@
 import 'package:flutter/services.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/utils/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'i_lyric_overlay_controller.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class LyricOverlayController implements ILyricOverlayController {
   static const _tag = 'LyricOverlay';
-  static const _channel = MethodChannel('com.xuro/lyric_overlay');
+  static const _channel = MethodChannel('moe.lizu.nemu/lyric_overlay');
   
   @override
   Future<void> initialize() async {

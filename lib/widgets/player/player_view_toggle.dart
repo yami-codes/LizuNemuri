@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/theme/app_animations.dart';
-import 'package:xuro/core/theme/app_radius.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
+import 'package:lizunemu/core/theme/app_animations.dart';
+import 'package:lizunemu/core/theme/app_radius.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
 
 /// Mobile player cover / subtitle mode switcher.
 class PlayerViewToggle extends StatelessWidget {

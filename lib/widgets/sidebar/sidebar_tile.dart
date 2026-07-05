@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:xuro/core/theme/app_radius.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/core/theme/app_text_styles.dart';
+import 'package:lizunemu/core/theme/app_radius.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/core/theme/app_text_styles.dart';
 
 /// 侧边栏菜单项（对齐参考图）：干净行 + 中性线性图标 + 主题色文字；
 /// `selected` 时整行为实心 accent 胶囊（`primary`/`onPrimary`），未选中透明 + 涟漪。

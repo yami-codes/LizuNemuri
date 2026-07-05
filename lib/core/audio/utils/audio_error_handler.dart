@@ -1,5 +1,5 @@
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 enum AudioErrorType {
   playback,    // 播放错误

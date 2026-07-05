@@ -1,15 +1,15 @@
 import 'dart:io';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
-import 'package:xuro/data/models/files/child.dart';
-import 'package:xuro/data/models/files/files.dart';
-import 'package:xuro/core/audio/models/file_path.dart';
-import 'package:xuro/core/audio/models/subtitle.dart';
+import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/data/models/files/files.dart';
+import 'package:lizunemu/core/audio/models/file_path.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
 import 'package:dio/dio.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/core/subtitle/utils/subtitle_matcher.dart';
-import 'package:xuro/core/subtitle/parsers/subtitle_parser_factory.dart';
-import 'package:xuro/core/subtitle/cache/subtitle_cache_manager.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/core/subtitle/utils/subtitle_matcher.dart';
+import 'package:lizunemu/core/subtitle/parsers/subtitle_parser_factory.dart';
+import 'package:lizunemu/core/subtitle/cache/subtitle_cache_manager.dart';
 
 class SubtitleLoader {
   final Dio _dio;

@@ -37,4 +37,7 @@ class PlatformCapabilities {
 
   /// Browser SQLite via sqflite_common_ffi_web.
   static bool get needsWebSqlite => isWeb;
+
+  /// just_audio AndroidEqualizer (Milestone H).
+  static bool get supportsAndroidEqualizer => isAndroid;
 }

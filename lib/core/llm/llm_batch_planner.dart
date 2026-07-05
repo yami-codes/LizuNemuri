@@ -1,5 +1,5 @@
-import 'package:xuro/core/audio/models/subtitle.dart';
-import 'package:xuro/core/settings/llm_batch_split_mode.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
+import 'package:lizunemu/core/settings/llm_batch_split_mode.dart';
 
 /// Computes subtitle batches for LLM translation requests.
 class LlmBatchPlanner {

@@ -1,10 +1,12 @@
 import 'dart:async';
-import 'package:xuro/core/audio/events/playback_event_hub.dart';
+import 'package:get_it/get_it.dart';
+import 'package:lizunemu/core/audio/events/playback_event_hub.dart';
+import 'package:lizunemu/core/audio/i_audio_player_service.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class AudioPlayerHandler extends BaseAudioHandler {
   final AudioPlayer _player;
@@ -69,13 +71,13 @@ class AudioPlayerHandler extends BaseAudioHandler {
   @override
   Future<void> play() async {
     AppLogger.debug(LogStrings.logAudiohandlerPlayCommanda6f42);
-    await _player.play();
+    await GetIt.I<IAudioPlayerService>().resume();
   }
 
   @override
   Future<void> pause() async {
     AppLogger.debug(LogStrings.logAudiohandlerPauseCommanda0f46);
-    await _player.pause();
+    await GetIt.I<IAudioPlayerService>().pause();
   }
 
   @override

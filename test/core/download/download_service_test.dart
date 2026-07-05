@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:xuro/core/download/download_service.dart';
-import 'package:xuro/data/models/files/child.dart';
+import 'package:lizunemu/core/download/download_service.dart';
+import 'package:lizunemu/data/models/files/child.dart';
 
 void main() {
   Child mk({String? title, String? hash, String? url}) =>

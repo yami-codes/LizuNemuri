@@ -1,8 +1,8 @@
 import 'dart:ui' show Locale;
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:xuro/core/di/service_locator.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/di/service_locator.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
 
 /// Localized logs, diagnostics, and internal exception copy.
 class LogStrings {
@@ -68,6 +68,7 @@ class LogStrings {
   static String get logLoadCacheSizeFailed => _l10n.logLoadCacheSizeFailed;
   static String get logLoadCirclesFailed => _l10n.logLoadCirclesFailed;
   static String get logLoadFavoritesFailed => _l10n.logLoadFavoritesFailed;
+  static String get logLoadDownloadsFailed => _l10n.logLoadDownloadsFailed;
   static String get logLoadFilesFailed => _l10n.logLoadFilesFailed;
   static String get logLoadFilterStateFailed => _l10n.logLoadFilterStateFailed;
   static String get logLoadLocalSubtitleFailed5afd7 => _l10n.logLoadLocalSubtitleFailed5afd7;

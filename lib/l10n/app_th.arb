@@ -2,9 +2,9 @@
   "@@locale": "th",
   "a11yUserAccount": "บัญชีผู้ใช้",
   "about": "เกี่ยวกับ",
-  "aboutAppDescription": "Xuro เป็นไคลเอนต์ ASMR.ONE รองรับเล่นพื้นหลัง คำบรรยาย/เนื้อเพลงลอย เพลย์ลิสต์ และแคช โอเพนซอร์สภายใต้ CC BY-NC-SA",
-  "aboutAppName": "Xuro",
-  "aboutFooter": "© Xuro · CC BY-NC-SA 4.0",
+  "aboutAppDescription": "Lizunemu เป็นไคลเอนต์ ASMR.ONE รองรับเล่นพื้นหลัง คำบรรยาย/เนื้อเพลงลอย เพลย์ลิสต์ และแคช โอเพนซอร์สภายใต้ CC BY-NC-SA",
+  "aboutAppName": "Lizunemu",
+  "aboutFooter": "© Lizunemu · CC BY-NC-SA 4.0",
   "aboutUs": "เกี่ยวกับ",
   "actionChecking": "กำลังตรวจสอบ",
   "actionFavorite": "รายการโปรด",
@@ -12,7 +12,7 @@
   "actionNoRecommend": "ไม่มีคำแนะนำ",
   "actionRate": "ให้คะแนน",
   "addToPlaylist": "เพิ่มในเพลย์ลิสต์",
-  "appName": "asmr.one",
+  "appName": "Lizunemu",
   "appearance": "รูปลักษณ์",
   "audioCache": "แคชเสียง",
   "audioDownloadPrompt": "ดาวน์โหลดเสียงนี้เพื่อเล่นออฟไลน์?",
@@ -103,6 +103,47 @@
   "downloadSuccess": "ดาวน์โหลดเสร็จสิ้น",
   "downloadToLocalTooltip": "ดาวน์โหลดเพื่อเล่นออฟไลน์",
   "downloading": "กำลังดาวน์โหลด...",
+  "downloadsEmpty": "ยังไม่มีไฟล์ดาวน์โหลด ดาวน์โหลดเสียงจากรายการไฟล์ของผลงานเพื่อฟังออฟไลน์",
+  "downloadsFileCountSummary": "{count} ไฟล์ · {size}",
+  "@downloadsFileCountSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadsPlayA11y": "เล่นเสียงที่ดาวน์โหลดแล้ว",
+  "downloadsTitle": "ดาวน์โหลด",
+  "equalizerDesc": "Android graphic EQ (just_audio) ยังไม่รองรับ balance/spectrum",
+  "equalizerEnable": "เปิด equalizer",
+  "equalizerTitle": "Equalizer",
+  "equalizerUnsupported": "Equalizer ใช้ได้เฉพาะ Android ในเวอร์ชันนี้",
+  "dlsiteCookieHint": "วาง Cookie จาก play.dlsite.com หลังเข้าสู่ระบบในเบราว์เซอร์",
+  "dlsiteCookieSave": "บันทึก Cookie",
+  "dlsiteDisclaimer": "ไคลเอนต์ DLsite Play ไม่เป็นทางการ ใช้กับไลบรารีที่คุณซื้อเท่านั้น Lizunemu ไม่เกี่ยวข้องกับ DLsite",
+  "dlsiteLibraryTitle": "ไลบรารี DLsite",
+  "dlsiteLoginRequired": "ต้องเข้าสู่ระบบ DLsite",
+  "dlsiteLoginTitle": "เข้าสู่ระบบ DLsite",
+  "dlsiteLogout": "ออกจากระบบ",
+  "librarySegmentBrowse": "เรียกดู",
+  "librarySegmentLocal": "ในเครื่อง",
+  "localLibraryAddFolder": "เพิ่มโฟลเดอร์",
+  "localLibraryEmpty": "เพิ่มโฟลเดอร์เพลงเพื่อสร้างคลังออฟไลน์",
+  "localLibraryNoAlbums": "ไม่พบเสียงในโฟลเดอร์ที่สแกน แตะสแกนเพื่อรีเฟรช",
+  "localLibraryScan": "สแกน",
+  "localLibraryScanFolders": "โฟลเดอร์สแกนในเครื่อง",
+  "localLibraryTrackCount": "{count} แทร็ก",
+  "@localLibraryTrackCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "playlistsTitle": "เพลย์ลิสต์",
   "drawerSectionContent": "เนื้อหา",
   "drawerSectionDiscover": "ค้นพบ",
   "drawerSectionSystem": "ระบบ",
@@ -271,6 +312,28 @@
     }
   },
   "sleepTimerOff": "ปิด",
+  "sleepTimerFadeOut": "เฟดเสียงก่อนหลับ",
+  "sleepTimerFadeOutDesc": "ลดระดับเสียงแบบเส้นตรงในช่วง 30 วินาทีสุดท้าย แล้วหยุดชั่วคราว",
+  "sleepTimerDimScreen": "โหมดหลับมืดหน้าจอ",
+  "sleepTimerDimScreenDesc": "หรี่หน้าจอเครื่องเล่นขณะตั้งเวลาหลับทำงาน",
+  "playbackFade": "เฟดเสียงเมื่อเล่น/หยุดชั่วคราว",
+  "playbackFadeDesc": "ปรับระดับเสียงอย่างนุ่มนวลเมื่อหยุดชั่วคราวหรือเล่นต่อ",
+  "playbackFadeDuration": "ระยะเวลาเฟด",
+  "playbackFadeDurationDesc": "ระยะเวลาที่ใช้ในการเฟดระดับเสียง (มิลลิวินาที)",
+  "playbackFadeDurationMs": "{ms} มิลลิวินาที",
+  "@playbackFadeDurationMs": {
+    "placeholders": {
+      "ms": { "type": "int" }
+    }
+  },
+  "sleepTimerActiveSummary": "{preset} นาที · เหลือ {minutes}:{seconds}",
+  "@sleepTimerActiveSummary": {
+    "placeholders": {
+      "preset": { "type": "int" },
+      "minutes": { "type": "int" },
+      "seconds": { "type": "int" }
+    }
+  },
   "smartPath": "เส้นทางอัจฉริยะ",
   "smartPathDesc": "ขยายโฟลเดอร์ที่มีเสียงอัตโนมัติเมื่อเปิดผลงาน",
   "sortAscending": "น้อยไปมาก",
@@ -300,6 +363,9 @@
   "subtitlePreviewTitle": "ตัวอย่างคำบรรยาย",
   "subtitleRemoved": "ลบคำบรรยายที่นำเข้าแล้ว",
   "tabFavorites": "รายการโปรด",
+  "tabHot": "มาแรง",
+  "tabLibrary": "คลัง",
+  "tabSearch": "ค้นหา",
   "tags": "แท็ก",
   "telegramChannel": "ช่อง Telegram",
   "themeAutoDesc": "สลับโหมดสว่าง/มืดอัตโนมัติ",
@@ -401,6 +467,7 @@
   "logLoadRecommendFailed": "โหลดคำแนะนำล้มเหลว",
   "logLoadSimilarFailed": "โหลดผลงานที่คล้ายกันล้มเหลว",
   "logLoadFavoritesFailed": "โหลดรายการโปรดล้มเหลว",
+  "logLoadDownloadsFailed": "โหลดรายการดาวน์โหลดล้มเหลว",
   "logLoadPlaylistsFailed": "โหลดเพลย์ลิสต์ล้มเหลว",
   "logLoadPlaylistWorksFailed": "โหลดผลงานในเพลย์ลิสต์ล้มเหลว",
   "logLoadWorkPlaylistsFailed": "โหลดเพลย์ลิสต์ของผลงานล้มเหลว",
@@ -2313,6 +2380,11 @@
   },
   "llmUsageOperationSubtitle": "แปลซับไตเติ้ล",
   "llmUsageOperationTitle": "แปลชื่อผลงาน",
+  "llmSubtitleDisplayMode": "การแสดงซับไตเติล",
+  "llmSubtitleDisplayDual": "ต้นฉบับ + คำแปล",
+  "llmSubtitleDisplayDualDesc": "เมื่อแปลด้วย LLM แล้ว แสดงบรรทัดต้นฉบับด้านบนและคำแปลด้านล่าง",
+  "llmSubtitleDisplayTranslationOnly": "คำแปลเท่านั้น",
+  "llmSubtitleDisplayTranslationOnlyDesc": "แสดงบรรทัดเดียว (คำแปลเมื่อมี ไม่เช่นนั้นแสดงต้นฉบับ)",
   "batchTranslateTitle": "แปลซับไตเติลแบบกลุ่ม",
   "batchTranslateTooltip": "แปลทั้งหมด",
   "batchTranslateEmpty": "ไม่มีแทร็กที่จับคู่ซับไตเติลในโฟลเดอร์นี้",
@@ -2378,6 +2450,15 @@
   "llmErrorNoTitle": "ผลงานนี้ไม่มีชื่อให้แปล",
   "batchTranslateIncludeTitle": "แปลชื่อผลงาน",
   "playerVolume": "ระดับเสียง",
+  "playerBackdropClarity": "ความชัดพื้นหลังปก",
+  "playerBackdropClarityDesc": "ค่ายิ่งสูง ภาพปกเบลอจะมองเห็นชัดขึ้น",
+  "playerSpeed": "ความเร็วเล่น",
+  "playerSpeedLabel": "{speed}x",
+  "@playerSpeedLabel": {
+    "placeholders": {
+      "speed": { "type": "String" }
+    }
+  },
   "playerViewCover": "ปก",
   "playerViewSubtitles": "ซับไตเติล"
 }

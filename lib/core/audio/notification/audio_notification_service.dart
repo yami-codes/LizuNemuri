@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:xuro/core/audio/events/playback_event_hub.dart';
-import 'package:xuro/core/subtitle/i_subtitle_service.dart';
+import 'package:lizunemu/core/audio/events/playback_event_hub.dart';
+import 'package:lizunemu/core/subtitle/i_subtitle_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/utils/platform_capabilities.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/utils/platform_capabilities.dart';
 import '../models/audio_track_info.dart';
 import '../audio_player_handler.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class AudioNotificationService {
   final AudioPlayer _player;
@@ -49,7 +49,7 @@ class AudioNotificationService {
       _audioHandler = await AudioService.init(
         builder: () => AudioPlayerHandler(_player, _eventHub),
         config: AudioServiceConfig(
-          androidNotificationChannelId: 'com.xuro.audio',
+          androidNotificationChannelId: 'moe.lizu.nemu.audio',
           androidNotificationChannelName: LogStrings.logNotificationChannelName,
           androidNotificationOngoing: true,
           androidStopForegroundOnPause: true,

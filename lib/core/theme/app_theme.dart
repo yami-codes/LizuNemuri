@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'app_colors.dart';
 import 'app_radius.dart';
 
@@ -7,11 +7,16 @@ import 'app_radius.dart';
 class AppTheme {
   const AppTheme._();
 
-  // 亮色主题
-  static ThemeData light(ColorVariant variant) => ThemeData(
+  // 暗色主题
+  static ThemeData dark(ColorVariant variant) => fromColorScheme(
+        AppColors.darkSchemeFor(variant),
+      );
+
+  /// Theme from a pre-built [ColorScheme] (Monet dynamic hue).
+  static ThemeData fromColorScheme(ColorScheme scheme) => ThemeData(
         useMaterial3: true,
-        brightness: Brightness.light,
-        colorScheme: AppColors.lightSchemeFor(variant),
+        brightness: scheme.brightness,
+        colorScheme: scheme,
         cardTheme: const CardThemeData(
           elevation: 0,
           shape: RoundedRectangleBorder(
@@ -25,21 +30,8 @@ class AppTheme {
         ),
       );
 
-  // 暗色主题
-  static ThemeData dark(ColorVariant variant) => ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        colorScheme: AppColors.darkSchemeFor(variant),
-        cardTheme: const CardThemeData(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: AppRadius.mdAll,
-          ),
-        ),
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-        ),
+  // 亮色主题
+  static ThemeData light(ColorVariant variant) => fromColorScheme(
+        AppColors.lightSchemeFor(variant),
       );
 }

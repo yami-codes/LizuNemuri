@@ -1,9 +1,9 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:xuro/core/database/database_service.dart';
-import 'package:xuro/core/download/models/download_entry.dart';
-import 'package:xuro/core/download/storage/i_download_repository.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/core/database/database_service.dart';
+import 'package:lizunemu/core/download/models/download_entry.dart';
+import 'package:lizunemu/core/download/storage/i_download_repository.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class DownloadRepository implements IDownloadRepository {
   static const _table = 'downloads';

@@ -1,5 +1,5 @@
-import 'package:xuro/core/audio/models/subtitle.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 /// 字幕解析器接口
 abstract class SubtitleParser {

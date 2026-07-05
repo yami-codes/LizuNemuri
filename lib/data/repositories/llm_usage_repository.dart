@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xuro/core/llm/llm_usage.dart';
-import 'package:xuro/data/models/llm/llm_usage_record.dart';
+import 'package:lizunemu/core/llm/llm_usage.dart';
+import 'package:lizunemu/data/models/llm/llm_usage_record.dart';
 
 /// Persists LLM token/cost history locally (newest first).
 class LlmUsageRepository {

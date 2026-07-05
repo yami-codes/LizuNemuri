@@ -1,14 +1,14 @@
-import 'package:xuro/core/theme/app_animations.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/widgets/filter/filter_with_keyword.dart';
+import 'package:lizunemu/core/theme/app_animations.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/widgets/filter/filter_with_keyword.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/presentation/viewmodels/similar_works_viewmodel.dart';
-import 'package:xuro/widgets/work_grid_view.dart';
-import 'package:xuro/presentation/layouts/work_layout_strategy.dart';
-import 'package:xuro/widgets/common/back_leading.dart';
-import 'package:xuro/widgets/pagination_controls.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/presentation/viewmodels/similar_works_viewmodel.dart';
+import 'package:lizunemu/widgets/work_grid_view.dart';
+import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
+import 'package:lizunemu/widgets/common/back_leading.dart';
+import 'package:lizunemu/widgets/pagination_controls.dart';
 
 class SimilarWorksScreen extends StatefulWidget {
   final Work work;

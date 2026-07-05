@@ -1,4 +1,4 @@
-package com.xuro.lyric
+package moe.lizu.nemu.lyric
 
 import android.app.Service
 import android.content.Context
@@ -14,7 +14,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.TextView
-import com.xuro.R
+import moe.lizu.nemu.R
 
 class LyricOverlayService : Service() {
     private var windowManager: WindowManager? = null

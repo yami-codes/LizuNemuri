@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:xuro/core/audio/models/subtitle.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
+import 'package:lizunemu/utils/logger.dart';
 
 /// Disk cache for translated subtitle lines keyed by work/file/lang/source hash.
 class SubtitleTranslationCache {

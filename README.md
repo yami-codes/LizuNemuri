@@ -1,28 +1,24 @@
-# Xuro
+# Lizunemu
 
 [中文说明](README_zh.md) · [ภาษาไทย](README_th.md)
 
-A beautiful and modern [ASMR.ONE](https://asmr.one) client application built with Flutter.
+A beautiful and modern [ASMR.ONE](https://asmr.one) client application built with Flutter (rebranded from **Xuro** 2.0).
 
 ## Project Overview
 
-Xuro is designed to provide a smooth and enjoyable ASMR listening experience with beautiful animations and a modern user interface.
+Lizunemu is designed to provide a smooth and enjoyable ASMR listening experience with beautiful animations and a modern user interface. The immersive player, sleep-timer bedtime flow, and several interaction patterns are inspired by **[EaraAsmrPlayer](https://github.com/moyucc/EaraAsmrPlayer)**.
 
 ## Features
 
-- Stable background playback
-- Beautiful animations and clean UI design
-- Subtitle/lyric display with VTT/LRC import support
-- **LLM subtitle translation** (OpenAI-compatible / OpenRouter) with streaming line-by-line updates
-- Playlist management
-- Multi-dimensional browsing: tags, circles, voice actors
-- Favorites collection
-- Android 13+ notification permission support
-- Floating lyric overlay (Android)
-- Comprehensive settings system
-- Smart caching (images, subtitles, audio files)
-- Unified cache management
-- Local media download for offline playback
+- Stable background playback with media notifications
+- Cover-driven Monet dynamic theme + kinetic centered lyrics
+- **LLM subtitle translation** (OpenAI-compatible / OpenRouter) with streaming line-by-line updates, batch split modes, and usage history
+- Dual-line subtitle display (original + translation)
+- Offline downloads, local library scan, DLsite Play library
+- Playlist management and multi-dimensional browsing (tags, circles, voice actors)
+- Floating lyric overlay (Android), Android graphic EQ
+- Multilingual UI (English, 中文, ไทย)
+- Android / iOS / Web / Windows desktop
 
 ## Requirements
 
@@ -34,35 +30,13 @@ Xuro is designed to provide a smooth and enjoyable ASMR listening experience wit
 ## Getting Started
 
 ```bash
-git clone https://github.com/yami-codes/Xuro.git
-cd Xuro
+git clone https://github.com/yami-codes/LizuNemu.git
+cd LizuNemu
 
-# Install dependencies (prefer FVM)
 fvm flutter pub get
-
-# Code generation (freezed + json_serializable)
 fvm dart run build_runner build --delete-conflicting-outputs
-
-# Run the app (debug)
 fvm flutter run
-
-# Run tests
 fvm flutter test
-
-# Build release APK
-fvm flutter build apk --release
-```
-
-## Project Structure
-
-```
-lib/
-├── core/                 # Core functionality (audio, subtitle, theme, cache, LLM, platform)
-├── data/                 # Data layer (API, models, repositories)
-├── presentation/         # Presentation layer (ViewModels)
-├── screens/              # Full-page screens
-├── widgets/              # Reusable UI components
-└── common/               # Common utilities and constants
 ```
 
 ## Development Guidelines
@@ -71,12 +45,6 @@ lib/
 - [Development Guidelines](docs/guidelines_en.md)
 - [TODO tracker](docs/todos/)
 
-## Contributing
-
-Please read our [Development Workflow](docs/dev_workflow.md) and [Development Guidelines](docs/guidelines_en.md) before making a contribution.
-
 ## License
 
-This project is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike License (CC BY-NC-SA) — see the [LICENSE](LICENSE) file for details.
-
-Original author: [asmroneapp](https://github.com/asmroneapp) | Original repo: [Yuro](https://github.com/asmroneapp/Yuro)
+This project is licensed under CC BY-NC-SA 4.0 — see [LICENSE](LICENSE).

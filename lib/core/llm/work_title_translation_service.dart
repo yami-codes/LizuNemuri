@@ -1,11 +1,11 @@
-import 'package:xuro/core/llm/work_title_translation_cache.dart';
-import 'package:xuro/data/repositories/llm_usage_repository.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/core/settings/llm_subtitle_target_language.dart';
-import 'package:xuro/data/repositories/llm_api_key_repository.dart';
-import 'package:xuro/data/services/exceptions/llm_translation_exception.dart';
-import 'package:xuro/data/services/llm_client.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/core/llm/work_title_translation_cache.dart';
+import 'package:lizunemu/data/repositories/llm_usage_repository.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/settings/llm_subtitle_target_language.dart';
+import 'package:lizunemu/data/repositories/llm_api_key_repository.dart';
+import 'package:lizunemu/data/services/exceptions/llm_translation_exception.dart';
+import 'package:lizunemu/data/services/llm_client.dart';
+import 'package:lizunemu/utils/logger.dart';
 
 /// Result of translating a work title.
 class WorkTitleTranslationResult {

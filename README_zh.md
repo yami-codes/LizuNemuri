@@ -1,4 +1,4 @@
-# Xuro
+# Lizunemu
 
 [English](README.md) · [ภาษาไทย](README_th.md)
 
@@ -6,7 +6,7 @@
 
 ## 项目概述
 
-Xuro 旨在通过精美的动画和现代化的用户界面，提供流畅愉悦的 ASMR 聆听体验。
+Lizunemu 旨在通过精美的动画和现代化的用户界面，提供流畅愉悦的 ASMR 聆听体验。
 
 ## 特性
 
@@ -45,8 +45,8 @@ Xuro 旨在通过精美的动画和现代化的用户界面，提供流畅愉悦
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yami-codes/Xuro.git
-cd Xuro
+git clone https://github.com/yami-codes/Lizunemu.git
+cd Lizunemu
 
 # 安装依赖
 fvm flutter pub get

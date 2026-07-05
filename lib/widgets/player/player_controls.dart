@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/presentation/viewmodels/player_viewmodel.dart';
 
 class PlayerControls extends StatelessWidget {
   const PlayerControls({super.key});

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/theme/player_hue_derivation.dart';
 
 /// 应用颜色配置
 ///
@@ -81,6 +82,25 @@ class AppColors {
 
       onSurfaceVariant: const Color(0xFFCAC4D0),
       outlineVariant: const Color(0xFF49454F),
+    );
+  }
+
+  /// Monet dynamic accent — neutral surfaces, rotated primary from cover palette.
+  static ColorScheme schemeFromPlayerPalette(
+    PlayerHuePalette palette,
+    Brightness brightness,
+  ) {
+    final base = brightness == Brightness.light
+        ? lightSchemeFor(ColorVariant.blue)
+        : darkSchemeFor(ColorVariant.blue);
+    final onPrimary =
+        palette.primary.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+    return base.copyWith(
+      primary: palette.primary,
+      onPrimary: onPrimary,
+      primaryContainer: palette.primarySoft,
+      onPrimaryContainer:
+          brightness == Brightness.light ? Colors.black87 : Colors.white,
     );
   }
 

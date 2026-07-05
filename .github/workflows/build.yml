@@ -161,13 +161,13 @@ jobs:
       - name: Package Web
         run: |
           cd build
-          zip -r -9 ../xuro-web.zip web
+          zip -r -9 ../lizunemu-web.zip web
 
       - name: Upload Web artifact
         uses: actions/upload-artifact@v4
         with:
           name: web-build
-          path: xuro-web.zip
+          path: lizunemu-web.zip
 
   build-windows:
     runs-on: windows-2022
@@ -211,13 +211,13 @@ jobs:
         shell: pwsh
         run: |
           Compress-Archive -Path build/windows/x64/runner/Release/* `
-            -DestinationPath xuro-windows.zip -Force
+            -DestinationPath lizunemu-windows.zip -Force
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
-          path: xuro-windows.zip
+          path: lizunemu-windows.zip
 
   upload:
     runs-on: ubuntu-latest
@@ -319,8 +319,8 @@ jobs:
             | `.apk` | Android Package | Direct installation for testing |
             | `.aab` | Android App Bundle | Google Play Store deployment |
             | `.ipa` | iOS App Archive | iOS device installation |
-            | `xuro-web.zip` | Web build | Self-host or static hosting |
-            | `xuro-windows.zip` | Windows desktop | Extract and run `xuro.exe` |
+            | `lizunemu-web.zip` | Web build | Self-host or static hosting |
+            | `lizunemu-windows.zip` | Windows desktop | Extract and run `lizunemu.exe` |
 
             ### 🔍 Additional Notes
             - This is a pre-release build intended for testing purposes
@@ -330,16 +330,16 @@ jobs:
             ### 📱 Compatibility
             - Minimum Android SDK: 21 (Android 5.0)
             - Target Android SDK: 33 (Android 13)
-            - Web: modern Chromium / Firefox / Safari (self-host `xuro-web.zip`)
-            - Windows: Windows 10+ x64 desktop (`xuro.exe` in `xuro-windows.zip`)
+            - Web: modern Chromium / Firefox / Safari (self-host `lizunemu-web.zip`)
+            - Windows: Windows 10+ x64 desktop (`lizunemu.exe` in `lizunemu-windows.zip`)
 
             > **Note:** Please report any issues or bugs through the GitHub issue tracker.
           files: |
             dist/flutter-apk/app-release.apk
             dist/bundle/release/app-release.aab
             dist/app-release.ipa
-            dist/xuro-web.zip
-            dist/xuro-windows.zip
+            dist/lizunemu-web.zip
+            dist/lizunemu-windows.zip
           fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

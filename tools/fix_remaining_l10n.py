@@ -83,7 +83,7 @@ extra_keys = {
 
 
 def ensure_import(text: str) -> str:
-    imp = "import 'package:xuro/common/constants/log_strings.dart';\n"
+    imp = "import 'package:lizunemu/common/constants/log_strings.dart';\n"
     if "LogStrings." in text and imp not in text:
         m = re.search(r"(import [^;]+;\n)+", text)
         if m:

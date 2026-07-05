@@ -1,17 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:xuro/core/audio/models/playback_context.dart';
-import 'package:xuro/core/audio/models/subtitle.dart';
-import 'package:xuro/core/llm/llm_batch_planner.dart';
-import 'package:xuro/core/llm/llm_translation_context_builder.dart';
-import 'package:xuro/core/llm/llm_usage.dart';
-import 'package:xuro/core/llm/streaming_translation_parser.dart';
-import 'package:xuro/core/llm/subtitle_translation_completeness.dart';
-import 'package:xuro/core/settings/llm_batch_split_mode.dart';
-import 'package:xuro/data/models/files/child.dart';
-import 'package:xuro/data/models/files/files.dart';
-import 'package:xuro/data/models/works/circle.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/data/services/llm_client.dart';
+import 'package:lizunemu/core/audio/models/playback_context.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
+import 'package:lizunemu/core/llm/llm_batch_planner.dart';
+import 'package:lizunemu/core/llm/llm_translation_context_builder.dart';
+import 'package:lizunemu/core/llm/llm_usage.dart';
+import 'package:lizunemu/core/llm/streaming_translation_parser.dart';
+import 'package:lizunemu/core/llm/subtitle_translation_completeness.dart';
+import 'package:lizunemu/core/settings/llm_batch_split_mode.dart';
+import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/data/models/files/files.dart';
+import 'package:lizunemu/data/models/works/circle.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/data/services/llm_client.dart';
 
 void main() {
   group('LlmClient.parseJsonArrayResponse', () {

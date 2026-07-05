@@ -1,11 +1,11 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class DatabaseService {
-  static const _databaseName = 'xuro.db';
-  static const _databaseVersion = 2;
+  static const _databaseName = 'lizunemu.db';
+  static const _databaseVersion = 3;
 
   // schema 定义集中一处，`_onCreate`（全新安装拿到最新完整 schema）与
   // `_migrations`（旧库逐版本升级）共用同一字符串，避免两条路径漂移。
@@ -37,6 +37,30 @@ class DatabaseService {
         size        INTEGER NOT NULL DEFAULT 0,
         created_at  INTEGER NOT NULL,
         UNIQUE(work_id, file_key)
+      )
+    ''';
+
+  static const _createLocalAlbumsTable = '''
+      CREATE TABLE local_albums (
+        id           INTEGER PRIMARY KEY AUTOINCREMENT,
+        album_key    TEXT    NOT NULL UNIQUE,
+        title        TEXT    NOT NULL,
+        artist       TEXT,
+        folder_path  TEXT    NOT NULL,
+        track_count  INTEGER NOT NULL DEFAULT 0,
+        scanned_at   INTEGER NOT NULL
+      )
+    ''';
+
+  static const _createLocalTracksTable = '''
+      CREATE TABLE local_tracks (
+        id           INTEGER PRIMARY KEY AUTOINCREMENT,
+        album_id     INTEGER NOT NULL,
+        title        TEXT    NOT NULL,
+        file_path    TEXT    NOT NULL UNIQUE,
+        track_order  INTEGER NOT NULL DEFAULT 0,
+        scanned_at   INTEGER NOT NULL,
+        FOREIGN KEY(album_id) REFERENCES local_albums(id) ON DELETE CASCADE
       )
     ''';
 
@@ -76,6 +100,8 @@ class DatabaseService {
   Future<void> _onCreate(Database db, int version) async {
     await db.execute(_createUserSubtitlesTable);
     await db.execute(_createDownloadsTable);
+    await db.execute(_createLocalAlbumsTable);
+    await db.execute(_createLocalTracksTable);
     AppLogger.debug(LogStrings.logDatabaseTablesCreatedVVersiofa44c(version));
   }
 
@@ -89,6 +115,10 @@ class DatabaseService {
     //    全新安装由 _onCreate 直接建好，不会进 _onUpgrade。
     2: (db) async {
       await db.execute(_createDownloadsTable);
+    },
+    3: (db) async {
+      await db.execute(_createLocalAlbumsTable);
+      await db.execute(_createLocalTracksTable);
     },
   };
 

@@ -2,9 +2,9 @@
   "@@locale": "en",
   "a11yUserAccount": "User account",
   "about": "About",
-  "aboutAppDescription": "Xuro is a third-party ASMR.ONE client with background playback, subtitles/floating lyrics, playlists, and caching. Open source under CC BY-NC-SA.",
-  "aboutAppName": "Xuro",
-  "aboutFooter": "© Xuro · CC BY-NC-SA 4.0",
+  "aboutAppDescription": "Lizunemu is a third-party ASMR.ONE client with background playback, subtitles/floating lyrics, playlists, and caching. Open source under CC BY-NC-SA.",
+  "aboutAppName": "Lizunemu",
+  "aboutFooter": "© Lizunemu · CC BY-NC-SA 4.0",
   "aboutUs": "About",
   "actionChecking": "Checking",
   "actionFavorite": "Favorite",
@@ -12,7 +12,7 @@
   "actionNoRecommend": "No recommendations",
   "actionRate": "Rate",
   "addToPlaylist": "Add to playlist",
-  "appName": "asmr.one",
+  "appName": "Lizunemu",
   "appearance": "Appearance",
   "audioCache": "Audio cache",
   "audioDownloadPrompt": "Download this audio for offline playback?",
@@ -103,6 +103,47 @@
   "downloadSuccess": "Download complete",
   "downloadToLocalTooltip": "Download for offline playback",
   "downloading": "Downloading...",
+  "downloadsEmpty": "No downloads yet. Download audio from a work's file list for offline playback.",
+  "downloadsFileCountSummary": "{count} files · {size}",
+  "@downloadsFileCountSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadsPlayA11y": "Play downloaded audio",
+  "downloadsTitle": "Downloads",
+  "equalizerDesc": "Android system graphic EQ (just_audio). Balance and spectrum are not available yet.",
+  "equalizerEnable": "Enable equalizer",
+  "equalizerTitle": "Equalizer",
+  "equalizerUnsupported": "Equalizer is only available on Android in this version.",
+  "dlsiteCookieHint": "Paste Cookie header from play.dlsite.com (after logging in via browser)",
+  "dlsiteCookieSave": "Save cookie",
+  "dlsiteDisclaimer": "Unofficial DLsite Play client. Use only with your own purchased library. Lizunemu is not affiliated with DLsite.",
+  "dlsiteLibraryTitle": "DLsite Library",
+  "dlsiteLoginRequired": "DLsite login required",
+  "dlsiteLoginTitle": "DLsite Login",
+  "dlsiteLogout": "Sign out",
+  "librarySegmentBrowse": "Browse",
+  "librarySegmentLocal": "Local",
+  "localLibraryAddFolder": "Add folder",
+  "localLibraryEmpty": "Add a music folder to build your offline library.",
+  "localLibraryNoAlbums": "No audio found in scan folders. Tap Scan to refresh.",
+  "localLibraryScan": "Scan",
+  "localLibraryScanFolders": "Local scan folders",
+  "localLibraryTrackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+  "@localLibraryTrackCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "playlistsTitle": "Playlists",
   "drawerSectionContent": "Content",
   "drawerSectionDiscover": "Discover",
   "drawerSectionSystem": "System",
@@ -271,6 +312,28 @@
     }
   },
   "sleepTimerOff": "Off",
+  "sleepTimerFadeOut": "Fade out before sleep",
+  "sleepTimerFadeOutDesc": "Linearly lower volume over the last 30 seconds, then pause.",
+  "sleepTimerDimScreen": "Sleep mode dim",
+  "sleepTimerDimScreenDesc": "Dim the player screen while the sleep timer is active.",
+  "playbackFade": "Play/pause fade",
+  "playbackFadeDesc": "Smoothly fade volume when pausing or resuming playback.",
+  "playbackFadeDuration": "Fade duration",
+  "playbackFadeDurationDesc": "How long the volume fade takes (milliseconds).",
+  "playbackFadeDurationMs": "{ms} ms",
+  "@playbackFadeDurationMs": {
+    "placeholders": {
+      "ms": { "type": "int" }
+    }
+  },
+  "sleepTimerActiveSummary": "{preset} min · {minutes}:{seconds} left",
+  "@sleepTimerActiveSummary": {
+    "placeholders": {
+      "preset": { "type": "int" },
+      "minutes": { "type": "int" },
+      "seconds": { "type": "int" }
+    }
+  },
   "smartPath": "Smart path",
   "smartPathDesc": "Auto-expand folders that contain audio when opening a work",
   "sortAscending": "Ascending",
@@ -300,6 +363,9 @@
   "subtitlePreviewTitle": "Subtitle preview",
   "subtitleRemoved": "Imported subtitle removed",
   "tabFavorites": "Favorites",
+  "tabHot": "Hot",
+  "tabLibrary": "Library",
+  "tabSearch": "Search",
   "tags": "Tags",
   "telegramChannel": "Telegram channel",
   "themeAutoDesc": "Automatically switch light/dark mode",
@@ -401,6 +467,7 @@
   "logLoadRecommendFailed": "Failed to load recommendations",
   "logLoadSimilarFailed": "Failed to load similar works",
   "logLoadFavoritesFailed": "Failed to load favorites",
+  "logLoadDownloadsFailed": "Failed to load downloads",
   "logLoadPlaylistsFailed": "Failed to load playlists",
   "logLoadPlaylistWorksFailed": "Failed to load playlist works",
   "logLoadWorkPlaylistsFailed": "Failed to load work playlists",
@@ -2313,6 +2380,11 @@
   },
   "llmUsageOperationSubtitle": "Subtitle translation",
   "llmUsageOperationTitle": "Title translation",
+  "llmSubtitleDisplayMode": "Subtitle display",
+  "llmSubtitleDisplayDual": "Original + translation",
+  "llmSubtitleDisplayDualDesc": "Stack the source line above the translation when LLM translation is active.",
+  "llmSubtitleDisplayTranslationOnly": "Translation only",
+  "llmSubtitleDisplayTranslationOnlyDesc": "Show a single line (translation when available, otherwise the original).",
   "batchTranslateTitle": "Bulk translate subtitles",
   "batchTranslateTooltip": "Translate all",
   "batchTranslateEmpty": "No tracks with matched subtitles in this folder",
@@ -2378,6 +2450,15 @@
   "llmErrorNoTitle": "This work has no title to translate",
   "batchTranslateIncludeTitle": "Translate project title",
   "playerVolume": "Volume",
+  "playerBackdropClarity": "Cover backdrop clarity",
+  "playerBackdropClarityDesc": "Higher values reveal more of the blurred cover art",
+  "playerSpeed": "Playback speed",
+  "playerSpeedLabel": "{speed}x",
+  "@playerSpeedLabel": {
+    "placeholders": {
+      "speed": { "type": "String" }
+    }
+  },
   "playerViewCover": "Cover",
   "playerViewSubtitles": "Subtitles"
 }

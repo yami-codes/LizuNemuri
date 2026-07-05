@@ -1,11 +1,11 @@
 {
-    "name": "Xuro",
-    "short_name": "Xuro",
+    "name": "Lizunemu",
+    "short_name": "Lizunemu",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "Xuro — ASMR.ONE client with streaming playback, subtitles, and playlists.",
+    "background_color": "#E8D5FF",
+    "theme_color": "#C5B8E8",
+    "description": "Lizunemu — ASMR player with streaming playback, subtitles, and playlists.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

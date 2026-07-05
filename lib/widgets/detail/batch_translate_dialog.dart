@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/llm/subtitle_translation_progress.dart';
-import 'package:xuro/presentation/viewmodels/detail_viewmodel.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/llm/subtitle_translation_progress.dart';
+import 'package:lizunemu/presentation/viewmodels/detail_viewmodel.dart';
 
 /// Progress dialog for bulk LLM subtitle pre-translation.
 class BatchTranslateDialog extends StatefulWidget {

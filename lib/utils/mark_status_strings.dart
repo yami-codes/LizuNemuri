@@ -1,5 +1,5 @@
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/data/models/mark_status.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/data/models/mark_status.dart';
 
 extension MarkStatusStrings on MarkStatus {
   String get localizedLabel => switch (this) {

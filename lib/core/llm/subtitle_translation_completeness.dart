@@ -1,4 +1,4 @@
-import 'package:xuro/core/audio/models/subtitle.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
 
 /// Helpers for deciding which subtitle lines still need LLM translation.
 class SubtitleTranslationCompleteness {

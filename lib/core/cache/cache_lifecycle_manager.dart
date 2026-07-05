@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:xuro/core/cache/cache_coordinator.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/core/cache/cache_coordinator.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 /// 缓存生命周期管理器
 /// 监听应用生命周期事件，自动触发缓存维护

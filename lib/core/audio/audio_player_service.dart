@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:get_it/get_it.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/core/subtitle/i_subtitle_service.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/core/subtitle/i_subtitle_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_session/audio_session.dart';
 import './i_audio_player_service.dart';
@@ -12,12 +12,17 @@ import './storage/i_playback_state_repository.dart';
 import './utils/audio_error_handler.dart';
 import './state/playback_state_manager.dart';
 import './controllers/playback_controller.dart';
+import './utils/volume_fader.dart';
 import './events/playback_event_hub.dart';
-import 'package:xuro/common/constants/log_strings.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/settings/playback_speed_presets.dart';
+import 'package:lizunemu/core/audio/effects/audio_effects_controller.dart';
+import 'package:lizunemu/utils/platform_capabilities.dart';
 
 class AudioPlayerService implements IAudioPlayerService {
   late final AudioPlayer _player;
+  AndroidEqualizer? _androidEqualizer;
   late final AudioNotificationService _notificationService;
   late final ConcatenatingAudioSource _playlist;
   late final PlaybackStateManager _stateManager;
@@ -25,6 +30,7 @@ class AudioPlayerService implements IAudioPlayerService {
   final PlaybackEventHub _eventHub;
   final IPlaybackStateRepository _stateRepository;
   final Completer<void> _initCompleter = Completer<void>();
+  int _fadeGeneration = 0;
 
   /// Await this before calling any public method to ensure init is complete
   Future<void> get ready => _initCompleter.future;
@@ -52,7 +58,17 @@ class AudioPlayerService implements IAudioPlayerService {
 
   Future<void> _init() async {
     try {
-      _player = AudioPlayer();
+      if (PlatformCapabilities.supportsAndroidEqualizer) {
+        _androidEqualizer = AndroidEqualizer();
+        _player = AudioPlayer(
+          audioPipeline: AudioPipeline(
+            androidAudioEffects: [_androidEqualizer!],
+          ),
+        );
+        GetIt.I<AudioEffectsController>().bind(_androidEqualizer!);
+      } else {
+        _player = AudioPlayer();
+      }
       _notificationService = AudioNotificationService(
         _player,
         _eventHub,
@@ -75,8 +91,10 @@ class AudioPlayerService implements IAudioPlayerService {
 
       final session = await AudioSession.instance;
       await session.configure(const AudioSessionConfiguration.music());
-      final savedVolume = GetIt.I<AppSettingsService>().playbackVolume;
+      final settings = GetIt.I<AppSettingsService>();
+      final savedVolume = settings.playbackVolume;
       await _player.setVolume(savedVolume.clamp(0.0, 1.0));
+      await _player.setSpeed(PlaybackSpeedPresets.clamp(settings.playbackSpeed));
       await _notificationService.init();
 
       _stateManager.initStateListeners();
@@ -99,23 +117,87 @@ class AudioPlayerService implements IAudioPlayerService {
   }
 
   // 基础播放控制
+  void _cancelFade() => _fadeGeneration++;
+
+  Future<void> _animateVolume({
+    required double from,
+    required double to,
+    required int durationMs,
+  }) async {
+    final gen = _fadeGeneration;
+    const stepMs = VolumeFader.defaultStepMs;
+    final total = VolumeFader.stepCount(durationMs, stepMs: stepMs);
+    if (total == 0 || from == to) {
+      if (gen != _fadeGeneration) return;
+      await setVolume(to.clamp(0.0, 1.0), persist: false);
+      return;
+    }
+    for (var i = 1; i <= total; i++) {
+      if (gen != _fadeGeneration) return;
+      final vol = VolumeFader.volumeAtStep(
+        from: from,
+        to: to,
+        step: i,
+        totalSteps: total,
+      );
+      await setVolume(vol.clamp(0.0, 1.0), persist: false);
+      if (i < total) {
+        await Future<void>.delayed(const Duration(milliseconds: stepMs));
+      }
+    }
+  }
+
   @override
-  Future<void> pause() async {
+  Future<void> pause({bool fade = true}) async {
     await ready;
-    await _playbackController.pause();
+    _cancelFade();
+    final gen = _fadeGeneration;
+    final settings = GetIt.I<AppSettingsService>();
+    if (fade && settings.playbackFadeEnabled && settings.playbackFadeMs > 0) {
+      final target = settings.playbackVolume;
+      final from = _player.volume;
+      await _animateVolume(
+        from: from,
+        to: 0,
+        durationMs: settings.playbackFadeMs,
+      );
+      if (gen != _fadeGeneration) return;
+      await _playbackController.pause();
+      await _player.setVolume(target.clamp(0.0, 1.0));
+    } else {
+      await _playbackController.pause();
+    }
     // 暂停是用户离开/切后台的强信号，立即 flush 一次，避免依赖 20s 节流。
     await _stateManager.saveState();
   }
 
   @override
-  Future<void> resume() async {
+  Future<void> resume({bool fade = true}) async {
     await ready;
-    await _playbackController.play();
+    _cancelFade();
+    final gen = _fadeGeneration;
+    final settings = GetIt.I<AppSettingsService>();
+    if (fade && settings.playbackFadeEnabled && settings.playbackFadeMs > 0) {
+      final target = settings.playbackVolume;
+      await _player.setVolume(0);
+      await _playbackController.play();
+      await _animateVolume(
+        from: 0,
+        to: target,
+        durationMs: settings.playbackFadeMs,
+      );
+      if (gen != _fadeGeneration) return;
+    } else {
+      final target = settings.playbackVolume;
+      await _player.setVolume(target.clamp(0.0, 1.0));
+      await _playbackController.play();
+    }
   }
 
   @override
   Future<void> stop() async {
     await ready;
+    _cancelFade();
     await _playbackController.stop();
     _stateManager.clearState();
     // 停止 = 用户主动结束，清掉持久化，避免下次启动误恢复已停止内容。
@@ -160,11 +242,26 @@ class AudioPlayerService implements IAudioPlayerService {
   double get volume => _player.volume;
 
   @override
-  Future<void> setVolume(double volume) async {
+  Future<void> setVolume(double volume, {bool persist = true}) async {
     await ready;
     final clamped = volume.clamp(0.0, 1.0);
     await _player.setVolume(clamped);
-    await GetIt.I<AppSettingsService>().setPlaybackVolume(clamped);
+    if (persist) {
+      await GetIt.I<AppSettingsService>().setPlaybackVolume(clamped);
+    }
+  }
+
+  @override
+  double get playbackSpeed => _player.speed;
+
+  @override
+  Future<void> setPlaybackSpeed(double speed, {bool persist = true}) async {
+    await ready;
+    final clamped = PlaybackSpeedPresets.clamp(speed);
+    await _player.setSpeed(clamped);
+    if (persist) {
+      await GetIt.I<AppSettingsService>().setPlaybackSpeed(clamped);
+    }
   }
 
   // 状态持久化

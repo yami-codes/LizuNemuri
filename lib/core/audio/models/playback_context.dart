@@ -1,12 +1,12 @@
-import 'package:xuro/core/audio/utils/audio_error_handler.dart';
-import 'package:xuro/core/audio/utils/audio_file_classifier.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/data/models/files/files.dart';
-import 'package:xuro/data/models/files/child.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/core/audio/models/play_mode.dart';
-import 'package:xuro/core/audio/models/file_path.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/core/audio/utils/audio_error_handler.dart';
+import 'package:lizunemu/core/audio/utils/audio_file_classifier.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/data/models/files/files.dart';
+import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/core/audio/models/play_mode.dart';
+import 'package:lizunemu/core/audio/models/file_path.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class PlaybackContext {
   final Work work;
