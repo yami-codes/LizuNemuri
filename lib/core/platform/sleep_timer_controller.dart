@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 import 'package:flutter/foundation.dart';
 
-import 'package:xuro/core/audio/i_audio_player_service.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/core/audio/i_audio_player_service.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/utils/logger.dart';
 
 /// 睡眠定时器：选定时长后到点自动 **暂停** 播放（用 `pause()` 而非
 /// `stop()`——`stop()` 会清空持久化播放态，睡眠场景需可恢复）。

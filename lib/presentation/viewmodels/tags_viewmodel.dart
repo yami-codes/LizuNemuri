@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
-import 'package:xuro/data/models/tags/tag_item.dart';
-import 'package:xuro/data/services/api_service.dart';
-import 'package:xuro/utils/i18n_name_resolver.dart';
-import 'package:xuro/utils/user_facing_error.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/data/models/tags/tag_item.dart';
+import 'package:lizunemu/data/services/api_service.dart';
+import 'package:lizunemu/utils/i18n_name_resolver.dart';
+import 'package:lizunemu/utils/user_facing_error.dart';
+import 'package:lizunemu/utils/logger.dart';
 import 'package:get_it/get_it.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class TagsViewModel extends ChangeNotifier {
   final ApiService _apiService = GetIt.I<ApiService>();

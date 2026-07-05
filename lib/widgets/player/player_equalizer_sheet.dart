@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/audio/effects/audio_effects_controller.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/core/theme/app_text_styles.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/audio/effects/audio_effects_controller.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/core/theme/app_text_styles.dart';
 
 /// Android graphic EQ band sheet (just_audio AndroidEqualizer).
 class PlayerEqualizerSheet extends StatefulWidget {

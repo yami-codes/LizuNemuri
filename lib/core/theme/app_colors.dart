@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/core/theme/player_hue_derivation.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/theme/player_hue_derivation.dart';
 
 /// 应用颜色配置
 ///

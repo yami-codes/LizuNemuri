@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/audio/models/subtitle.dart';
-import 'package:xuro/core/theme/app_animations.dart';
-import 'package:xuro/widgets/player/player_immersive_scope.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
+import 'package:lizunemu/core/theme/app_animations.dart';
+import 'package:lizunemu/widgets/player/player_immersive_scope.dart';
 
 class LyricLine extends StatelessWidget {
   final Subtitle subtitle;

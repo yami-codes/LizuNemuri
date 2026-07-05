@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:xuro/data/models/update_info.dart';
-import 'package:xuro/data/services/exceptions/update_exception.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/data/models/update_info.dart';
+import 'package:lizunemu/data/services/exceptions/update_exception.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class UpdateCheckResult {
   final UpdateInfo latest;
@@ -22,8 +22,8 @@ class UpdateCheckResult {
 /// 独立 Dio，host 固定为 api.github.com：**刻意不监听 `AppSettingsService`**，
 /// 因为 asmr 节点切换与 GitHub 无关；也不挂 `AuthInterceptor`。
 class UpdateService {
-  static const String _owner = 'WuMe-sicx';
-  static const String _repo = 'Xuro';
+  static const String _owner = 'yami-codes';
+  static const String _repo = 'LizuNemu';
 
   /// CI 用 `softprops/action-gh-release` 且 `prerelease: true`，所以
   /// `/releases/latest`（只返回 non-prerelease）取不到——必须用列表端点。

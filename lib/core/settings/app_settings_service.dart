@@ -2,10 +2,10 @@ import 'dart:ui' show Locale, PlatformDispatcher;
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xuro/core/settings/app_language.dart';
-import 'package:xuro/core/settings/llm_subtitle_display_mode.dart';
-import 'package:xuro/core/settings/playback_speed_presets.dart';
-import 'package:xuro/core/settings/llm_subtitle_target_language.dart';
+import 'package:lizunemu/core/settings/app_language.dart';
+import 'package:lizunemu/core/settings/llm_subtitle_display_mode.dart';
+import 'package:lizunemu/core/settings/playback_speed_presets.dart';
+import 'package:lizunemu/core/settings/llm_subtitle_target_language.dart';
 
 /// Top-level accent color variants. Surfaces stay neutral (white/black) across
 /// all variants — only the `primary` token rotates. Persisted by

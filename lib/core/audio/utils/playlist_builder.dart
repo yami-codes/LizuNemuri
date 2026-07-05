@@ -1,10 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:xuro/core/download/download_service.dart';
-import 'package:xuro/data/models/files/child.dart';
-import 'package:xuro/core/audio/cache/audio_cache_manager.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/core/download/download_service.dart';
+import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/core/audio/cache/audio_cache_manager.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class PlaylistBuilder {
   /// Build audio sources with per-item error handling.

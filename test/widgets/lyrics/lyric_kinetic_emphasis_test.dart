@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:xuro/widgets/lyrics/components/player_lyric_view.dart';
+import 'package:lizunemu/widgets/lyrics/components/player_lyric_view.dart';
 
 void main() {
   group('lyricKineticEmphasis', () {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/widgets/work_row.dart';
-import 'package:xuro/presentation/layouts/work_layout_strategy.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/widgets/work_row.dart';
+import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
 
 class WorkGrid extends StatelessWidget {
   final List<Work> works;

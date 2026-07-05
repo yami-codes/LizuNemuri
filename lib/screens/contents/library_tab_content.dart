@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/presentation/viewmodels/downloads_viewmodel.dart';
-import 'package:xuro/presentation/viewmodels/home_viewmodel.dart';
-import 'package:xuro/presentation/viewmodels/local_library_viewmodel.dart';
-import 'package:xuro/screens/contents/downloads_hub_content.dart';
-import 'package:xuro/screens/contents/home_content.dart';
-import 'package:xuro/screens/contents/local_library_content.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/presentation/viewmodels/downloads_viewmodel.dart';
+import 'package:lizunemu/presentation/viewmodels/home_viewmodel.dart';
+import 'package:lizunemu/presentation/viewmodels/local_library_viewmodel.dart';
+import 'package:lizunemu/screens/contents/downloads_hub_content.dart';
+import 'package:lizunemu/screens/contents/home_content.dart';
+import 'package:lizunemu/screens/contents/local_library_content.dart';
 
 enum _LibrarySegment { local, downloads, browse }
 

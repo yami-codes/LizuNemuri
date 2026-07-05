@@ -1,5 +1,5 @@
-import 'package:xuro/core/database/database_service.dart';
-import 'package:xuro/core/library/models/local_album.dart';
+import 'package:lizunemu/core/database/database_service.dart';
+import 'package:lizunemu/core/library/models/local_album.dart';
 
 class LocalLibraryRepository {
   LocalLibraryRepository(this._db);

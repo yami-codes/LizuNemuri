@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/data/models/playback/playback_state.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/data/models/playback/playback_state.dart';
 import 'i_playback_state_repository.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class PlaybackStateRepository implements IPlaybackStateRepository {
   static const _key = 'last_playback_state';

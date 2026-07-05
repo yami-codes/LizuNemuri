@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xuro/core/di/service_locator.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/core/theme/player_hue_derivation.dart';
-import 'package:xuro/widgets/player/cover_artwork_backdrop_style.dart';
-import 'package:xuro/widgets/player/cover_artwork_background.dart';
+import 'package:lizunemu/core/di/service_locator.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/theme/player_hue_derivation.dart';
+import 'package:lizunemu/widgets/player/cover_artwork_backdrop_style.dart';
+import 'package:lizunemu/widgets/player/cover_artwork_background.dart';
 
 void main() {
   group('coverArtworkBackdropStyle', () {

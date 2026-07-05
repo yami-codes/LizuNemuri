@@ -1,7 +1,7 @@
-import 'package:xuro/core/audio/models/playback_context.dart';
-import 'package:xuro/core/audio/models/play_mode.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/utils/i18n_name_resolver.dart';
+import 'package:lizunemu/core/audio/models/playback_context.dart';
+import 'package:lizunemu/core/audio/models/play_mode.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/utils/i18n_name_resolver.dart';
 
 /// Builds rich playback context for LLM subtitle translation prompts.
 class LlmTranslationContextBuilder {

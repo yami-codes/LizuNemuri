@@ -1,17 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:xuro/utils/platform_capabilities.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/utils/platform_capabilities.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:xuro/core/download/models/download_entry.dart';
-import 'package:xuro/core/download/storage/i_download_repository.dart';
-import 'package:xuro/data/models/files/child.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/core/download/models/download_entry.dart';
+import 'package:lizunemu/core/download/storage/i_download_repository.dart';
+import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/utils/logger.dart';
 
 enum DownloadStatus {
   success,

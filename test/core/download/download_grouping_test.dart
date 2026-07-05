@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:xuro/core/download/models/download_entry.dart';
-import 'package:xuro/core/download/utils/download_grouping.dart';
+import 'package:lizunemu/core/download/models/download_entry.dart';
+import 'package:lizunemu/core/download/utils/download_grouping.dart';
 
 DownloadEntry _entry({
   required String workId,

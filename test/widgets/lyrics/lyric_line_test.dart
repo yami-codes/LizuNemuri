@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:xuro/core/audio/models/subtitle.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/core/theme/app_colors.dart';
-import 'package:xuro/widgets/lyrics/components/lyric_line.dart';
-import 'package:xuro/widgets/player/player_immersive_scope.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/theme/app_colors.dart';
+import 'package:lizunemu/widgets/lyrics/components/lyric_line.dart';
+import 'package:lizunemu/widgets/player/player_immersive_scope.dart';
 
 Widget _host({
   required Widget child,

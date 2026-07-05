@@ -2,16 +2,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/image/cache/image_cache_manager.dart';
-import 'package:xuro/core/theme/app_radius.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/core/theme/app_text_styles.dart';
-import 'package:xuro/presentation/viewmodels/dlsite_library_viewmodel.dart';
-import 'package:xuro/screens/dlsite/dlsite_login_screen.dart';
-import 'package:xuro/utils/user_facing_error.dart';
-import 'package:xuro/widgets/common/app_search_field.dart';
-import 'package:xuro/widgets/common/back_leading.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/image/cache/image_cache_manager.dart';
+import 'package:lizunemu/core/theme/app_radius.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/core/theme/app_text_styles.dart';
+import 'package:lizunemu/presentation/viewmodels/dlsite_library_viewmodel.dart';
+import 'package:lizunemu/screens/dlsite/dlsite_login_screen.dart';
+import 'package:lizunemu/utils/user_facing_error.dart';
+import 'package:lizunemu/widgets/common/app_search_field.dart';
+import 'package:lizunemu/widgets/common/back_leading.dart';
 
 class DlsiteLibraryScreen extends StatelessWidget {
   const DlsiteLibraryScreen({super.key});

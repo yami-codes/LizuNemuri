@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
-import 'package:xuro/core/library/models/local_album.dart';
+import 'package:lizunemu/core/library/models/local_album.dart';
 
 /// Pure scan logic — groups audio files by parent folder name.
 class LocalLibraryScanner {

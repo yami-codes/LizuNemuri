@@ -1,13 +1,13 @@
-import 'package:xuro/core/theme/app_animations.dart';
-import 'package:xuro/data/models/works/work.dart';
+import 'package:lizunemu/core/theme/app_animations.dart';
+import 'package:lizunemu/data/models/works/work.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/presentation/viewmodels/auth_viewmodel.dart';
-import 'package:xuro/presentation/viewmodels/recommend_viewmodel.dart';
-import 'package:xuro/presentation/layouts/work_layout_strategy.dart';
-import 'package:xuro/presentation/widgets/auth/login_dialog.dart';
-import 'package:xuro/widgets/work_grid/enhanced_work_grid_view.dart';
-import 'package:xuro/widgets/filter/filter_with_keyword.dart';
+import 'package:lizunemu/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:lizunemu/presentation/viewmodels/recommend_viewmodel.dart';
+import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
+import 'package:lizunemu/presentation/widgets/auth/login_dialog.dart';
+import 'package:lizunemu/widgets/work_grid/enhanced_work_grid_view.dart';
+import 'package:lizunemu/widgets/filter/filter_with_keyword.dart';
 
 class RecommendContent extends StatefulWidget {
   const RecommendContent({super.key});

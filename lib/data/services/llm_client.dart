@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/data/repositories/llm_api_key_repository.dart';
-import 'package:xuro/data/services/exceptions/llm_translation_exception.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/data/repositories/llm_api_key_repository.dart';
+import 'package:lizunemu/data/services/exceptions/llm_translation_exception.dart';
+import 'package:lizunemu/utils/logger.dart';
 
 /// OpenAI-compatible chat client (OpenAI, OpenRouter, local proxies).
 class LlmClient {

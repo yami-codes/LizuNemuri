@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:xuro/core/audio/models/subtitle.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class SubtitleStateManager {
   SubtitleList? _subtitleList;

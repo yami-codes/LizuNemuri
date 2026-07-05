@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/core/theme/app_colors.dart';
-import 'package:xuro/core/theme/cover_palette_loader.dart';
-import 'package:xuro/core/theme/player_hue_derivation.dart';
-import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/theme/app_colors.dart';
+import 'package:lizunemu/core/theme/cover_palette_loader.dart';
+import 'package:lizunemu/core/theme/player_hue_derivation.dart';
+import 'package:lizunemu/presentation/viewmodels/player_viewmodel.dart';
 
 /// App-wide Monet accent from now-playing (or last) cover art — Milestone C.
 class DynamicHueController extends ChangeNotifier {

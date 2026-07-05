@@ -1,18 +1,18 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:xuro/core/audio/models/playback_context.dart';
-import 'package:xuro/core/audio/models/subtitle.dart';
-import 'package:xuro/core/llm/llm_translation_context_builder.dart';
-import 'package:xuro/core/llm/subtitle_translation_cache.dart';
-import 'package:xuro/core/llm/subtitle_translation_progress.dart';
-import 'package:xuro/core/llm/subtitle_translation_result.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/core/settings/llm_subtitle_target_language.dart';
-import 'package:xuro/data/repositories/llm_api_key_repository.dart';
-import 'package:xuro/data/services/exceptions/llm_translation_exception.dart';
-import 'package:xuro/data/services/llm_client.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/core/audio/models/playback_context.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
+import 'package:lizunemu/core/llm/llm_translation_context_builder.dart';
+import 'package:lizunemu/core/llm/subtitle_translation_cache.dart';
+import 'package:lizunemu/core/llm/subtitle_translation_progress.dart';
+import 'package:lizunemu/core/llm/subtitle_translation_result.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/settings/llm_subtitle_target_language.dart';
+import 'package:lizunemu/data/repositories/llm_api_key_repository.dart';
+import 'package:lizunemu/data/services/exceptions/llm_translation_exception.dart';
+import 'package:lizunemu/data/services/llm_client.dart';
+import 'package:lizunemu/utils/logger.dart';
 
 /// Translates parsed subtitle lists via an OpenAI-compatible LLM.
 class SubtitleTranslationService {

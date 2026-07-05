@@ -2,28 +2,28 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/theme/app_radius.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/core/theme/app_text_styles.dart';
-import 'package:xuro/core/theme/theme_controller.dart';
-import 'package:xuro/presentation/viewmodels/auth_viewmodel.dart';
-import 'package:xuro/presentation/widgets/auth/login_dialog.dart';
-import 'package:xuro/screens/browse/circles_screen.dart';
-import 'package:xuro/screens/browse/tags_screen.dart';
-import 'package:xuro/screens/browse/voice_actors_screen.dart';
-import 'package:xuro/screens/about_screen.dart';
-import 'package:xuro/screens/downloads_screen.dart';
-import 'package:xuro/screens/favorites_screen.dart';
-import 'package:xuro/screens/playlists_screen.dart';
-import 'package:xuro/screens/recommend_screen.dart';
-import 'package:xuro/screens/dlsite/dlsite_library_screen.dart';
-import 'package:xuro/screens/settings/settings_screen.dart';
-import 'package:xuro/widgets/common/brand_wordmark.dart';
-import 'package:xuro/widgets/sidebar/sidebar_decoration.dart';
-import 'package:xuro/widgets/sidebar/sidebar_group.dart';
-import 'package:xuro/widgets/sidebar/sidebar_header.dart';
-import 'package:xuro/widgets/sidebar/sidebar_tile.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/theme/app_radius.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/core/theme/app_text_styles.dart';
+import 'package:lizunemu/core/theme/theme_controller.dart';
+import 'package:lizunemu/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:lizunemu/presentation/widgets/auth/login_dialog.dart';
+import 'package:lizunemu/screens/browse/circles_screen.dart';
+import 'package:lizunemu/screens/browse/tags_screen.dart';
+import 'package:lizunemu/screens/browse/voice_actors_screen.dart';
+import 'package:lizunemu/screens/about_screen.dart';
+import 'package:lizunemu/screens/downloads_screen.dart';
+import 'package:lizunemu/screens/favorites_screen.dart';
+import 'package:lizunemu/screens/playlists_screen.dart';
+import 'package:lizunemu/screens/recommend_screen.dart';
+import 'package:lizunemu/screens/dlsite/dlsite_library_screen.dart';
+import 'package:lizunemu/screens/settings/settings_screen.dart';
+import 'package:lizunemu/widgets/common/brand_wordmark.dart';
+import 'package:lizunemu/widgets/sidebar/sidebar_decoration.dart';
+import 'package:lizunemu/widgets/sidebar/sidebar_group.dart';
+import 'package:lizunemu/widgets/sidebar/sidebar_header.dart';
+import 'package:lizunemu/widgets/sidebar/sidebar_tile.dart';
 
 /// 侧边抽屉。2026-05-16 用户决策：推翻旧「深色玻璃拟态不可回退」视觉不变量，
 /// 改为**跟随应用主题的清爽列表**（对齐参考图：浅色模式=浅色，暗色/mono=深色）。
@@ -353,8 +353,8 @@ class _SidebarFooterState extends State<_SidebarFooter> {
         future: _packageInfoFuture,
         builder: (context, snapshot) {
           final label = snapshot.hasData
-              ? 'Xuro v${snapshot.data!.version}'
-              : 'Xuro';
+              ? 'Lizunemu v${snapshot.data!.version}'
+              : 'Lizunemu';
           return Row(
             mainAxisSize: MainAxisSize.min,
             children: [

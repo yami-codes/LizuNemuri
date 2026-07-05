@@ -1,17 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as p;
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/audio/i_audio_player_service.dart';
-import 'package:xuro/core/audio/models/playback_context.dart';
-import 'package:xuro/core/dlsite/auth/dlsite_auth_repository.dart';
-import 'package:xuro/core/dlsite/dlsite_play_library_service.dart';
-import 'package:xuro/core/dlsite/dlsite_play_work_service.dart';
-import 'package:xuro/core/dlsite/models/dlsite_album.dart';
-import 'package:xuro/data/models/files/child.dart';
-import 'package:xuro/data/models/files/files.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/utils/user_facing_error.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/audio/i_audio_player_service.dart';
+import 'package:lizunemu/core/audio/models/playback_context.dart';
+import 'package:lizunemu/core/dlsite/auth/dlsite_auth_repository.dart';
+import 'package:lizunemu/core/dlsite/dlsite_play_library_service.dart';
+import 'package:lizunemu/core/dlsite/dlsite_play_work_service.dart';
+import 'package:lizunemu/core/dlsite/models/dlsite_album.dart';
+import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/data/models/files/files.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/utils/user_facing_error.dart';
 
 class DlsiteLibraryViewModel extends ChangeNotifier {
   DlsiteLibraryViewModel({

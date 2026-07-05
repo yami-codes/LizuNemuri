@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/core/theme/app_colors.dart';
-import 'package:xuro/widgets/player/circular_cover.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/theme/app_colors.dart';
+import 'package:lizunemu/widgets/player/circular_cover.dart';
 
 /// D5：播放器封面由方形换圆形。锁定——圆形(ClipOval/BoxShape.circle)、
 /// accent 细环随三配色轮换、无封面时音符回退。

@@ -3,8 +3,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:just_audio/just_audio.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 /// 音频缓存管理器
 /// 负责管理音频文件的缓存,对外隐藏具体的缓存实现

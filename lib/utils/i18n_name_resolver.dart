@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:xuro/data/models/works/i18n.dart';
+import 'package:lizunemu/data/models/works/i18n.dart';
 
 /// Resolves API-provided [I18n] display names by device [Locale].
 ///

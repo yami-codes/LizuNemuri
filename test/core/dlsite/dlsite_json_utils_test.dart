@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:xuro/core/dlsite/dlsite_json_utils.dart';
+import 'package:lizunemu/core/dlsite/dlsite_json_utils.dart';
 
 void main() {
   group('dlsite_json_utils', () {

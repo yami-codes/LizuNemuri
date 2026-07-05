@@ -16,7 +16,7 @@ Companion specs: [`docs/guidelines_zh.md`](docs/guidelines_zh.md) (architecture 
 
 ## Project Overview
 
-Xuro is a Flutter-based ASMR.ONE client app (package name: `xuro`, app ID: `com.xuro`). It provides ASMR audio streaming with background playback, subtitle/lyric display, playlists, and caching. Licensed CC BY-NC-SA.
+Xuro is a Flutter-based ASMR.ONE client app (package name: `lizunemu`, app ID: `moe.lizu.nemu`). It provides ASMR audio streaming with background playback, subtitle/lyric display, playlists, and caching. Licensed CC BY-NC-SA. **Rebranded as Lizunemu in 2.0** (formerly Xuro / `com.xuro`).
 
 ## Build & Development Commands
 

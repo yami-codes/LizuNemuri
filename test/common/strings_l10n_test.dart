@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/di/service_locator.dart';
-import 'package:xuro/core/settings/app_language.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/di/service_locator.dart';
+import 'package:lizunemu/core/settings/app_language.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

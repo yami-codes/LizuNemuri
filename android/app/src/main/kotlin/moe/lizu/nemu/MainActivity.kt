@@ -1,10 +1,10 @@
-package com.xuro
+package moe.lizu.nemu
 
 import io.flutter.embedding.android.FlutterActivity
 import com.ryanheise.audioservice.AudioServiceActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
-import com.xuro.lyric.LyricOverlayPlugin
+import moe.lizu.nemu.lyric.LyricOverlayPlugin
 
 class MainActivity: AudioServiceActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -12,7 +12,7 @@ class MainActivity: AudioServiceActivity() {
 
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
-            "com.xuro/lyric_overlay"
+            "moe.lizu.nemu/lyric_overlay"
         ).setMethodCallHandler(LyricOverlayPlugin(applicationContext))
     }
 }

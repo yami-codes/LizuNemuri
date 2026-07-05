@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/presentation/viewmodels/search_viewmodel.dart';
-import 'package:xuro/screens/search_screen.dart';
+import 'package:lizunemu/presentation/viewmodels/search_viewmodel.dart';
+import 'package:lizunemu/screens/search_screen.dart';
 
 /// Eara-style Search tab — embeds [SearchScreenContent] with its own scaffold.
 ///

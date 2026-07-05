@@ -1,6 +1,6 @@
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/utils/logger.dart';
 import 'i_lyric_overlay_controller.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class DummyLyricOverlayController implements ILyricOverlayController {
   static const _tag = 'LyricOverlay';

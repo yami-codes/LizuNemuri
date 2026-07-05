@@ -1,8 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/data/models/files/files.dart';
-import 'package:xuro/data/models/files/child.dart';
-import 'package:xuro/core/audio/models/play_mode.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/data/models/files/files.dart';
+import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/core/audio/models/play_mode.dart';
 
 part 'playback_state.freezed.dart';
 part 'playback_state.g.dart';

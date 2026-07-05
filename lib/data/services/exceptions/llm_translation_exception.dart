@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:xuro/common/constants/strings.dart';
+import 'package:lizunemu/common/constants/strings.dart';
 
 enum LlmTranslationErrorType {
   missingApiKey,

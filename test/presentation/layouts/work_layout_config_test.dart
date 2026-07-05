@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:xuro/presentation/layouts/work_layout_config.dart';
+import 'package:lizunemu/presentation/layouts/work_layout_config.dart';
 
 void main() {
   group('WorkLayoutConfig.columnsForWidth', () {

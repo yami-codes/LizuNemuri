@@ -1,12 +1,12 @@
 import 'dart:convert';
-import 'package:xuro/presentation/viewmodels/base/paginated_works_viewmodel.dart';
-import 'package:xuro/data/services/api_service.dart';
+import 'package:lizunemu/presentation/viewmodels/base/paginated_works_viewmodel.dart';
+import 'package:lizunemu/data/services/api_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/presentation/models/filter_state.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/presentation/models/filter_state.dart';
+import 'package:lizunemu/utils/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class HomeViewModel extends PaginatedWorksViewModel {
   // home_filter_state（排序）是本页私有、单写者，无跨 VM 竞态，沿用本地

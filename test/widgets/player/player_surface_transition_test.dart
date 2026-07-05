@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:xuro/core/theme/app_animations.dart';
-import 'package:xuro/widgets/mini_player/mini_player_cover.dart';
-import 'package:xuro/widgets/player/player_art_panel.dart';
-import 'package:xuro/widgets/player/player_surface_transition.dart';
+import 'package:lizunemu/core/theme/app_animations.dart';
+import 'package:lizunemu/widgets/mini_player/mini_player_cover.dart';
+import 'package:lizunemu/widgets/player/player_art_panel.dart';
+import 'package:lizunemu/widgets/player/player_surface_transition.dart';
 
 void main() {
   group('player hero tag contract', () {

@@ -1,7 +1,7 @@
 import 'dart:math';
-import 'package:xuro/data/models/files/child.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class SubtitleMatcher {
   static const supportedFormats = ['.vtt', '.lrc'];

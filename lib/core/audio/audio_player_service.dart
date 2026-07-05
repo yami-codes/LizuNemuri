@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:get_it/get_it.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/core/subtitle/i_subtitle_service.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/core/subtitle/i_subtitle_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_session/audio_session.dart';
 import './i_audio_player_service.dart';
@@ -14,11 +14,11 @@ import './state/playback_state_manager.dart';
 import './controllers/playback_controller.dart';
 import './utils/volume_fader.dart';
 import './events/playback_event_hub.dart';
-import 'package:xuro/common/constants/log_strings.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/core/settings/playback_speed_presets.dart';
-import 'package:xuro/core/audio/effects/audio_effects_controller.dart';
-import 'package:xuro/utils/platform_capabilities.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/settings/playback_speed_presets.dart';
+import 'package:lizunemu/core/audio/effects/audio_effects_controller.dart';
+import 'package:lizunemu/utils/platform_capabilities.dart';
 
 class AudioPlayerService implements IAudioPlayerService {
   late final AudioPlayer _player;

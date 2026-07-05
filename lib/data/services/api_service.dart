@@ -1,22 +1,22 @@
-import 'package:xuro/core/cache/recommendation_cache_manager.dart';
-import 'package:xuro/data/models/mark_status.dart';
-import 'package:xuro/data/models/playlists_with_exist_statu/playlists_with_exist_statu.dart';
+import 'package:lizunemu/core/cache/recommendation_cache_manager.dart';
+import 'package:lizunemu/data/models/mark_status.dart';
+import 'package:lizunemu/data/models/playlists_with_exist_statu/playlists_with_exist_statu.dart';
 import 'package:dio/dio.dart';
-import 'package:xuro/data/models/files/files.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/data/models/works/pagination.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/data/services/interceptors/auth_interceptor.dart';
-import 'package:xuro/data/services/interceptors/retry_interceptor.dart';
-import 'package:xuro/data/services/exceptions/network_exception.dart';
-import 'package:xuro/data/models/playlists_with_exist_statu/playlist.dart';
-import 'package:xuro/data/models/my_lists/my_playlists/my_playlists.dart';
-import 'package:xuro/data/models/tags/tag_item.dart';
-import 'package:xuro/data/models/circles/circle_item.dart';
-import 'package:xuro/data/models/vas/voice_actor.dart';
-import 'package:xuro/data/models/works/work_info.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/data/models/files/files.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/data/models/works/pagination.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/data/services/interceptors/auth_interceptor.dart';
+import 'package:lizunemu/data/services/interceptors/retry_interceptor.dart';
+import 'package:lizunemu/data/services/exceptions/network_exception.dart';
+import 'package:lizunemu/data/models/playlists_with_exist_statu/playlist.dart';
+import 'package:lizunemu/data/models/my_lists/my_playlists/my_playlists.dart';
+import 'package:lizunemu/data/models/tags/tag_item.dart';
+import 'package:lizunemu/data/models/circles/circle_item.dart';
+import 'package:lizunemu/data/models/vas/voice_actor.dart';
+import 'package:lizunemu/data/models/works/work_info.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 
 class WorksResponse {

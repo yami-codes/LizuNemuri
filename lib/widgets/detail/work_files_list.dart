@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/data/models/files/files.dart';
-import 'package:xuro/data/models/files/child.dart';
-import 'package:xuro/widgets/detail/work_folder_item.dart';
-import 'package:xuro/widgets/detail/work_file_item.dart';
-import 'package:xuro/utils/platform_capabilities.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/data/models/files/files.dart';
+import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/widgets/detail/work_folder_item.dart';
+import 'package:lizunemu/widgets/detail/work_file_item.dart';
+import 'package:lizunemu/utils/platform_capabilities.dart';
 
 class WorkFilesList extends StatelessWidget {
   final Files files;

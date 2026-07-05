@@ -1,7 +1,7 @@
-import 'package:xuro/data/models/files/files.dart';
-import 'package:xuro/data/models/files/child.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/data/models/files/files.dart';
+import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 /// 文件路径工具类
 /// 用于在文件树中定位文件和获取同级文件

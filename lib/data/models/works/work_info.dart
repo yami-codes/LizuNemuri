@@ -1,12 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:xuro/data/models/works/circle.dart';
-import 'package:xuro/data/models/works/language_edition.dart';
-import 'package:xuro/data/models/works/other_language_editions_in_db.dart';
-import 'package:xuro/data/models/works/translation_info.dart';
-import 'package:xuro/data/models/works/rate_detail.dart';
-import 'package:xuro/data/models/works/rank_info.dart';
-import 'package:xuro/data/models/works/work_va.dart';
-import 'package:xuro/data/models/works/work_tag.dart';
+import 'package:lizunemu/data/models/works/circle.dart';
+import 'package:lizunemu/data/models/works/language_edition.dart';
+import 'package:lizunemu/data/models/works/other_language_editions_in_db.dart';
+import 'package:lizunemu/data/models/works/translation_info.dart';
+import 'package:lizunemu/data/models/works/rate_detail.dart';
+import 'package:lizunemu/data/models/works/rank_info.dart';
+import 'package:lizunemu/data/models/works/work_va.dart';
+import 'package:lizunemu/data/models/works/work_tag.dart';
 
 part 'work_info.freezed.dart';
 part 'work_info.g.dart';

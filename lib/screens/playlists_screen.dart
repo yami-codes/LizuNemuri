@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/presentation/viewmodels/auth_viewmodel.dart';
-import 'package:xuro/presentation/viewmodels/playlists_viewmodel.dart';
-import 'package:xuro/presentation/widgets/auth/login_dialog.dart';
-import 'package:xuro/screens/contents/playlists_content.dart';
-import 'package:xuro/widgets/common/back_leading.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:lizunemu/presentation/viewmodels/playlists_viewmodel.dart';
+import 'package:lizunemu/presentation/widgets/auth/login_dialog.dart';
+import 'package:lizunemu/screens/contents/playlists_content.dart';
+import 'package:lizunemu/widgets/common/back_leading.dart';
 
 /// Drawer route for user playlists (liked / marked / custom lists).
 class PlaylistsScreen extends StatefulWidget {

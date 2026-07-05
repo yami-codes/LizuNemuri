@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/data/models/works/tag.dart';
-import 'package:xuro/utils/i18n_name_resolver.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/data/models/works/tag.dart';
+import 'package:lizunemu/utils/i18n_name_resolver.dart';
 
 class WorkTagsPanel extends StatelessWidget {
   final Work work;

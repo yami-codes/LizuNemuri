@@ -1,16 +1,16 @@
-import 'package:xuro/core/theme/app_animations.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/common/constants/strings.dart';
+import 'package:lizunemu/core/theme/app_animations.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/common/constants/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/presentation/viewmodels/search_viewmodel.dart';
-import 'package:xuro/widgets/work_grid_view.dart';
-import 'package:xuro/presentation/layouts/work_layout_strategy.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/widgets/pagination_controls.dart';
-import 'package:xuro/widgets/common/app_search_field.dart';
-import 'package:xuro/widgets/common/back_leading.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/presentation/viewmodels/search_viewmodel.dart';
+import 'package:lizunemu/widgets/work_grid_view.dart';
+import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/widgets/pagination_controls.dart';
+import 'package:lizunemu/widgets/common/app_search_field.dart';
+import 'package:lizunemu/widgets/common/back_leading.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class SearchScreen extends StatelessWidget {
   final String? initialKeyword;

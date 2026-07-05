@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/utils/logger.dart';
 
 class SubtitleCacheManager {
   static const String key = 'subtitleCache';

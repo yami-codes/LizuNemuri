@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/presentation/viewmodels/settings/cache_manager_viewmodel.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/presentation/viewmodels/settings/cache_manager_viewmodel.dart';
 
 class CacheManagerScreen extends StatelessWidget {
   const CacheManagerScreen({super.key});

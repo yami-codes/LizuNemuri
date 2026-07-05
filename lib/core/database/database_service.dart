@@ -1,10 +1,10 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class DatabaseService {
-  static const _databaseName = 'xuro.db';
+  static const _databaseName = 'lizunemu.db';
   static const _databaseVersion = 3;
 
   // schema 定义集中一处，`_onCreate`（全新安装拿到最新完整 schema）与

@@ -1,9 +1,9 @@
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xuro/core/audio/i_audio_player_service.dart';
-import 'package:xuro/core/platform/sleep_timer_controller.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/audio/i_audio_player_service.dart';
+import 'package:lizunemu/core/platform/sleep_timer_controller.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
 
 /// 仅记录 pause() / setVolume；其余接口测试不触达 → noSuchMethod 抛错暴露误用。
 class _FakeAudioService implements IAudioPlayerService {

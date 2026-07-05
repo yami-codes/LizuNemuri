@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/theme/player_hue_derivation.dart';
-import 'package:xuro/widgets/player/cover_artwork_backdrop_style.dart';
-import 'package:xuro/widgets/player/player_cover_palette_loader.dart';
+import 'package:lizunemu/core/theme/player_hue_derivation.dart';
+import 'package:lizunemu/widgets/player/cover_artwork_backdrop_style.dart';
+import 'package:lizunemu/widgets/player/player_cover_palette_loader.dart';
 
 /// Lyric / chrome colors for immersive player backdrop.
 class PlayerImmersiveColors {
