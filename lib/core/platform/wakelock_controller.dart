@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 import 'package:wakelock_plus/wakelock_plus.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/utils/logger.dart';
 
 class WakeLockController extends ChangeNotifier {
   static const _tag = 'WakeLock';

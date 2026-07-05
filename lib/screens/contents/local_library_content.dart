@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/theme/app_radius.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/core/theme/app_text_styles.dart';
-import 'package:xuro/presentation/viewmodels/local_library_viewmodel.dart';
-import 'package:xuro/utils/user_facing_error.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/theme/app_radius.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/core/theme/app_text_styles.dart';
+import 'package:lizunemu/presentation/viewmodels/local_library_viewmodel.dart';
+import 'package:lizunemu/utils/user_facing_error.dart';
 
 /// Local folder library — scan roots + album list (Milestone F).
 class LocalLibraryContent extends StatefulWidget {

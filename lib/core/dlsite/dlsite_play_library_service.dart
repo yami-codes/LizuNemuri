@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:xuro/core/dlsite/auth/dlsite_auth_repository.dart';
-import 'package:xuro/core/dlsite/dlsite_constants.dart';
-import 'package:xuro/core/dlsite/dlsite_json_utils.dart';
-import 'package:xuro/core/dlsite/models/dlsite_album.dart';
-import 'package:xuro/common/constants/strings.dart';
+import 'package:lizunemu/core/dlsite/auth/dlsite_auth_repository.dart';
+import 'package:lizunemu/core/dlsite/dlsite_constants.dart';
+import 'package:lizunemu/core/dlsite/dlsite_json_utils.dart';
+import 'package:lizunemu/core/dlsite/models/dlsite_album.dart';
+import 'package:lizunemu/common/constants/strings.dart';
 
 /// Fetches purchased works from DLsite Play API (Eara port).
 class DlsitePlayLibraryService {

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:xuro/core/library/local_library_scanner.dart';
+import 'package:lizunemu/core/library/local_library_scanner.dart';
 
 void main() {
   group('LocalLibraryScanner', () {

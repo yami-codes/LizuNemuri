@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
-import 'package:xuro/core/image/cache/image_cache_manager.dart';
-import 'package:xuro/core/theme/player_hue_derivation.dart';
+import 'package:lizunemu/core/image/cache/image_cache_manager.dart';
+import 'package:lizunemu/core/theme/player_hue_derivation.dart';
 
 /// Loads a [PlayerHuePalette] from a network [coverUrl].
 Future<PlayerHuePalette> loadCoverPalette({

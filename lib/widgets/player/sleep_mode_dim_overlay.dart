@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/platform/sleep_timer_controller.dart';
-import 'package:xuro/core/theme/app_animations.dart';
+import 'package:lizunemu/core/platform/sleep_timer_controller.dart';
+import 'package:lizunemu/core/theme/app_animations.dart';
 
 /// Pass-through dim veil for sleep-timer "sleep mode" on the player screen.
 class SleepModeDimOverlay extends StatelessWidget {

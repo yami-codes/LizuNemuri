@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/widgets/work_grid.dart';
-import 'package:xuro/presentation/layouts/work_layout_strategy.dart';
-import 'package:xuro/screens/detail_screen.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/widgets/work_grid.dart';
+import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
+import 'package:lizunemu/screens/detail_screen.dart';
 
 class WorkGridView extends StatelessWidget {
   final List<Work> works;

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/presentation/viewmodels/auth_viewmodel.dart';
-import 'package:xuro/presentation/viewmodels/recommend_viewmodel.dart';
-import 'package:xuro/presentation/widgets/auth/login_dialog.dart';
-import 'package:xuro/screens/contents/recommend_content.dart';
-import 'package:xuro/widgets/common/back_leading.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:lizunemu/presentation/viewmodels/recommend_viewmodel.dart';
+import 'package:lizunemu/presentation/widgets/auth/login_dialog.dart';
+import 'package:lizunemu/screens/contents/recommend_content.dart';
+import 'package:lizunemu/widgets/common/back_leading.dart';
 
 /// Drawer route for personalized recommendations (formerly a bottom tab).
 class RecommendScreen extends StatefulWidget {

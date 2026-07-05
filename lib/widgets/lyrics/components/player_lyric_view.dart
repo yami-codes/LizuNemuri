@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/core/theme/app_animations.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/theme/app_animations.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/presentation/viewmodels/player_viewmodel.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:xuro/core/subtitle/i_subtitle_service.dart';
-import 'package:xuro/core/audio/models/subtitle.dart';
+import 'package:lizunemu/core/subtitle/i_subtitle_service.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
 import 'lyric_line.dart';
 
 /// Proximity-based emphasis for kinetic centered lyrics (0 = dim, 1 = center).

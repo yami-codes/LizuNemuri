@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/presentation/viewmodels/detail_viewmodel.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/presentation/viewmodels/detail_viewmodel.dart';
 
 /// Result from the bulk-translate checklist.
 class BatchTranslateSelectionResult {

@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/core/audio/models/subtitle.dart';
-import 'package:xuro/core/subtitle/i_subtitle_service.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
+import 'package:lizunemu/core/subtitle/i_subtitle_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:xuro/core/subtitle/subtitle_loader.dart';
-import 'package:xuro/core/subtitle/managers/subtitle_state_manager.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/core/subtitle/subtitle_loader.dart';
+import 'package:lizunemu/core/subtitle/managers/subtitle_state_manager.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 
 class SubtitleService implements ISubtitleService {

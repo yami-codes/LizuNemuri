@@ -1,6 +1,6 @@
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 /// 图片缓存管理器
 /// 统一管理应用内所有图片的缓存策略

@@ -1,4 +1,4 @@
-import 'package:xuro/core/download/models/download_entry.dart';
+import 'package:lizunemu/core/download/models/download_entry.dart';
 
 /// One work's completed downloads (grouped by [workId]).
 class DownloadWorkGroup {

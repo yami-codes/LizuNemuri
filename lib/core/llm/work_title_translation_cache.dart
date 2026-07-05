@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/utils/logger.dart';
 
 /// Disk cache for LLM-translated work titles.
 class WorkTitleTranslationCache {

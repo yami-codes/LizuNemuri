@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
 
 /// 品牌标志锁定：波形图标 + 文字。规范 §2.1（侧边栏顶 / 关于页中部）。
 ///

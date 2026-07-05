@@ -1,9 +1,9 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:xuro/core/database/database_service.dart';
-import 'package:xuro/core/subtitle/models/user_subtitle_entry.dart';
-import 'package:xuro/core/subtitle/storage/i_user_subtitle_repository.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/core/database/database_service.dart';
+import 'package:lizunemu/core/subtitle/models/user_subtitle_entry.dart';
+import 'package:lizunemu/core/subtitle/storage/i_user_subtitle_repository.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class UserSubtitleRepository implements IUserSubtitleRepository {
   static const _table = 'user_subtitles';

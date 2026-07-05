@@ -1,5 +1,5 @@
-import 'package:xuro/core/audio/models/subtitle.dart';
-import 'package:xuro/data/services/exceptions/llm_translation_exception.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
+import 'package:lizunemu/data/services/exceptions/llm_translation_exception.dart';
 
 /// Outcome of an LLM subtitle translation attempt.
 class SubtitleTranslationResult {

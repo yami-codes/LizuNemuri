@@ -1,7 +1,7 @@
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/data/services/auth_service.dart';
-import 'package:xuro/data/services/exceptions/network_exception.dart';
-import 'package:xuro/data/services/exceptions/update_exception.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/data/services/auth_service.dart';
+import 'package:lizunemu/data/services/exceptions/network_exception.dart';
+import 'package:lizunemu/data/services/exceptions/update_exception.dart';
 
 /// Thrown when [message] is already localized for the current locale.
 class UserFacingException implements Exception {

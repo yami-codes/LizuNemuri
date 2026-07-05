@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/audio/models/subtitle.dart';
-import 'package:xuro/core/platform/i_lyric_overlay_controller.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/core/subtitle/i_subtitle_service.dart';
-import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
+import 'package:lizunemu/core/platform/i_lyric_overlay_controller.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/subtitle/i_subtitle_service.dart';
+import 'package:lizunemu/presentation/viewmodels/player_viewmodel.dart';
 import 'package:flutter/material.dart';
 
 class LyricOverlayManager {

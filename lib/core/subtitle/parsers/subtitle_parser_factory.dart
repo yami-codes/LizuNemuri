@@ -1,8 +1,8 @@
-import 'package:xuro/core/subtitle/parsers/subtitle_parser.dart';
-import 'package:xuro/core/subtitle/parsers/vtt_parser.dart';
-import 'package:xuro/core/subtitle/parsers/lrc_parser.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/core/subtitle/parsers/subtitle_parser.dart';
+import 'package:lizunemu/core/subtitle/parsers/vtt_parser.dart';
+import 'package:lizunemu/core/subtitle/parsers/lrc_parser.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class SubtitleParserFactory {
   static final List<SubtitleParser> _parsers = [

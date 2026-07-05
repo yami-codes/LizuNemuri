@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:xuro/core/di/service_locator.dart';
-import 'package:xuro/core/image/cache/image_cache_manager.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/widgets/common/skeleton_pulse.dart';
-import 'package:xuro/widgets/player/cover_artwork_backdrop_style.dart';
+import 'package:lizunemu/core/di/service_locator.dart';
+import 'package:lizunemu/core/image/cache/image_cache_manager.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/widgets/common/skeleton_pulse.dart';
+import 'package:lizunemu/widgets/player/cover_artwork_backdrop_style.dart';
 
 /// Full-bleed blurred cover backdrop with Monet tint layers (Eara-style).
 ///

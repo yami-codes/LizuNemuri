@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/presentation/viewmodels/popular_viewmodel.dart';
-import 'package:xuro/screens/contents/popular_content.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/presentation/viewmodels/popular_viewmodel.dart';
+import 'package:lizunemu/screens/contents/popular_content.dart';
 
 /// Eara-style "Hot" tab — popular grid + quick filter chips (Milestone E).
 class HotTabContent extends StatelessWidget {

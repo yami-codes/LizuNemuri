@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/presentation/viewmodels/playlists_viewmodel.dart';
-import 'package:xuro/data/models/my_lists/my_playlists/playlist.dart';
-import 'package:xuro/widgets/pagination_controls.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/presentation/viewmodels/playlists_viewmodel.dart';
+import 'package:lizunemu/data/models/my_lists/my_playlists/playlist.dart';
+import 'package:lizunemu/widgets/pagination_controls.dart';
 
 class PlaylistsListView extends StatelessWidget {
   final Function(Playlist) onPlaylistSelected;

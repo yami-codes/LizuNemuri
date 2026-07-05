@@ -1,11 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:xuro/data/models/works/en_us.dart';
-import 'package:xuro/data/models/works/i18n.dart';
-import 'package:xuro/data/models/works/ja_jp.dart';
-import 'package:xuro/data/models/works/th_th.dart';
-import 'package:xuro/data/models/works/zh_cn.dart';
-import 'package:xuro/utils/i18n_name_resolver.dart';
+import 'package:lizunemu/data/models/works/en_us.dart';
+import 'package:lizunemu/data/models/works/i18n.dart';
+import 'package:lizunemu/data/models/works/ja_jp.dart';
+import 'package:lizunemu/data/models/works/th_th.dart';
+import 'package:lizunemu/data/models/works/zh_cn.dart';
+import 'package:lizunemu/utils/i18n_name_resolver.dart';
 
 void main() {
   final sample = I18n(

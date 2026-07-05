@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/theme/app_radius.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/core/theme/app_text_styles.dart';
+import 'package:lizunemu/core/theme/app_radius.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/core/theme/app_text_styles.dart';
 
 /// 图标 + 标签分类芯片（首页「热门分类」）。规范 §2.1。
 ///

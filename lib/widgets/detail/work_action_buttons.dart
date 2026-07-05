@@ -1,6 +1,6 @@
-import 'package:xuro/data/models/mark_status.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/utils/mark_status_strings.dart';
+import 'package:lizunemu/data/models/mark_status.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/utils/mark_status_strings.dart';
 import 'package:flutter/material.dart';
 
 class WorkActionButtons extends StatelessWidget {

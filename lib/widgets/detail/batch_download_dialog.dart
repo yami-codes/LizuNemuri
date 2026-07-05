@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/presentation/viewmodels/detail_viewmodel.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/presentation/viewmodels/detail_viewmodel.dart';
 
 /// 文件夹 / 整部作品"下载全部"对话框：
 /// 阶段 1 = 确认（共 [audioCount] 个音频，含匹配字幕）；[audioCount]==0 时

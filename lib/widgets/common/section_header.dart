@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/core/theme/app_text_styles.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/core/theme/app_text_styles.dart';
 
 /// 分区标题 + 可选「更多 >」动作。规范 §2.1 复用矩阵（首页/设置/关于）。
 ///

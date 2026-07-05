@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/audio/models/playback_context.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/audio/models/playback_context.dart';
 
 class PlayerWorkInfo extends StatelessWidget {
   final PlaybackContext? context;

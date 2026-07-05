@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/core/theme/app_text_styles.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/core/theme/app_text_styles.dart';
 
 /// 实心 accent 胶囊：侧边栏选中项 / 「关注」 / 主行动按钮。规范 §2.2。
 ///

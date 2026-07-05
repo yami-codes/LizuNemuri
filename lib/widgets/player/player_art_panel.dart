@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
-import 'package:xuro/widgets/player/circular_cover.dart';
-import 'package:xuro/widgets/player/player_work_info.dart';
-import 'package:xuro/widgets/player/player_immersive_scope.dart';
-import 'package:xuro/widgets/player/player_surface_transition.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/presentation/viewmodels/player_viewmodel.dart';
+import 'package:lizunemu/widgets/player/circular_cover.dart';
+import 'package:lizunemu/widgets/player/player_work_info.dart';
+import 'package:lizunemu/widgets/player/player_immersive_scope.dart';
+import 'package:lizunemu/widgets/player/player_surface_transition.dart';
 
 /// Cover art, track title, and work metadata column for the player.
 class PlayerArtPanel extends StatelessWidget {

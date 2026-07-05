@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/data/models/auth/auth_resp/auth_resp.dart';
-import 'package:xuro/data/services/exceptions/network_exception.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/data/models/auth/auth_resp/auth_resp.dart';
+import 'package:lizunemu/data/services/exceptions/network_exception.dart';
 import '../../utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 /// Thrown when `/auth/reg` succeeded (account exists on the server) but the
 /// follow-up auto-login call failed. The account is real; the user just needs

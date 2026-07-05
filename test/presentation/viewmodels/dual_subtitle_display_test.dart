@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:xuro/core/audio/models/subtitle.dart';
+import 'package:lizunemu/core/audio/models/subtitle.dart';
 
 void main() {
   group('dual subtitle display helpers', () {

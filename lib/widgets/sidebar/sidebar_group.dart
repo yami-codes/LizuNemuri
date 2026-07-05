@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/core/theme/app_text_styles.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/core/theme/app_text_styles.dart';
 
 /// 侧边栏分组：扁平、无玻璃卡（对齐参考图清爽列表）。
 /// 分区头为静默标签（`onSurfaceVariant`），不引入 accent——三配色一致。

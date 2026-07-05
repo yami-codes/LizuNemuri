@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/dlsite/auth/dlsite_auth_repository.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/core/theme/app_text_styles.dart';
-import 'package:xuro/widgets/common/back_leading.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/dlsite/auth/dlsite_auth_repository.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/core/theme/app_text_styles.dart';
+import 'package:lizunemu/widgets/common/back_leading.dart';
 
 /// Cookie-based DLsite Play login (v1 — paste browser cookie).
 class DlsiteLoginScreen extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'dart:collection';
-import 'package:xuro/data/services/api_service.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/data/services/api_service.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class RecommendationCacheManager {
   // 单例模式

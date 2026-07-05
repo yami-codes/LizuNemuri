@@ -1,18 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/download/utils/download_grouping.dart';
-import 'package:xuro/core/theme/app_radius.dart';
-import 'package:xuro/core/theme/app_spacing.dart';
-import 'package:xuro/core/theme/app_text_styles.dart';
-import 'package:xuro/presentation/viewmodels/downloads_viewmodel.dart';
-import 'package:xuro/screens/detail_screen.dart';
-import 'package:xuro/utils/file_size_formatter.dart';
-import 'package:xuro/utils/user_facing_error.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/download/utils/download_grouping.dart';
+import 'package:lizunemu/core/theme/app_radius.dart';
+import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/core/theme/app_text_styles.dart';
+import 'package:lizunemu/presentation/viewmodels/downloads_viewmodel.dart';
+import 'package:lizunemu/screens/detail_screen.dart';
+import 'package:lizunemu/utils/file_size_formatter.dart';
+import 'package:lizunemu/utils/user_facing_error.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:xuro/core/image/cache/image_cache_manager.dart';
-import 'package:xuro/widgets/common/skeleton_pulse.dart';
+import 'package:lizunemu/core/image/cache/image_cache_manager.dart';
+import 'package:lizunemu/widgets/common/skeleton_pulse.dart';
 
 /// Downloads list grouped by work — Eara [DownloadsScreen] hub pattern.
 class DownloadsHubContent extends StatefulWidget {

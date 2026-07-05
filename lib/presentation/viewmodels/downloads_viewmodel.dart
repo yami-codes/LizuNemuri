@@ -2,19 +2,19 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
-import 'package:xuro/common/constants/log_strings.dart';
-import 'package:xuro/core/audio/i_audio_player_service.dart';
-import 'package:xuro/core/audio/models/playback_context.dart';
-import 'package:xuro/core/download/models/download_entry.dart';
-import 'package:xuro/core/download/storage/i_download_repository.dart';
-import 'package:xuro/core/download/utils/download_grouping.dart';
-import 'package:xuro/data/models/files/child.dart';
-import 'package:xuro/data/models/files/files.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/data/models/works/work_info.dart';
-import 'package:xuro/data/services/api_service.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/utils/user_facing_error.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
+import 'package:lizunemu/core/audio/i_audio_player_service.dart';
+import 'package:lizunemu/core/audio/models/playback_context.dart';
+import 'package:lizunemu/core/download/models/download_entry.dart';
+import 'package:lizunemu/core/download/storage/i_download_repository.dart';
+import 'package:lizunemu/core/download/utils/download_grouping.dart';
+import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/data/models/files/files.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/data/models/works/work_info.dart';
+import 'package:lizunemu/data/services/api_service.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/utils/user_facing_error.dart';
 
 /// Cached metadata for a downloaded work (best-effort from API).
 class DownloadWorkMeta {

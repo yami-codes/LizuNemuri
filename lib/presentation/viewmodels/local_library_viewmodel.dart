@@ -2,17 +2,17 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as p;
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/audio/i_audio_player_service.dart';
-import 'package:xuro/core/audio/models/playback_context.dart';
-import 'package:xuro/core/library/local_library_scanner.dart';
-import 'package:xuro/core/library/models/local_album.dart';
-import 'package:xuro/core/library/scan_roots_store.dart';
-import 'package:xuro/core/library/storage/local_library_repository.dart';
-import 'package:xuro/data/models/files/child.dart';
-import 'package:xuro/data/models/files/files.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/utils/user_facing_error.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/audio/i_audio_player_service.dart';
+import 'package:lizunemu/core/audio/models/playback_context.dart';
+import 'package:lizunemu/core/library/local_library_scanner.dart';
+import 'package:lizunemu/core/library/models/local_album.dart';
+import 'package:lizunemu/core/library/scan_roots_store.dart';
+import 'package:lizunemu/core/library/storage/local_library_repository.dart';
+import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/data/models/files/files.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/utils/user_facing_error.dart';
 
 class LocalLibraryViewModel extends ChangeNotifier {
   LocalLibraryViewModel({

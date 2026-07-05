@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
 
 class AudioFormatOrderDialog extends StatefulWidget {
   final AppSettingsService settings;

@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:xuro/core/audio/models/playback_context.dart';
-import 'package:xuro/core/llm/llm_translation_context_builder.dart';
-import 'package:xuro/data/models/files/child.dart';
-import 'package:xuro/data/models/files/files.dart';
-import 'package:xuro/data/models/works/circle.dart';
-import 'package:xuro/data/models/works/work.dart';
-import 'package:xuro/data/services/llm_client.dart';
+import 'package:lizunemu/core/audio/models/playback_context.dart';
+import 'package:lizunemu/core/llm/llm_translation_context_builder.dart';
+import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/data/models/files/files.dart';
+import 'package:lizunemu/data/models/works/circle.dart';
+import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/data/services/llm_client.dart';
 
 void main() {
   group('LlmClient.parseJsonArrayResponse', () {

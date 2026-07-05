@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/common/constants/strings.dart';
+import 'package:lizunemu/common/constants/strings.dart';
 
 class FilterWithKeyword extends StatelessWidget {
   final bool hasSubtitle;

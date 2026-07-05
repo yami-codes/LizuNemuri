@@ -1,4 +1,4 @@
-package com.xuro.lyric
+package moe.lizu.nemu.lyric
 
 import android.content.ComponentName
 import android.content.Context

@@ -1,6 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xuro/utils/logger.dart';
+import 'package:lizunemu/utils/logger.dart';
 
 /// Stores the LLM API key in secure storage with prefs fallback.
 class LlmApiKeyRepository {

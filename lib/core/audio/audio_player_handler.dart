@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:get_it/get_it.dart';
-import 'package:xuro/core/audio/events/playback_event_hub.dart';
-import 'package:xuro/core/audio/i_audio_player_service.dart';
+import 'package:lizunemu/core/audio/events/playback_event_hub.dart';
+import 'package:lizunemu/core/audio/i_audio_player_service.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class AudioPlayerHandler extends BaseAudioHandler {
   final AudioPlayer _player;

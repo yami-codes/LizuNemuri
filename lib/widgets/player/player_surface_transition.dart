@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/theme/app_animations.dart';
-import 'package:xuro/screens/player_screen.dart';
+import 'package:lizunemu/core/theme/app_animations.dart';
+import 'package:lizunemu/screens/player_screen.dart';
 
 /// Hero tag shared by mini player cover and full-screen [CircularCover].
 const String kMiniPlayerCoverHeroTag = 'mini-player-cover';

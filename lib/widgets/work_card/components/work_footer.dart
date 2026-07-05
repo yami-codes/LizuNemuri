@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/data/models/works/work.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/data/models/works/work.dart';
 
 class WorkFooter extends StatelessWidget {
   final Work work;

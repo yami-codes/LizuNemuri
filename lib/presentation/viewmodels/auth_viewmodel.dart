@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/data/models/auth/auth_resp/auth_resp.dart';
-import 'package:xuro/data/services/auth_service.dart';
-import 'package:xuro/data/repositories/auth_repository.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/data/models/auth/auth_resp/auth_resp.dart';
+import 'package:lizunemu/data/services/auth_service.dart';
+import 'package:lizunemu/data/repositories/auth_repository.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final AuthService _authService;

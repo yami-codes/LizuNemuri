@@ -1,14 +1,14 @@
-import 'package:xuro/core/theme/app_animations.dart';
+import 'package:lizunemu/core/theme/app_animations.dart';
 import 'package:flutter/material.dart';
-import 'package:xuro/widgets/mini_player/mini_player.dart';
-import 'package:xuro/widgets/sidebar/sidebar_menu.dart';
-import 'package:xuro/screens/contents/library_tab_content.dart';
-import 'package:xuro/screens/contents/search_tab_content.dart';
-import 'package:xuro/screens/contents/hot_tab_content.dart';
+import 'package:lizunemu/widgets/mini_player/mini_player.dart';
+import 'package:lizunemu/widgets/sidebar/sidebar_menu.dart';
+import 'package:lizunemu/screens/contents/library_tab_content.dart';
+import 'package:lizunemu/screens/contents/search_tab_content.dart';
+import 'package:lizunemu/screens/contents/hot_tab_content.dart';
 import 'package:provider/provider.dart';
-import 'package:xuro/presentation/viewmodels/home_viewmodel.dart';
-import 'package:xuro/presentation/viewmodels/popular_viewmodel.dart';
-import 'package:xuro/common/constants/strings.dart';
+import 'package:lizunemu/presentation/viewmodels/home_viewmodel.dart';
+import 'package:lizunemu/presentation/viewmodels/popular_viewmodel.dart';
+import 'package:lizunemu/common/constants/strings.dart';
 
 /// MainScreen 是应用的主界面，负责管理底部导航栏和对应的内容页面。
 /// 它采用了集中式的状态管理架构，所有子页面的 ViewModel 都在这里初始化和提供。

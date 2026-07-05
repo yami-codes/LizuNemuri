@@ -1,7 +1,7 @@
-import 'package:xuro/common/constants/strings.dart';
+import 'package:lizunemu/common/constants/strings.dart';
 import 'package:flutter/material.dart';
-import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
-import 'package:xuro/widgets/player/player_surface_transition.dart';
+import 'package:lizunemu/presentation/viewmodels/player_viewmodel.dart';
+import 'package:lizunemu/widgets/player/player_surface_transition.dart';
 import 'mini_player_controls.dart';
 import 'mini_player_progress.dart';
 import 'package:get_it/get_it.dart';

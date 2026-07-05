@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xuro/core/audio/utils/volume_fader.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/audio/utils/volume_fader.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
 
 void main() {
   group('VolumeFader', () {

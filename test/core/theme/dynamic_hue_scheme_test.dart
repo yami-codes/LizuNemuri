@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/core/theme/app_colors.dart';
-import 'package:xuro/core/theme/player_hue_derivation.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/theme/app_colors.dart';
+import 'package:lizunemu/core/theme/player_hue_derivation.dart';
 
 void main() {
   test('schemeFromPlayerPalette rotates primary from cover palette', () {

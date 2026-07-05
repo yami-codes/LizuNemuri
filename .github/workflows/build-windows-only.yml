@@ -42,13 +42,13 @@ jobs:
         shell: pwsh
         run: |
           Compress-Archive -Path build/windows/x64/runner/Release/* `
-            -DestinationPath xuro-windows.zip -Force
+            -DestinationPath lizunemu-windows.zip -Force
 
       - name: Upload to release (tag push)
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: xuro-windows.zip
+          files: lizunemu-windows.zip
           fail_on_unmatched_files: false
 
       - name: Upload artifact (manual dispatch)
@@ -56,4 +56,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
-          path: xuro-windows.zip
+          path: lizunemu-windows.zip

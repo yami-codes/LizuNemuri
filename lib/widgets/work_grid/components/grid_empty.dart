@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/common/constants/strings.dart';
+import 'package:lizunemu/common/constants/strings.dart';
 
 class GridEmpty extends StatelessWidget {
   final String? message;

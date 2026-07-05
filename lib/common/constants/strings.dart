@@ -1,17 +1,17 @@
 import 'dart:ui' show Locale;
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:xuro/core/di/service_locator.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/di/service_locator.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
 
 /// Central UI copy — backed by generated [AppLocalizations].
 class Strings {
   Strings._();
 
-  static const String feedbackUrl = 'https://github.com/WuMe-sicx/Xuro/issues';
-  static const String repoUrl = 'https://github.com/WuMe-sicx/Xuro';
+  static const String feedbackUrl = 'https://github.com/yami-codes/LizuNemu/issues';
+  static const String repoUrl = 'https://github.com/yami-codes/LizuNemu';
   static const String originalRepoUrl = 'https://github.com/asmroneapp/Yuro';
-  static const String telegramChannelUrl = 'https://t.me/XuroAsmr';
+  static const String telegramChannelUrl = 'https://t.me/LizuNemu';
 
   static AppLocalizations get _l10n {
     try {

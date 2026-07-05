@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
-import 'package:xuro/core/settings/llm_subtitle_display_mode.dart';
-import 'package:xuro/core/settings/llm_subtitle_target_language.dart';
-import 'package:xuro/data/repositories/llm_api_key_repository.dart';
-import 'package:xuro/screens/settings/widgets/settings_group.dart';
-import 'package:xuro/screens/settings/widgets/settings_tile.dart';
-import 'package:xuro/screens/settings/widgets/settings_theme.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/settings/llm_subtitle_display_mode.dart';
+import 'package:lizunemu/core/settings/llm_subtitle_target_language.dart';
+import 'package:lizunemu/data/repositories/llm_api_key_repository.dart';
+import 'package:lizunemu/screens/settings/widgets/settings_group.dart';
+import 'package:lizunemu/screens/settings/widgets/settings_tile.dart';
+import 'package:lizunemu/screens/settings/widgets/settings_theme.dart';
 
 /// LLM subtitle translation API + prompt configuration.
 class LlmTranslationSettingsScreen extends StatefulWidget {

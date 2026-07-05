@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
-import 'package:xuro/core/audio/cache/audio_cache_manager.dart';
-import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/utils/logger.dart';
-import 'package:xuro/core/subtitle/cache/subtitle_cache_manager.dart';
-import 'package:xuro/core/image/cache/image_cache_manager.dart';
-import 'package:xuro/core/cache/cache_coordinator.dart';
-import 'package:xuro/common/constants/log_strings.dart';
+import 'package:lizunemu/core/audio/cache/audio_cache_manager.dart';
+import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/utils/logger.dart';
+import 'package:lizunemu/core/subtitle/cache/subtitle_cache_manager.dart';
+import 'package:lizunemu/core/image/cache/image_cache_manager.dart';
+import 'package:lizunemu/core/cache/cache_coordinator.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 
 class CacheManagerViewModel extends ChangeNotifier {
   bool _isLoading = false;
