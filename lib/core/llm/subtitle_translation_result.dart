@@ -5,12 +5,14 @@ import 'package:xuro/data/services/exceptions/llm_translation_exception.dart';
 class SubtitleTranslationResult {
   final SubtitleList list;
   final bool translated;
+  final bool fromCache;
   final LlmTranslationException? error;
   final bool skipped;
 
   const SubtitleTranslationResult._({
     required this.list,
     this.translated = false,
+    this.fromCache = false,
     this.error,
     this.skipped = false,
   });
@@ -18,8 +20,13 @@ class SubtitleTranslationResult {
   factory SubtitleTranslationResult.success(
     SubtitleList list, {
     required bool translated,
+    bool fromCache = false,
   }) =>
-      SubtitleTranslationResult._(list: list, translated: translated);
+      SubtitleTranslationResult._(
+        list: list,
+        translated: translated,
+        fromCache: fromCache,
+      );
 
   factory SubtitleTranslationResult.skipped(SubtitleList source) =>
       SubtitleTranslationResult._(list: source, skipped: true);

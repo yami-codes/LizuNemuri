@@ -2240,5 +2240,73 @@
   "llmShowOriginal": "显示原文字幕",
   "llmTranslationDone": "字幕翻译完成",
   "llmErrorNoSubtitles": "当前曲目没有可翻译的字幕",
-  "llmTranslationNoChange": "翻译结果与原文相同（请检查 API 配置或目标语言）"
+  "llmTranslationNoChange": "翻译结果与原文相同（请检查 API 配置或目标语言）",
+  "llmTranslationFromCache": "已从缓存加载已保存的翻译",
+  "llmTranslationStatusStarting": "正在准备翻译…",
+  "llmTranslationStatusCheckingCache": "正在检查已保存的翻译…",
+  "llmTranslationStatusTranslating": "正在翻译第 {batch}/{total} 批…",
+  "@llmTranslationStatusTranslating": {
+    "placeholders": {
+      "batch": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "llmTranslationStatusSaving": "正在保存翻译到缓存…",
+  "batchTranslateTitle": "批量翻译字幕",
+  "batchTranslateTooltip": "全部翻译",
+  "batchTranslateEmpty": "此文件夹内没有可配对字幕的音频",
+  "batchTranslateLoading": "正在扫描曲目与缓存状态…",
+  "batchTranslateConfirm": "使用 LLM 翻译选中的 {count} 个曲目？",
+  "@batchTranslateConfirm": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "batchTranslateStart": "开始翻译（{count}）",
+  "@batchTranslateStart": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "batchTranslateSelectAll": "全选",
+  "batchTranslateDeselectAll": "取消全选",
+  "batchTranslateCachedBadge": "已保存 — 无需重复翻译",
+  "batchTranslateNeedsTranslate": "尚未翻译",
+  "batchTranslateCacheSummary": "列表中 {cachedInList}/{totalInList} 已保存 · 本作品共 {savedOnDisk} 个缓存文件",
+  "@batchTranslateCacheSummary": {
+    "placeholders": {
+      "cachedInList": { "type": "int" },
+      "totalInList": { "type": "int" },
+      "savedOnDisk": { "type": "int" }
+    }
+  },
+  "batchTranslateProgress": "曲目 {index}/{total}：{name}",
+  "@batchTranslateProgress": {
+    "placeholders": {
+      "index": { "type": "int" },
+      "total": { "type": "int" },
+      "name": { "type": "String" }
+    }
+  },
+  "batchTranslatePhaseLoading": "正在加载字幕…",
+  "batchTranslatePhaseCheckingCache": "正在检查缓存…",
+  "batchTranslatePhaseTranslating": "LLM 第 {batch}/{total} 批…",
+  "@batchTranslatePhaseTranslating": {
+    "placeholders": {
+      "batch": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "batchTranslatePhaseTranslatingSimple": "正在 LLM 翻译…",
+  "batchTranslatePhaseCached": "已保存 — 已跳过",
+  "batchTranslatePhaseFailed": "失败 — 已跳过",
+  "batchTranslateSummary": "完成：{translated} 个新翻译，{cached} 个缓存/跳过，{failed} 个失败",
+  "@batchTranslateSummary": {
+    "placeholders": {
+      "translated": { "type": "int" },
+      "cached": { "type": "int" },
+      "failed": { "type": "int" }
+    }
+  },
+  "batchTranslateCancelled": "批量翻译已取消"
 }

@@ -5,6 +5,7 @@ import 'package:xuro/core/audio/models/playback_context.dart';
 import 'package:xuro/core/audio/models/subtitle.dart';
 import 'package:xuro/core/llm/llm_translation_context_builder.dart';
 import 'package:xuro/core/llm/subtitle_translation_cache.dart';
+import 'package:xuro/core/llm/subtitle_translation_progress.dart';
 import 'package:xuro/core/llm/subtitle_translation_result.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/core/settings/llm_subtitle_target_language.dart';
@@ -47,15 +48,42 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
 
   bool get isEnabled => _settings.llmTranslationEnabled;
 
+  String get _targetLang =>
+      _settings.llmTargetLanguage.resolveCode(_settings.stringsLocale);
+
+  /// Cached translation count on disk for one work (project).
+  Future<int> cachedCountForWork(String workId) =>
+      _cache.countForWork(workId);
+
+  /// True when a saved translation exists for this source + track + target lang.
+  Future<bool> isCached({
+    required SubtitleList source,
+    required PlaybackContext? context,
+  }) async {
+    if (source.subtitles.isEmpty) return false;
+    final workId = context?.work.id?.toString() ?? 'unknown';
+    final fileName = context?.currentFile.title ?? 'track';
+    final hash = _cache.sourceHash(source);
+    return _cache.exists(
+      workId: workId,
+      fileName: fileName,
+      targetLang: _targetLang,
+      hash: hash,
+      lineCount: source.subtitles.length,
+    );
+  }
+
   /// Auto path on subtitle load — respects the settings toggle.
   Future<SubtitleTranslationResult> translateIfEnabled({
     required SubtitleList source,
     required PlaybackContext? context,
+    SubtitleTranslationProgressCallback? onProgress,
   }) =>
       translate(
         source: source,
         context: context,
         requireEnabled: true,
+        onProgress: onProgress,
       );
 
   /// Manual translate from the player — works even when auto is off.
@@ -63,12 +91,14 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     required SubtitleList source,
     required PlaybackContext? context,
     bool forceRefresh = false,
+    SubtitleTranslationProgressCallback? onProgress,
   }) =>
       translate(
         source: source,
         context: context,
         requireEnabled: false,
         forceRefresh: forceRefresh,
+        onProgress: onProgress,
       );
 
   Future<SubtitleTranslationResult> translate({
@@ -76,7 +106,16 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     required PlaybackContext? context,
     bool requireEnabled = false,
     bool forceRefresh = false,
+    SubtitleTranslationProgressCallback? onProgress,
   }) async {
+    void report(SubtitleTranslationPhase phase, {int? batch, int? total}) {
+      onProgress?.call(SubtitleTranslationProgress(
+        phase: phase,
+        batchIndex: batch,
+        batchTotal: total,
+      ));
+    }
+
     if (requireEnabled && !_settings.llmTranslationEnabled) {
       return SubtitleTranslationResult.skipped(source);
     }
@@ -95,13 +134,13 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
       );
     }
 
-    final targetLang =
-        _settings.llmTargetLanguage.resolveCode(_settings.stringsLocale);
+    final targetLang = _targetLang;
     final workId = context?.work.id?.toString() ?? 'unknown';
     final fileName = context?.currentFile.title ?? 'track';
     final hash = _cache.sourceHash(source);
 
     if (!forceRefresh) {
+      report(SubtitleTranslationPhase.checkingCache);
       final cached = await _loadCached(
         workId: workId,
         fileName: fileName,
@@ -111,16 +150,28 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
       if (cached != null && cached.length == source.subtitles.length) {
         final list = _applyTranslations(source, cached);
         final changed = _hasTextChanges(source, list);
-        return SubtitleTranslationResult.success(list, translated: changed);
+        report(SubtitleTranslationPhase.cached);
+        return SubtitleTranslationResult.success(
+          list,
+          translated: changed,
+          fromCache: true,
+        );
       }
     }
 
     try {
+      report(SubtitleTranslationPhase.translating);
       final translated = await _translateBatches(
         source: source,
         context: context,
         targetLang: targetLang,
+        onBatchProgress: (batch, total) => report(
+          SubtitleTranslationPhase.translating,
+          batch: batch,
+          total: total,
+        ),
       );
+      report(SubtitleTranslationPhase.saving);
       await _saveCached(
         workId: workId,
         fileName: fileName,
@@ -129,6 +180,7 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
         lines: {for (final s in translated.subtitles) s.index: s.text},
       );
       final changed = _hasTextChanges(source, translated);
+      report(SubtitleTranslationPhase.done);
       return SubtitleTranslationResult.success(translated, translated: changed);
     } on LlmTranslationException catch (e) {
       AppLogger.warning('Subtitle translation failed: ${e.message}');
@@ -154,6 +206,7 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     required SubtitleList source,
     required PlaybackContext? context,
     required String targetLang,
+    void Function(int batchIndex, int batchTotal)? onBatchProgress,
   }) async {
     final systemPrompt = _composeSystemPrompt(
       targetLang: targetLang,
@@ -167,6 +220,9 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     for (var start = 0; start < source.subtitles.length; start += _batchSize) {
       final end = (start + _batchSize).clamp(0, source.subtitles.length);
       final batch = source.subtitles.sublist(start, end);
+      final batchNum = (start ~/ _batchSize) + 1;
+      final batchTotal = (source.subtitles.length / _batchSize).ceil();
+      onBatchProgress?.call(batchNum, batchTotal);
       final payload = batch
           .map((s) => {'index': s.index, 'text': s.text})
           .toList();

@@ -15,12 +15,16 @@ class WorkFilesList extends StatelessWidget {
   /// 参数为 null 代表整部作品，否则为该文件夹节点。
   final void Function(Child? folderNode)? onFolderDownload;
 
+  /// 批量 LLM 预翻译整部作品 / 文件夹子树（含匹配字幕）。
+  final void Function(Child? folderNode)? onFolderTranslate;
+
   const WorkFilesList({
     super.key,
     required this.files,
     this.onFileTap,
     this.onFileDownload,
     this.onFolderDownload,
+    this.onFolderTranslate,
   });
 
   @override
@@ -50,6 +54,12 @@ class WorkFilesList extends StatelessWidget {
                         size: 18),
                     label: Text(Strings.downloadAllTooltip),
                   ),
+                if (onFolderTranslate != null)
+                  TextButton.icon(
+                    onPressed: () => onFolderTranslate!.call(null),
+                    icon: const Icon(Icons.translate, size: 18),
+                    label: Text(Strings.batchTranslateTooltip),
+                  ),
               ],
             ),
           ),
@@ -65,6 +75,7 @@ class WorkFilesList extends StatelessWidget {
                           onFileTap: onFileTap,
                           onFileDownload: onFileDownload,
                           onFolderDownload: onFolderDownload,
+                          onFolderTranslate: onFolderTranslate,
                         )
                       : WorkFileItem(
                           file: child,
