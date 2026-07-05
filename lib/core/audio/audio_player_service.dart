@@ -14,6 +14,7 @@ import './state/playback_state_manager.dart';
 import './controllers/playback_controller.dart';
 import './events/playback_event_hub.dart';
 import 'package:xuro/common/constants/log_strings.dart';
+import 'package:xuro/core/settings/app_settings_service.dart';
 
 class AudioPlayerService implements IAudioPlayerService {
   late final AudioPlayer _player;
@@ -74,6 +75,8 @@ class AudioPlayerService implements IAudioPlayerService {
 
       final session = await AudioSession.instance;
       await session.configure(const AudioSessionConfiguration.music());
+      final savedVolume = GetIt.I<AppSettingsService>().playbackVolume;
+      await _player.setVolume(savedVolume.clamp(0.0, 1.0));
       await _notificationService.init();
 
       _stateManager.initStateListeners();
@@ -152,6 +155,17 @@ class AudioPlayerService implements IAudioPlayerService {
 
   @override
   PlaybackContext? get currentContext => _stateManager.currentContext;
+
+  @override
+  double get volume => _player.volume;
+
+  @override
+  Future<void> setVolume(double volume) async {
+    await ready;
+    final clamped = volume.clamp(0.0, 1.0);
+    await _player.setVolume(clamped);
+    await GetIt.I<AppSettingsService>().setPlaybackVolume(clamped);
+  }
 
   // 状态持久化
   @override

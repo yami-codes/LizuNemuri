@@ -44,6 +44,7 @@ class PlayerViewModel extends ChangeNotifier {
   Duration? _position;
   Duration? _duration;
   Subtitle? _currentSubtitle;
+  double _volume = 1.0;
 
   final List<StreamSubscription> _subscriptions = [];
 
@@ -67,6 +68,8 @@ class PlayerViewModel extends ChangeNotifier {
   bool get hasSubtitles =>
       _subtitleService.subtitleList != null &&
       _subtitleService.subtitleList!.subtitles.isNotEmpty;
+
+  double get volume => _volume;
 
   /// One-shot snackbar message for auto-translate failures (consumed by UI).
   String? takeTranslationFeedback() {
@@ -297,9 +300,23 @@ class PlayerViewModel extends ChangeNotifier {
 
   // 请求初始状态
   void _requestInitialState() {
-    Future.microtask(() {
+    _volume = _settings.playbackVolume;
+    Future.microtask(() async {
       _eventHub.emit(RequestInitialStateEvent());
+      try {
+        final v = _audioService.volume;
+        if (v != _volume) {
+          _volume = v;
+          notifyListeners();
+        }
+      } catch (_) {}
     });
+  }
+
+  Future<void> setVolume(double volume) async {
+    await _audioService.setVolume(volume);
+    _volume = volume.clamp(0.0, 1.0);
+    notifyListeners();
   }
 
   Future<void> _presentSubtitleList(

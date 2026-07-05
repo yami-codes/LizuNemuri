@@ -32,6 +32,7 @@ class AppSettingsService extends ChangeNotifier {
   static const String _llmSystemPromptKey = 'llm_system_prompt';
   static const String _llmJailbreakPromptKey = 'llm_jailbreak_prompt';
   static const String _llmJailbreakAutoKey = 'llm_jailbreak_auto';
+  static const String _playbackVolumeKey = 'playback_volume';
 
   static const String defaultServerUrl = 'https://api.asmr.one/api';
   static const String defaultLlmApiEndpoint = 'https://api.openai.com/v1';
@@ -68,6 +69,7 @@ class AppSettingsService extends ChangeNotifier {
   late String _llmSystemPromptOverride;
   late String _llmJailbreakPrompt;
   late bool _llmJailbreakAuto;
+  late double _playbackVolume;
 
   AppSettingsService(this._prefs) {
     _serverUrl = _prefs.getString(_serverUrlKey) ?? defaultServerUrl;
@@ -100,6 +102,7 @@ class AppSettingsService extends ChangeNotifier {
     _llmSystemPromptOverride = _prefs.getString(_llmSystemPromptKey) ?? '';
     _llmJailbreakPrompt = _prefs.getString(_llmJailbreakPromptKey) ?? '';
     _llmJailbreakAuto = _prefs.getBool(_llmJailbreakAutoKey) ?? true;
+    _playbackVolume = _prefs.getDouble(_playbackVolumeKey) ?? 1.0;
   }
 
   // === UI Language ===
@@ -285,5 +288,16 @@ class AppSettingsService extends ChangeNotifier {
     _llmJailbreakAuto = enabled;
     notifyListeners();
     await _prefs.setBool(_llmJailbreakAutoKey, enabled);
+  }
+
+  // === Playback volume (0.0–1.0) ===
+  double get playbackVolume => _playbackVolume;
+
+  Future<void> setPlaybackVolume(double volume) async {
+    final clamped = volume.clamp(0.0, 1.0);
+    if (_playbackVolume == clamped) return;
+    _playbackVolume = clamped;
+    notifyListeners();
+    await _prefs.setDouble(_playbackVolumeKey, clamped);
   }
 }
