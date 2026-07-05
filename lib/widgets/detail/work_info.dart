@@ -6,6 +6,7 @@ import 'package:xuro/widgets/common/tag_chip.dart';
 import 'package:xuro/widgets/detail/work_info_header.dart';
 import 'package:xuro/utils/i18n_name_resolver.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class WorkInfo extends StatelessWidget {
   final Work work;
@@ -29,7 +30,7 @@ class WorkInfo extends StatelessWidget {
     final keyword = tag.name ?? '';
     if (keyword.isEmpty) return;
 
-    AppLogger.debug('点击标签: $keyword');
+    AppLogger.debug(LogStrings.logTagTappedKeyword12029(keyword));
     Navigator.pushNamed(
       context,
       '/search',

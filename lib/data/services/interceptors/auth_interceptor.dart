@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:xuro/data/repositories/auth_repository.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class AuthInterceptor extends Interceptor {
   @override
@@ -19,7 +20,7 @@ class AuthInterceptor extends Interceptor {
       
       handler.next(options);
     } catch (e) {
-      AppLogger.error('AuthInterceptor: 处理请求失败', e);
+      AppLogger.error(LogStrings.logAuthinterceptorRequestFailed68aba, e);
       handler.next(options);  // 即使出错也继续请求
     }
   }

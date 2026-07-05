@@ -3,6 +3,7 @@ import 'package:xuro/core/database/database_service.dart';
 import 'package:xuro/core/subtitle/models/user_subtitle_entry.dart';
 import 'package:xuro/core/subtitle/storage/i_user_subtitle_repository.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class UserSubtitleRepository implements IUserSubtitleRepository {
   static const _table = 'user_subtitles';
@@ -31,7 +32,7 @@ class UserSubtitleRepository implements IUserSubtitleRepository {
       entry.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    AppLogger.debug('用户字幕关联已保存: ${entry.workId}/${entry.fileName}');
+    AppLogger.debug(LogStrings.logUserSubtitleRowSavedEntryWorc4adb(entry.workId, entry.fileName));
   }
 
   @override
@@ -42,7 +43,7 @@ class UserSubtitleRepository implements IUserSubtitleRepository {
       where: 'work_id = ? AND file_name = ?',
       whereArgs: [workId, fileName],
     );
-    AppLogger.debug('用户字幕关联已删除: $workId/$fileName');
+    AppLogger.debug(LogStrings.logUserSubtitleRowDeletedWorkid82bad(workId, fileName));
   }
 
   @override

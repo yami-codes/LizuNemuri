@@ -6,6 +6,7 @@ import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/presentation/models/filter_state.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class HomeViewModel extends PaginatedWorksViewModel {
   // home_filter_state（排序）是本页私有、单写者，无跨 VM 竞态，沿用本地
@@ -36,7 +37,7 @@ class HomeViewModel extends PaginatedWorksViewModel {
         notifyListeners();
       }
     } catch (e) {
-      AppLogger.error('加载筛选状态失败', e);
+      AppLogger.error(LogStrings.logLoadFilterStateFailed, e);
     }
   }
 
@@ -45,7 +46,7 @@ class HomeViewModel extends PaginatedWorksViewModel {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_filterStateKey, jsonEncode(_filterState.toJson()));
     } catch (e) {
-      AppLogger.error('保存筛选状态失败', e);
+      AppLogger.error(LogStrings.logSaveFilterStateFailed, e);
     }
   }
 
@@ -88,7 +89,7 @@ class HomeViewModel extends PaginatedWorksViewModel {
   }
 
   @override
-  String get pageName => '主页';
+  String get pageName => LogStrings.logPageNameHome;
 
   @override
   Future<WorksResponse> fetchPage(int page) {

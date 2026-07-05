@@ -5,6 +5,7 @@ import 'package:xuro/utils/i18n_name_resolver.dart';
 import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:get_it/get_it.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class VoiceActorsViewModel extends ChangeNotifier {
   final ApiService _apiService = GetIt.I<ApiService>();
@@ -34,9 +35,9 @@ class VoiceActorsViewModel extends ChangeNotifier {
       _allVoiceActors = await _apiService.getVoiceActors();
       _allVoiceActors.sort((a, b) => (b.count ?? 0).compareTo(a.count ?? 0));
       _applyFilter();
-      AppLogger.info('声优列表加载成功: ${_allVoiceActors.length}个声优');
+      AppLogger.info(LogStrings.logVoiceActorsLoadedAllvoiceact8347d(_allVoiceActors.length));
     } catch (e) {
-      AppLogger.error('加载声优列表失败', e);
+      AppLogger.error(LogStrings.logLoadVoiceActorsFailed, e);
       _error = userFacingError(e);
     } finally {
       _isLoading = false;

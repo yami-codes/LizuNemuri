@@ -6,6 +6,7 @@ import 'package:xuro/widgets/common/tag_chip.dart';
 import 'package:xuro/widgets/detail/work_stats_info.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class WorkInfoHeader extends StatelessWidget {
   final Work work;
@@ -20,7 +21,7 @@ class WorkInfoHeader extends StatelessWidget {
   void _onTagTap(BuildContext context, String keyword) {
     if (keyword.isEmpty) return;
 
-    AppLogger.debug('点击标签: $keyword');
+    AppLogger.debug(LogStrings.logTagTappedKeyword12029(keyword));
     Navigator.pushNamed(
       context,
       '/search',

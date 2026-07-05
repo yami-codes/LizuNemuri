@@ -376,5 +376,1770 @@
     }
   },
   "fileUrlMissing": "Cannot play: file URL is missing",
-  "fileListNotLoaded": "File list not loaded"
+  "fileListNotLoaded": "File list not loaded",
+  "logNetworkRequestFailed": "Network request failed",
+  "logParseDataFailed": "Parse data failed",
+  "logParseAuthDataFailed": "Failed to parse auth data",
+  "logParseFailedDetail": "Parse failed: {detail}",
+  "logLoginFailed": "Login failed",
+  "logLoginFailedDetail": "Login failed: {detail}",
+  "logLoginFailedCode": "Login failed: {code}",
+  "logLoginRequestFailed": "Login request failed",
+  "logRegisterFailed": "Register failed",
+  "logRegisterFailedDetail": "Register failed: {detail}",
+  "logRegisterFailedCode": "Register failed: {code}",
+  "logRegisterRequestFailed": "Register request failed",
+  "logSearchFailed": "Search failed",
+  "logSearchFailedCode": "Search failed: {code}",
+  "logPlaybackFailed": "Playback failed",
+  "logMarkFailedCode": "Mark failed: {code}",
+  "logLoadFilesFailed": "Failed to load files",
+  "logLoadWorkDetailFailed": "Failed to load work detail",
+  "logLoadTagsFailed": "Failed to load tags",
+  "logLoadCirclesFailed": "Failed to load circles",
+  "logLoadVoiceActorsFailed": "Failed to load voice actors",
+  "logLoadRecommendFailed": "Failed to load recommendations",
+  "logLoadSimilarFailed": "Failed to load similar works",
+  "logLoadFavoritesFailed": "Failed to load favorites",
+  "logLoadPlaylistsFailed": "Failed to load playlists",
+  "logLoadPlaylistWorksFailed": "Failed to load playlist works",
+  "logLoadWorkPlaylistsFailed": "Failed to load work playlists",
+  "logLoadFilterStateFailed": "Failed to load filter state",
+  "logSaveFilterStateFailed": "Failed to save filter state",
+  "logLoadCacheSizeFailed": "Failed to load cache size",
+  "logCleanCacheFailed": "Failed to clean cache",
+  "logCleanAudioCacheFailed": "Failed to clean audio cache",
+  "logCleanSubtitleCacheFailed": "Failed to clean subtitle cache",
+  "logCleanImageCacheFailed": "Failed to clean image cache",
+  "logCheckSimilarFailed": "Failed to check similar works",
+  "logToggleFavoriteFailed": "Failed to toggle favorite",
+  "logUpdateMarkFailed": "Failed to update mark status",
+  "logAddToPlaylistFailed": "Failed to add to playlist",
+  "logRemoveFromPlaylistFailed": "Failed to remove from playlist",
+  "logAddToPlaylistFailedDetail": "Failed to add to playlist: {detail}",
+  "logRemoveFromPlaylistFailedDetail": "Failed to remove from playlist: {detail}",
+  "logSubtitlePreviewLoadFailed": "Failed to load subtitle preview",
+  "logSubtitleImportFailed": "Subtitle import failed",
+  "logSubtitleParseException": "Subtitle parse exception",
+  "logUnsupportedSubtitleFormat": "Unsupported subtitle format",
+  "logSubtitleUrlEmpty": "Subtitle URL is empty",
+  "logSubtitleDownloadFailedCode": "Subtitle download failed: {code}",
+  "logNoAudioSources": "No playable audio sources",
+  "logFetchFileListFailed": "Failed to fetch file list: {code}",
+  "logFetchWorksFailed": "Failed to fetch works: {code}",
+  "logFetchFavoritesFailed": "Failed to fetch favorites: {code}",
+  "logFetchRecommendFailed": "Failed to fetch recommendations: {code}",
+  "logFetchPopularFailed": "Failed to fetch popular list: {code}",
+  "logFetchSimilarFailed": "Failed to fetch similar works: {code}",
+  "logFetchPlaylistsFailed": "Failed to fetch playlists: {code}",
+  "logFetchMyPlaylistsFailed": "Failed to fetch my playlists: {code}",
+  "logFetchTagsFailed": "Failed to fetch tags: {code}",
+  "logFetchCirclesFailed": "Failed to fetch circles: {code}",
+  "logFetchVoiceActorsFailed": "Failed to fetch voice actors: {code}",
+  "logFetchWorkDetailFailed": "Failed to fetch work detail: {code}",
+  "logFetchPlaylistWorksFailed": "Failed to fetch playlist works: {code}",
+  "logFetchDefaultMarkPlaylistFailed": "Failed to fetch default mark playlist: {code}",
+  "logRequestCancelled": "Request cancelled",
+  "logRequestTimeout": "Request timeout: {detail}",
+  "logConnectionFailed": "Connection failed: {detail}",
+  "logAuthFailedCode": "Auth failed: {code}",
+  "logClientErrorCode": "Client error: {code}",
+  "logServerErrorCode": "Server error: {code}",
+  "logUnknownResponseCode": "Unknown response error: {code}",
+  "logCertificateFailed": "Certificate validation failed: {detail}",
+  "logUnknownNetworkError": "Unknown network error: {detail}",
+  "logNetworkErrorDetail": "Network error: {detail}",
+  "logGithubRateLimited": "GitHub rate limited: {code}",
+  "logReleaseNotFound404": "Release not found: 404",
+  "logResponseErrorCode": "Response error: {code}",
+  "logGithubReleaseMissingFields": "GitHub release missing tag_name or html_url",
+  "logPlaylistEmpty": "Invalid playlist state: playlist is empty",
+  "logPlaylistIndexInvalid": "Invalid playlist index: {index}, length: {length}",
+  "logCurrentFileNotInPlaylist": "Current file is not in the playlist",
+  "logNotificationChannelName": "ASMR One Player",
+  "logPageNameHome": "Home",
+  "logPageNamePopular": "Popular",
+  "logActionRemove": "Remove",
+  "logActionAdd": "Add",
+  "logExpand": "Expand",
+  "logCollapse": "Collapse",
+  "logLoaded": "loaded",
+  "logNotLoaded": "not loaded",
+  "logFileListEmpty": "File list is empty",
+  "logCurrentFileNameEmpty": "Current file name is empty",
+  "logSubtitleNotFoundClearing": "Subtitle not found, clearing current subtitle",
+  "logRegisterOkLoginFailed": "Registered but auto-login failed",
+  "logAudioplayerhandlerInit92c24": "AudioPlayerHandler init",
+  "logAudiohandlerPlayCommanda6f42": "AudioHandler: play command",
+  "logAudiohandlerPauseCommanda0f46": "AudioHandler: pause command",
+  "logAudiohandlerSeekCommandPositc4726": "AudioHandler: seek command position={position}",
+  "@logAudiohandlerSeekCommandPositc4726": {
+    "placeholders": {
+      "position": {
+        "type": "String"
+      }
+    }
+  },
+  "logAudiohandlerNextCommand0e2e1": "AudioHandler: next command",
+  "logAudiohandlerPreviousCommand7454a": "AudioHandler: previous command",
+  "logAudiohandlerStopCommand7540c": "AudioHandler: stop command",
+  "logStartRestoringPlaybackStatebf3e6": "Start restoring playback state",
+  "logNoPlaybackStateToRestored59fb": "No playback state to restore",
+  "logLoadedSavedStateWorkidStateW175f5": "Loaded saved state: workId={state}",
+  "@logLoadedSavedStateWorkidStateW175f5": {
+    "placeholders": {
+      "state": {
+        "type": "String"
+      }
+    }
+  },
+  "logPlaylistInfoLengthContextPlac41a2": "Playlist info: length={context}, index={context2}",
+  "@logPlaylistInfoLengthContextPlac41a2": {
+    "placeholders": {
+      "context": {
+        "type": "String"
+      },
+      "context2": {
+        "type": "String"
+      }
+    }
+  },
+  "logRestoredPlaylistEmptySkipe85b3": "Restored playlist empty, skip",
+  "logPlaybackStateRestoredc4753": "Playback state restored",
+  "logSetContextFailedSkipStateRes87ad0": "Set context failed, skip state restore",
+  "logCreateaudioUrlUrlCachefil14d8a": "准备Createaudio源 - URL: {url}, Cachefile名: {fileName}",
+  "@logCreateaudioUrlUrlCachefil14d8a": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilenameUsingCachefile42421": "[{fileName}] Using已有Cachefile",
+  "@logFilenameUsingCachefile42421": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilenameCreateCache8c40f": "[{fileName}] Create新的Cache源",
+  "@logFilenameCreateCache8c40f": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logCacheAudioSourceFailedStreama308a": "Cache audio source failed, streaming fallback: {url}",
+  "@logCacheAudioSourceFailedStreama308a": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "logCacheSourceCreationError7469b": "Cache source creation error",
+  "logCannotDeleteCacheFileEntityP1dc66": "Cannot delete cache file: {entity}, may be in use",
+  "@logCannotDeleteCacheFileEntityP1dc66": {
+    "placeholders": {
+      "entity": {
+        "type": "String"
+      }
+    }
+  },
+  "logAudioCacheClearedDeletedDele52cd6": "Audio cache cleared, deleted {deleted} files",
+  "@logAudioCacheClearedDeletedDele52cd6": {
+    "placeholders": {
+      "deleted": {
+        "type": "String"
+      }
+    }
+  },
+  "logAudioCachePartialCleanOkDeleec69e": "Audio cache partial clean: ok {deleted}, failed {failed}",
+  "@logAudioCachePartialCleanOkDeleec69e": {
+    "placeholders": {
+      "deleted": {
+        "type": "String"
+      },
+      "failed": {
+        "type": "String"
+      }
+    }
+  },
+  "logGetCacheSizeFailedf83a7": "Get cache size failed",
+  "logFilenameCachevalidateFile4be6a": "[{fileName}] Cachevalidate: file不存在",
+  "@logFilenameCachevalidateFile4be6a": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilenameCachevalidateSizef7217": "[{fileName}] Cachevalidate: 大小={size}bytes, 年龄={age}",
+  "@logFilenameCachevalidateSizef7217": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      },
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilenameCacheinvalidFileexpif9f0f": "[{fileName}] Cacheinvalid: fileexpired ({age} > {_cacheExpiration})",
+  "@logFilenameCacheinvalidFileexpif9f0f": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      },
+      "age": {
+        "type": "String"
+      },
+      "_cacheExpiration": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilenameCachevalidateValid6ddeb": "[{fileName}] Cachevalidate: valid",
+  "@logFilenameCachevalidateValid6ddeb": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilenameCheckcachevalidFaile1bb88": "[{fileName}] CheckCachevalid性failed",
+  "@logFilenameCheckcachevalidFaile1bb88": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logLegacyTempCacheCleaneddcfa8": "Legacy temp cache cleaned",
+  "logLegacyCacheCleanupFailedE792c9": "Legacy cache cleanup failed: {e}",
+  "@logLegacyCacheCleanupFailedE792c9": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logTrySkipNextac03e": "Try skip next",
+  "logNoContextCannotSkipNextdc074": "No context, cannot skip next",
+  "logSwitchingToNextTrack5bd58": "Switching to next track",
+  "logNoNextTrack1c8bb": "No next track",
+  "logSkipNextFailed2be30": "Skip next failed",
+  "logTrySkipPrevious376dc": "Try skip previous",
+  "logNoContextCannotSkipPreviousc1953": "No context, cannot skip previous",
+  "logSwitchingToPreviousTrackabca4": "Switching to previous track",
+  "logNoPreviousTrackb0605": "No previous track",
+  "logSkipPreviousFailed965b5": "Skip previous failed",
+  "logPreparePlaybackContextWorkid46397": "Prepare playback context: workId={originalContext}, file={originalContext2}",
+  "@logPreparePlaybackContextWorkid46397": {
+    "placeholders": {
+      "originalContext": {
+        "type": "String"
+      },
+      "originalContext2": {
+        "type": "String"
+      }
+    }
+  },
+  "logPlaylistStateLengthOriginalc24b5f": "Playlist state: length={originalContext}, current index={originalContext2}",
+  "@logPlaylistStateLengthOriginalc24b5f": {
+    "placeholders": {
+      "originalContext": {
+        "type": "String"
+      },
+      "originalContext2": {
+        "type": "String"
+      }
+    }
+  },
+  "logPlaybackContextValidationFaica38c": "Playback context validation failed",
+  "logStopCurrentPlayback61998": "Stop current playback",
+  "logSetPlaybackSourceFailed81f10": "Set playback source failed",
+  "logUpdateTrackInfoeb504": "Update track info",
+  "logPlaybackContextSetaa3cc": "Playback context set",
+  "logSetPlaybackContextFailed866ab": "Set playback context failed",
+  "logUpdateTrackAndContextFileFile5842": "Update track and context: file={file}",
+  "@logUpdateTrackAndContextFileFile5842": {
+    "placeholders": {
+      "file": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartResolvingFilePathTargetb9a7f": "Start resolving file path: {targetFile}",
+  "@logStartResolvingFilePathTargetb9a7f": {
+    "placeholders": {
+      "targetFile": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilePathNotFound6f266": "File path not found",
+  "logFoundFilePathPath57008": "Found file path: {path}",
+  "@logFoundFilePathPath57008": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "logGetSiblingFilesTargetfileTit6cf37": "Get sibling files: {targetFile}",
+  "@logGetSiblingFilesTargetfileTit6cf37": {
+    "placeholders": {
+      "targetFile": {
+        "type": "String"
+      }
+    }
+  },
+  "logCannotResolveFilePathReturnEff0fd": "Cannot resolve file path, return empty",
+  "logParentDirPathParentpathd3aa7": "Parent dir path: {parentPath}",
+  "@logParentDirPathParentpathd3aa7": {
+    "placeholders": {
+      "parentPath": {
+        "type": "String"
+      }
+    }
+  },
+  "logFileAtRootUseRootFileList8c225": "File at root, use root file list",
+  "logParentDirEmptyReturnEmpty7c668": "Parent dir empty, return empty",
+  "logSiblingFileCountSiblingsLeng9ed81": "Sibling file count: {siblings}",
+  "@logSiblingFileCountSiblingsLeng9ed81": {
+    "placeholders": {
+      "siblings": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartBuildingPlaylist3066d": "Start building playlist...",
+  "logCurrentFileCurrentfileTitle51690": "Current file: {currentFile}",
+  "@logCurrentFileCurrentfileTitle51690": {
+    "placeholders": {
+      "currentFile": {
+        "type": "String"
+      }
+    }
+  },
+  "logCurrentFileTypeCurrentfileTyd7c12": "Current file type: {currentFile}",
+  "@logCurrentFileTypeCurrentfileTyd7c12": {
+    "placeholders": {
+      "currentFile": {
+        "type": "String"
+      }
+    }
+  },
+  "logCurrentFileExtensionExtensiof67a2": "Current file extension: {extension}",
+  "@logCurrentFileExtensionExtensiof67a2": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "logUnsupportedFileTypeExtension332f4": "Unsupported file type: {extension}",
+  "@logUnsupportedFileTypeExtension332f4": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "logFoundPlaylistLengthPlayableFa7c85": "Found {playlist} playable files:",
+  "@logFoundPlaylistLengthPlayableFa7c85": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      }
+    }
+  },
+  "logNotificationServiceInitializc2ef2": "Notification service initialized",
+  "logNotificationServiceInitFailef5f41": "Notification service init failed",
+  "logPlaybackStateSaved8075d": "Playback state saved",
+  "logSavePlaybackStateFailed48c3d": "Save playback state failed",
+  "logPlaybackStateCleareda68e0": "Playback state cleared",
+  "logClearPlaybackStateFailedebdde": "Clear playback state failed",
+  "logNoSavedPlaybackStated1b67": "No saved playback state",
+  "logPlaybackStateLoadedbf046": "Playback state loaded",
+  "logLoadPlaybackStateFailed21627": "Load playback state failed",
+  "logCreateAudioSourceFailedSkipe805d": "Create audio source failed, skip: {files_i_}",
+  "@logCreateAudioSourceFailedSkipe805d": {
+    "placeholders": {
+      "files_i_": {
+        "type": "String"
+      }
+    }
+  },
+  "logAllAudioSourcesFailed90f2f": "All audio sources failed",
+  "logOriginalIndexInitialindexUna075a6": "Original index {initialIndex} unavailable, use index {remappedIndex}",
+  "@logOriginalIndexInitialindexUna075a6": {
+    "placeholders": {
+      "initialIndex": {
+        "type": "String"
+      },
+      "remappedIndex": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartUnifiedCacheCleanup964c6": "Start unified cache cleanup...",
+  "logUnifiedCacheCleanupDoneea48b": "Unified cache cleanup done",
+  "logClearingAllCache16985": "Clearing all cache...",
+  "logAllCacheCleared0da32": "All cache cleared",
+  "logAutoCacheCleanupDone9b23a": "Auto cache cleanup done",
+  "logAutoCacheCleanupFailed7cdd2": "Auto cache cleanup failed",
+  "logCacheExpiredKey3dbc2": "Cache expired: {key}",
+  "@logCacheExpiredKey3dbc2": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "logCacheHitKeyebd0f": "Cache hit: {key}",
+  "@logCacheHitKeyebd0f": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "logCacheAddKey26f96": "Cache add: {key}",
+  "@logCacheAddKey26f96": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "logClearAllRecommendationCache6c408": "Clear all recommendation cache",
+  "logRemoveWorkCacheItemid82faf": "Remove work cache: {itemId}",
+  "@logRemoveWorkCacheItemid82faf": {
+    "placeholders": {
+      "itemId": {
+        "type": "String"
+      }
+    }
+  },
+  "logInitDatabasePath557d5": "Init database: {path}",
+  "@logInitDatabasePath557d5": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "logDatabaseTablesCreatedVVersiofa44c": "Database tables created (v{version})",
+  "@logDatabaseTablesCreatedVVersiofa44c": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "logDatabaseUpgradeOldversionNe5cef7": "Database upgrade: {oldVersion} -> {newVersion}",
+  "@logDatabaseUpgradeOldversionNe5cef7": {
+    "placeholders": {
+      "oldVersion": {
+        "type": "String"
+      },
+      "newVersion": {
+        "type": "String"
+      }
+    }
+  },
+  "logApplyDbMigrationVV368dc": "Apply DB migration: -> v{v}",
+  "@logApplyDbMigrationVV368dc": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "logCloseDatabaseFailed3f1be": "Close database failed",
+  "logExternalStorageUnavailableFae9daa": "External storage unavailable, fallback internal: {e}",
+  "@logExternalStorageUnavailableFae9daa": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logStaleDownloadRowCleanedEntry5340a": "Stale download row cleaned: {entry}",
+  "@logStaleDownloadRowCleanedEntry5340a": {
+    "placeholders": {
+      "entry": {
+        "type": "String"
+      }
+    }
+  },
+  "logCleanStaleDownloadRowsFailede1ed8": "Clean stale download rows failed",
+  "logDownloadMissingUrlOrFilename1e7e8": "Download missing URL or filename: {fileName}",
+  "@logDownloadMissingUrlOrFilename1e7e8": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logDownloadCompleteWorkidFilena3d481": "Download complete: {workId}/{fileName} -> {destPath}",
+  "@logDownloadCompleteWorkidFilena3d481": {
+    "placeholders": {
+      "workId": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      },
+      "destPath": {
+        "type": "String"
+      }
+    }
+  },
+  "logDownloadCancelledWorkidFilene08ac": "Download cancelled: {workId}/{fileName}",
+  "@logDownloadCancelledWorkidFilene08ac": {
+    "placeholders": {
+      "workId": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logDownloadNetworkErrorWorkidFi3d322": "Download network error: {workId}/{fileName}",
+  "@logDownloadNetworkErrorWorkidFi3d322": {
+    "placeholders": {
+      "workId": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logDownloadFailedWorkidFilename338fd": "download failed: {workId}/{fileName}",
+  "@logDownloadFailedWorkidFilename338fd": {
+    "placeholders": {
+      "workId": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logQueryDownloadToRemoveFailedb00ee": "Query download to remove failed",
+  "logRemoveDownloadDbRowFailedKee7b72d": "Remove download DB row failed, keep file",
+  "logRemoveDownloadFileFailedDbRo1c106": "Remove download file failed (DB row deleted): {e}",
+  "@logRemoveDownloadFileFailedDbRo1c106": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logDownloadCapacityReclaimFaile4d679": "Download capacity reclaim failed",
+  "logDownloadRowSavedEntryWorkid6e26d": "Download row saved: {entry}/{entry2}",
+  "@logDownloadRowSavedEntryWorkid6e26d": {
+    "placeholders": {
+      "entry": {
+        "type": "String"
+      },
+      "entry2": {
+        "type": "String"
+      }
+    }
+  },
+  "logDownloadRowDeletedWorkidFile8c4f0": "Download row deleted: {workId}/{fileKey}",
+  "@logDownloadRowDeletedWorkidFile8c4f0": {
+    "placeholders": {
+      "workId": {
+        "type": "String"
+      },
+      "fileKey": {
+        "type": "String"
+      }
+    }
+  },
+  "logGetImageCacheSizeFailed8c2b8": "Get image cache size failed",
+  "logImageCacheCleared7784c": "Image cache cleared",
+  "logTagBackgroundPauseFailed79342": "[{_tag}] Background pause failed",
+  "@logTagBackgroundPauseFailed79342": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagRequestPermission021a2": "[{_tag}] request permission",
+  "@logTagRequestPermission021a2": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagInitd4e18": "[{_tag}] Init",
+  "@logTagInitd4e18": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagInitFailed3648a": "[{_tag}] Init failed",
+  "@logTagInitFailed3648a": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagShowOverlay90227": "[{_tag}] show overlay",
+  "@logTagShowOverlay90227": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagHideOverlay4fda2": "[{_tag}] hide overlay",
+  "@logTagHideOverlay4fda2": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagCheckPermissionf3479": "[{_tag}] check permission",
+  "@logTagCheckPermissionf3479": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagDisposea3399": "[{_tag}] dispose",
+  "@logTagDisposea3399": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagSleepTimerPauseFailed9626d": "[{_tag}] Sleep timer pause failed",
+  "@logTagSleepTimerPauseFailed9626d": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagLoadStateFailedb0232": "[{_tag}] load state failed",
+  "@logTagLoadStateFailedb0232": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagToggleStateFailed284fe": "[{_tag}] toggle state failed",
+  "@logTagToggleStateFailed284fe": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagDisposeFailede13c8": "[{_tag}] dispose failed",
+  "@logTagDisposeFailede13c8": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleCacheExpiredUrle7fbb": "Subtitle cache expired: {url}",
+  "@logSubtitleCacheExpiredUrle7fbb": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "logUsingSubtitleCacheUrl3a292": "Using subtitle cache: {url}",
+  "@logUsingSubtitleCacheUrl3a292": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "logReadSubtitleCacheFaileddb134": "Read subtitle cache failed",
+  "logSubtitleCachedUrlec740": "Subtitle cached: {url}",
+  "@logSubtitleCachedUrlec740": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "logSaveSubtitleCacheFailedf3048": "Save subtitle cache failed",
+  "logSubtitleCacheCleared0d887": "Subtitle cache cleared",
+  "logGetSubtitleCacheSizeFailed622b3": "Get subtitle cache size failed",
+  "logSubtitleStateCleared0e6a2": "Subtitle state cleared",
+  "logLrcTimeTagParseFailedE0589e": "LRC time tag parse failed: {e}",
+  "@logLrcTimeTagParseFailedE0589e": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logLrcParseCompleteSubtitlesLen8f25e": "LRC parse complete: {subtitles}条Subtitle, {metadata}元数据",
+  "@logLrcParseCompleteSubtitlesLen8f25e": {
+    "placeholders": {
+      "subtitles": {
+        "type": "String"
+      },
+      "metadata": {
+        "type": "String"
+      }
+    }
+  },
+  "logNoMatchingSubtitleParser8b7bb": "No matching subtitle parser",
+  "logUserSubtitleRowSavedEntryWorc4adb": "User subtitle row saved: {entry}/{entry2}",
+  "@logUserSubtitleRowSavedEntryWorc4adb": {
+    "placeholders": {
+      "entry": {
+        "type": "String"
+      },
+      "entry2": {
+        "type": "String"
+      }
+    }
+  },
+  "logUserSubtitleRowDeletedWorkid82bad": "User subtitle row deleted: {workId}/{fileName}",
+  "@logUserSubtitleRowDeletedWorkid82bad": {
+    "placeholders": {
+      "workId": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleFormatUnsupportedExtd85b3": "Subtitle format unsupported: {ext}",
+  "@logSubtitleFormatUnsupportedExtd85b3": {
+    "placeholders": {
+      "ext": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleFileTooLargeFilesizeab4da": "Subtitle file too large: {fileSize____1024}KB",
+  "@logSubtitleFileTooLargeFilesizeab4da": {
+    "placeholders": {
+      "fileSize____1024": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleContentParseFailedOr9cb41": "Subtitle content parse failed: {originalName}",
+  "@logSubtitleContentParseFailedOr9cb41": {
+    "placeholders": {
+      "originalName": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleFileHasNoValidConten02363": "Subtitle file has no valid content: {originalName}",
+  "@logSubtitleFileHasNoValidConten02363": {
+    "placeholders": {
+      "originalName": {
+        "type": "String"
+      }
+    }
+  },
+  "logDeleteOldImportedSubtitleFil9e249": "Delete old imported subtitle file: {existingEntry}",
+  "@logDeleteOldImportedSubtitleFil9e249": {
+    "placeholders": {
+      "existingEntry": {
+        "type": "String"
+      }
+    }
+  },
+  "logOldSubtitleCleanupFailedImpo6282e": "Old subtitle cleanup failed (import ok): {e}",
+  "@logOldSubtitleCleanupFailedImpo6282e": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleImportSucceededOrigi127da": "Subtitle import succeeded: {originalName} -> {workId}/{fileName}",
+  "@logSubtitleImportSucceededOrigi127da": {
+    "placeholders": {
+      "originalName": {
+        "type": "String"
+      },
+      "workId": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logLocalSubtitleFileMissingFile59c5c": "Local subtitle file missing: {filePath}",
+  "@logLocalSubtitleFileMissingFile59c5c": {
+    "placeholders": {
+      "filePath": {
+        "type": "String"
+      }
+    }
+  },
+  "logLoadLocalSubtitleFailed5afd7": "Load local subtitle failed",
+  "logQueryRemovesubtitleFailed292b7": "Query待RemoveSubtitle关联failed",
+  "logRemoveSubtitleDbRowFailedKeea4675": "Remove subtitle DB row failed, keep file",
+  "logRemoveSubtitleFileFailedDbRoe5275": "Remove subtitle file failed (DB row deleted): {e}",
+  "@logRemoveSubtitleFileFailedDbRoe5275": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logRemovedImportedSubtitleWorkibd879": "Removed imported subtitle: {workId}/{fileName}",
+  "@logRemovedImportedSubtitleWorkibd879": {
+    "placeholders": {
+      "workId": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartFindingSubtitleFileb7fbb": "Start finding subtitle file...",
+  "logFoundSubtitleFileSubtitlefilefa0b": "Found subtitle file: {subtitleFile}, URL: {subtitleFile2}",
+  "@logFoundSubtitleFileSubtitlefilefa0b": {
+    "placeholders": {
+      "subtitleFile": {
+        "type": "String"
+      },
+      "subtitleFile2": {
+        "type": "String"
+      }
+    }
+  },
+  "logNoSubtitleInCurrentDirectoryb005d": "No subtitle in current directory",
+  "logLoadSubtitleFromCacheUrle52f3": "Load subtitle from cache: {url}",
+  "@logLoadSubtitleFromCacheUrle52f3": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "logLoadSubtitleFromNetworkUrl9145d": "Load subtitle from network: {url}",
+  "@logLoadSubtitleFromNetworkUrl9145d": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitlefiledownloadstateResd5fd5": "SubtitlefileDownloadstate: {response}",
+  "@logSubtitlefiledownloadstateResd5fd5": {
+    "placeholders": {
+      "response": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleLoadFailedEfb464": "Subtitle load failed: {e}",
+  "@logSubtitleLoadFailedEfb464": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logTimelineParseFailedFallbackT8e556": "Timeline parse failed, fallback to raw: {e}",
+  "@logTimelineParseFailedFallbackT8e556": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleParseCompleteSubtitlae958": "Subtitle parse complete，Subtitle数量: {subtitleList}",
+  "@logSubtitleParseCompleteSubtitlae958": {
+    "placeholders": {
+      "subtitleList": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitlematchExactExactmatch334b5": "Subtitlematch[exact]: {exactMatch}",
+  "@logSubtitlematchExactExactmatch334b5": {
+    "placeholders": {
+      "exactMatch": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitlematchPrefixPrefixmat07a65": "Subtitlematch[prefix]: {prefixMatch}",
+  "@logSubtitlematchPrefixPrefixmat07a65": {
+    "placeholders": {
+      "prefixMatch": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitlematchSimilaritySimil52acf": "Subtitlematch[similarity]: {similarMatch}",
+  "@logSubtitlematchSimilaritySimil52acf": {
+    "placeholders": {
+      "similarMatch": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitlesimilarityBestmatchTc3940": "Subtitlesimilarity最高: {bestMatch} (score: {bestScore})",
+  "@logSubtitlesimilarityBestmatchTc3940": {
+    "placeholders": {
+      "bestMatch": {
+        "type": "String"
+      },
+      "bestScore": {
+        "type": "String"
+      }
+    }
+  },
+  "logSecureStorageReadFailedFallb4e79f": "Secure storage read failed, fallback to prefs: {e}",
+  "@logSecureStorageReadFailedFallb4e79f": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthMigrationFailedKeepPrefs5e139": "Auth migration failed, keep prefs plaintext: {e}",
+  "@logAuthMigrationFailedKeepPrefs5e139": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthDataMigratedToSecureStor5b637": "Auth data migrated to secure storage",
+  "logAuthDataSavedSecureStoragef9d9f": "Auth data saved (secure storage)",
+  "logSecureStorageWriteFailedFallfdfba": "Secure storage write failed, fallback to prefs: {e}",
+  "@logSecureStorageWriteFailedFallfdfba": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logPrefsFallbackWriteAlsoFailed1252d": "Prefs fallback write also failed",
+  "logClearAuthDatafailedEac5db": "Clear安全存储Auth datafailed: {e}",
+  "@logClearAuthDatafailedEac5db": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logClearPrefsAuthDatafailedE0d083": "Clear prefs Auth datafailed: {e}",
+  "@logClearPrefsAuthDatafailedE0d083": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthDataCleared160e7": "Auth data cleared",
+  "logApiServerSwitchedSettingsSer60b99": "API server switched: {_settings}",
+  "@logApiServerSwitchedSettingsSer60b99": {
+    "placeholders": {
+      "_settings": {
+        "type": "String"
+      }
+    }
+  },
+  "logSearchResponseDataResponseDad62cd": "Search response data: {response}",
+  "@logSearchResponseDataResponseDad62cd": {
+    "placeholders": {
+      "response": {
+        "type": "String"
+      }
+    }
+  },
+  "logDefaultMarkPlaylistFetchedId166ef": "Default mark playlist fetched: id={playlist}, name={playlist2}",
+  "@logDefaultMarkPlaylistFetchedId166ef": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      },
+      "playlist2": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthApiServerSwitchedSetting7985a": "Auth API server switched: {_settings}",
+  "@logAuthApiServerSwitchedSetting7985a": {
+    "placeholders": {
+      "_settings": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartLoginRequestNameNameBasa9cd2": "Start login request: name={name}, baseUrl={_dio}",
+  "@logStartLoginRequestNameNameBasa9cd2": {
+    "placeholders": {
+      "_dio": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "logLoginResponseReceivedStatuscc6594": "Login response received: statusCode={response}",
+  "@logLoginResponseReceivedStatuscc6594": {
+    "placeholders": {
+      "response": {
+        "type": "String"
+      }
+    }
+  },
+  "logRegisterResponseReceivedStat806f3": "Register response received: statusCode={response}",
+  "@logRegisterResponseReceivedStat806f3": {
+    "placeholders": {
+      "response": {
+        "type": "String"
+      }
+    }
+  },
+  "logRegisteredWithTokenSkipFollo54265": "Registered with token, skip follow-up login",
+  "logRegisteredWithoutTokenFallba780d3": "Registered without token, fallback to login",
+  "logRequestTimeoutEMessagee56d4": "Request timeout: {e}",
+  "@logRequestTimeoutEMessagee56d4": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logConnectionFailedEMessageae7e5": "Connection failed: {e}",
+  "@logConnectionFailedEMessageae7e5": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthFailedStatuscode3531b": "Auth failed: {statusCode}",
+  "@logAuthFailedStatuscode3531b": {
+    "placeholders": {
+      "statusCode": {
+        "type": "String"
+      }
+    }
+  },
+  "logClientErrorStatuscode3f573": "Client error: {statusCode}",
+  "@logClientErrorStatuscode3f573": {
+    "placeholders": {
+      "statusCode": {
+        "type": "String"
+      }
+    }
+  },
+  "logServerErrorStatuscodeea835": "Server error: {statusCode}",
+  "@logServerErrorStatuscodeea835": {
+    "placeholders": {
+      "statusCode": {
+        "type": "String"
+      }
+    }
+  },
+  "logUnknownResponseErrorStatusco531da": "Unknown response error: {statusCode}",
+  "@logUnknownResponseErrorStatusco531da": {
+    "placeholders": {
+      "statusCode": {
+        "type": "String"
+      }
+    }
+  },
+  "logCertificateValidationFailedE94918": "Certificate validation failed: {e}",
+  "@logCertificateValidationFailedE94918": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logUnknownNetworkErrorEMessagee0ea2": "Unknown network error: {e}",
+  "@logUnknownNetworkErrorEMessagee0ea2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logNetworkErrorEMessage80c20": "Network error: {e}",
+  "@logNetworkErrorEMessage80c20": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthinterceptorRequestFailed68aba": "AuthInterceptor: request failed",
+  "logNetworkRetryRetrycount1Ma64331": "Network retry ({retryCount___1}/{maxRetries}), wait {delay}ms: {options}",
+  "@logNetworkRetryRetrycount1Ma64331": {
+    "placeholders": {
+      "retryCount___1": {
+        "type": "String"
+      },
+      "delay": {
+        "type": "String"
+      },
+      "options": {
+        "type": "String"
+      },
+      "maxRetries": {
+        "type": "String"
+      }
+    }
+  },
+  "logUpdateCheckRemoteLatestVersi710ef": "Update check: remote={latest} current={current} has update={hasUpdate}",
+  "@logUpdateCheckRemoteLatestVersi710ef": {
+    "placeholders": {
+      "latest": {
+        "type": "String"
+      },
+      "current": {
+        "type": "String"
+      },
+      "hasUpdate": {
+        "type": "String"
+      }
+    }
+  },
+  "logUpdateCheckNetworkFailed7aa8a": "Update check network failed",
+  "logUpdateCheckParseFailed537cd": "Update check parse failed",
+  "logReleasesResponseIsNotAnArray69be5": "releases response is not an array: {data}",
+  "@logReleasesResponseIsNotAnArray69be5": {
+    "placeholders": {
+      "data": {
+        "type": "String"
+      }
+    }
+  },
+  "logNoValidReleaseEmptyOrNoSemveee981": "No valid release (empty or no semver tag)",
+  "logParseFailedEe96d4": "Parse failed: {e}",
+  "@logParseFailedEe96d4": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthviewmodelLoginStart6547f": "AuthViewModel: login start",
+  "logAuthviewmodelLoginFailedbdfe4": "AuthViewModel: login failed",
+  "logAuthviewmodelRegisterStarte2fa4": "AuthViewModel: register start",
+  "logAuthviewmodelRegisterFailed7d876": "AuthViewModel: register failed",
+  "logAuthviewmodelLogoute9158": "AuthViewModel: logout",
+  "logRefreshingPagenamee3eb2": "Refreshing{pageName}",
+  "@logRefreshingPagenamee3eb2": {
+    "placeholders": {
+      "pageName": {
+        "type": "String"
+      }
+    }
+  },
+  "logDisposingPagenameViewmodelfc71e": "Disposing{pageName} ViewModel",
+  "@logDisposingPagenameViewmodelfc71e": {
+    "placeholders": {
+      "pageName": {
+        "type": "String"
+      }
+    }
+  },
+  "logCirclesLoadedAllcirclesLengtbf4e0": "Circles loaded: {_allCircles} circles",
+  "@logCirclesLoadedAllcirclesLengtbf4e0": {
+    "placeholders": {
+      "_allCircles": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartLoadingWorkFilesWorkId5bb3d": "Start loading work files: {work}",
+  "@logStartLoadingWorkFilesWorkId5bb3d": {
+    "placeholders": {
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilesLoadedWorkId92bd2": "Files loaded: {work}",
+  "@logFilesLoadedWorkId92bd2": {
+    "placeholders": {
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "logWorkDetailLoadedWorkId3f489": "Work detail loaded: {work}",
+  "@logWorkDetailLoadedWorkId3f489": {
+    "placeholders": {
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "logPairedSubtitleDownloadFailedd44d7": "Paired subtitle download failed (audio unaffected): {e}",
+  "@logPairedSubtitleDownloadFailedd44d7": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logPlaybackErrorEventEventOpera07a4d": "playback error event: {event}",
+  "@logPlaybackErrorEventEventOpera07a4d": {
+    "placeholders": {
+      "event": {
+        "type": "String"
+      }
+    }
+  },
+  "logUsingDownloadedLocalSubtitlef5b14": "Using downloaded local subtitle: {localPath}",
+  "@logUsingDownloadedLocalSubtitlef5b14": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleUrlUnavailableCleari4443f": "Subtitle URL unavailable, clearing",
+  "logTagPlayerStateStreamErrorb3257": "{_tag} - player state stream error: {error}",
+  "@logTagPlayerStateStreamErrorb3257": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagTrackChangeStreamErrorce29a": "{_tag} - track change stream error: {error}",
+  "@logTagTrackChangeStreamErrorce29a": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagProgressStreamErrorErro5613a": "{_tag} - progress stream error: {error}",
+  "@logTagProgressStreamErrorErro5613a": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagSubtitleSyncStreamError0bca2": "{_tag} - subtitle sync stream error: {error}",
+  "@logTagSubtitleSyncStreamError0bca2": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagContextStreamErrorErrora0756": "{_tag} - context stream error: {error}",
+  "@logTagContextStreamErrorErrora0756": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagInitialStateStreamError36ea4": "{_tag} - initial state stream error: {error}",
+  "@logTagInitialStateStreamError36ea4": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagErrorEventStreamErrorE48848": "{_tag} - error event stream error: {error}",
+  "@logTagErrorEventStreamErrorE48848": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagClearedStateStreamError92747": "{_tag} - cleared state stream error: {error}",
+  "@logTagClearedStateStreamError92747": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagCompletedStreamErrorErr77a4c": "{_tag} - completed stream error: {error}",
+  "@logTagCompletedStreamErrorErr77a4c": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagSubtitleStreamErrorErro296b9": "{_tag} - subtitle stream error: {error}",
+  "@logTagSubtitleStreamErrorErro296b9": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagCurrentSubtitleStreamErro2fef4": "{_tag} - current subtitle stream error: {error}",
+  "@logTagCurrentSubtitleStreamErro2fef4": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logDisposingPlaylistsviewmodele5090": "Disposing PlaylistsViewModel",
+  "logSearchKeywordKeywordPage420d8": "Search keyword: {keyword}, 码: {page}",
+  "@logSearchKeywordKeywordPage420d8": {
+    "placeholders": {
+      "keyword": {
+        "type": "String"
+      },
+      "page": {
+        "type": "String"
+      }
+    }
+  },
+  "logSearchSucceededResponseWorks55719": "Search succeeded: {response} results",
+  "@logSearchSucceededResponseWorks55719": {
+    "placeholders": {
+      "response": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagsLoadedAlltagsLengthTags7b78a": "Tags loaded: {_allTags} tags",
+  "@logTagsLoadedAlltagsLengthTags7b78a": {
+    "placeholders": {
+      "_allTags": {
+        "type": "String"
+      }
+    }
+  },
+  "logUpdateviewmodelUpdateCheckFacead5": "UpdateViewModel: update check failed",
+  "logUpdateviewmodelUpdateCheckUn69571": "UpdateViewModel: update check unknown",
+  "logUpdateviewmodelOpenDownloadFf03f5": "UpdateViewModel: open download failed",
+  "logVoiceActorsLoadedAllvoiceact8347d": "Voice actors loaded: {_allVoiceActors} voice actors",
+  "@logVoiceActorsLoadedAllvoiceact8347d": {
+    "placeholders": {
+      "_allVoiceActors": {
+        "type": "String"
+      }
+    }
+  },
+  "logLogindialogLoginAttemptNameN70c23": "LoginDialog: login attempt: name={name}",
+  "@logLogindialogLoginAttemptNameN70c23": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "logLogindialogLoginOkClosing833b9": "LoginDialog: login ok, closing",
+  "logLogindialogLoginFailedAuthvmaa6d5": "LoginDialog: login failed: {authVM}",
+  "@logLogindialogLoginFailedAuthvmaa6d5": {
+    "placeholders": {
+      "authVM": {
+        "type": "String"
+      }
+    }
+  },
+  "logRegisterdialogRegisterAttemp39a65": "RegisterDialog: register attempt: name={name}",
+  "@logRegisterdialogRegisterAttemp39a65": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "logRegisterdialogRegisterOkClos5c5a3": "RegisterDialog: register ok, closing",
+  "logRegisterdialogRegisterFailede25aa": "RegisterDialog: register failed: {authVM}",
+  "@logRegisterdialogRegisterFailede25aa": {
+    "placeholders": {
+      "authVM": {
+        "type": "String"
+      }
+    }
+  },
+  "logRunSearchKeyword2ee4b": "Run search: {keyword}",
+  "@logRunSearchKeyword2ee4b": {
+    "placeholders": {
+      "keyword": {
+        "type": "String"
+      }
+    }
+  },
+  "logFileTappedFileTitleFileTe6c23": "File tapped: {file} ({file2})",
+  "@logFileTappedFileTitleFileTe6c23": {
+    "placeholders": {
+      "file": {
+        "type": "String"
+      },
+      "file2": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagTappedKeyword12029": "Tag tapped: {keyword}",
+  "@logTagTappedKeyword12029": {
+    "placeholders": {
+      "keyword": {
+        "type": "String"
+      }
+    }
+  },
+  "logMarkStatusUpdated": "Mark status updated: {label}",
+  "logFolderToggled": "{action} folder: {title}",
+  "logSubtitleListUpdated": "Subtitle list updated: {status}",
+  "logCannotFindSubtitleReason": "Cannot find subtitle file: {reason}",
+  "logSubtitleStateUpdated": "Subtitle update: {text} ({state})",
+  "logNoSubtitle": "No subtitle",
+  "logErrorDetails": "Error details: {detail}",
+  "@logErrorDetails": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "logPartialCacheDeleteFailed": "Some cache files could not be deleted ({count}), may be playing",
+  "@logPartialCacheDeleteFailed": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "logOpSkipNext": "skip next",
+  "logOpSkipPrevious": "skip previous",
+  "logOpSetContext": "set playback context",
+  "logOpAudioPlayerInit": "audio player init",
+  "logOpRestorePlaybackState": "restore playback state",
+  "logOpSavePlaybackState": "save playback state",
+  "logOpClearPlaybackState": "clear playback state",
+  "logOpLoadPlaybackState": "load playback state",
+  "logPlaybackOperationFailed": "Playback operation failed: {operation}",
+  "@logPlaybackOperationFailed": {
+    "placeholders": {
+      "operation": {
+        "type": "String"
+      }
+    }
+  },
+  "logPlaylistOperationFailed": "Playlist operation failed: {operation}",
+  "@logPlaylistOperationFailed": {
+    "placeholders": {
+      "operation": {
+        "type": "String"
+      }
+    }
+  },
+  "logStateOperationFailed": "State operation failed: {operation}",
+  "@logStateOperationFailed": {
+    "placeholders": {
+      "operation": {
+        "type": "String"
+      }
+    }
+  },
+  "logContextOperationFailed": "Context operation failed: {operation}",
+  "@logContextOperationFailed": {
+    "placeholders": {
+      "operation": {
+        "type": "String"
+      }
+    }
+  },
+  "logInitOperationFailed": "Init failed: {operation}",
+  "@logInitOperationFailed": {
+    "placeholders": {
+      "operation": {
+        "type": "String"
+      }
+    }
+  },
+  "logLoginSucceeded": "Login succeeded: username={username}, group={group}",
+  "@logLoginSucceeded": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "logRegisterSucceeded": "Register succeeded: name={name}, group={group}",
+  "@logRegisterSucceeded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "logLoadedSavedAuth": "Loaded saved auth data: {name}",
+  "@logLoadedSavedAuth": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "logPlaylistsPageLoaded": "Page {page} playlists loaded: {count}",
+  "@logPlaylistsPageLoaded": {
+    "placeholders": {
+      "page": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "logWorkPlaylistsLoaded": "Work playlists loaded: {count}",
+  "@logWorkPlaylistsLoaded": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "logMyPlaylistsFetched": "Playlists fetched: {count}",
+  "@logMyPlaylistsFetched": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "@logPlaylistIndexInvalid": {
+    "placeholders": {
+      "index": {
+        "type": "String"
+      },
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleContentPreview": "Subtitle content preview: {preview}...",
+  "@logSubtitleContentPreview": {
+    "placeholders": {
+      "preview": {
+        "type": "String"
+      }
+    }
+  },
+  "logLyricOverlayUpdate": "[{tag}] update lyric: {text}",
+  "@logLyricOverlayUpdate": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartRegisterRequest": "Start register request: name={name}, hasRecommender={hasRecommender}, baseUrl={baseUrl}",
+  "@logStartRegisterRequest": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "hasRecommender": {
+        "type": "String"
+      },
+      "baseUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "logSetPlaybackSourceInitial": "Set playback source: initial position={ms}ms",
+  "@logSetPlaybackSourceInitial": {
+    "placeholders": {
+      "ms": {
+        "type": "String"
+      }
+    }
+  },
+  "logFavoriteUpdated": "{action} favorite updated: {name}",
+  "@logFavoriteUpdated": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "logUsingPreloadedData": "Using preloaded data: page {page} {pageName}",
+  "@logUsingPreloadedData": {
+    "placeholders": {
+      "page": {
+        "type": "String"
+      },
+      "pageName": {
+        "type": "String"
+      }
+    }
+  },
+  "logLoadingPageName": "Loading {pageName}: page {page}",
+  "@logLoadingPageName": {
+    "placeholders": {
+      "pageName": {
+        "type": "String"
+      },
+      "page": {
+        "type": "String"
+      }
+    }
+  },
+  "logPageWorksLoaded": "Page {page} {pageName} loaded: {count} works",
+  "@logPageWorksLoaded": {
+    "placeholders": {
+      "page": {
+        "type": "String"
+      },
+      "pageName": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "logPageLoadFailed": "Failed to load {pageName}",
+  "@logPageLoadFailed": {
+    "placeholders": {
+      "pageName": {
+        "type": "String"
+      }
+    }
+  },
+  "logPreloadDone": "Preload {pageName} page {nextPage} done",
+  "@logPreloadDone": {
+    "placeholders": {
+      "pageName": {
+        "type": "String"
+      },
+      "nextPage": {
+        "type": "String"
+      }
+    }
+  },
+  "logPreloadFailed": "Preload {pageName} page {nextPage} failed: {error}",
+  "@logPreloadFailed": {
+    "placeholders": {
+      "pageName": {
+        "type": "String"
+      },
+      "nextPage": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logPageListLoaded": "Page {page} {listName} loaded: {count} works",
+  "@logPageListLoaded": {
+    "placeholders": {
+      "page": {
+        "type": "String"
+      },
+      "listName": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "logPageNamePlaylistWorks": "playlist works",
+  "@logMarkStatusUpdated": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "logPageNameFavorites": "favorites",
+  "logPageNameRecommend": "recommendations",
+  "logPageNameSimilar": "similar works"
 }

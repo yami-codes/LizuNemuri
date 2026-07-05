@@ -3,6 +3,7 @@ import 'package:xuro/core/database/database_service.dart';
 import 'package:xuro/core/download/models/download_entry.dart';
 import 'package:xuro/core/download/storage/i_download_repository.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class DownloadRepository implements IDownloadRepository {
   static const _table = 'downloads';
@@ -31,7 +32,7 @@ class DownloadRepository implements IDownloadRepository {
       entry.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    AppLogger.debug('下载记录已保存: ${entry.workId}/${entry.fileName}');
+    AppLogger.debug(LogStrings.logDownloadRowSavedEntryWorkid6e26d(entry.workId, entry.fileName));
   }
 
   @override
@@ -42,7 +43,7 @@ class DownloadRepository implements IDownloadRepository {
       where: 'work_id = ? AND file_key = ?',
       whereArgs: [workId, fileKey],
     );
-    AppLogger.debug('下载记录已删除: $workId/$fileKey');
+    AppLogger.debug(LogStrings.logDownloadRowDeletedWorkidFile8c4f0(workId, fileKey));
   }
 
   @override

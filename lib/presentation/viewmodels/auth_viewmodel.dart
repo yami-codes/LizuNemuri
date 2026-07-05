@@ -4,6 +4,7 @@ import 'package:xuro/data/models/auth/auth_resp/auth_resp.dart';
 import 'package:xuro/data/services/auth_service.dart';
 import 'package:xuro/data/repositories/auth_repository.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final AuthService _authService;
@@ -23,7 +24,7 @@ class AuthViewModel extends ChangeNotifier {
   Future<void> _loadSavedAuth() async {
     _authData = await _authRepository.getAuthData();
     if (_authData != null) {
-      AppLogger.info('加载保存的认证数据: ${_authData?.user?.name}');
+      AppLogger.info(LogStrings.logLoadedSavedAuth(_authData?.user?.name ?? ''));
     }
     notifyListeners();
   }
@@ -36,7 +37,7 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      AppLogger.info('AuthViewModel: 开始登录流程');
+      AppLogger.info(LogStrings.logAuthviewmodelLoginStart6547f);
       _authData = await _authService.login(name, password);
       
       // 保存认证数据
@@ -53,7 +54,7 @@ class AuthViewModel extends ChangeNotifier {
       ''');
 
     } catch (e) {
-      AppLogger.error('AuthViewModel: 登录失败', e);
+      AppLogger.error(LogStrings.logAuthviewmodelLoginFailedbdfe4, e);
       _error = Strings.loginFailedGeneric;
       _authData = null;
     } finally {
@@ -74,7 +75,7 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      AppLogger.info('AuthViewModel: 开始注册流程');
+      AppLogger.info(LogStrings.logAuthviewmodelRegisterStarte2fa4);
       _authData = await _authService.register(
         name,
         password,
@@ -84,13 +85,13 @@ class AuthViewModel extends ChangeNotifier {
       await _authRepository.saveAuthData(_authData!);
 
       AppLogger.info(
-        '注册成功: name=${_authData?.user?.name}, group=${_authData?.user?.group}',
+        LogStrings.logRegisterSucceeded(_authData?.user?.name ?? '', _authData?.user?.group ?? ''),
       );
     } on RegisteredButNotLoggedInException {
       _error = Strings.registerOkButLoginFailed;
       _authData = null;
     } catch (e) {
-      AppLogger.error('AuthViewModel: 注册失败', e);
+      AppLogger.error(LogStrings.logAuthviewmodelRegisterFailed7d876, e);
       _error = Strings.registerFailedGeneric;
       _authData = null;
     } finally {
@@ -100,7 +101,7 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    AppLogger.info('AuthViewModel: 执行登出');
+    AppLogger.info(LogStrings.logAuthviewmodelLogoute9158);
     AppLogger.info('''
 登出用户信息:
 - name: ${_authData?.user?.name}
@@ -133,7 +134,7 @@ class AuthViewModel extends ChangeNotifier {
   Future<void> loadSavedAuth() async {
     _authData = await _authRepository.getAuthData();
     if (_authData != null) {
-      AppLogger.info('加载保存的认证数据: ${_authData?.user?.name}');
+      AppLogger.info(LogStrings.logLoadedSavedAuth(_authData?.user?.name ?? ''));
     }
     notifyListeners();
   }

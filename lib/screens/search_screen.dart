@@ -7,6 +7,7 @@ import 'package:xuro/widgets/work_grid_view.dart';
 import 'package:xuro/presentation/layouts/work_layout_strategy.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:xuro/widgets/pagination_controls.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class SearchScreen extends StatelessWidget {
   final String? initialKeyword;
@@ -66,7 +67,7 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
     final keyword = _searchController.text.trim();
     if (keyword.isEmpty) return;
 
-    AppLogger.debug('执行搜索: $keyword');
+    AppLogger.debug(LogStrings.logRunSearchKeyword2ee4b(keyword));
     context.read<SearchViewModel>().search(keyword);
   }
 

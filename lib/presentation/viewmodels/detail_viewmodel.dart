@@ -22,6 +22,7 @@ import 'package:xuro/widgets/detail/work_folder_item.dart';
 import 'package:xuro/core/audio/models/file_path.dart';
 import 'package:xuro/core/subtitle/utils/subtitle_matcher.dart';
 import 'package:dio/dio.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 /// 一条批量下载项：音频 + 同目录匹配到的字幕（可空）。
 typedef DownloadPair = ({Child audio, Child? subtitle});
@@ -114,7 +115,7 @@ class DetailViewModel extends ChangeNotifier {
       );
       _hasRecommendations = (response.pagination.totalCount ?? 0) > 0;
     } catch (e) {
-      AppLogger.error('检查相关推荐失败', e);
+      AppLogger.error(LogStrings.logCheckSimilarFailed, e);
       _hasRecommendations = false;
     } finally {
       if (!_disposed) {
@@ -145,16 +146,16 @@ class DetailViewModel extends ChangeNotifier {
 
   Future<void> _loadFilesInternal() async {
     try {
-      AppLogger.info('开始加载作品文件: ${work.id}');
+      AppLogger.info(LogStrings.logStartLoadingWorkFilesWorkId5bb3d(work.id));
       _files = await _apiService.getWorkFiles(
         work.id.toString(),
         cancelToken: _cancelToken,
       );
       WorkFolderItem.resetExpandState(); // Reset on new data load, not on every build
-      AppLogger.info('文件加载成功: ${work.id}');
+      AppLogger.info(LogStrings.logFilesLoadedWorkId92bd2(work.id));
     } catch (e) {
       if (e is! DioException || e.type != DioExceptionType.cancel) {
-        AppLogger.info('加载文件失败');
+        AppLogger.info(LogStrings.logLoadFilesFailed);
         _error = userFacingError(e);
       }
     } finally {
@@ -166,10 +167,10 @@ class DetailViewModel extends ChangeNotifier {
     try {
       final workId = _extractNumericId(work.sourceId) ?? work.id.toString();
       _workInfo = await _apiService.getWorkInfo(workId, cancelToken: _cancelToken);
-      AppLogger.info('作品详情加载成功: ${work.id}');
+      AppLogger.info(LogStrings.logWorkDetailLoadedWorkId3f489(work.id));
     } catch (e) {
       if (e is! DioException || e.type != DioExceptionType.cancel) {
-        AppLogger.error('加载作品详情失败', e);
+        AppLogger.error(LogStrings.logLoadWorkDetailFailed, e);
       }
     } finally {
       _isLoadingInfo = false;
@@ -275,7 +276,7 @@ class DetailViewModel extends ChangeNotifier {
             cancelToken: cancelToken,
           );
         } catch (e) {
-          AppLogger.warning('配对字幕下载失败（不影响音频）: $e');
+          AppLogger.warning(LogStrings.logPairedSubtitleDownloadFailedd44d7(e));
         }
       }
     }
@@ -342,7 +343,7 @@ class DetailViewModel extends ChangeNotifier {
           }
           // 字幕网络/IO 失败属 best-effort，仅记日志、不计入 failed。
         } catch (e) {
-          AppLogger.warning('配对字幕下载失败（不影响音频）: $e');
+          AppLogger.warning(LogStrings.logPairedSubtitleDownloadFailedd44d7(e));
         }
       }
       // 末项之后无循环顶部检查，这里兜底捕获取消。
@@ -386,7 +387,7 @@ class DetailViewModel extends ChangeNotifier {
       await _audioService.playWithContext(playbackContext);
     } catch (e) {
       if (!_disposed) {
-        AppLogger.error('播放失败', e);
+        AppLogger.error(LogStrings.logPlaybackFailed, e);
       }
       rethrow;
     }
@@ -408,9 +409,9 @@ class DetailViewModel extends ChangeNotifier {
       
       _playlists = response.playlists;
       _playlistsPagination = response.pagination;
-      AppLogger.info('收藏夹列表加载成功: ${_playlists?.length ?? 0}个收藏夹');
+      AppLogger.info(LogStrings.logWorkPlaylistsLoaded((_playlists?.length ?? 0).toString()));
     } catch (e) {
-      AppLogger.error('加载收藏夹列表失败', e);
+      AppLogger.error(LogStrings.logLoadWorkPlaylistsFailed, e);
       _playlistsError = userFacingError(e);
     } finally {
       _loadingPlaylists = false;
@@ -478,10 +479,10 @@ class DetailViewModel extends ChangeNotifier {
         notifyListeners();
       }
       
-      final action = (playlist.exist ?? false) ? '移除' : '添加';
-      AppLogger.info('$action收藏成功: ${playlist.name}');
+      final action = (playlist.exist ?? false) ? LogStrings.logActionRemove : LogStrings.logActionAdd;
+      AppLogger.info(LogStrings.logFavoriteUpdated(action, playlist.name ?? ''));
     } catch (e) {
-      AppLogger.error('切换收藏状态失败', e);
+      AppLogger.error(LogStrings.logToggleFavoriteFailed, e);
       rethrow;
     }
   }
@@ -497,9 +498,9 @@ class DetailViewModel extends ChangeNotifier {
       );
       
       _currentMarkStatus = status;
-      AppLogger.info('更新标记状态成功: ${status.label}');
+      AppLogger.info(LogStrings.logMarkStatusUpdated(status.localizedLabel));
     } catch (e) {
-      AppLogger.error('更新标记状态失败', e);
+      AppLogger.error(LogStrings.logUpdateMarkFailed, e);
       rethrow;
     } finally {
       _loadingMark = false;

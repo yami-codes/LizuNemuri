@@ -3,6 +3,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:xuro/data/models/update_info.dart';
 import 'package:xuro/data/services/exceptions/update_exception.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class UpdateCheckResult {
   final UpdateInfo latest;
@@ -55,7 +56,7 @@ class UpdateService {
       if (data is! List) {
         throw UpdateException(
           type: UpdateErrorType.invalidPayload,
-          message: 'releases 响应不是数组: ${data.runtimeType}',
+          message: LogStrings.logReleasesResponseIsNotAnArray69be5(data.runtimeType),
         );
       }
 
@@ -63,14 +64,14 @@ class UpdateService {
       if (latest == null) {
         throw UpdateException(
           type: UpdateErrorType.noRelease,
-          message: '无合法发布（空列表或无 vX.Y.Z tag）',
+          message: LogStrings.logNoValidReleaseEmptyOrNoSemveee981,
         );
       }
 
       final current = (await PackageInfo.fromPlatform()).version;
       final hasUpdate = compareSemver(latest.version, current) > 0;
       AppLogger.info(
-        '检查更新: 远端=${latest.version} 当前=$current 有更新=$hasUpdate',
+        LogStrings.logUpdateCheckRemoteLatestVersi710ef(latest.version, current, hasUpdate),
       );
       return UpdateCheckResult(
         latest: latest,
@@ -80,13 +81,13 @@ class UpdateService {
     } on UpdateException {
       rethrow;
     } on DioException catch (e, st) {
-      AppLogger.error('检查更新网络失败', e, st);
+      AppLogger.error(LogStrings.logUpdateCheckNetworkFailed7aa8a, e, st);
       throw UpdateException.fromDioException(e);
     } catch (e, st) {
-      AppLogger.error('检查更新解析失败', e, st);
+      AppLogger.error(LogStrings.logUpdateCheckParseFailed537cd, e, st);
       throw UpdateException(
         type: UpdateErrorType.invalidPayload,
-        message: '解析失败: $e',
+        message: LogStrings.logParseFailedEe96d4(e),
         originalError: e,
       );
     }

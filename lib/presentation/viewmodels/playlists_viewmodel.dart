@@ -7,6 +7,7 @@ import 'package:xuro/data/services/api_service.dart';
 import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:get_it/get_it.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class PlaylistsViewModel extends ChangeNotifier {
   final ApiService _apiService = GetIt.I<ApiService>();
@@ -60,9 +61,9 @@ class PlaylistsViewModel extends ChangeNotifier {
       _playlists = response.playlists;
       _pagination = response.pagination;
       _currentPage = page;
-      AppLogger.info('第$page页播放列表加载成功: ${_playlists?.length ?? 0}个播放列表');
+      AppLogger.info(LogStrings.logPlaylistsPageLoaded(page.toString(), (_playlists?.length ?? 0).toString()));
     } catch (e) {
-      AppLogger.error('加载播放列表失败', e);
+      AppLogger.error(LogStrings.logLoadPlaylistsFailed, e);
       _error = userFacingError(e);
     } finally {
       _isLoading = false;
@@ -115,9 +116,9 @@ class PlaylistsViewModel extends ChangeNotifier {
       _playlistWorks = response.works;
       _worksPagination = response.pagination as Pagination?;
       _worksCurrentPage = page;
-      AppLogger.info('第$page页播放列表作品加载成功: ${response.works.length}个作品');
+      AppLogger.info(LogStrings.logPageListLoaded(page.toString(), LogStrings.logPageNamePlaylistWorks, response.works.length.toString()));
     } catch (e) {
-      AppLogger.error('加载播放列表作品失败', e);
+      AppLogger.error(LogStrings.logLoadPlaylistWorksFailed, e);
       _worksError = userFacingError(e);
     } finally {
       _loadingWorks = false;
@@ -142,7 +143,7 @@ class PlaylistsViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    AppLogger.info('销毁 PlaylistsViewModel');
+    AppLogger.info(LogStrings.logDisposingPlaylistsviewmodele5090);
     super.dispose();
   }
 } 

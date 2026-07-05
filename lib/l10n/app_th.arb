@@ -376,5 +376,1770 @@
     }
   },
   "fileUrlMissing": "เล่นไม่ได้: ไม่มี URL ของไฟล์",
-  "fileListNotLoaded": "ยังไม่ได้โหลดรายการไฟล์"
+  "fileListNotLoaded": "ยังไม่ได้โหลดรายการไฟล์",
+  "logNetworkRequestFailed": "คำขอเครือข่ายล้มเหลว",
+  "logParseDataFailed": "แปลงข้อมูลล้มเหลว",
+  "logParseAuthDataFailed": "แปลงข้อมูลยืนยันตัวตนล้มเหลว",
+  "logParseFailedDetail": "แปลงล้มเหลว: {detail}",
+  "logLoginFailed": "เข้าสู่ระบบล้มเหลว",
+  "logLoginFailedDetail": "เข้าสู่ระบบล้มเหลว: {detail}",
+  "logLoginFailedCode": "เข้าสู่ระบบล้มเหลว: {code}",
+  "logLoginRequestFailed": "คำขอเข้าสู่ระบบล้มเหลว",
+  "logRegisterFailed": "สมัครล้มเหลว",
+  "logRegisterFailedDetail": "สมัครล้มเหลว: {detail}",
+  "logRegisterFailedCode": "สมัครล้มเหลว: {code}",
+  "logRegisterRequestFailed": "คำขอสมัครล้มเหลว",
+  "logSearchFailed": "ค้นหาล้มเหลว",
+  "logSearchFailedCode": "ค้นหาล้มเหลว: {code}",
+  "logPlaybackFailed": "เล่นล้มเหลว",
+  "logMarkFailedCode": "ทำเครื่องหมายล้มเหลว: {code}",
+  "logLoadFilesFailed": "โหลดไฟล์ล้มเหลว",
+  "logLoadWorkDetailFailed": "โหลดรายละเอียดผลงานล้มเหลว",
+  "logLoadTagsFailed": "โหลดแท็กล้มเหลว",
+  "logLoadCirclesFailed": "โหลดเซอร์เคิลล้มเหลว",
+  "logLoadVoiceActorsFailed": "โหลดนักพากย์ล้มเหลว",
+  "logLoadRecommendFailed": "โหลดคำแนะนำล้มเหลว",
+  "logLoadSimilarFailed": "โหลดผลงานที่คล้ายกันล้มเหลว",
+  "logLoadFavoritesFailed": "โหลดรายการโปรดล้มเหลว",
+  "logLoadPlaylistsFailed": "โหลดเพลย์ลิสต์ล้มเหลว",
+  "logLoadPlaylistWorksFailed": "โหลดผลงานในเพลย์ลิสต์ล้มเหลว",
+  "logLoadWorkPlaylistsFailed": "โหลดเพลย์ลิสต์ของผลงานล้มเหลว",
+  "logLoadFilterStateFailed": "โหลดสถานะตัวกรองล้มเหลว",
+  "logSaveFilterStateFailed": "บันทึกสถานะตัวกรองล้มเหลว",
+  "logLoadCacheSizeFailed": "โหลดขนาดแคชล้มเหลว",
+  "logCleanCacheFailed": "ล้างแคชล้มเหลว",
+  "logCleanAudioCacheFailed": "ล้างแคชเสียงล้มเหลว",
+  "logCleanSubtitleCacheFailed": "ล้างแคชคำบรรยายล้มเหลว",
+  "logCleanImageCacheFailed": "ล้างแคชรูปภาพล้มเหลว",
+  "logCheckSimilarFailed": "ตรวจสอบผลงานที่คล้ายกันล้มเหลว",
+  "logToggleFavoriteFailed": "สลับรายการโปรดล้มเหลว",
+  "logUpdateMarkFailed": "อัปเดตสถานะเครื่องหมายล้มเหลว",
+  "logAddToPlaylistFailed": "เพิ่มในเพลย์ลิสต์ล้มเหลว",
+  "logRemoveFromPlaylistFailed": "นำออกจากเพลย์ลิสต์ล้มเหลว",
+  "logAddToPlaylistFailedDetail": "เพิ่มในเพลย์ลิสต์ล้มเหลว: {detail}",
+  "logRemoveFromPlaylistFailedDetail": "นำออกจากเพลย์ลิสต์ล้มเหลว: {detail}",
+  "logSubtitlePreviewLoadFailed": "โหลดตัวอย่างคำบรรยายล้มเหลว",
+  "logSubtitleImportFailed": "นำเข้าคำบรรยายล้มเหลว",
+  "logSubtitleParseException": "ข้อยกเว้นการแปลงคำบรรยาย",
+  "logUnsupportedSubtitleFormat": "รูปแบบคำบรรยายไม่รองรับ",
+  "logSubtitleUrlEmpty": "URL คำบรรยายว่าง",
+  "logSubtitleDownloadFailedCode": "ดาวน์โหลดคำบรรยายล้มเหลว: {code}",
+  "logNoAudioSources": "ไม่มีแหล่งเสียงที่เล่นได้",
+  "logFetchFileListFailed": "ดึงรายการไฟล์ล้มเหลว: {code}",
+  "logFetchWorksFailed": "ดึงผลงานล้มเหลว: {code}",
+  "logFetchFavoritesFailed": "ดึงรายการโปรดล้มเหลว: {code}",
+  "logFetchRecommendFailed": "ดึงคำแนะนำล้มเหลว: {code}",
+  "logFetchPopularFailed": "ดึงรายการยอดนิยมล้มเหลว: {code}",
+  "logFetchSimilarFailed": "ดึงผลงานที่คล้ายกันล้มเหลว: {code}",
+  "logFetchPlaylistsFailed": "ดึงเพลย์ลิสต์ล้มเหลว: {code}",
+  "logFetchMyPlaylistsFailed": "ดึงเพลย์ลิสต์ของฉันล้มเหลว: {code}",
+  "logFetchTagsFailed": "ดึงแท็กล้มเหลว: {code}",
+  "logFetchCirclesFailed": "ดึงเซอร์เคิลล้มเหลว: {code}",
+  "logFetchVoiceActorsFailed": "ดึงนักพากย์ล้มเหลว: {code}",
+  "logFetchWorkDetailFailed": "ดึงรายละเอียดผลงานล้มเหลว: {code}",
+  "logFetchPlaylistWorksFailed": "ดึงผลงานในเพลย์ลิสต์ล้มเหลว: {code}",
+  "logFetchDefaultMarkPlaylistFailed": "ดึงเพลย์ลิสต์เครื่องหมายเริ่มต้นล้มเหลว: {code}",
+  "logRequestCancelled": "ยกเลิกคำขอแล้ว",
+  "logRequestTimeout": "คำขอหมดเวลา: {detail}",
+  "logConnectionFailed": "เชื่อมต่อล้มเหลว: {detail}",
+  "logAuthFailedCode": "ยืนยันตัวตนล้มเหลว: {code}",
+  "logClientErrorCode": "ข้อผิดพลาดไคลเอนต์: {code}",
+  "logServerErrorCode": "ข้อผิดพลาดเซิร์ฟเวอร์: {code}",
+  "logUnknownResponseCode": "ข้อผิดพลาดการตอบกลับไม่ทราบ: {code}",
+  "logCertificateFailed": "ตรวจสอบใบรับรองล้มเหลว: {detail}",
+  "logUnknownNetworkError": "ข้อผิดพลาดเครือข่ายไม่ทราบ: {detail}",
+  "logNetworkErrorDetail": "ข้อผิดพลาดเครือข่าย: {detail}",
+  "logGithubRateLimited": "GitHub จำกัดอัตรา: {code}",
+  "logReleaseNotFound404": "ไม่พบข้อมูลเผยแพร่: 404",
+  "logResponseErrorCode": "ข้อผิดพลาดการตอบกลับ: {code}",
+  "logGithubReleaseMissingFields": "GitHub release ไม่มี tag_name หรือ html_url",
+  "logPlaylistEmpty": "สถานะเพลย์ลิสต์ไม่ถูกต้อง: ว่าง",
+  "logPlaylistIndexInvalid": "ดัชนีเพลย์ลิสต์ไม่ถูกต้อง: {index}, ความยาว: {length}",
+  "logCurrentFileNotInPlaylist": "ไฟล์ปัจจุบันไม่ได้อยู่ในเพลย์ลิสต์",
+  "logNotificationChannelName": "ASMR One Player",
+  "logPageNameHome": "หน้าแรก",
+  "logPageNamePopular": "ยอดนิยม",
+  "logActionRemove": "นำออก",
+  "logActionAdd": "เพิ่ม",
+  "logExpand": "ขยาย",
+  "logCollapse": "ยุบ",
+  "logLoaded": "โหลดแล้ว",
+  "logNotLoaded": "ยังไม่โหลด",
+  "logFileListEmpty": "รายการไฟล์ว่าง",
+  "logCurrentFileNameEmpty": "ชื่อไฟล์ปัจจุบันว่าง",
+  "logSubtitleNotFoundClearing": "ไม่พบคำบรรยาย กำลังล้างคำบรรยายปัจจุบัน",
+  "logRegisterOkLoginFailed": "สมัครสำเร็จแต่เข้าสู่ระบบอัตโนมัติล้มเหลว",
+  "logAudioplayerhandlerInit92c24": "AudioPlayerHandler 初始化",
+  "logAudiohandlerPlayCommanda6f42": "AudioHandler: 播放命令",
+  "logAudiohandlerPauseCommanda0f46": "AudioHandler: 暂停命令",
+  "logAudiohandlerSeekCommandPositc4726": "AudioHandler: 跳转命令 position={position}",
+  "@logAudiohandlerSeekCommandPositc4726": {
+    "placeholders": {
+      "position": {
+        "type": "String"
+      }
+    }
+  },
+  "logAudiohandlerNextCommand0e2e1": "AudioHandler: 下一曲命令",
+  "logAudiohandlerPreviousCommand7454a": "AudioHandler: 上一曲命令",
+  "logAudiohandlerStopCommand7540c": "AudioHandler: 停止命令",
+  "logStartRestoringPlaybackStatebf3e6": "เริ่ม恢复播放สถานะ",
+  "logNoPlaybackStateToRestored59fb": "没有可恢复的播放สถานะ",
+  "logLoadedSavedStateWorkidStateW175f5": "โหลดแล้ว保存的สถานะ: workId={state}",
+  "@logLoadedSavedStateWorkidStateW175f5": {
+    "placeholders": {
+      "state": {
+        "type": "String"
+      }
+    }
+  },
+  "logPlaylistInfoLengthContextPlac41a2": "เพลย์ลิสต์信息: 长度={context}, 索引={context2}",
+  "@logPlaylistInfoLengthContextPlac41a2": {
+    "placeholders": {
+      "context": {
+        "type": "String"
+      },
+      "context2": {
+        "type": "String"
+      }
+    }
+  },
+  "logRestoredPlaylistEmptySkipe85b3": "恢复的เพลย์ลิสต์为空，跳过恢复",
+  "logPlaybackStateRestoredc4753": "播放สถานะ恢复สำเร็จ",
+  "logSetContextFailedSkipStateRes87ad0": "设置播放上下文ล้มเหลว，跳过สถานะ恢复",
+  "logCreateaudioUrlUrlCachefil14d8a": "准备创建เสียง源 - URL: {url}, แคชไฟล์名: {fileName}",
+  "@logCreateaudioUrlUrlCachefil14d8a": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilenameUsingCachefile42421": "[{fileName}] 使用已有แคชไฟล์",
+  "@logFilenameUsingCachefile42421": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilenameCreateCache8c40f": "[{fileName}] 创建新的แคช源",
+  "@logFilenameCreateCache8c40f": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logCacheAudioSourceFailedStreama308a": "创建แคชเสียง源ล้มเหลว,降级为流式播放: {url}",
+  "@logCacheAudioSourceFailedStreama308a": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "logCacheSourceCreationError7469b": "แคช源创建异常",
+  "logCannotDeleteCacheFileEntityP1dc66": "无法删除แคชไฟล์: {entity}, 可能正在使用中",
+  "@logCannotDeleteCacheFileEntityP1dc66": {
+    "placeholders": {
+      "entity": {
+        "type": "String"
+      }
+    }
+  },
+  "logAudioCacheClearedDeletedDele52cd6": "เสียงแคช已清空，共删除 {deleted} 个ไฟล์",
+  "@logAudioCacheClearedDeletedDele52cd6": {
+    "placeholders": {
+      "deleted": {
+        "type": "String"
+      }
+    }
+  },
+  "logAudioCachePartialCleanOkDeleec69e": "เสียงแคช部分ล้าง: สำเร็จ {deleted}, ล้มเหลว {failed}",
+  "@logAudioCachePartialCleanOkDeleec69e": {
+    "placeholders": {
+      "deleted": {
+        "type": "String"
+      },
+      "failed": {
+        "type": "String"
+      }
+    }
+  },
+  "logGetCacheSizeFailedf83a7": "ดึงแคช大小ล้มเหลว",
+  "logFilenameCachevalidateFile4be6a": "[{fileName}] แคช验证: ไฟล์不存在",
+  "@logFilenameCachevalidateFile4be6a": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilenameCachevalidateSizef7217": "[{fileName}] แคช验证: 大小={size}bytes, 年龄={age}",
+  "@logFilenameCachevalidateSizef7217": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      },
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilenameCacheinvalidFileexpif9f0f": "[{fileName}] แคช无效: ไฟล์过期 ({age} > {_cacheExpiration})",
+  "@logFilenameCacheinvalidFileexpif9f0f": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      },
+      "age": {
+        "type": "String"
+      },
+      "_cacheExpiration": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilenameCachevalidateValid6ddeb": "[{fileName}] แคช验证: 有效",
+  "@logFilenameCachevalidateValid6ddeb": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilenameCheckcachevalidFaile1bb88": "[{fileName}] 检查แคช有效性ล้มเหลว",
+  "@logFilenameCheckcachevalidFaile1bb88": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logLegacyTempCacheCleaneddcfa8": "已ล้าง旧版临时แคช目录",
+  "logLegacyCacheCleanupFailedE792c9": "ล้าง旧版แคชล้มเหลว: {e}",
+  "@logLegacyCacheCleanupFailedE792c9": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logTrySkipNextac03e": "尝试切换下一曲",
+  "logNoContextCannotSkipNextdc074": "当前上下文为空，无法切换下一曲",
+  "logSwitchingToNextTrack5bd58": "执行切换到下一曲",
+  "logNoNextTrack1c8bb": "没有下一曲可切换",
+  "logSkipNextFailed2be30": "切换下一曲ล้มเหลว",
+  "logTrySkipPrevious376dc": "尝试切换上一曲",
+  "logNoContextCannotSkipPreviousc1953": "当前上下文为空，无法切换上一曲",
+  "logSwitchingToPreviousTrackabca4": "执行切换到上一曲",
+  "logNoPreviousTrackb0605": "没有上一曲可切换",
+  "logSkipPreviousFailed965b5": "切换上一曲ล้มเหลว",
+  "logPreparePlaybackContextWorkid46397": "准备设置播放上下文: workId={originalContext}, file={originalContext2}",
+  "@logPreparePlaybackContextWorkid46397": {
+    "placeholders": {
+      "originalContext": {
+        "type": "String"
+      },
+      "originalContext2": {
+        "type": "String"
+      }
+    }
+  },
+  "logPlaylistStateLengthOriginalc24b5f": "เพลย์ลิสต์สถานะ: 长度={originalContext}, 当前索引={originalContext2}",
+  "@logPlaylistStateLengthOriginalc24b5f": {
+    "placeholders": {
+      "originalContext": {
+        "type": "String"
+      },
+      "originalContext2": {
+        "type": "String"
+      }
+    }
+  },
+  "logPlaybackContextValidationFaica38c": "播放上下文验证ล้มเหลว",
+  "logStopCurrentPlayback61998": "停止当前播放",
+  "logSetPlaybackSourceFailed81f10": "设置播放源ล้มเหลว",
+  "logUpdateTrackInfoeb504": "更新轨道信息",
+  "logPlaybackContextSetaa3cc": "播放上下文设置เสร็จ",
+  "logSetPlaybackContextFailed866ab": "设置播放上下文ล้มเหลว",
+  "logUpdateTrackAndContextFileFile5842": "更新轨道和上下文: file={file}",
+  "@logUpdateTrackAndContextFileFile5842": {
+    "placeholders": {
+      "file": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartResolvingFilePathTargetb9a7f": "เริ่ม查找ไฟล์路径: {targetFile}",
+  "@logStartResolvingFilePathTargetb9a7f": {
+    "placeholders": {
+      "targetFile": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilePathNotFound6f266": "未找到ไฟล์路径",
+  "logFoundFilePathPath57008": "找到ไฟล์路径: {path}",
+  "@logFoundFilePathPath57008": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "logGetSiblingFilesTargetfileTit6cf37": "เริ่มดึง同级ไฟล์: {targetFile}",
+  "@logGetSiblingFilesTargetfileTit6cf37": {
+    "placeholders": {
+      "targetFile": {
+        "type": "String"
+      }
+    }
+  },
+  "logCannotResolveFilePathReturnEff0fd": "无法ดึงไฟล์路径，返回空รายการ",
+  "logParentDirPathParentpathd3aa7": "父目录路径: {parentPath}",
+  "@logParentDirPathParentpathd3aa7": {
+    "placeholders": {
+      "parentPath": {
+        "type": "String"
+      }
+    }
+  },
+  "logFileAtRootUseRootFileList8c225": "ไฟล์位于根目录，使用根目录ไฟล์รายการ",
+  "logParentDirEmptyReturnEmpty7c668": "未找到父目录内容，返回空รายการ",
+  "logSiblingFileCountSiblingsLeng9ed81": "找到同级ไฟล์数量: {siblings}",
+  "@logSiblingFileCountSiblingsLeng9ed81": {
+    "placeholders": {
+      "siblings": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartBuildingPlaylist3066d": "เริ่มดึงเพลย์ลิสต์...",
+  "logCurrentFileCurrentfileTitle51690": "当前ไฟล์: {currentFile}",
+  "@logCurrentFileCurrentfileTitle51690": {
+    "placeholders": {
+      "currentFile": {
+        "type": "String"
+      }
+    }
+  },
+  "logCurrentFileTypeCurrentfileTyd7c12": "当前ไฟล์类型: {currentFile}",
+  "@logCurrentFileTypeCurrentfileTyd7c12": {
+    "placeholders": {
+      "currentFile": {
+        "type": "String"
+      }
+    }
+  },
+  "logCurrentFileExtensionExtensiof67a2": "当前ไฟล์扩展名: {extension}",
+  "@logCurrentFileExtensionExtensiof67a2": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "logUnsupportedFileTypeExtension332f4": "不支持的ไฟล์类型: {extension}",
+  "@logUnsupportedFileTypeExtension332f4": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "logFoundPlaylistLengthPlayableFa7c85": "找到 {playlist} 个可播放ไฟล์:",
+  "@logFoundPlaylistLengthPlayableFa7c85": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      }
+    }
+  },
+  "logNotificationServiceInitializc2ef2": "通知栏服务初始化สำเร็จ",
+  "logNotificationServiceInitFailef5f41": "通知栏服务初始化ล้มเหลว",
+  "logPlaybackStateSaved8075d": "播放สถานะ已保存",
+  "logSavePlaybackStateFailed48c3d": "保存播放สถานะล้มเหลว",
+  "logPlaybackStateCleareda68e0": "播放สถานะ已清除",
+  "logClearPlaybackStateFailedebdde": "清除播放สถานะล้มเหลว",
+  "logNoSavedPlaybackStated1b67": "没有找到保存的播放สถานะ",
+  "logPlaybackStateLoadedbf046": "播放สถานะโหลดแล้ว",
+  "logLoadPlaybackStateFailed21627": "โหลด播放สถานะล้มเหลว",
+  "logCreateAudioSourceFailedSkipe805d": "创建เสียง源ล้มเหลว,跳过: {files_i_}",
+  "@logCreateAudioSourceFailedSkipe805d": {
+    "placeholders": {
+      "files_i_": {
+        "type": "String"
+      }
+    }
+  },
+  "logAllAudioSourcesFailed90f2f": "所有เสียง源创建ล้มเหลว,无法播放",
+  "logOriginalIndexInitialindexUna075a6": "原始索引 {initialIndex} 不可用,使用替代索引 {remappedIndex}",
+  "@logOriginalIndexInitialindexUna075a6": {
+    "placeholders": {
+      "initialIndex": {
+        "type": "String"
+      },
+      "remappedIndex": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartUnifiedCacheCleanup964c6": "เริ่ม统一แคชล้าง...",
+  "logUnifiedCacheCleanupDoneea48b": "统一แคชล้างเสร็จ",
+  "logClearingAllCache16985": "清除所有แคช...",
+  "logAllCacheCleared0da32": "所有แคช已清除",
+  "logAutoCacheCleanupDone9b23a": "自动แคชล้างเสร็จ",
+  "logAutoCacheCleanupFailed7cdd2": "自动แคชล้างล้มเหลว",
+  "logCacheExpiredKey3dbc2": "แคช已过期: {key}",
+  "@logCacheExpiredKey3dbc2": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "logCacheHitKeyebd0f": "命中แคช: {key}",
+  "@logCacheHitKeyebd0f": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "logCacheAddKey26f96": "เพิ่มแคช: {key}",
+  "@logCacheAddKey26f96": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "logClearAllRecommendationCache6c408": "清除所有แนะนำแคช",
+  "logRemoveWorkCacheItemid82faf": "นำออกผลงานแคช: {itemId}",
+  "@logRemoveWorkCacheItemid82faf": {
+    "placeholders": {
+      "itemId": {
+        "type": "String"
+      }
+    }
+  },
+  "logInitDatabasePath557d5": "初始化数据库: {path}",
+  "@logInitDatabasePath557d5": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "logDatabaseTablesCreatedVVersiofa44c": "数据库表创建เสร็จ (v{version})",
+  "@logDatabaseTablesCreatedVVersiofa44c": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "logDatabaseUpgradeOldversionNe5cef7": "数据库升级: {oldVersion} -> {newVersion}",
+  "@logDatabaseUpgradeOldversionNe5cef7": {
+    "placeholders": {
+      "oldVersion": {
+        "type": "String"
+      },
+      "newVersion": {
+        "type": "String"
+      }
+    }
+  },
+  "logApplyDbMigrationVV368dc": "应用数据库迁移: -> v{v}",
+  "@logApplyDbMigrationVV368dc": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "logCloseDatabaseFailed3f1be": "关闭数据库ล้มเหลว",
+  "logExternalStorageUnavailableFae9daa": "外部存储目录不可用，回退 App 内部目录: {e}",
+  "@logExternalStorageUnavailableFae9daa": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logStaleDownloadRowCleanedEntry5340a": "下载记录指向缺失ไฟล์，ล้าง失效行: {entry}",
+  "@logStaleDownloadRowCleanedEntry5340a": {
+    "placeholders": {
+      "entry": {
+        "type": "String"
+      }
+    }
+  },
+  "logCleanStaleDownloadRowsFailede1ed8": "ล้าง失效下载行ล้มเหลว",
+  "logDownloadMissingUrlOrFilename1e7e8": "下载缺少 URL 或ไฟล์名: {fileName}",
+  "@logDownloadMissingUrlOrFilename1e7e8": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logDownloadCompleteWorkidFilena3d481": "下载เสร็จ: {workId}/{fileName} -> {destPath}",
+  "@logDownloadCompleteWorkidFilena3d481": {
+    "placeholders": {
+      "workId": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      },
+      "destPath": {
+        "type": "String"
+      }
+    }
+  },
+  "logDownloadCancelledWorkidFilene08ac": "下载已取消: {workId}/{fileName}",
+  "@logDownloadCancelledWorkidFilene08ac": {
+    "placeholders": {
+      "workId": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logDownloadNetworkErrorWorkidFi3d322": "下载ข้อผิดพลาดเครือข่าย: {workId}/{fileName}",
+  "@logDownloadNetworkErrorWorkidFi3d322": {
+    "placeholders": {
+      "workId": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logDownloadFailedWorkidFilename338fd": "ดาวน์โหลดล้มเหลว: {workId}/{fileName}",
+  "@logDownloadFailedWorkidFilename338fd": {
+    "placeholders": {
+      "workId": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logQueryDownloadToRemoveFailedb00ee": "查询待นำออกดาวน์โหลดล้มเหลว",
+  "logRemoveDownloadDbRowFailedKee7b72d": "นำออก下载 DB 行ล้มเหลว（保留ไฟล์以免失效行）",
+  "logRemoveDownloadFileFailedDbRo1c106": "นำออก下载ไฟล์ล้มเหลว（DB 行已删，孤儿无害）: {e}",
+  "@logRemoveDownloadFileFailedDbRo1c106": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logDownloadCapacityReclaimFaile4d679": "下载容量回收ล้มเหลว",
+  "logDownloadRowSavedEntryWorkid6e26d": "下载记录已保存: {entry}/{entry2}",
+  "@logDownloadRowSavedEntryWorkid6e26d": {
+    "placeholders": {
+      "entry": {
+        "type": "String"
+      },
+      "entry2": {
+        "type": "String"
+      }
+    }
+  },
+  "logDownloadRowDeletedWorkidFile8c4f0": "下载记录已删除: {workId}/{fileKey}",
+  "@logDownloadRowDeletedWorkidFile8c4f0": {
+    "placeholders": {
+      "workId": {
+        "type": "String"
+      },
+      "fileKey": {
+        "type": "String"
+      }
+    }
+  },
+  "logGetImageCacheSizeFailed8c2b8": "ดึง图片แคช大小ล้มเหลว",
+  "logImageCacheCleared7784c": "图片แคช已清空",
+  "logTagBackgroundPauseFailed79342": "[{_tag}] 切后台暂停ล้มเหลว",
+  "@logTagBackgroundPauseFailed79342": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagRequestPermission021a2": "[{_tag}] 请求权限",
+  "@logTagRequestPermission021a2": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagInitd4e18": "[{_tag}] 初始化",
+  "@logTagInitd4e18": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagInitFailed3648a": "[{_tag}] 初始化ล้มเหลว",
+  "@logTagInitFailed3648a": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagShowOverlay90227": "[{_tag}] 显示悬浮窗",
+  "@logTagShowOverlay90227": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagHideOverlay4fda2": "[{_tag}] 隐藏悬浮窗",
+  "@logTagHideOverlay4fda2": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagCheckPermissionf3479": "[{_tag}] 检查权限",
+  "@logTagCheckPermissionf3479": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagDisposea3399": "[{_tag}] 释放资源",
+  "@logTagDisposea3399": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagSleepTimerPauseFailed9626d": "[{_tag}] 到点暂停ล้มเหลว",
+  "@logTagSleepTimerPauseFailed9626d": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagLoadStateFailedb0232": "[{_tag}] โหลดสถานะล้มเหลว",
+  "@logTagLoadStateFailedb0232": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagToggleStateFailed284fe": "[{_tag}] 切换สถานะล้มเหลว",
+  "@logTagToggleStateFailed284fe": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagDisposeFailede13c8": "[{_tag}] 释放ล้มเหลว",
+  "@logTagDisposeFailede13c8": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleCacheExpiredUrle7fbb": "คำบรรยายแคช已过期: {url}",
+  "@logSubtitleCacheExpiredUrle7fbb": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "logUsingSubtitleCacheUrl3a292": "使用คำบรรยายแคช: {url}",
+  "@logUsingSubtitleCacheUrl3a292": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "logReadSubtitleCacheFaileddb134": "读取คำบรรยายแคชล้มเหลว",
+  "logSubtitleCachedUrlec740": "คำบรรยาย已แคช: {url}",
+  "@logSubtitleCachedUrlec740": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "logSaveSubtitleCacheFailedf3048": "保存คำบรรยายแคชล้มเหลว",
+  "logSubtitleCacheCleared0d887": "คำบรรยายแคช已清空",
+  "logGetSubtitleCacheSizeFailed622b3": "ดึงคำบรรยายแคช大小ล้มเหลว",
+  "logSubtitleStateCleared0e6a2": "คำบรรยายสถานะ已清除",
+  "logLrcTimeTagParseFailedE0589e": "解析LRC时间แท็กล้มเหลว: {e}",
+  "@logLrcTimeTagParseFailedE0589e": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logLrcParseCompleteSubtitlesLen8f25e": "LRC解析เสร็จ: {subtitles}条คำบรรยาย, {metadata}个元数据",
+  "@logLrcParseCompleteSubtitlesLen8f25e": {
+    "placeholders": {
+      "subtitles": {
+        "type": "String"
+      },
+      "metadata": {
+        "type": "String"
+      }
+    }
+  },
+  "logNoMatchingSubtitleParser8b7bb": "没有找到匹配的คำบรรยาย解析器",
+  "logUserSubtitleRowSavedEntryWorc4adb": "用户คำบรรยาย关联已保存: {entry}/{entry2}",
+  "@logUserSubtitleRowSavedEntryWorc4adb": {
+    "placeholders": {
+      "entry": {
+        "type": "String"
+      },
+      "entry2": {
+        "type": "String"
+      }
+    }
+  },
+  "logUserSubtitleRowDeletedWorkid82bad": "用户คำบรรยาย关联已删除: {workId}/{fileName}",
+  "@logUserSubtitleRowDeletedWorkid82bad": {
+    "placeholders": {
+      "workId": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleFormatUnsupportedExtd85b3": "คำบรรยาย格式不支持: {ext}",
+  "@logSubtitleFormatUnsupportedExtd85b3": {
+    "placeholders": {
+      "ext": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleFileTooLargeFilesizeab4da": "คำบรรยายไฟล์过大: {fileSize____1024}KB",
+  "@logSubtitleFileTooLargeFilesizeab4da": {
+    "placeholders": {
+      "fileSize____1024": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleContentParseFailedOr9cb41": "คำบรรยาย内容解析ล้มเหลว: {originalName}",
+  "@logSubtitleContentParseFailedOr9cb41": {
+    "placeholders": {
+      "originalName": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleFileHasNoValidConten02363": "คำบรรยายไฟล์无有效内容: {originalName}",
+  "@logSubtitleFileHasNoValidConten02363": {
+    "placeholders": {
+      "originalName": {
+        "type": "String"
+      }
+    }
+  },
+  "logDeleteOldImportedSubtitleFil9e249": "删除旧的导入คำบรรยายไฟล์: {existingEntry}",
+  "@logDeleteOldImportedSubtitleFil9e249": {
+    "placeholders": {
+      "existingEntry": {
+        "type": "String"
+      }
+    }
+  },
+  "logOldSubtitleCleanupFailedImpo6282e": "旧คำบรรยายไฟล์ล้างล้มเหลว（已สำเร็จ导入新คำบรรยาย，孤儿无害）: {e}",
+  "@logOldSubtitleCleanupFailedImpo6282e": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleImportSucceededOrigi127da": "คำบรรยาย导入สำเร็จ: {originalName} -> {workId}/{fileName}",
+  "@logSubtitleImportSucceededOrigi127da": {
+    "placeholders": {
+      "originalName": {
+        "type": "String"
+      },
+      "workId": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logLocalSubtitleFileMissingFile59c5c": "本地คำบรรยายไฟล์不存在: {filePath}",
+  "@logLocalSubtitleFileMissingFile59c5c": {
+    "placeholders": {
+      "filePath": {
+        "type": "String"
+      }
+    }
+  },
+  "logLoadLocalSubtitleFailed5afd7": "โหลด本地คำบรรยายล้มเหลว",
+  "logQueryRemovesubtitleFailed292b7": "查询待นำออกคำบรรยาย关联ล้มเหลว",
+  "logRemoveSubtitleDbRowFailedKeea4675": "นำออกคำบรรยาย DB 关联ล้มเหลว（一致性关键），保留本地ไฟล์以免产生指向缺失ไฟล์的失效行",
+  "logRemoveSubtitleFileFailedDbRoe5275": "นำออกคำบรรยาย本地ไฟล์ล้มเหลว（DB 关联已删，孤儿无害）: {e}",
+  "@logRemoveSubtitleFileFailedDbRoe5275": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logRemovedImportedSubtitleWorkibd879": "已นำออก导入คำบรรยาย: {workId}/{fileName}",
+  "@logRemovedImportedSubtitleWorkibd879": {
+    "placeholders": {
+      "workId": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartFindingSubtitleFileb7fbb": "เริ่ม查找คำบรรยายไฟล์...",
+  "logFoundSubtitleFileSubtitlefilefa0b": "找到คำบรรยายไฟล์: {subtitleFile}, URL: {subtitleFile2}",
+  "@logFoundSubtitleFileSubtitlefilefa0b": {
+    "placeholders": {
+      "subtitleFile": {
+        "type": "String"
+      },
+      "subtitleFile2": {
+        "type": "String"
+      }
+    }
+  },
+  "logNoSubtitleInCurrentDirectoryb005d": "在当前目录中未找到คำบรรยายไฟล์",
+  "logLoadSubtitleFromCacheUrle52f3": "从แคชโหลดคำบรรยาย: {url}",
+  "@logLoadSubtitleFromCacheUrle52f3": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "logLoadSubtitleFromNetworkUrl9145d": "从网络โหลดคำบรรยาย: {url}",
+  "@logLoadSubtitleFromNetworkUrl9145d": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitlefiledownloadstateResd5fd5": "คำบรรยายไฟล์下载สถานะ: {response}",
+  "@logSubtitlefiledownloadstateResd5fd5": {
+    "placeholders": {
+      "response": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleLoadFailedEfb464": "คำบรรยายโหลดล้มเหลว: {e}",
+  "@logSubtitleLoadFailedEfb464": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logTimelineParseFailedFallbackT8e556": "คำบรรยาย按时间轴解析ล้มเหลว，回退原文: {e}",
+  "@logTimelineParseFailedFallbackT8e556": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleParseCompleteSubtitlae958": "คำบรรยาย解析เสร็จ，คำบรรยาย数量: {subtitleList}",
+  "@logSubtitleParseCompleteSubtitlae958": {
+    "placeholders": {
+      "subtitleList": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitlematchExactExactmatch334b5": "คำบรรยาย匹配[精确]: {exactMatch}",
+  "@logSubtitlematchExactExactmatch334b5": {
+    "placeholders": {
+      "exactMatch": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitlematchPrefixPrefixmat07a65": "คำบรรยาย匹配[前缀]: {prefixMatch}",
+  "@logSubtitlematchPrefixPrefixmat07a65": {
+    "placeholders": {
+      "prefixMatch": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitlematchSimilaritySimil52acf": "คำบรรยาย匹配[相似度]: {similarMatch}",
+  "@logSubtitlematchSimilaritySimil52acf": {
+    "placeholders": {
+      "similarMatch": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitlesimilarityBestmatchTc3940": "คำบรรยาย相似度最高: {bestMatch} (score: {bestScore})",
+  "@logSubtitlesimilarityBestmatchTc3940": {
+    "placeholders": {
+      "bestMatch": {
+        "type": "String"
+      },
+      "bestScore": {
+        "type": "String"
+      }
+    }
+  },
+  "logSecureStorageReadFailedFallb4e79f": "安全存储读取ล้มเหลว，回退检查 prefs 明文: {e}",
+  "@logSecureStorageReadFailedFallb4e79f": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthMigrationFailedKeepPrefs5e139": "迁移认证数据到安全存储ล้มเหลว，保留 prefs 明文（不登出用户）: {e}",
+  "@logAuthMigrationFailedKeepPrefs5e139": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthDataMigratedToSecureStor5b637": "认证数据已迁移到安全存储",
+  "logAuthDataSavedSecureStoragef9d9f": "保存认证数据สำเร็จ（安全存储）",
+  "logSecureStorageWriteFailedFallfdfba": "安全存储写入ล้มเหลว，降级写入 prefs: {e}",
+  "@logSecureStorageWriteFailedFallfdfba": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logPrefsFallbackWriteAlsoFailed1252d": "降级写入 prefs 也ล้มเหลว",
+  "logClearAuthDatafailedEac5db": "清除安全存储认证数据ล้มเหลว: {e}",
+  "@logClearAuthDatafailedEac5db": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logClearPrefsAuthDatafailedE0d083": "清除 prefs 认证数据ล้มเหลว: {e}",
+  "@logClearPrefsAuthDatafailedE0d083": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthDataCleared160e7": "清除认证数据สำเร็จ",
+  "logApiServerSwitchedSettingsSer60b99": "API服务器已切换: {_settings}",
+  "@logApiServerSwitchedSettingsSer60b99": {
+    "placeholders": {
+      "_settings": {
+        "type": "String"
+      }
+    }
+  },
+  "logSearchResponseDataResponseDad62cd": "搜索返回数据: {response}",
+  "@logSearchResponseDataResponseDad62cd": {
+    "placeholders": {
+      "response": {
+        "type": "String"
+      }
+    }
+  },
+  "logDefaultMarkPlaylistFetchedId166ef": "ดึง默认标记目标รายการโปรด夹สำเร็จ: id={playlist}, name={playlist2}",
+  "@logDefaultMarkPlaylistFetchedId166ef": {
+    "placeholders": {
+      "playlist": {
+        "type": "String"
+      },
+      "playlist2": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthApiServerSwitchedSetting7985a": "Auth API 服务器已切换: {_settings}",
+  "@logAuthApiServerSwitchedSetting7985a": {
+    "placeholders": {
+      "_settings": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartLoginRequestNameNameBasa9cd2": "เริ่ม登录请求: name={name}, baseUrl={_dio}",
+  "@logStartLoginRequestNameNameBasa9cd2": {
+    "placeholders": {
+      "_dio": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "logLoginResponseReceivedStatuscc6594": "收到登录响应: statusCode={response}",
+  "@logLoginResponseReceivedStatuscc6594": {
+    "placeholders": {
+      "response": {
+        "type": "String"
+      }
+    }
+  },
+  "logRegisterResponseReceivedStat806f3": "收到注册响应: statusCode={response}",
+  "@logRegisterResponseReceivedStat806f3": {
+    "placeholders": {
+      "response": {
+        "type": "String"
+      }
+    }
+  },
+  "logRegisteredWithTokenSkipFollo54265": "注册สำเร็จ且已携带 token，跳过补充登录",
+  "logRegisteredWithoutTokenFallba780d3": "注册สำเร็จ但响应未携带 token/user，回退到 login 兜底",
+  "logRequestTimeoutEMessagee56d4": "请求超时: {e}",
+  "@logRequestTimeoutEMessagee56d4": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logConnectionFailedEMessageae7e5": "连接ล้มเหลว: {e}",
+  "@logConnectionFailedEMessageae7e5": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthFailedStatuscode3531b": "认证ล้มเหลว: {statusCode}",
+  "@logAuthFailedStatuscode3531b": {
+    "placeholders": {
+      "statusCode": {
+        "type": "String"
+      }
+    }
+  },
+  "logClientErrorStatuscode3f573": "客户端ข้อผิดพลาด: {statusCode}",
+  "@logClientErrorStatuscode3f573": {
+    "placeholders": {
+      "statusCode": {
+        "type": "String"
+      }
+    }
+  },
+  "logServerErrorStatuscodeea835": "服务器ข้อผิดพลาด: {statusCode}",
+  "@logServerErrorStatuscodeea835": {
+    "placeholders": {
+      "statusCode": {
+        "type": "String"
+      }
+    }
+  },
+  "logUnknownResponseErrorStatusco531da": "未知响应ข้อผิดพลาด: {statusCode}",
+  "@logUnknownResponseErrorStatusco531da": {
+    "placeholders": {
+      "statusCode": {
+        "type": "String"
+      }
+    }
+  },
+  "logCertificateValidationFailedE94918": "证书验证ล้มเหลว: {e}",
+  "@logCertificateValidationFailedE94918": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logUnknownNetworkErrorEMessagee0ea2": "未知ข้อผิดพลาดเครือข่าย: {e}",
+  "@logUnknownNetworkErrorEMessagee0ea2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logNetworkErrorEMessage80c20": "ข้อผิดพลาดเครือข่าย: {e}",
+  "@logNetworkErrorEMessage80c20": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthinterceptorRequestFailed68aba": "AuthInterceptor: 处理请求ล้มเหลว",
+  "logNetworkRetryRetrycount1Ma64331": "网络请求重试 ({retryCount___1}/{maxRetries}), 等待 {delay}ms: {options}",
+  "@logNetworkRetryRetrycount1Ma64331": {
+    "placeholders": {
+      "retryCount___1": {
+        "type": "String"
+      },
+      "delay": {
+        "type": "String"
+      },
+      "options": {
+        "type": "String"
+      },
+      "maxRetries": {
+        "type": "String"
+      }
+    }
+  },
+  "logUpdateCheckRemoteLatestVersi710ef": "检查更新: 远端={latest} 当前={current} 有更新={hasUpdate}",
+  "@logUpdateCheckRemoteLatestVersi710ef": {
+    "placeholders": {
+      "latest": {
+        "type": "String"
+      },
+      "current": {
+        "type": "String"
+      },
+      "hasUpdate": {
+        "type": "String"
+      }
+    }
+  },
+  "logUpdateCheckNetworkFailed7aa8a": "检查更新网络ล้มเหลว",
+  "logUpdateCheckParseFailed537cd": "检查更新解析ล้มเหลว",
+  "logReleasesResponseIsNotAnArray69be5": "releases 响应不是数组: {data}",
+  "@logReleasesResponseIsNotAnArray69be5": {
+    "placeholders": {
+      "data": {
+        "type": "String"
+      }
+    }
+  },
+  "logNoValidReleaseEmptyOrNoSemveee981": "无合法发布（空รายการ或无 vX.Y.Z tag）",
+  "logParseFailedEe96d4": "解析ล้มเหลว: {e}",
+  "@logParseFailedEe96d4": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logAuthviewmodelLoginStart6547f": "AuthViewModel: เริ่ม登录流程",
+  "logAuthviewmodelLoginFailedbdfe4": "AuthViewModel: เข้าสู่ระบบล้มเหลว",
+  "logAuthviewmodelRegisterStarte2fa4": "AuthViewModel: เริ่ม注册流程",
+  "logAuthviewmodelRegisterFailed7d876": "AuthViewModel: สมัครล้มเหลว",
+  "logAuthviewmodelLogoute9158": "AuthViewModel: 执行登出",
+  "logRefreshingPagenamee3eb2": "รีเฟรช{pageName}",
+  "@logRefreshingPagenamee3eb2": {
+    "placeholders": {
+      "pageName": {
+        "type": "String"
+      }
+    }
+  },
+  "logDisposingPagenameViewmodelfc71e": "ทำลาย{pageName} ViewModel",
+  "@logDisposingPagenameViewmodelfc71e": {
+    "placeholders": {
+      "pageName": {
+        "type": "String"
+      }
+    }
+  },
+  "logCirclesLoadedAllcirclesLengtbf4e0": "เซอร์เคิลรายการโหลดสำเร็จ: {_allCircles}个เซอร์เคิล",
+  "@logCirclesLoadedAllcirclesLengtbf4e0": {
+    "placeholders": {
+      "_allCircles": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartLoadingWorkFilesWorkId5bb3d": "เริ่มโหลดผลงานไฟล์: {work}",
+  "@logStartLoadingWorkFilesWorkId5bb3d": {
+    "placeholders": {
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "logFilesLoadedWorkId92bd2": "ไฟล์โหลดสำเร็จ: {work}",
+  "@logFilesLoadedWorkId92bd2": {
+    "placeholders": {
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "logWorkDetailLoadedWorkId3f489": "ผลงานรายละเอียดโหลดสำเร็จ: {work}",
+  "@logWorkDetailLoadedWorkId3f489": {
+    "placeholders": {
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "logPairedSubtitleDownloadFailedd44d7": "配对คำบรรยายดาวน์โหลดล้มเหลว（不影响เสียง）: {e}",
+  "@logPairedSubtitleDownloadFailedd44d7": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "logPlaybackErrorEventEventOpera07a4d": "播放ข้อผิดพลาด事件: {event}",
+  "@logPlaybackErrorEventEventOpera07a4d": {
+    "placeholders": {
+      "event": {
+        "type": "String"
+      }
+    }
+  },
+  "logUsingDownloadedLocalSubtitlef5b14": "使用已下载本地คำบรรยาย: {localPath}",
+  "@logUsingDownloadedLocalSubtitlef5b14": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleUrlUnavailableCleari4443f": "คำบรรยายไฟล์无可用 URL，清除现有คำบรรยาย",
+  "logTagPlayerStateStreamErrorb3257": "{_tag} - 播放สถานะ流ข้อผิดพลาด: {error}",
+  "@logTagPlayerStateStreamErrorb3257": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagTrackChangeStreamErrorce29a": "{_tag} - 音轨变更流ข้อผิดพลาด: {error}",
+  "@logTagTrackChangeStreamErrorce29a": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagProgressStreamErrorErro5613a": "{_tag} - 播放进度流ข้อผิดพลาด: {error}",
+  "@logTagProgressStreamErrorErro5613a": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagSubtitleSyncStreamError0bca2": "{_tag} - คำบรรยาย同步流ข้อผิดพลาด: {error}",
+  "@logTagSubtitleSyncStreamError0bca2": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagContextStreamErrorErrora0756": "{_tag} - 上下文流ข้อผิดพลาด: {error}",
+  "@logTagContextStreamErrorErrora0756": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagInitialStateStreamError36ea4": "{_tag} - 初始สถานะ流ข้อผิดพลาด: {error}",
+  "@logTagInitialStateStreamError36ea4": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagErrorEventStreamErrorE48848": "{_tag} - ข้อผิดพลาด事件流ข้อผิดพลาด: {error}",
+  "@logTagErrorEventStreamErrorE48848": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagClearedStateStreamError92747": "{_tag} - 清空สถานะ流ข้อผิดพลาด: {error}",
+  "@logTagClearedStateStreamError92747": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagCompletedStreamErrorErr77a4c": "{_tag} - 播放เสร็จ流ข้อผิดพลาด: {error}",
+  "@logTagCompletedStreamErrorErr77a4c": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagSubtitleStreamErrorErro296b9": "{_tag} - คำบรรยาย流ข้อผิดพลาด: {error}",
+  "@logTagSubtitleStreamErrorErro296b9": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagCurrentSubtitleStreamErro2fef4": "{_tag} - 当前คำบรรยาย流ข้อผิดพลาด: {error}",
+  "@logTagCurrentSubtitleStreamErro2fef4": {
+    "placeholders": {
+      "_tag": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logDisposingPlaylistsviewmodele5090": "ทำลาย PlaylistsViewModel",
+  "logSearchKeywordKeywordPage420d8": "搜索关键词: {keyword}, 页码: {page}",
+  "@logSearchKeywordKeywordPage420d8": {
+    "placeholders": {
+      "keyword": {
+        "type": "String"
+      },
+      "page": {
+        "type": "String"
+      }
+    }
+  },
+  "logSearchSucceededResponseWorks55719": "搜索สำเร็จ: {response}个结果",
+  "@logSearchSucceededResponseWorks55719": {
+    "placeholders": {
+      "response": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagsLoadedAlltagsLengthTags7b78a": "แท็กรายการโหลดสำเร็จ: {_allTags}个แท็ก",
+  "@logTagsLoadedAlltagsLengthTags7b78a": {
+    "placeholders": {
+      "_allTags": {
+        "type": "String"
+      }
+    }
+  },
+  "logUpdateviewmodelUpdateCheckFacead5": "UpdateViewModel: 检查更新ล้มเหลว",
+  "logUpdateviewmodelUpdateCheckUn69571": "UpdateViewModel: 检查更新未知异常",
+  "logUpdateviewmodelOpenDownloadFf03f5": "UpdateViewModel: 打开下载地址ล้มเหลว",
+  "logVoiceActorsLoadedAllvoiceact8347d": "นักพากย์รายการโหลดสำเร็จ: {_allVoiceActors}个นักพากย์",
+  "@logVoiceActorsLoadedAllvoiceact8347d": {
+    "placeholders": {
+      "_allVoiceActors": {
+        "type": "String"
+      }
+    }
+  },
+  "logLogindialogLoginAttemptNameN70c23": "LoginDialog: 尝试登录: name={name}",
+  "@logLogindialogLoginAttemptNameN70c23": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "logLogindialogLoginOkClosing833b9": "LoginDialog: 登录สำเร็จ，关闭对话框",
+  "logLogindialogLoginFailedAuthvmaa6d5": "LoginDialog: เข้าสู่ระบบล้มเหลว: {authVM}",
+  "@logLogindialogLoginFailedAuthvmaa6d5": {
+    "placeholders": {
+      "authVM": {
+        "type": "String"
+      }
+    }
+  },
+  "logRegisterdialogRegisterAttemp39a65": "RegisterDialog: 尝试注册: name={name}",
+  "@logRegisterdialogRegisterAttemp39a65": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "logRegisterdialogRegisterOkClos5c5a3": "RegisterDialog: 注册สำเร็จ，关闭对话框",
+  "logRegisterdialogRegisterFailede25aa": "RegisterDialog: สมัครล้มเหลว: {authVM}",
+  "@logRegisterdialogRegisterFailede25aa": {
+    "placeholders": {
+      "authVM": {
+        "type": "String"
+      }
+    }
+  },
+  "logRunSearchKeyword2ee4b": "执行搜索: {keyword}",
+  "@logRunSearchKeyword2ee4b": {
+    "placeholders": {
+      "keyword": {
+        "type": "String"
+      }
+    }
+  },
+  "logFileTappedFileTitleFileTe6c23": "点击ไฟล์: {file} ({file2})",
+  "@logFileTappedFileTitleFileTe6c23": {
+    "placeholders": {
+      "file": {
+        "type": "String"
+      },
+      "file2": {
+        "type": "String"
+      }
+    }
+  },
+  "logTagTappedKeyword12029": "点击แท็ก: {keyword}",
+  "@logTagTappedKeyword12029": {
+    "placeholders": {
+      "keyword": {
+        "type": "String"
+      }
+    }
+  },
+  "logMarkStatusUpdated": "อัปเดตสถานะเครื่องหมายสำเร็จ: {label}",
+  "logFolderToggled": "{action} โฟลเดอร์: {title}",
+  "logSubtitleListUpdated": "อัปเดตรายการคำบรรยาย: {status}",
+  "logCannotFindSubtitleReason": "ไม่พบไฟล์คำบรรยาย: {reason}",
+  "logSubtitleStateUpdated": "อัปเดตคำบรรยาย: {text} ({state})",
+  "logNoSubtitle": "ไม่มีคำบรรยาย",
+  "logErrorDetails": "รายละเอียดข้อผิดพลาด: {detail}",
+  "@logErrorDetails": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "logPartialCacheDeleteFailed": "ลบแคชบางไฟล์ไม่ได้ ({count}) อาจกำลังเล่น",
+  "@logPartialCacheDeleteFailed": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "logOpSkipNext": "ข้ามเพลงถัดไป",
+  "logOpSkipPrevious": "ข้ามเพลงก่อนหน้า",
+  "logOpSetContext": "ตั้งค่าบริบทการเล่น",
+  "logOpAudioPlayerInit": "เริ่มต้นเครื่องเล่นเสียง",
+  "logOpRestorePlaybackState": "กู้คืนสถานะการเล่น",
+  "logOpSavePlaybackState": "บันทึกสถานะการเล่น",
+  "logOpClearPlaybackState": "ล้างสถานะการเล่น",
+  "logOpLoadPlaybackState": "โหลดสถานะการเล่น",
+  "logPlaybackOperationFailed": "การเล่นล้มเหลว: {operation}",
+  "@logPlaybackOperationFailed": {
+    "placeholders": {
+      "operation": {
+        "type": "String"
+      }
+    }
+  },
+  "logPlaylistOperationFailed": "เพลย์ลิสต์ล้มเหลว: {operation}",
+  "@logPlaylistOperationFailed": {
+    "placeholders": {
+      "operation": {
+        "type": "String"
+      }
+    }
+  },
+  "logStateOperationFailed": "สถานะล้มเหลว: {operation}",
+  "@logStateOperationFailed": {
+    "placeholders": {
+      "operation": {
+        "type": "String"
+      }
+    }
+  },
+  "logContextOperationFailed": "บริบทล้มเหลว: {operation}",
+  "@logContextOperationFailed": {
+    "placeholders": {
+      "operation": {
+        "type": "String"
+      }
+    }
+  },
+  "logInitOperationFailed": "เริ่มต้นล้มเหลว: {operation}",
+  "@logInitOperationFailed": {
+    "placeholders": {
+      "operation": {
+        "type": "String"
+      }
+    }
+  },
+  "logLoginSucceeded": "เข้าสู่ระบบสำเร็จ: username={username}, group={group}",
+  "@logLoginSucceeded": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "logRegisterSucceeded": "สมัครสำเร็จ: name={name}, group={group}",
+  "@logRegisterSucceeded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "logLoadedSavedAuth": "โหลดข้อมูลยืนยันตัวตนที่บันทึก: {name}",
+  "@logLoadedSavedAuth": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "logPlaylistsPageLoaded": "โหลดเพลย์ลิสต์หน้า {page}: {count}",
+  "@logPlaylistsPageLoaded": {
+    "placeholders": {
+      "page": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "logWorkPlaylistsLoaded": "โหลดเพลย์ลิสต์ผลงาน: {count}",
+  "@logWorkPlaylistsLoaded": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "logMyPlaylistsFetched": "ดึงเพลย์ลิสต์สำเร็จ: {count}",
+  "@logMyPlaylistsFetched": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "@logPlaylistIndexInvalid": {
+    "placeholders": {
+      "index": {
+        "type": "String"
+      },
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleContentPreview": "ตัวอย่างเนื้อหาคำบรรยาย: {preview}...",
+  "@logSubtitleContentPreview": {
+    "placeholders": {
+      "preview": {
+        "type": "String"
+      }
+    }
+  },
+  "logLyricOverlayUpdate": "[{tag}] อัปเดตเนื้อเพลง: {text}",
+  "@logLyricOverlayUpdate": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "logStartRegisterRequest": "เริ่มคำขอสมัคร: name={name}, hasRecommender={hasRecommender}, baseUrl={baseUrl}",
+  "@logStartRegisterRequest": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "hasRecommender": {
+        "type": "String"
+      },
+      "baseUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "logSetPlaybackSourceInitial": "ตั้งแหล่งเล่น: ตำแหน่งเริ่ม={ms}ms",
+  "@logSetPlaybackSourceInitial": {
+    "placeholders": {
+      "ms": {
+        "type": "String"
+      }
+    }
+  },
+  "logFavoriteUpdated": "{action} อัปเดตรายการโปรด: {name}",
+  "@logFavoriteUpdated": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "logUsingPreloadedData": "ใช้ข้อมูลโหลดล่วงหน้า: หน้า {page} {pageName}",
+  "@logUsingPreloadedData": {
+    "placeholders": {
+      "page": {
+        "type": "String"
+      },
+      "pageName": {
+        "type": "String"
+      }
+    }
+  },
+  "logLoadingPageName": "โหลด {pageName}: หน้า {page}",
+  "@logLoadingPageName": {
+    "placeholders": {
+      "pageName": {
+        "type": "String"
+      },
+      "page": {
+        "type": "String"
+      }
+    }
+  },
+  "logPageWorksLoaded": "โหลดหน้า {page} {pageName} สำเร็จ: {count} ผลงาน",
+  "@logPageWorksLoaded": {
+    "placeholders": {
+      "page": {
+        "type": "String"
+      },
+      "pageName": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "logPageLoadFailed": "โหลด {pageName} ล้มเหลว",
+  "@logPageLoadFailed": {
+    "placeholders": {
+      "pageName": {
+        "type": "String"
+      }
+    }
+  },
+  "logPreloadDone": "โหลดล่วงหน้า {pageName} หน้า {nextPage} เสร็จ",
+  "@logPreloadDone": {
+    "placeholders": {
+      "pageName": {
+        "type": "String"
+      },
+      "nextPage": {
+        "type": "String"
+      }
+    }
+  },
+  "logPreloadFailed": "โหลดล่วงหน้า {pageName} หน้า {nextPage} ล้มเหลว: {error}",
+  "@logPreloadFailed": {
+    "placeholders": {
+      "pageName": {
+        "type": "String"
+      },
+      "nextPage": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logPageListLoaded": "โหลดหน้า {page} {listName} สำเร็จ: {count} ผลงาน",
+  "@logPageListLoaded": {
+    "placeholders": {
+      "page": {
+        "type": "String"
+      },
+      "listName": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "logPageNamePlaylistWorks": "ผลงานในเพลย์ลิสต์",
+  "@logMarkStatusUpdated": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "logPageNameFavorites": "รายการโปรด",
+  "logPageNameRecommend": "คำแนะนำ",
+  "logPageNameSimilar": "ผลงานที่คล้ายกัน"
 }

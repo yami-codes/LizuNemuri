@@ -1,6 +1,7 @@
 import 'package:xuro/data/models/files/files.dart';
 import 'package:xuro/data/models/files/child.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 /// 文件路径工具类
 /// 用于在文件树中定位文件和获取同级文件
@@ -10,16 +11,16 @@ class FilePath {
   /// 获取文件的完整路径
   /// 返回类似 /folder1/folder2/file.mp3 的路径
   static String? getPath(Child targetFile, Files root) {
-    AppLogger.debug('开始查找文件路径: ${targetFile.title}');
+    AppLogger.debug(LogStrings.logStartResolvingFilePathTargetb9a7f(targetFile.title));
     final segments = _findPathSegments(root.children, targetFile);
     
     if (segments == null) {
-      AppLogger.debug('未找到文件路径');
+      AppLogger.debug(LogStrings.logFilePathNotFound6f266);
       return null;
     }
 
     final path = separator + segments.join(separator);
-    AppLogger.debug('找到文件路径: $path');
+    AppLogger.debug(LogStrings.logFoundFilePathPath57008(path));
     return path;
   }
 
@@ -51,25 +52,25 @@ class FilePath {
   /// 获取同级文件列表
   /// 返回与目标文件在同一目录下的所有文件
   static List<Child> getSiblings(Child targetFile, Files root) {
-    AppLogger.debug('开始获取同级文件: ${targetFile.title}');
+    AppLogger.debug(LogStrings.logGetSiblingFilesTargetfileTit6cf37(targetFile.title));
     
     // 获取目标文件的路径
     final path = getPath(targetFile, root);
     if (path == null) {
-      AppLogger.debug('无法获取文件路径，返回空列表');
+      AppLogger.debug(LogStrings.logCannotResolveFilePathReturnEff0fd);
       return [];
     }
 
     // 获取父目录路径
     final lastSeparator = path.lastIndexOf(separator);
     final parentPath = lastSeparator > 0 ? path.substring(0, lastSeparator) : separator;
-    AppLogger.debug('父目录路径: $parentPath');
+    AppLogger.debug(LogStrings.logParentDirPathParentpathd3aa7(parentPath));
 
     // 查找父目录内容
     List<Child>? siblings;
     if (parentPath == separator) {
       // 如果是根目录，直接使用 root.children
-      AppLogger.debug('文件位于根目录，使用根目录文件列表');
+      AppLogger.debug(LogStrings.logFileAtRootUseRootFileList8c225);
       siblings = root.children;
     } else {
       // 否则查找父目录
@@ -77,11 +78,11 @@ class FilePath {
     }
 
     if (siblings == null) {
-      AppLogger.debug('未找到父目录内容，返回空列表');
+      AppLogger.debug(LogStrings.logParentDirEmptyReturnEmpty7c668);
       return [];
     }
 
-    AppLogger.debug('找到同级文件数量: ${siblings.length}');
+    AppLogger.debug(LogStrings.logSiblingFileCountSiblingsLeng9ed81(siblings.length));
     return siblings;
   }
 

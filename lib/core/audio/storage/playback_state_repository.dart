@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:xuro/data/models/playback/playback_state.dart';
 import 'i_playback_state_repository.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class PlaybackStateRepository implements IPlaybackStateRepository {
   static const _key = 'last_playback_state';
@@ -16,9 +17,9 @@ class PlaybackStateRepository implements IPlaybackStateRepository {
       final json = state.toJson();
       final data = jsonEncode(json);
       await _prefs.setString(_key, data);
-      AppLogger.debug('播放状态已保存');
+      AppLogger.debug(LogStrings.logPlaybackStateSaved8075d);
     } catch (e) {
-      AppLogger.error('保存播放状态失败', e);
+      AppLogger.error(LogStrings.logSavePlaybackStateFailed48c3d, e);
       rethrow;
     }
   }
@@ -27,9 +28,9 @@ class PlaybackStateRepository implements IPlaybackStateRepository {
   Future<void> clearState() async {
     try {
       await _prefs.remove(_key);
-      AppLogger.debug('播放状态已清除');
+      AppLogger.debug(LogStrings.logPlaybackStateCleareda68e0);
     } catch (e) {
-      AppLogger.error('清除播放状态失败', e);
+      AppLogger.error(LogStrings.logClearPlaybackStateFailedebdde, e);
       rethrow;
     }
   }
@@ -39,16 +40,16 @@ class PlaybackStateRepository implements IPlaybackStateRepository {
     try {
       final data = _prefs.getString(_key);
       if (data == null) {
-        AppLogger.debug('没有找到保存的播放状态');
+        AppLogger.debug(LogStrings.logNoSavedPlaybackStated1b67);
         return null;
       }
 
       final json = jsonDecode(data) as Map<String, dynamic>;
       final state = PlaybackState.fromJson(json);
-      AppLogger.debug('播放状态已加载');
+      AppLogger.debug(LogStrings.logPlaybackStateLoadedbf046);
       return state;
     } catch (e) {
-      AppLogger.error('加载播放状态失败', e);
+      AppLogger.error(LogStrings.logLoadPlaybackStateFailed21627, e);
       return null;
     }
   }

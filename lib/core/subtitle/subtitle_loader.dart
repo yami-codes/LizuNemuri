@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:xuro/common/constants/log_strings.dart';
 
 import 'package:xuro/data/models/files/child.dart';
 import 'package:xuro/data/models/files/files.dart';
@@ -18,11 +19,11 @@ class SubtitleLoader {
   // 查找字幕文件
   Child? findSubtitleFile(Child audioFile, Files files) {
     if (files.children == null || audioFile.title == null) {
-      AppLogger.debug('无法查找字幕文件: ${files.children == null ? '文件列表为空' : '当前文件名为空'}');
+      AppLogger.debug(LogStrings.logCannotFindSubtitleReason(files.children == null ? LogStrings.logFileListEmpty : LogStrings.logCurrentFileNameEmpty));
       return null;
     }
 
-    AppLogger.debug('开始查找字幕文件...');
+    AppLogger.debug(LogStrings.logStartFindingSubtitleFileb7fbb);
     
     // 使用 FilePath 获取同级文件
     final siblings = FilePath.getSiblings(audioFile, files);
@@ -34,9 +35,9 @@ class SubtitleLoader {
     );
     
     if (subtitleFile != null) {
-      AppLogger.debug('找到字幕文件: ${subtitleFile.title}, URL: ${subtitleFile.mediaDownloadUrl}');
+      AppLogger.debug(LogStrings.logFoundSubtitleFileSubtitlefilefa0b(subtitleFile.title, subtitleFile.mediaDownloadUrl));
     } else {
-      AppLogger.debug('在当前目录中未找到字幕文件');
+      AppLogger.debug(LogStrings.logNoSubtitleInCurrentDirectoryb005d);
     }
     
     return subtitleFile;
@@ -48,14 +49,14 @@ class SubtitleLoader {
       // 首先尝试从缓存加载
       final cachedContent = await SubtitleCacheManager.getCachedContent(url);
       if (cachedContent != null) {
-        AppLogger.debug('从缓存加载字幕: $url');
+        AppLogger.debug(LogStrings.logLoadSubtitleFromCacheUrle52f3(url));
         return _parseSubtitleContent(cachedContent);
       }
 
       // 缓存未命中，从网络加载
-      AppLogger.debug('从网络加载字幕: $url');
+      AppLogger.debug(LogStrings.logLoadSubtitleFromNetworkUrl9145d(url));
       final response = await _dio.get(url);
-      AppLogger.debug('字幕文件下载状态: ${response.statusCode}');
+      AppLogger.debug(LogStrings.logSubtitlefiledownloadstateResd5fd5(response.statusCode));
       
       if (response.statusCode == 200) {
         final content = response.data as String;
@@ -65,10 +66,10 @@ class SubtitleLoader {
         
         return _parseSubtitleContent(content);
       } else {
-        throw Exception('字幕下载失败: ${response.statusCode}');
+        throw Exception(LogStrings.logSubtitleDownloadFailedCode(response.statusCode.toString()));
       }
     } catch (e) {
-      AppLogger.debug('字幕加载失败: $e');
+      AppLogger.debug(LogStrings.logSubtitleLoadFailedEfb464(e));
       rethrow;
     }
   }
@@ -81,13 +82,13 @@ class SubtitleLoader {
       return File(localPath).readAsString();
     }
     if (url == null || url.isEmpty) {
-      throw Exception('字幕地址为空');
+      throw Exception(LogStrings.logSubtitleUrlEmpty);
     }
     final cached = await SubtitleCacheManager.getCachedContent(url);
     if (cached != null) return cached;
     final response = await _dio.get(url);
     if (response.statusCode != 200) {
-      throw Exception('字幕下载失败: ${response.statusCode}');
+      throw Exception(LogStrings.logSubtitleDownloadFailedCode(response.statusCode.toString()));
     }
     final content = response.data as String;
     await SubtitleCacheManager.cacheContent(url, content);
@@ -103,22 +104,22 @@ class SubtitleLoader {
       final list = parser.parse(content);
       return list.subtitles.isNotEmpty ? list : null;
     } catch (e) {
-      AppLogger.debug('字幕按时间轴解析失败，回退原文: $e');
+      AppLogger.debug(LogStrings.logTimelineParseFailedFallbackT8e556(e));
       return null;
     }
   }
 
   // 新增: 解析字幕内容的私有方法
   SubtitleList? _parseSubtitleContent(String content) {
-    AppLogger.debug('字幕文件内容预览: ${content.substring(0, content.length > 100 ? 100 : content.length)}...');
+    AppLogger.debug(LogStrings.logSubtitleContentPreview(content.substring(0, content.length > 100 ? 100 : content.length)));
     
     final parser = SubtitleParserFactory.getParser(content);
     if (parser == null) {
-      throw Exception('不支持的字幕格式');
+      throw Exception(LogStrings.logUnsupportedSubtitleFormat);
     }
     
     final subtitleList = parser.parse(content);
-    AppLogger.debug('字幕解析完成，字幕数量: ${subtitleList.subtitles.length}');
+    AppLogger.debug(LogStrings.logSubtitleParseCompleteSubtitlae958(subtitleList.subtitles.length));
     
     return subtitleList;
   }

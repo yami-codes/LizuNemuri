@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:xuro/common/constants/strings.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 /// 检查更新的错误分类。
 ///
@@ -51,7 +52,7 @@ class UpdateException implements Exception {
       case DioExceptionType.badCertificate:
         return UpdateException(
           type: UpdateErrorType.network,
-          message: '网络错误: ${e.message}',
+          message: LogStrings.logNetworkErrorEMessage80c20(e.message),
           originalError: e,
         );
       case DioExceptionType.badResponse:
@@ -60,7 +61,7 @@ class UpdateException implements Exception {
           // 公开只读端点的 403/429 ≈ 未鉴权限流（GitHub 文档）。
           return UpdateException(
             type: UpdateErrorType.rateLimited,
-            message: 'GitHub 限流: $code',
+            message: LogStrings.logGithubRateLimited(code),
             statusCode: code,
             originalError: e,
           );
@@ -68,14 +69,14 @@ class UpdateException implements Exception {
         if (code == 404) {
           return UpdateException(
             type: UpdateErrorType.notFound,
-            message: '未找到发布信息: 404',
+            message: LogStrings.logReleaseNotFound404,
             statusCode: code,
             originalError: e,
           );
         }
         return UpdateException(
           type: UpdateErrorType.unknown,
-          message: '响应错误: $code',
+          message: LogStrings.logResponseErrorCode(code),
           statusCode: code,
           originalError: e,
         );
@@ -83,7 +84,7 @@ class UpdateException implements Exception {
       case DioExceptionType.unknown:
         return UpdateException(
           type: UpdateErrorType.network,
-          message: '网络错误: ${e.message}',
+          message: LogStrings.logNetworkErrorEMessage80c20(e.message),
           originalError: e,
         );
     }

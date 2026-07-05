@@ -4,6 +4,7 @@ import 'package:xuro/core/download/download_service.dart';
 import 'package:xuro/data/models/files/child.dart';
 import 'package:xuro/core/audio/cache/audio_cache_manager.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class PlaylistBuilder {
   /// Build audio sources with per-item error handling.
@@ -39,7 +40,7 @@ class PlaylistBuilder {
         sources.add(source);
         originalIndices.add(i);
       } catch (e) {
-        AppLogger.error('创建音频源失败,跳过: ${files[i].title}', e);
+        AppLogger.error(LogStrings.logCreateAudioSourceFailedSkipe805d(files[i].title), e);
       }
     }
     return (sources, originalIndices);
@@ -67,8 +68,8 @@ class PlaylistBuilder {
 
     // Guard: empty playlist
     if (sources.isEmpty) {
-      AppLogger.error('所有音频源创建失败,无法播放');
-      throw Exception('无可用的音频源');
+      AppLogger.error(LogStrings.logAllAudioSourcesFailed90f2f);
+      throw Exception(LogStrings.logNoAudioSources);
     }
 
     await updatePlaylist(playlist, sources);
@@ -87,7 +88,7 @@ class PlaylistBuilder {
           break;
         }
       }
-      AppLogger.warning('原始索引 $initialIndex 不可用,使用替代索引 $remappedIndex');
+      AppLogger.warning(LogStrings.logOriginalIndexInitialindexUna075a6(initialIndex, remappedIndex));
     }
 
     await player.setAudioSource(

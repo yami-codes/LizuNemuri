@@ -5,6 +5,7 @@ import 'package:xuro/data/models/works/pagination.dart';
 import 'package:xuro/data/services/api_service.dart';
 import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class SearchViewModel extends ChangeNotifier {
   final _apiService = GetIt.I<ApiService>();
@@ -65,7 +66,7 @@ class SearchViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      AppLogger.info('搜索关键词: $keyword, 页码: $page');
+      AppLogger.info(LogStrings.logSearchKeywordKeywordPage420d8(keyword, page));
       final response = await _apiService.searchWorks(
         keyword: keyword,
         page: page,
@@ -77,9 +78,9 @@ class SearchViewModel extends ChangeNotifier {
       _works = response.works;
       _pagination = response.pagination;
       _currentPage = page;
-      AppLogger.info('搜索成功: ${response.works.length}个结果');
+      AppLogger.info(LogStrings.logSearchSucceededResponseWorks55719(response.works.length));
     } catch (e) {
-      AppLogger.error('搜索失败', e);
+      AppLogger.error(LogStrings.logSearchFailed, e);
       _error = userFacingError(e);
     } finally {
       _isLoading = false;

@@ -13,6 +13,7 @@ import './utils/audio_error_handler.dart';
 import './state/playback_state_manager.dart';
 import './controllers/playback_controller.dart';
 import './events/playback_event_hub.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class AudioPlayerService implements IAudioPlayerService {
   late final AudioPlayer _player;
@@ -82,13 +83,13 @@ class AudioPlayerService implements IAudioPlayerService {
       _initCompleter.completeError(e, stack);
       AudioErrorHandler.handleError(
         AudioErrorType.init,
-        '音频播放器初始化',
+        LogStrings.logOpAudioPlayerInit,
         e,
         stack,
       );
       AudioErrorHandler.throwError(
         AudioErrorType.init,
-        '音频播放器初始化',
+        LogStrings.logOpAudioPlayerInit,
         e,
       );
     }
@@ -159,15 +160,15 @@ class AudioPlayerService implements IAudioPlayerService {
   @override
   Future<void> restorePlaybackState() async {
     try {
-      AppLogger.debug('开始恢复播放状态');
+      AppLogger.debug(LogStrings.logStartRestoringPlaybackStatebf3e6);
       final state = await _stateManager.loadState();
       
       if (state == null) {
-        AppLogger.debug('没有可恢复的播放状态');
+        AppLogger.debug(LogStrings.logNoPlaybackStateToRestored59fb);
         return;
       }
 
-      AppLogger.debug('已加载保存的状态: workId=${state.work.id}');
+      AppLogger.debug(LogStrings.logLoadedSavedStateWorkidStateW175f5(state.work.id));
 
       final context = PlaybackContext(
         work: state.work,
@@ -177,10 +178,10 @@ class AudioPlayerService implements IAudioPlayerService {
       );
 
       AppLogger.debug(
-          '播放列表信息: 长度=${context.playlist.length}, 索引=${context.currentIndex}');
+          LogStrings.logPlaylistInfoLengthContextPlac41a2(context.playlist.length, context.currentIndex));
 
       if (context.playlist.isEmpty) {
-        AppLogger.debug('恢复的播放列表为空，跳过恢复');
+        AppLogger.debug(LogStrings.logRestoredPlaylistEmptySkipe85b3);
         return;
       }
 
@@ -189,14 +190,14 @@ class AudioPlayerService implements IAudioPlayerService {
           context,
           initialPosition: Duration(milliseconds: state.position),
         );
-        AppLogger.debug('播放状态恢复成功');
+        AppLogger.debug(LogStrings.logPlaybackStateRestoredc4753);
       } catch (e) {
-        AppLogger.error('设置播放上下文失败，跳过状态恢复', e);
+        AppLogger.error(LogStrings.logSetContextFailedSkipStateRes87ad0, e);
       }
     } catch (e, stack) {
       AudioErrorHandler.handleError(
         AudioErrorType.init,
-        '恢复播放状态',
+        LogStrings.logOpRestorePlaybackState,
         e,
         stack,
       );

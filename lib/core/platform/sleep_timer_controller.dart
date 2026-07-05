@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:xuro/common/constants/log_strings.dart';
 
 import 'package:flutter/foundation.dart';
 
@@ -53,7 +54,7 @@ class SleepTimerController extends ChangeNotifier {
     _minutes = null;
     notifyListeners();
     _audioService.pause().catchError(
-      (Object e) => AppLogger.error('[$_tag] 到点暂停失败', e),
+      (Object e) => AppLogger.error(LogStrings.logTagSleepTimerPauseFailed9626d(_tag), e),
     );
   }
 

@@ -6,6 +6,7 @@ import 'package:xuro/core/download/download_service.dart';
 import 'package:xuro/core/subtitle/subtitle_loader.dart';
 import 'package:xuro/data/models/files/child.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 /// 只读字幕预览：已下载则读本地文件（离线可用），否则拉
 /// `mediaDownloadUrl`（带缓存）。能按时间轴解析就逐行列出，
@@ -69,7 +70,7 @@ class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
         }
       });
     } catch (e) {
-      AppLogger.error('字幕预览加载失败', e);
+      AppLogger.error(LogStrings.logSubtitlePreviewLoadFailed, e);
       if (!mounted) return;
       setState(() {
         _loading = false;

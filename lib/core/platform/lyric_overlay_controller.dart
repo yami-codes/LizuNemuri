@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'i_lyric_overlay_controller.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class LyricOverlayController implements ILyricOverlayController {
   static const _tag = 'LyricOverlay';
@@ -10,10 +11,10 @@ class LyricOverlayController implements ILyricOverlayController {
   @override
   Future<void> initialize() async {
     try {
-      AppLogger.debug('[$_tag] 初始化');
+      AppLogger.debug(LogStrings.logTagInitd4e18(_tag));
       await _channel.invokeMethod('initialize');
     } catch (e) {
-      AppLogger.error('[$_tag] 初始化失败', e);
+      AppLogger.error(LogStrings.logTagInitFailed3648a(_tag), e);
       // 这里我们不抛出异常,而是静默失败
       // 因为这个错误不应该影响应用的主要功能
     }
@@ -21,38 +22,38 @@ class LyricOverlayController implements ILyricOverlayController {
   
   @override
   Future<void> show() async {
-    AppLogger.debug('[$_tag] 显示悬浮窗');
+    AppLogger.debug(LogStrings.logTagShowOverlay90227(_tag));
     await _channel.invokeMethod('show');
   }
   
   @override
   Future<void> hide() async {
-    AppLogger.debug('[$_tag] 隐藏悬浮窗');
+    AppLogger.debug(LogStrings.logTagHideOverlay4fda2(_tag));
     await _channel.invokeMethod('hide');
   }
   
   @override
   Future<void> updateLyric(String? text) async {
-    AppLogger.debug('[$_tag] 更新歌词: ${text ?? '<空>'}');
+    AppLogger.debug(LogStrings.logLyricOverlayUpdate(_tag, text ?? ''));
     await _channel.invokeMethod('updateLyric', {'text': text});
   }
   
   @override
   Future<bool> checkPermission() async {
-    AppLogger.debug('[$_tag] 检查权限');
+    AppLogger.debug(LogStrings.logTagCheckPermissionf3479(_tag));
     return await Permission.systemAlertWindow.isGranted;
   }
   
   @override
   Future<bool> requestPermission() async {
-    AppLogger.debug('[$_tag] 请求权限');
+    AppLogger.debug(LogStrings.logTagRequestPermission021a2(_tag));
     final status = await Permission.systemAlertWindow.request();
     return status.isGranted;
   }
   
   @override
   Future<void> dispose() async {
-    AppLogger.debug('[$_tag] 释放资源');
+    AppLogger.debug(LogStrings.logTagDisposea3399(_tag));
     await _channel.invokeMethod('dispose');
   }
   

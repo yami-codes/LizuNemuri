@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class DatabaseService {
   static const _databaseName = 'xuro.db';
@@ -59,7 +60,7 @@ class DatabaseService {
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, _databaseName);
-    AppLogger.debug('初始化数据库: $path');
+    AppLogger.debug(LogStrings.logInitDatabasePath557d5(path));
 
     return await openDatabase(
       path,
@@ -75,7 +76,7 @@ class DatabaseService {
   Future<void> _onCreate(Database db, int version) async {
     await db.execute(_createUserSubtitlesTable);
     await db.execute(_createDownloadsTable);
-    AppLogger.debug('数据库表创建完成 (v$version)');
+    AppLogger.debug(LogStrings.logDatabaseTablesCreatedVVersiofa44c(version));
   }
 
   /// 版本顺序迁移表：键为目标版本，值为「从 (键-1) 升到 键」要执行的步骤。
@@ -92,11 +93,11 @@ class DatabaseService {
   };
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    AppLogger.debug('数据库升级: $oldVersion -> $newVersion');
+    AppLogger.debug(LogStrings.logDatabaseUpgradeOldversionNe5cef7(oldVersion, newVersion));
     for (var v = oldVersion + 1; v <= newVersion; v++) {
       final migration = _migrations[v];
       if (migration != null) {
-        AppLogger.debug('应用数据库迁移: -> v$v');
+        AppLogger.debug(LogStrings.logApplyDbMigrationVV368dc(v));
         await migration(db);
       }
     }
@@ -110,7 +111,7 @@ class DatabaseService {
       final db = await future;
       await db.close();
     } catch (e) {
-      AppLogger.error('关闭数据库失败', e);
+      AppLogger.error(LogStrings.logCloseDatabaseFailed3f1be, e);
     }
   }
 }

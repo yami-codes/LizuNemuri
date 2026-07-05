@@ -15,6 +15,7 @@ import 'package:get_it/get_it.dart';
 import 'package:xuro/core/subtitle/subtitle_import_service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class PlayerViewModel extends ChangeNotifier {
   final IAudioPlayerService _audioService;
@@ -61,7 +62,7 @@ class PlayerViewModel extends ChangeNotifier {
                          event.state.processingState == ProcessingState.loading;
           notifyListeners();
         },
-        onError: (error) => debugPrint('$_tag - 播放状态流错误: $error'),
+        onError: (error) => debugPrint(LogStrings.logTagPlayerStateStreamErrorb3257(_tag, error)),
       ),
     );
 
@@ -71,7 +72,7 @@ class PlayerViewModel extends ChangeNotifier {
         (event) {
           notifyListeners();
         },
-        onError: (error) => debugPrint('$_tag - 音轨变更流错误: $error'),
+        onError: (error) => debugPrint(LogStrings.logTagTrackChangeStreamErrorce29a(_tag, error)),
       ),
     );
 
@@ -84,7 +85,7 @@ class PlayerViewModel extends ChangeNotifier {
           _position = event.position;
           notifyListeners();
         },
-        onError: (error) => debugPrint('$_tag - 播放进度流错误: $error'),
+        onError: (error) => debugPrint(LogStrings.logTagProgressStreamErrorErro5613a(_tag, error)),
       ),
     );
 
@@ -94,7 +95,7 @@ class PlayerViewModel extends ChangeNotifier {
         (event) {
           _subtitleService.updatePosition(event.position);
         },
-        onError: (error) => debugPrint('$_tag - 字幕同步流错误: $error'),
+        onError: (error) => debugPrint(LogStrings.logTagSubtitleSyncStreamError0bca2(_tag, error)),
       ),
     );
 
@@ -107,7 +108,7 @@ class PlayerViewModel extends ChangeNotifier {
             _subtitleService.updatePosition(_position!);
           }
         },
-        onError: (error) => debugPrint('$_tag - 上下文流错误: $error'),
+        onError: (error) => debugPrint(LogStrings.logTagContextStreamErrorErrora0756(_tag, error)),
       ),
     );
 
@@ -122,7 +123,7 @@ class PlayerViewModel extends ChangeNotifier {
             _loadSubtitleIfAvailable(event.context!);
           }
         },
-        onError: (error) => debugPrint('$_tag - 初始状态流错误: $error'),
+        onError: (error) => debugPrint(LogStrings.logTagInitialStateStreamError36ea4(_tag, error)),
       ),
     );
 
@@ -131,10 +132,10 @@ class PlayerViewModel extends ChangeNotifier {
       _eventHub.errors.listen(
         (event) {
           _errorMessage = Strings.playbackError(event.operation);
-          AppLogger.error('播放错误事件: ${event.operation}', event.error, event.stackTrace);
+          AppLogger.error(LogStrings.logPlaybackErrorEventEventOpera07a4d(event.operation), event.error, event.stackTrace);
           notifyListeners();
         },
-        onError: (error) => debugPrint('$_tag - 错误事件流错误: $error'),
+        onError: (error) => debugPrint(LogStrings.logTagErrorEventStreamErrorE48848(_tag, error)),
       ),
     );
 
@@ -150,7 +151,7 @@ class PlayerViewModel extends ChangeNotifier {
           _subtitleService.clearSubtitle();
           notifyListeners();
         },
-        onError: (error) => debugPrint('$_tag - 清空状态流错误: $error'),
+        onError: (error) => debugPrint(LogStrings.logTagClearedStateStreamError92747(_tag, error)),
       ),
     );
 
@@ -161,7 +162,7 @@ class PlayerViewModel extends ChangeNotifier {
           _isPlaying = false;
           notifyListeners();
         },
-        onError: (error) => debugPrint('$_tag - 播放完成流错误: $error'),
+        onError: (error) => debugPrint(LogStrings.logTagCompletedStreamErrorErr77a4c(_tag, error)),
       ),
     );
 
@@ -172,9 +173,9 @@ class PlayerViewModel extends ChangeNotifier {
     _subscriptions.add(
       _subtitleService.subtitleStream.listen(
         (subtitleList) {
-          debugPrint('$_tag - 字幕列表更新: ${subtitleList != null ? '已加载' : '未加载'}');
+          debugPrint('$_tag - ${LogStrings.logSubtitleListUpdated(subtitleList != null ? LogStrings.logLoaded : LogStrings.logNotLoaded)}');
         },
-        onError: (error) => debugPrint('$_tag - 字幕流错误: $error'),
+        onError: (error) => debugPrint(LogStrings.logTagSubtitleStreamErrorErro296b9(_tag, error)),
       ),
     );
 
@@ -184,7 +185,7 @@ class PlayerViewModel extends ChangeNotifier {
           _currentSubtitle = subtitle;
           notifyListeners();
         },
-        onError: (error) => debugPrint('$_tag - 当前字幕流错误: $error'),
+        onError: (error) => debugPrint(LogStrings.logTagCurrentSubtitleStreamErro2fef4(_tag, error)),
       ),
     );
   }
@@ -288,7 +289,7 @@ class PlayerViewModel extends ChangeNotifier {
     );
     if (subtitleFile == null) {
       _subtitleService.clearSubtitle();
-      AppLogger.debug('未找到字幕文件，清除现有字幕');
+      AppLogger.debug(LogStrings.logSubtitleNotFoundClearing);
       return;
     }
 
@@ -302,7 +303,7 @@ class PlayerViewModel extends ChangeNotifier {
         if (_loadVersion != version) return;
         if (list != null) {
           await _subtitleService.loadSubtitleFromContent(list);
-          AppLogger.debug('使用已下载本地字幕: $localPath');
+          AppLogger.debug(LogStrings.logUsingDownloadedLocalSubtitlef5b14(localPath));
           return;
         }
       }
@@ -313,7 +314,7 @@ class PlayerViewModel extends ChangeNotifier {
       await _subtitleService.loadSubtitle(subtitleFile.mediaDownloadUrl!);
     } else {
       _subtitleService.clearSubtitle();
-      AppLogger.debug('字幕文件无可用 URL，清除现有字幕');
+      AppLogger.debug(LogStrings.logSubtitleUrlUnavailableCleari4443f);
     }
   }
 

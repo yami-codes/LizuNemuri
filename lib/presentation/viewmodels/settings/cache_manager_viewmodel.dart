@@ -5,6 +5,7 @@ import 'package:xuro/utils/logger.dart';
 import 'package:xuro/core/subtitle/cache/subtitle_cache_manager.dart';
 import 'package:xuro/core/image/cache/image_cache_manager.dart';
 import 'package:xuro/core/cache/cache_coordinator.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class CacheManagerViewModel extends ChangeNotifier {
   bool _isLoading = false;
@@ -45,7 +46,7 @@ class CacheManagerViewModel extends ChangeNotifier {
 
       _error = null;
     } catch (e) {
-      AppLogger.error('加载缓存大小失败', e);
+      AppLogger.error(LogStrings.logLoadCacheSizeFailed, e);
       _error = Strings.cacheLoadFailed;
     } finally {
       _isLoading = false;
@@ -63,7 +64,7 @@ class CacheManagerViewModel extends ChangeNotifier {
       await loadCacheSize();
       _error = null;
     } catch (e) {
-      AppLogger.error('清理音频缓存失败', e);
+      AppLogger.error(LogStrings.logCleanAudioCacheFailed, e);
       _error = Strings.cacheCleanFailed;
     } finally {
       _isLoading = false;
@@ -81,7 +82,7 @@ class CacheManagerViewModel extends ChangeNotifier {
       await loadCacheSize();
       _error = null;
     } catch (e) {
-      AppLogger.error('清理字幕缓存失败', e);
+      AppLogger.error(LogStrings.logCleanSubtitleCacheFailed, e);
       _error = Strings.cacheCleanFailed;
     } finally {
       _isLoading = false;
@@ -99,7 +100,7 @@ class CacheManagerViewModel extends ChangeNotifier {
       await loadCacheSize();
       _error = null;
     } catch (e) {
-      AppLogger.error('清理图片缓存失败', e);
+      AppLogger.error(LogStrings.logCleanImageCacheFailed, e);
       _error = Strings.cacheCleanFailed;
     } finally {
       _isLoading = false;
@@ -117,7 +118,7 @@ class CacheManagerViewModel extends ChangeNotifier {
 
       _error = null;
     } catch (e) {
-      AppLogger.error('清理缓存失败', e);
+      AppLogger.error(LogStrings.logCleanCacheFailed, e);
       _error = Strings.cacheCleanFailed;
     } finally {
       await loadCacheSize();

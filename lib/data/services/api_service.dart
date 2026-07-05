@@ -16,6 +16,7 @@ import 'package:xuro/data/models/circles/circle_item.dart';
 import 'package:xuro/data/models/vas/voice_actor.dart';
 import 'package:xuro/data/models/works/work_info.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 
 class WorksResponse {
@@ -49,7 +50,7 @@ class ApiService {
     if (_dio.options.baseUrl != _settings.serverUrl) {
       _dio.options.baseUrl = _settings.serverUrl;
       _recommendationCache.clear();
-      AppLogger.info('API服务器已切换: ${_settings.serverUrl}');
+      AppLogger.info(LogStrings.logApiServerSwitchedSettingsSer60b99(_settings.serverUrl));
     }
   }
 
@@ -74,13 +75,13 @@ class ApiService {
         return Files.fromJson(filesData);
       }
 
-      throw Exception('获取文件列表失败: ${response.statusCode}');
+      throw Exception(LogStrings.logFetchFileListFailed(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('解析数据失败', e, stackTrace);
-      throw Exception('解析数据失败: $e');
+      AppLogger.error(LogStrings.logParseDataFailed, e, stackTrace);
+      throw Exception(LogStrings.logParseFailedDetail(e.toString()));
     }
   }
 
@@ -120,13 +121,13 @@ class ApiService {
         );
       }
 
-      throw Exception('获取作品列表失败: ${response.statusCode}');
+      throw Exception(LogStrings.logFetchWorksFailed(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('解析数据失败', e, stackTrace);
-      throw Exception('解析数据失败: $e');
+      AppLogger.error(LogStrings.logParseDataFailed, e, stackTrace);
+      throw Exception(LogStrings.logParseFailedDetail(e.toString()));
     }
   }
 
@@ -156,7 +157,7 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        AppLogger.debug('搜索返回数据: ${response.data}');
+        AppLogger.debug(LogStrings.logSearchResponseDataResponseDad62cd(response.data));
 
         final works = (response.data['works'] as List)
             .map((work) => Work.fromJson(work))
@@ -170,13 +171,13 @@ class ApiService {
         );
       }
 
-      throw Exception('搜索失败: ${response.statusCode}');
+      throw Exception(LogStrings.logSearchFailedCode(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('解析数据失败', e, stackTrace);
-      throw Exception('解析数据失败: $e');
+      AppLogger.error(LogStrings.logParseDataFailed, e, stackTrace);
+      throw Exception(LogStrings.logParseFailedDetail(e.toString()));
     }
   }
 
@@ -242,13 +243,13 @@ class ApiService {
         );
       }
 
-      throw Exception('获取收藏列表失败: ${response.statusCode}');
+      throw Exception(LogStrings.logFetchFavoritesFailed(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('解析数据失败', e, stackTrace);
-      throw Exception('解析数据失败: $e');
+      AppLogger.error(LogStrings.logParseDataFailed, e, stackTrace);
+      throw Exception(LogStrings.logParseFailedDetail(e.toString()));
     }
   }
 
@@ -281,13 +282,13 @@ class ApiService {
         );
       }
 
-      throw Exception('获取推荐列表失败: ${response.statusCode}');
+      throw Exception(LogStrings.logFetchRecommendFailed(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('解析数据失败', e, stackTrace);
-      throw Exception('解析数据失败: $e');
+      AppLogger.error(LogStrings.logParseDataFailed, e, stackTrace);
+      throw Exception(LogStrings.logParseFailedDetail(e.toString()));
     }
   }
 
@@ -318,13 +319,13 @@ class ApiService {
         );
       }
 
-      throw Exception('获取热门列表失败: ${response.statusCode}');
+      throw Exception(LogStrings.logFetchPopularFailed(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('解析数据失败', e, stackTrace);
-      throw Exception('解析数据失败: $e');
+      AppLogger.error(LogStrings.logParseDataFailed, e, stackTrace);
+      throw Exception(LogStrings.logParseFailedDetail(e.toString()));
     }
   }
 
@@ -369,13 +370,13 @@ class ApiService {
         return worksResponse;
       }
 
-      throw Exception('获取相关推荐失败: ${response.statusCode}');
+      throw Exception(LogStrings.logFetchSimilarFailed(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('解析数据失败', e, stackTrace);
-      throw Exception('解析数据失败: $e');
+      AppLogger.error(LogStrings.logParseDataFailed, e, stackTrace);
+      throw Exception(LogStrings.logParseFailedDetail(e.toString()));
     }
   }
 
@@ -398,13 +399,13 @@ class ApiService {
         return PlaylistsWithExistStatu.fromJson(response.data);
       }
 
-      throw Exception('获取收藏夹列表失败: ${response.statusCode}');
+      throw Exception(LogStrings.logFetchPlaylistsFailed(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('解析数据失败', e, stackTrace);
-      throw Exception('解析数据失败: $e');
+      AppLogger.error(LogStrings.logParseDataFailed, e, stackTrace);
+      throw Exception(LogStrings.logParseFailedDetail(e.toString()));
     }
   }
 
@@ -422,11 +423,11 @@ class ApiService {
         },
       );
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('添加到收藏夹失败', e, stackTrace);
-      throw Exception('添加到收藏夹失败: $e');
+      AppLogger.error(LogStrings.logAddToPlaylistFailed, e, stackTrace);
+      throw Exception(LogStrings.logAddToPlaylistFailedDetail(e.toString()));
     }
   }
 
@@ -444,11 +445,11 @@ class ApiService {
         },
       );
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('从收藏夹移除失败', e, stackTrace);
-      throw Exception('从收藏夹移除失败: $e');
+      AppLogger.error(LogStrings.logRemoveFromPlaylistFailed, e, stackTrace);
+      throw Exception(LogStrings.logRemoveFromPlaylistFailedDetail(e.toString()));
     }
   }
 
@@ -464,13 +465,13 @@ class ApiService {
       );
 
       if (response.statusCode != 200) {
-        throw Exception('标记失败: ${response.statusCode}');
+        throw Exception(LogStrings.logMarkFailedCode(response.statusCode.toString()));
       }
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('更新标记状态失败', e, stackTrace);
+      AppLogger.error(LogStrings.logUpdateMarkFailed, e, stackTrace);
       rethrow;
     }
   }
@@ -498,17 +499,17 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final playlist = Playlist.fromJson(response.data);
-        AppLogger.info('获取默认标记目标收藏夹成功: id=${playlist.id}, name=${playlist.name}');
+        AppLogger.info(LogStrings.logDefaultMarkPlaylistFetchedId166ef(playlist.id, playlist.name));
         return playlist;
       }
 
-      throw Exception('获取默认标记目标收藏夹失败: ${response.statusCode}');
+      throw Exception(LogStrings.logFetchDefaultMarkPlaylistFailed(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('解析数据失败', e, stackTrace);
-      throw Exception('解析数据失败: $e');
+      AppLogger.error(LogStrings.logParseDataFailed, e, stackTrace);
+      throw Exception(LogStrings.logParseFailedDetail(e.toString()));
     }
   }
 
@@ -524,17 +525,17 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final myPlaylists = MyPlaylists.fromJson(response.data);
-        AppLogger.info('获取播放列表成功: ${myPlaylists.playlists?.length ?? 0}个播放列表');
+        AppLogger.info(LogStrings.logMyPlaylistsFetched((myPlaylists.playlists?.length ?? 0).toString()));
         return myPlaylists;
       }
 
-      throw Exception('获取播放列表失败: ${response.statusCode}');
+      throw Exception(LogStrings.logFetchMyPlaylistsFailed(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('解析数据失败', e, stackTrace);
-      throw Exception('解析数据失败: $e');
+      AppLogger.error(LogStrings.logParseDataFailed, e, stackTrace);
+      throw Exception(LogStrings.logParseFailedDetail(e.toString()));
     }
   }
 
@@ -548,13 +549,13 @@ class ApiService {
         return data.map((item) => TagItem.fromJson(item)).toList();
       }
 
-      throw Exception('获取标签列表失败: ${response.statusCode}');
+      throw Exception(LogStrings.logFetchTagsFailed(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('解析数据失败', e, stackTrace);
-      throw Exception('解析数据失败: $e');
+      AppLogger.error(LogStrings.logParseDataFailed, e, stackTrace);
+      throw Exception(LogStrings.logParseFailedDetail(e.toString()));
     }
   }
 
@@ -568,13 +569,13 @@ class ApiService {
         return data.map((item) => CircleItem.fromJson(item)).toList();
       }
 
-      throw Exception('获取社团列表失败: ${response.statusCode}');
+      throw Exception(LogStrings.logFetchCirclesFailed(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('解析数据失败', e, stackTrace);
-      throw Exception('解析数据失败: $e');
+      AppLogger.error(LogStrings.logParseDataFailed, e, stackTrace);
+      throw Exception(LogStrings.logParseFailedDetail(e.toString()));
     }
   }
 
@@ -588,13 +589,13 @@ class ApiService {
         return data.map((item) => VoiceActor.fromJson(item)).toList();
       }
 
-      throw Exception('获取声优列表失败: ${response.statusCode}');
+      throw Exception(LogStrings.logFetchVoiceActorsFailed(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('解析数据失败', e, stackTrace);
-      throw Exception('解析数据失败: $e');
+      AppLogger.error(LogStrings.logParseDataFailed, e, stackTrace);
+      throw Exception(LogStrings.logParseFailedDetail(e.toString()));
     }
   }
 
@@ -607,13 +608,13 @@ class ApiService {
         return WorkInfo.fromJson(response.data);
       }
 
-      throw Exception('获取作品详情失败: ${response.statusCode}');
+      throw Exception(LogStrings.logFetchWorkDetailFailed(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('解析数据失败', e, stackTrace);
-      throw Exception('解析数据失败: $e');
+      AppLogger.error(LogStrings.logParseDataFailed, e, stackTrace);
+      throw Exception(LogStrings.logParseFailedDetail(e.toString()));
     }
   }
 
@@ -643,13 +644,13 @@ class ApiService {
         );
       }
 
-      throw Exception('获取播放列表作品失败: ${response.statusCode}');
+      throw Exception(LogStrings.logFetchPlaylistWorksFailed(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('网络请求失败', e, e.stackTrace);
+      AppLogger.error(LogStrings.logNetworkRequestFailed, e, e.stackTrace);
       throw NetworkException.fromDioException(e);
     } catch (e, stackTrace) {
-      AppLogger.error('解析数据失败', e, stackTrace);
-      throw Exception('解析数据失败: $e');
+      AppLogger.error(LogStrings.logParseDataFailed, e, stackTrace);
+      throw Exception(LogStrings.logParseFailedDetail(e.toString()));
     }
   }
 }

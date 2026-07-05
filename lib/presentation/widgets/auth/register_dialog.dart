@@ -4,6 +4,7 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:xuro/presentation/widgets/auth/login_dialog.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class RegisterDialog extends StatefulWidget {
   const RegisterDialog({super.key});
@@ -75,14 +76,14 @@ class _RegisterDialogState extends State<RegisterDialog> {
     final messenger = ScaffoldMessenger.of(context);
     final name = _nameController.text.trim();
     final password = _passwordController.text;
-    AppLogger.info('RegisterDialog: 尝试注册: name=$name');
+    AppLogger.info(LogStrings.logRegisterdialogRegisterAttemp39a65(name));
 
     final authVM = context.read<AuthViewModel>();
     await authVM.register(name, password);
 
     if (!mounted) return;
     if (authVM.error == null) {
-      AppLogger.info('RegisterDialog: 注册成功，关闭对话框');
+      AppLogger.info(LogStrings.logRegisterdialogRegisterOkClos5c5a3);
       Navigator.of(context).pop();
       messenger.showSnackBar(
         SnackBar(
@@ -92,7 +93,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
         ),
       );
     } else {
-      AppLogger.error('RegisterDialog: 注册失败: ${authVM.error}');
+      AppLogger.error(LogStrings.logRegisterdialogRegisterFailede25aa(authVM.error));
     }
   }
 

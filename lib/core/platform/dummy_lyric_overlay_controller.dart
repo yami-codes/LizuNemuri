@@ -1,5 +1,6 @@
 import 'package:xuro/utils/logger.dart';
 import 'i_lyric_overlay_controller.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class DummyLyricOverlayController implements ILyricOverlayController {
   static const _tag = 'LyricOverlay';
@@ -30,7 +31,7 @@ class DummyLyricOverlayController implements ILyricOverlayController {
 
   @override
   Future<bool> requestPermission() async {
-    AppLogger.debug('[$_tag] 请求权限');
+    AppLogger.debug(LogStrings.logTagRequestPermission021a2(_tag));
     return true;
   }
 

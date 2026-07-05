@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:xuro/common/constants/strings.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 enum NetworkErrorType {
   timeout,
@@ -31,19 +32,19 @@ class NetworkException implements Exception {
       case DioExceptionType.sendTimeout:
         return NetworkException(
           type: NetworkErrorType.timeout,
-          message: '请求超时: ${e.message}',
+          message: LogStrings.logRequestTimeoutEMessagee56d4(e.message),
           originalError: e,
         );
       case DioExceptionType.connectionError:
         return NetworkException(
           type: NetworkErrorType.connectionError,
-          message: '连接失败: ${e.message}',
+          message: LogStrings.logConnectionFailedEMessageae7e5(e.message),
           originalError: e,
         );
       case DioExceptionType.cancel:
         return NetworkException(
           type: NetworkErrorType.cancelled,
-          message: '请求已取消',
+          message: LogStrings.logRequestCancelled,
           originalError: e,
         );
       case DioExceptionType.badResponse:
@@ -51,41 +52,41 @@ class NetworkException implements Exception {
         if (statusCode == 401 || statusCode == 403) {
           return NetworkException(
             type: NetworkErrorType.authError,
-            message: '认证失败: $statusCode',
+            message: LogStrings.logAuthFailedStatuscode3531b(statusCode),
             statusCode: statusCode,
             originalError: e,
           );
         } else if (statusCode != null && statusCode >= 400 && statusCode < 500) {
           return NetworkException(
             type: NetworkErrorType.clientError,
-            message: '客户端错误: $statusCode',
+            message: LogStrings.logClientErrorStatuscode3f573(statusCode),
             statusCode: statusCode,
             originalError: e,
           );
         } else if (statusCode != null && statusCode >= 500) {
           return NetworkException(
             type: NetworkErrorType.serverError,
-            message: '服务器错误: $statusCode',
+            message: LogStrings.logServerErrorStatuscodeea835(statusCode),
             statusCode: statusCode,
             originalError: e,
           );
         }
         return NetworkException(
           type: NetworkErrorType.unknown,
-          message: '未知响应错误: $statusCode',
+          message: LogStrings.logUnknownResponseErrorStatusco531da(statusCode),
           statusCode: statusCode,
           originalError: e,
         );
       case DioExceptionType.badCertificate:
         return NetworkException(
           type: NetworkErrorType.connectionError,
-          message: '证书验证失败: ${e.message}',
+          message: LogStrings.logCertificateValidationFailedE94918(e.message),
           originalError: e,
         );
       case DioExceptionType.unknown:
         return NetworkException(
           type: NetworkErrorType.unknown,
-          message: '未知网络错误: ${e.message}',
+          message: LogStrings.logUnknownNetworkErrorEMessagee0ea2(e.message),
           originalError: e,
         );
     }

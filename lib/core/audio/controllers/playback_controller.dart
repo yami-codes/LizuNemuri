@@ -9,6 +9,7 @@ import '../events/playback_event.dart';
 import '../models/play_mode.dart';
 import 'package:xuro/data/models/files/child.dart';
 import 'package:xuro/data/models/works/work.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 
 class PlaybackController {
@@ -36,24 +37,24 @@ class PlaybackController {
   // 播放列表控制
   Future<void> next() async {
     try {
-      AppLogger.debug('尝试切换下一曲');
+      AppLogger.debug(LogStrings.logTrySkipNextac03e);
       if (_stateManager.currentContext == null) {
-        AppLogger.debug('当前上下文为空，无法切换下一曲');
+        AppLogger.debug(LogStrings.logNoContextCannotSkipNextdc074);
         return;
       }
 
       if (_player.hasNext) {
-        AppLogger.debug('执行切换到下一曲');
+        AppLogger.debug(LogStrings.logSwitchingToNextTrack5bd58);
         await _player.seekToNext();
       } else {
-        AppLogger.debug('没有下一曲可切换');
+        AppLogger.debug(LogStrings.logNoNextTrack1c8bb);
       }
     } catch (e, stack) {
-      AppLogger.error('切换下一曲失败', e, stack);
+      AppLogger.error(LogStrings.logSkipNextFailed2be30, e, stack);
       _eventHub.emit(PlaybackErrorEvent('next', e, stack));
       AudioErrorHandler.handleError(
         AudioErrorType.playback,
-        '切换下一曲',
+        LogStrings.logOpSkipNext,
         e,
         stack,
       );
@@ -62,24 +63,24 @@ class PlaybackController {
 
   Future<void> previous() async {
     try {
-      AppLogger.debug('尝试切换上一曲');
+      AppLogger.debug(LogStrings.logTrySkipPrevious376dc);
       if (_stateManager.currentContext == null) {
-        AppLogger.debug('当前上下文为空，无法切换上一曲');
+        AppLogger.debug(LogStrings.logNoContextCannotSkipPreviousc1953);
         return;
       }
 
       if (_player.hasPrevious) {
-        AppLogger.debug('执行切换到上一曲');
+        AppLogger.debug(LogStrings.logSwitchingToPreviousTrackabca4);
         await _player.seekToPrevious();
       } else {
-        AppLogger.debug('没有上一曲可切换');
+        AppLogger.debug(LogStrings.logNoPreviousTrackb0605);
       }
     } catch (e, stack) {
-      AppLogger.error('切换上一曲失败', e, stack);
+      AppLogger.error(LogStrings.logSkipPreviousFailed965b5, e, stack);
       _eventHub.emit(PlaybackErrorEvent('previous', e, stack));
       AudioErrorHandler.handleError(
         AudioErrorType.playback,
-        '切换上一曲',
+        LogStrings.logOpSkipPrevious,
         e,
         stack,
       );
@@ -89,23 +90,23 @@ class PlaybackController {
   // 播放上下文设置
   Future<void> setPlaybackContext(PlaybackContext originalContext, {Duration? initialPosition}) async {
     try {
-      AppLogger.debug('准备设置播放上下文: workId=${originalContext.work.id}, file=${originalContext.currentFile.title}');
-      AppLogger.debug('播放列表状态: 长度=${originalContext.playlist.length}, 当前索引=${originalContext.currentIndex}');
+      AppLogger.debug(LogStrings.logPreparePlaybackContextWorkid46397(originalContext.work.id, originalContext.currentFile.title));
+      AppLogger.debug(LogStrings.logPlaylistStateLengthOriginalc24b5f(originalContext.playlist.length, originalContext.currentIndex));
 
       // 验证上下文
       try {
         originalContext.validate();
       } catch (e) {
-        AppLogger.error('播放上下文验证失败', e);
+        AppLogger.error(LogStrings.logPlaybackContextValidationFaica38c, e);
         rethrow;
       }
 
       // 1. 先停止当前播放
-      AppLogger.debug('停止当前播放');
+      AppLogger.debug(LogStrings.logStopCurrentPlayback61998);
       await _player.stop();
 
       // 2. 设置新的播放源
-      AppLogger.debug('设置播放源: 初始位置=${initialPosition?.inMilliseconds}ms');
+      AppLogger.debug(LogStrings.logSetPlaybackSourceInitial(initialPosition?.inMilliseconds.toString() ?? '0'));
       List<Child> loadedFiles;
       try {
         loadedFiles = await PlaylistBuilder.setPlaylistSource(
@@ -117,7 +118,7 @@ class PlaybackController {
           workId: originalContext.work.id.toString(),
         );
       } catch (e, stack) {
-        AppLogger.error('设置播放源失败', e, stack);
+        AppLogger.error(LogStrings.logSetPlaybackSourceFailed81f10, e, stack);
         rethrow;
       }
 
@@ -141,16 +142,16 @@ class PlaybackController {
       await _player.setLoopMode(context.playMode.toLoopMode());
 
       // 4. 更新轨道信息
-      AppLogger.debug('更新轨道信息');
+      AppLogger.debug(LogStrings.logUpdateTrackInfoeb504);
       _updateTrackAndContext(context.currentFile, context.work);
 
-      AppLogger.debug('播放上下文设置完成');
+      AppLogger.debug(LogStrings.logPlaybackContextSetaa3cc);
     } catch (e, stack) {
-      AppLogger.error('设置播放上下文失败', e, stack);
+      AppLogger.error(LogStrings.logSetPlaybackContextFailed866ab, e, stack);
       _eventHub.emit(PlaybackErrorEvent('setPlaybackContext', e, stack));
       AudioErrorHandler.handleError(
         AudioErrorType.context,
-        '设置播放上下文',
+        LogStrings.logOpSetContext,
         e,
         stack,
       );
@@ -160,7 +161,7 @@ class PlaybackController {
 
   // 私有辅助方法
   void _updateTrackAndContext(Child file, Work work) {
-    AppLogger.debug('更新轨道和上下文: file=${file.title}');
+    AppLogger.debug(LogStrings.logUpdateTrackAndContextFileFile5842(file.title));
     _stateManager.updateTrackAndContext(file, work);
   }
 } 

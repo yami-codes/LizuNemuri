@@ -6,6 +6,7 @@ import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class SimilarWorksViewModel extends ChangeNotifier {
   final ApiService _apiService;
@@ -74,9 +75,9 @@ class SimilarWorksViewModel extends ChangeNotifier {
       _works = response.works;
       _pagination = response.pagination;
       _currentPage = page;
-      AppLogger.info('第$page页相关推荐加载成功: ${response.works.length}个作品');
+      AppLogger.info(LogStrings.logPageListLoaded(page.toString(), LogStrings.logPageNameSimilar, response.works.length.toString()));
     } catch (e) {
-      AppLogger.error('加载相关推荐失败', e);
+      AppLogger.error(LogStrings.logLoadSimilarFailed, e);
       _error = userFacingError(e);
     } finally {
       _isLoading = false;

@@ -3,6 +3,7 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/data/models/files/child.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:xuro/utils/file_size_formatter.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class WorkFileItem extends StatelessWidget {
   final Child file;
@@ -91,7 +92,7 @@ class WorkFileItem extends StatelessWidget {
         dense: true,
         onTap: tappable
             ? () {
-                AppLogger.debug('点击文件: ${file.title} (${file.type})');
+                AppLogger.debug(LogStrings.logFileTappedFileTitleFileTe6c23(file.title, file.type));
                 onFileTap?.call(file);
               }
             : null,

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:xuro/core/audio/models/subtitle.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class SubtitleStateManager {
   SubtitleList? _subtitleList;
@@ -31,7 +32,7 @@ class SubtitleStateManager {
       if (newSubtitleWithState?.subtitle != _currentSubtitleWithState?.subtitle) {
         _currentSubtitleWithState = newSubtitleWithState;
         _currentSubtitle = newSubtitleWithState?.subtitle;
-        AppLogger.debug('字幕更新: ${_currentSubtitle?.text ?? '无字幕'} (${newSubtitleWithState?.state})');
+        AppLogger.debug(LogStrings.logSubtitleStateUpdated(_currentSubtitle?.text ?? LogStrings.logNoSubtitle, newSubtitleWithState?.state.toString() ?? ''));
         _currentSubtitleWithStateController.add(newSubtitleWithState);
         _currentSubtitleController.add(_currentSubtitle);
       }
@@ -45,7 +46,7 @@ class SubtitleStateManager {
     _subtitleController.add(null);
     _currentSubtitleController.add(null);
     _currentSubtitleWithStateController.add(null);
-    AppLogger.debug('字幕状态已清除');
+    AppLogger.debug(LogStrings.logSubtitleStateCleared0e6a2);
   }
 
   void dispose() {

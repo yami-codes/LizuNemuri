@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xuro/data/models/auth/auth_resp/auth_resp.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 /// 认证数据仓库。
 ///
@@ -52,7 +53,7 @@ class AuthRepository {
       try {
         jsonStr = await _secure.read(key: _authDataKey);
       } catch (e) {
-        AppLogger.warning('安全存储读取失败，回退检查 prefs 明文: $e');
+        AppLogger.warning(LogStrings.logSecureStorageReadFailedFallb4e79f(e));
       }
       // 若在途加载期间发生了 save/clear（已置 _loaded），其内存态才是
       // 权威值——放弃本次加载结果，避免旧态覆盖新登录/登出态。
@@ -74,14 +75,14 @@ class AuthRepository {
           try {
             await _secure.write(key: _authDataKey, value: legacy);
           } catch (e) {
-            AppLogger.warning('迁移认证数据到安全存储失败，保留 prefs 明文（不登出用户）: $e');
+            AppLogger.warning(LogStrings.logAuthMigrationFailedKeepPrefs5e139(e));
             return;
           }
           // 迁移成功才清明文：否则「清明文 + 迁移失败」= 登出用户。
           try {
             await _prefs.remove(_authDataKey);
           } catch (_) {}
-          AppLogger.info('认证数据已迁移到安全存储');
+          AppLogger.info(LogStrings.logAuthDataMigratedToSecureStor5b637);
         });
         // 无论迁移是否成功，都用 legacy 内容回填内存（迁移失败=防御式
         // 降级，不登出）。
@@ -105,7 +106,7 @@ class AuthRepository {
     try {
       return AuthResp.fromJson(json.decode(jsonStr) as Map<String, dynamic>);
     } catch (e) {
-      AppLogger.error('解析认证数据失败', e);
+      AppLogger.error(LogStrings.logParseAuthDataFailed, e);
       return null;
     }
   }
@@ -122,14 +123,14 @@ class AuthRepository {
         try {
           await _prefs.remove(_authDataKey);
         } catch (_) {}
-        AppLogger.info('保存认证数据成功（安全存储）');
+        AppLogger.info(LogStrings.logAuthDataSavedSecureStoragef9d9f);
       } catch (e) {
         // 防御式降级：安全存储不可用时落 prefs，至少保住登录态。
-        AppLogger.warning('安全存储写入失败，降级写入 prefs: $e');
+        AppLogger.warning(LogStrings.logSecureStorageWriteFailedFallfdfba(e));
         try {
           await _prefs.setString(_authDataKey, jsonStr);
         } catch (e2) {
-          AppLogger.error('降级写入 prefs 也失败', e2);
+          AppLogger.error(LogStrings.logPrefsFallbackWriteAlsoFailed1252d, e2);
           rethrow;
         }
       }
@@ -143,14 +144,14 @@ class AuthRepository {
       try {
         await _secure.delete(key: _authDataKey);
       } catch (e) {
-        AppLogger.warning('清除安全存储认证数据失败: $e');
+        AppLogger.warning(LogStrings.logClearAuthDatafailedEac5db(e));
       }
       try {
         await _prefs.remove(_authDataKey);
       } catch (e) {
-        AppLogger.warning('清除 prefs 认证数据失败: $e');
+        AppLogger.warning(LogStrings.logClearPrefsAuthDatafailedE0d083(e));
       }
-      AppLogger.info('清除认证数据成功');
+      AppLogger.info(LogStrings.logAuthDataCleared160e7);
     });
   }
 }

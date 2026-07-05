@@ -4,6 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:just_audio/just_audio.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 /// 音频缓存管理器
 /// 负责管理音频文件的缓存,对外隐藏具体的缓存实现
@@ -17,22 +18,22 @@ class AudioCacheManager {
     try {
       final cacheFile = await _getCacheFile(url, hash: hash);
       final fileName = _generateFileName(url, hash: hash);
-      AppLogger.debug('准备创建音频源 - URL: $url, 缓存文件名: $fileName');
+      AppLogger.debug(LogStrings.logCreateaudioUrlUrlCachefil14d8a(url, fileName));
       
       // 检查缓存文件是否存在且有效
       final isValid = await _isCacheValid(cacheFile, fileName);
       
       if (isValid) {
-        AppLogger.debug('[$fileName] 使用已有缓存文件');
+        AppLogger.debug(LogStrings.logFilenameUsingCachefile42421(fileName));
         return _createCachingSource(url, cacheFile);
       }
 
-      AppLogger.debug('[$fileName] 创建新的缓存源');
+      AppLogger.debug(LogStrings.logFilenameCreateCache8c40f(fileName));
       return _createCachingSource(url, cacheFile);
       
     } catch (e, stackTrace) {
-      AppLogger.warning('创建缓存音频源失败,降级为流式播放: $url');
-      AppLogger.error('缓存源创建异常', e, stackTrace);
+      AppLogger.warning(LogStrings.logCacheAudioSourceFailedStreama308a(url));
+      AppLogger.error(LogStrings.logCacheSourceCreationError7469b, e, stackTrace);
       return ProgressiveAudioSource(Uri.parse(url));
     }
   }
@@ -88,7 +89,7 @@ class AudioCacheManager {
         }
       }
     } catch (e) {
-      AppLogger.error('清理缓存失败', e);
+      AppLogger.error(LogStrings.logCleanCacheFailed, e);
     }
   }
 
@@ -112,15 +113,15 @@ class AudioCacheManager {
         }
       } catch (e) {
         failed++;
-        AppLogger.warning('无法删除缓存文件: ${entity.path}, 可能正在使用中');
+        AppLogger.warning(LogStrings.logCannotDeleteCacheFileEntityP1dc66(entity.path));
       }
     }
 
     if (failed == 0) {
-      AppLogger.debug('音频缓存已清空，共删除 $deleted 个文件');
+      AppLogger.debug(LogStrings.logAudioCacheClearedDeletedDele52cd6(deleted));
     } else {
-      AppLogger.warning('音频缓存部分清理: 成功 $deleted, 失败 $failed');
-      throw Exception('部分缓存文件无法删除（$failed 个），可能正在播放中');
+      AppLogger.warning(LogStrings.logAudioCachePartialCleanOkDeleec69e(deleted, failed));
+      throw Exception(LogStrings.logPartialCacheDeleteFailed(failed.toString()));
     }
   }
 
@@ -138,7 +139,7 @@ class AudioCacheManager {
       }
       return totalSize;
     } catch (e) {
-      AppLogger.error('获取缓存大小失败', e);
+      AppLogger.error(LogStrings.logGetCacheSizeFailedf83a7, e);
       return 0;
     }
   }
@@ -157,7 +158,7 @@ class AudioCacheManager {
   static Future<bool> _isCacheValid(File cacheFile, String fileName) async {
     final exists = await cacheFile.exists();
     if (!exists) {
-      AppLogger.debug('[$fileName] 缓存验证: 文件不存在');
+      AppLogger.debug(LogStrings.logFilenameCachevalidateFile4be6a(fileName));
       return false;
     }
 
@@ -166,19 +167,19 @@ class AudioCacheManager {
       final size = stat.size;
       final age = DateTime.now().difference(stat.modified);
       
-      AppLogger.debug('[$fileName] 缓存验证: 大小=${size}bytes, 年龄=$age');
+      AppLogger.debug(LogStrings.logFilenameCachevalidateSizef7217(size, fileName, age));
       
       // 移除单个文件大小检查，只保留过期检查
       if (age > _cacheExpiration) {
-        AppLogger.debug('[$fileName] 缓存无效: 文件过期 ($age > $_cacheExpiration)');
+        AppLogger.debug(LogStrings.logFilenameCacheinvalidFileexpif9f0f(fileName, age, _cacheExpiration));
         await cacheFile.delete();
         return false;
       }
 
-      AppLogger.debug('[$fileName] 缓存验证: 有效');
+      AppLogger.debug(LogStrings.logFilenameCachevalidateValid6ddeb(fileName));
       return true;
     } catch (e) {
-      AppLogger.error('[$fileName] 检查缓存有效性失败', e);
+      AppLogger.error(LogStrings.logFilenameCheckcachevalidFaile1bb88(fileName), e);
       return false;
     }
   }
@@ -218,10 +219,10 @@ class AudioCacheManager {
       final legacyDir = Directory('${tempDir.path}/audio_cache');
       if (await legacyDir.exists()) {
         await legacyDir.delete(recursive: true);
-        AppLogger.info('已清理旧版临时缓存目录');
+        AppLogger.info(LogStrings.logLegacyTempCacheCleaneddcfa8);
       }
     } catch (e) {
-      AppLogger.warning('清理旧版缓存失败: $e');
+      AppLogger.warning(LogStrings.logLegacyCacheCleanupFailedE792c9(e));
     }
   }
 }

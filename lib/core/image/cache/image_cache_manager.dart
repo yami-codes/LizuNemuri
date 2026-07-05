@@ -1,5 +1,6 @@
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 /// 图片缓存管理器
 /// 统一管理应用内所有图片的缓存策略
@@ -21,7 +22,7 @@ class ImageCacheManager {
     try {
       return instance.store.getCacheSize();
     } catch (e) {
-      AppLogger.error('获取图片缓存大小失败', e);
+      AppLogger.error(LogStrings.logGetImageCacheSizeFailed8c2b8, e);
       return 0;
     }
   }
@@ -30,9 +31,9 @@ class ImageCacheManager {
   static Future<void> clearCache() async {
     try {
       await instance.emptyCache();
-      AppLogger.debug('图片缓存已清空');
+      AppLogger.debug(LogStrings.logImageCacheCleared7784c);
     } catch (e) {
-      AppLogger.error('清理图片缓存失败', e);
+      AppLogger.error(LogStrings.logCleanImageCacheFailed, e);
     }
   }
 }

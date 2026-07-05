@@ -1,4 +1,5 @@
 import 'dart:io' show Platform;
+import 'package:xuro/common/constants/log_strings.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -57,10 +58,10 @@ class UpdateViewModel extends ChangeNotifier {
       _currentVersion = r.currentVersion;
     } on UpdateException catch (e) {
       // 走 GitHub 专用文案；ViewModel 不依赖 NetworkException。
-      AppLogger.error('UpdateViewModel: 检查更新失败', e);
+      AppLogger.error(LogStrings.logUpdateviewmodelUpdateCheckFacead5, e);
       _error = e.userMessage;
     } catch (e) {
-      AppLogger.error('UpdateViewModel: 检查更新未知异常', e);
+      AppLogger.error(LogStrings.logUpdateviewmodelUpdateCheckUn69571, e);
       _error = Strings.updateErrorUnknown;
     } finally {
       _isChecking = false;
@@ -84,7 +85,7 @@ class UpdateViewModel extends ChangeNotifier {
         mode: LaunchMode.externalApplication,
       );
     } catch (e) {
-      AppLogger.error('UpdateViewModel: 打开下载地址失败', e);
+      AppLogger.error(LogStrings.logUpdateviewmodelOpenDownloadFf03f5, e);
       return false;
     }
   }
