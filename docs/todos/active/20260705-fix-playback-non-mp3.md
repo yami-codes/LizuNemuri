@@ -36,4 +36,4 @@ Tapping an audio file (m4a/flac/opus/aac) on the detail screen should start play
 - [ ] Add `AudioFileClassifier` util
 - [ ] Fix `PlaybackContext._getPlaylistFromSameDirectory`
 - [ ] Add unit test
-- [ ] Run analyze + test
+- [x] Add `just_audio_windows` dependency (required native plugin for Windows playback)
