@@ -8,7 +8,16 @@
 
 ---
 
-## v2.0.0-rc.3 — 2026-07-05
+## v2.0.0-rc.4 — 2026-07-05
+
+### 修复 / Fixed
+- **CI keystore decode**: strip whitespace from `KEYSTORE_BASE64`, validate JKS magic bytes, and emit actionable errors when the secret is empty or malformed.
+
+### 工程 / Internal
+- CI: `concurrency.cancel-in-progress: false` so Web/iOS/Windows jobs finish even if Android signing fails.
+- CI: `workflow_dispatch` platform toggles for manual verification without a tag.
+
+---
 
 ### 修复 / Fixed
 - **Web CI compile**: rc.2 `database_bootstrap` imported `dart:ffi` / `dart:io` unconditionally — split into `database_bootstrap_stub.dart` (web) vs `database_bootstrap_io.dart` (mobile/desktop).
