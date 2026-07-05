@@ -1,4 +1,5 @@
 import 'package:xuro/core/llm/work_title_translation_cache.dart';
+import 'package:xuro/data/repositories/llm_usage_repository.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/core/settings/llm_subtitle_target_language.dart';
 import 'package:xuro/data/repositories/llm_api_key_repository.dart';
@@ -42,16 +43,19 @@ Return ONLY the translated title text — no quotes, labels, or explanation.''';
   final LlmClient _client;
   final LlmApiKeyRepository _apiKeyRepo;
   final WorkTitleTranslationCache _cache;
+  final LlmUsageRepository? _usageRepo;
 
   WorkTitleTranslationService({
     required AppSettingsService settings,
     required LlmClient client,
     required LlmApiKeyRepository apiKeyRepo,
     WorkTitleTranslationCache? cache,
+    LlmUsageRepository? usageRepo,
   })  : _settings = settings,
         _client = client,
         _apiKeyRepo = apiKeyRepo,
-        _cache = cache ?? WorkTitleTranslationCache();
+        _cache = cache ?? WorkTitleTranslationCache(),
+        _usageRepo = usageRepo;
 
   String get _targetLang =>
       _settings.llmTargetLanguage.resolveCode(_settings.stringsLocale);
@@ -116,7 +120,7 @@ Return ONLY the translated title text — no quotes, labels, or explanation.''';
     }
 
     try {
-      final response = await _client.chatCompletion(
+      final result = await _client.chatCompletionWithUsage(
         messages: [
           {'role': 'system', 'content': _systemPrompt},
           {
@@ -125,7 +129,7 @@ Return ONLY the translated title text — no quotes, labels, or explanation.''';
           },
         ],
       );
-      final translated = response.trim();
+      final translated = result.content.trim();
       if (translated.isEmpty) {
         return WorkTitleTranslationResult.failure(
           const LlmTranslationException(
@@ -140,6 +144,14 @@ Return ONLY the translated title text — no quotes, labels, or explanation.''';
         sourceTitle: source,
         translatedTitle: translated,
       );
+      if (result.usage != null && _usageRepo != null) {
+        await _usageRepo.record(
+          model: _settings.llmModel,
+          operation: 'title_translate',
+          usage: result.usage!,
+          workId: workId,
+        );
+      }
       return WorkTitleTranslationResult.success(translated);
     } on LlmTranslationException catch (e) {
       AppLogger.warning('Work title translation failed: ${e.message}');

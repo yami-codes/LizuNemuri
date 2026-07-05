@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:xuro/core/settings/llm_batch_split_mode.dart';
 import 'package:xuro/core/settings/llm_subtitle_target_language.dart';
 import 'package:xuro/data/repositories/llm_api_key_repository.dart';
+import 'package:xuro/screens/settings/llm_usage_history_screen.dart';
 import 'package:xuro/screens/settings/widgets/settings_group.dart';
 import 'package:xuro/screens/settings/widgets/settings_tile.dart';
 import 'package:xuro/screens/settings/widgets/settings_theme.dart';
@@ -26,6 +28,7 @@ class _LlmTranslationSettingsScreenState
   late final TextEditingController _apiKeyCtrl;
   late final TextEditingController _systemPromptCtrl;
   late final TextEditingController _jailbreakPromptCtrl;
+  late final TextEditingController _manualBatchSizeCtrl;
   bool _obscureKey = true;
   bool _saving = false;
 
@@ -39,6 +42,9 @@ class _LlmTranslationSettingsScreenState
         TextEditingController(text: widget.settings.llmSystemPromptOverride);
     _jailbreakPromptCtrl =
         TextEditingController(text: widget.settings.llmJailbreakPrompt);
+    _manualBatchSizeCtrl = TextEditingController(
+      text: widget.settings.llmManualBatchSize.toString(),
+    );
     _loadApiKey();
   }
 
@@ -55,6 +61,7 @@ class _LlmTranslationSettingsScreenState
     _apiKeyCtrl.dispose();
     _systemPromptCtrl.dispose();
     _jailbreakPromptCtrl.dispose();
+    _manualBatchSizeCtrl.dispose();
     super.dispose();
   }
 
@@ -66,6 +73,10 @@ class _LlmTranslationSettingsScreenState
       await widget.settings.setLlmModel(_modelCtrl.text);
       await widget.settings.setLlmSystemPromptOverride(_systemPromptCtrl.text);
       await widget.settings.setLlmJailbreakPrompt(_jailbreakPromptCtrl.text);
+      final batchSize = int.tryParse(_manualBatchSizeCtrl.text.trim());
+      if (batchSize != null) {
+        await widget.settings.setLlmManualBatchSize(batchSize);
+      }
       final key = _apiKeyCtrl.text.trim();
       final repo = GetIt.I<LlmApiKeyRepository>();
       if (key.isEmpty) {
@@ -181,6 +192,73 @@ class _LlmTranslationSettingsScreenState
             ListenableBuilder(
               listenable: widget.settings,
               builder: (context, _) => SettingsGroup(
+                header: Strings.llmBatchSplitMode,
+                children: [
+                  ...LlmBatchSplitMode.values.map(
+                    (mode) => SettingsTile.selection(
+                      title: _splitModeLabel(mode),
+                      leading: Icons.view_agenda_outlined,
+                      selected: widget.settings.llmBatchSplitMode == mode,
+                      onTap: () => widget.settings.setLlmBatchSplitMode(mode),
+                    ),
+                  ),
+                  if (widget.settings.llmBatchSplitMode ==
+                      LlmBatchSplitMode.manual)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      child: TextField(
+                        controller: _manualBatchSizeCtrl,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: Strings.llmManualBatchSize,
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListenableBuilder(
+              listenable: widget.settings,
+              builder: (context, _) => SettingsGroup(
+                header: Strings.llmStreamingEnabled,
+                footer: Strings.llmStreamingEnabledDesc,
+                children: [
+                  SettingsTile.toggle(
+                    title: Strings.llmStreamingEnabled,
+                    leading: Icons.stream_outlined,
+                    value: widget.settings.llmStreamingEnabled,
+                    onChanged: widget.settings.setLlmStreamingEnabled,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            SettingsGroup(
+              header: Strings.llmUsageHistory,
+              children: [
+                SettingsTile.navigation(
+                  title: Strings.llmUsageHistoryTitle,
+                  leading: Icons.receipt_long_outlined,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const LlmUsageHistoryScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ListenableBuilder(
+              listenable: widget.settings,
+              builder: (context, _) => SettingsGroup(
                 header: Strings.llmJailbreakPrompt,
                 footer: Strings.llmJailbreakAutoDesc,
                 children: [
@@ -254,6 +332,17 @@ class _LlmTranslationSettingsScreenState
         setState(() => _endpointCtrl.text = endpoint);
       },
     );
+  }
+
+  String _splitModeLabel(LlmBatchSplitMode mode) {
+    switch (mode) {
+      case LlmBatchSplitMode.none:
+        return Strings.llmBatchSplitNone;
+      case LlmBatchSplitMode.provider:
+        return Strings.llmBatchSplitProvider;
+      case LlmBatchSplitMode.manual:
+        return Strings.llmBatchSplitManual;
+    }
   }
 
   String _targetLangLabel(LlmSubtitleTargetLanguage lang) {

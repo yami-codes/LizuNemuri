@@ -2252,6 +2252,52 @@
     }
   },
   "llmTranslationStatusSaving": "กำลังบันทึกคำแปลลงแคช…",
+  "llmTranslationStatusStreaming": "แปลแล้ว {done}/{total} บรรทัด (ชุด {batch}/{batches})…",
+  "@llmTranslationStatusStreaming": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" },
+      "batch": { "type": "int" },
+      "batches": { "type": "int" }
+    }
+  },
+  "llmBatchSplitMode": "โหมดแบ่งชุด",
+  "llmBatchSplitNone": "ไม่แบ่ง (ทั้งไฟล์)",
+  "llmBatchSplitProvider": "อัตโนมัติ (context ของโมเดล)",
+  "llmBatchSplitManual": "ขนาดชุดกำหนดเอง",
+  "llmManualBatchSize": "บรรทัดต่อชุด",
+  "llmStreamingEnabled": "แปลแบบสตรีม",
+  "llmStreamingEnabledDesc": "แสดงบรรทัดที่แปลแล้วทันทีที่ LLM ส่งมา (NDJSON)",
+  "llmUsageHistory": "ประวัติการใช้งานและค่าใช้จ่าย",
+  "llmUsageHistoryTitle": "ประวัติการใช้ LLM",
+  "llmUsageTotalTokens": "โทเค็นรวม: {count}",
+  "@llmUsageTotalTokens": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "llmUsageTotalCost": "ค่าใช้จ่ายที่บันทึก: {amount} USD",
+  "@llmUsageTotalCost": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "llmUsageClearHistory": "ล้างประวัติ",
+  "llmUsageHistoryEmpty": "ยังไม่มีบันทึกการใช้ LLM",
+  "llmUsageRecordLine": "{tokens} โทเค็น · {cost}",
+  "@llmUsageRecordLine": {
+    "placeholders": {
+      "tokens": { "type": "int" },
+      "cost": { "type": "String" }
+    }
+  },
+  "llmOpenRouterBalance": "บัญชี OpenRouter",
+  "llmOpenRouterBalanceUsage": "การใช้งานสะสม: {amount} USD",
+  "@llmOpenRouterBalanceUsage": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "llmOpenRouterBalanceLimit": "วงเงิน: {amount} USD",
+  "@llmOpenRouterBalanceLimit": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "llmUsageOperationSubtitle": "แปลซับไตเติ้ล",
+  "llmUsageOperationTitle": "แปลชื่อผลงาน",
   "batchTranslateTitle": "แปลซับไตเติลแบบกลุ่ม",
   "batchTranslateTooltip": "แปลทั้งหมด",
   "batchTranslateEmpty": "ไม่มีแทร็กที่จับคู่ซับไตเติลในโฟลเดอร์นี้",

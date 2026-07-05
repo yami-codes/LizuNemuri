@@ -233,6 +233,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       ),
                 ),
               ),
+              _buildTranslationBanner(),
               Expanded(
                 child: PlayerLyricView(
                   lockParentViewSwitch: false,
@@ -244,6 +245,60 @@ class _PlayerScreenState extends State<PlayerScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildTranslationBanner() {
+    return ListenableBuilder(
+      listenable: _viewModel,
+      builder: (context, _) {
+        final status = _viewModel.translationStatus;
+        if (!_viewModel.isTranslating || status == null) {
+          return const SizedBox.shrink();
+        }
+        final cs = Theme.of(context).colorScheme;
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.space12,
+            0,
+            AppSpacing.space12,
+            AppSpacing.space8,
+          ),
+          child: Material(
+            color: cs.primaryContainer.withValues(alpha: 0.55),
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.space12,
+                vertical: AppSpacing.space8,
+              ),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: cs.primary,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.space8),
+                  Expanded(
+                    child: Text(
+                      status,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: cs.onSurface,
+                          ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -280,40 +335,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
           },
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(36),
-          child: ListenableBuilder(
-            listenable: _viewModel,
-            builder: (context, _) {
-              final status = _viewModel.translationStatus;
-              if (!_viewModel.isTranslating || status == null) {
-                return const SizedBox.shrink();
-              }
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 14,
-                      height: 14,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.space8),
-                    Expanded(
-                      child: Text(
-                        status,
-                        style: Theme.of(context).textTheme.bodySmall,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+          preferredSize: const Size.fromHeight(0),
+          child: const SizedBox.shrink(),
         ),
         actions: [
           PlayerVolumeButton(viewModel: _viewModel),
@@ -502,6 +525,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                           child: _buildNarrowContent(coverSize),
                         ),
                 ),
+                if (!isWide) _buildTranslationBanner(),
                 _buildControlsBar(),
               ],
             );

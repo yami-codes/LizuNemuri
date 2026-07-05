@@ -386,10 +386,17 @@ class PlayerViewModel extends ChangeNotifier {
         SubtitleTranslationPhase.checkingCache =>
           Strings.llmTranslationStatusCheckingCache,
         SubtitleTranslationPhase.translating =>
-          Strings.llmTranslationStatusTranslating(
-            p.batchIndex ?? 1,
-            p.batchTotal ?? 1,
-          ),
+          p.linesTranslated != null && p.linesTotal != null
+              ? Strings.llmTranslationStatusStreaming(
+                  p.linesTranslated!,
+                  p.linesTotal!,
+                  p.batchIndex ?? 1,
+                  p.batchTotal ?? 1,
+                )
+              : Strings.llmTranslationStatusTranslating(
+                  p.batchIndex ?? 1,
+                  p.batchTotal ?? 1,
+                ),
         SubtitleTranslationPhase.saving =>
           Strings.llmTranslationStatusSaving,
         SubtitleTranslationPhase.cached =>
@@ -402,17 +409,36 @@ class PlayerViewModel extends ChangeNotifier {
       notifyListeners();
     }
 
+    Future<void> onPartial(
+      SubtitleList partial,
+      int translatedCount,
+      int totalCount,
+    ) async {
+      if (version != null && _loadVersion != version) return;
+      await _subtitleService.loadSubtitleFromContent(partial);
+      _isLlmTranslated = translatedCount > 0;
+      _translationStatus = Strings.llmTranslationStatusStreaming(
+        translatedCount,
+        totalCount,
+        1,
+        1,
+      );
+      notifyListeners();
+    }
+
     final result = auto
         ? await _translationService.translateIfEnabled(
             source: source,
             context: context,
             onProgress: onProgress,
+            onPartial: onPartial,
           )
         : await _translationService.translateNow(
             source: source,
             context: context,
             forceRefresh: forceRefresh,
             onProgress: onProgress,
+            onPartial: onPartial,
           );
 
     _isTranslating = false;

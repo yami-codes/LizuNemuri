@@ -1,3 +1,5 @@
+import 'package:xuro/core/audio/models/subtitle.dart';
+
 /// Phase of an in-flight LLM subtitle translation (single track).
 enum SubtitleTranslationPhase {
   checkingCache,
@@ -13,16 +15,27 @@ class SubtitleTranslationProgress {
   final SubtitleTranslationPhase phase;
   final int? batchIndex;
   final int? batchTotal;
+  final int? linesTranslated;
+  final int? linesTotal;
 
   const SubtitleTranslationProgress({
     required this.phase,
     this.batchIndex,
     this.batchTotal,
+    this.linesTranslated,
+    this.linesTotal,
   });
 }
 
 typedef SubtitleTranslationProgressCallback = void Function(
   SubtitleTranslationProgress progress,
+);
+
+/// Called when streaming translation produces new lines (may fire many times).
+typedef SubtitlePartialTranslationCallback = void Function(
+  SubtitleList partialList,
+  int translatedCount,
+  int totalCount,
 );
 
 /// Phase while translating multiple tracks on a work detail page.

@@ -1,6 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xuro/core/audio/models/playback_context.dart';
+import 'package:xuro/core/audio/models/subtitle.dart';
+import 'package:xuro/core/llm/llm_batch_planner.dart';
 import 'package:xuro/core/llm/llm_translation_context_builder.dart';
+import 'package:xuro/core/llm/llm_usage.dart';
+import 'package:xuro/core/llm/streaming_translation_parser.dart';
+import 'package:xuro/core/settings/llm_batch_split_mode.dart';
 import 'package:xuro/data/models/files/child.dart';
 import 'package:xuro/data/models/files/files.dart';
 import 'package:xuro/data/models/works/circle.dart';
@@ -26,6 +31,101 @@ void main() {
 ''');
       expect(list.single['index'], 2);
       expect(list.single['text'], 'line');
+    });
+  });
+
+  group('StreamingTranslationParser', () {
+    test('parses NDJSON incrementally across chunks', () {
+      final parser = StreamingTranslationParser();
+      final first = parser.feed('{"index":0,"text":"a"}\n');
+      expect(first, hasLength(1));
+      expect(first.first.key, 0);
+      expect(first.first.value, 'a');
+
+      final second = parser.feed('{"index":1,"text":"b"}\n');
+      expect(second.single.key, 1);
+      expect(second.single.value, 'b');
+      expect(parser.flush(), isEmpty);
+    });
+
+    test('buffers partial line until newline', () {
+      final parser = StreamingTranslationParser();
+      expect(parser.feed('{"index":0,"text":"hel'), isEmpty);
+      final done = parser.feed('lo"}\n');
+      expect(done.single.value, 'hello');
+    });
+
+    test('flush parses trailing object without newline', () {
+      final parser = StreamingTranslationParser();
+      parser.feed('{"index":3,"text":"tail"}');
+      final flushed = parser.flush();
+      expect(flushed.single.key, 3);
+      expect(flushed.single.value, 'tail');
+    });
+  });
+
+  group('LlmBatchPlanner', () {
+    final subs = List.generate(
+      60,
+      (i) => Subtitle(
+        start: Duration(seconds: i),
+        end: Duration(seconds: i + 1),
+        text: 'line $i',
+        index: i,
+      ),
+    );
+
+    test('none mode returns single batch', () {
+      final batches = LlmBatchPlanner.planBatches(
+        subtitles: subs,
+        mode: LlmBatchSplitMode.none,
+        manualBatchSize: 25,
+      );
+      expect(batches, hasLength(1));
+      expect(batches.first, hasLength(60));
+    });
+
+    test('manual mode respects batch size', () {
+      final batches = LlmBatchPlanner.planBatches(
+        subtitles: subs,
+        mode: LlmBatchSplitMode.manual,
+        manualBatchSize: 25,
+      );
+      expect(batches, hasLength(3));
+      expect(batches[0], hasLength(25));
+      expect(batches[2], hasLength(10));
+    });
+
+    test('provider mode estimates from context window', () {
+      final longSubs = List.generate(
+        200,
+        (i) => Subtitle(
+          start: Duration(seconds: i),
+          end: Duration(seconds: i + 1),
+          text: 'subtitle line number $i with extra words',
+          index: i,
+        ),
+      );
+      final batches = LlmBatchPlanner.planBatches(
+        subtitles: longSubs,
+        mode: LlmBatchSplitMode.provider,
+        manualBatchSize: 25,
+        providerContextTokens: 2000,
+      );
+      expect(batches.length, greaterThan(1));
+    });
+  });
+
+  group('LlmUsage', () {
+    test('parses OpenRouter usage with cost', () {
+      final usage = LlmUsage.fromJson({
+        'prompt_tokens': 10,
+        'completion_tokens': 20,
+        'total_tokens': 30,
+        'total_cost': 0.00042,
+      });
+      expect(usage?.totalTokens, 30);
+      expect(usage?.totalCostUsd, closeTo(0.00042, 0.000001));
     });
   });
 

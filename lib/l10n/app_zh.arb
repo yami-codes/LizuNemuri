@@ -2252,6 +2252,52 @@
     }
   },
   "llmTranslationStatusSaving": "正在保存翻译到缓存…",
+  "llmTranslationStatusStreaming": "已翻译 {done}/{total} 行（第 {batch}/{batches} 批）…",
+  "@llmTranslationStatusStreaming": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" },
+      "batch": { "type": "int" },
+      "batches": { "type": "int" }
+    }
+  },
+  "llmBatchSplitMode": "分批模式",
+  "llmBatchSplitNone": "不分批（整文件）",
+  "llmBatchSplitProvider": "自动（模型上下文窗口）",
+  "llmBatchSplitManual": "手动批次大小",
+  "llmManualBatchSize": "每批行数",
+  "llmStreamingEnabled": "流式翻译",
+  "llmStreamingEnabledDesc": "边接收 LLM 输出边显示已翻译行（NDJSON）。",
+  "llmUsageHistory": "用量与费用历史",
+  "llmUsageHistoryTitle": "LLM 用量历史",
+  "llmUsageTotalTokens": "总 token：{count}",
+  "@llmUsageTotalTokens": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "llmUsageTotalCost": "已记录费用：{amount} USD",
+  "@llmUsageTotalCost": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "llmUsageClearHistory": "清空历史",
+  "llmUsageHistoryEmpty": "尚无 LLM 用量记录。",
+  "llmUsageRecordLine": "{tokens} token · {cost}",
+  "@llmUsageRecordLine": {
+    "placeholders": {
+      "tokens": { "type": "int" },
+      "cost": { "type": "String" }
+    }
+  },
+  "llmOpenRouterBalance": "OpenRouter 账户",
+  "llmOpenRouterBalanceUsage": "累计用量：{amount} USD",
+  "@llmOpenRouterBalanceUsage": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "llmOpenRouterBalanceLimit": "额度上限：{amount} USD",
+  "@llmOpenRouterBalanceLimit": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "llmUsageOperationSubtitle": "字幕翻译",
+  "llmUsageOperationTitle": "标题翻译",
   "batchTranslateTitle": "批量翻译字幕",
   "batchTranslateTooltip": "全部翻译",
   "batchTranslateEmpty": "此文件夹内没有可配对字幕的音频",

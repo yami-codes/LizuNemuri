@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:xuro/core/llm/llm_usage.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:xuro/data/models/llm/llm_usage_record.dart';
 import 'package:xuro/data/repositories/llm_api_key_repository.dart';
 import 'package:xuro/data/services/exceptions/llm_translation_exception.dart';
 import 'package:xuro/utils/logger.dart';
@@ -12,10 +15,12 @@ class LlmClient {
   final LlmApiKeyRepository _apiKeyRepo;
   late final Dio _dio;
 
+  final Map<String, int> _modelContextCache = {};
+
   LlmClient(this._settings, this._apiKeyRepo) {
     _dio = Dio(BaseOptions(
       connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 120),
+      receiveTimeout: const Duration(seconds: 180),
       headers: const {
         'Content-Type': 'application/json',
       },
@@ -40,10 +45,10 @@ class LlmClient {
     return url;
   }
 
-  Future<String> chatCompletion({
-    required List<Map<String, String>> messages,
-    double temperature = 0.2,
-  }) async {
+  bool get _isOpenRouter =>
+      _normalizeEndpoint(_settings.llmApiEndpoint).contains('openrouter.ai');
+
+  Future<Map<String, String>> _authHeaders() async {
     final endpoint = _normalizeEndpoint(_settings.llmApiEndpoint);
     if (endpoint.isEmpty) {
       throw const LlmTranslationException(
@@ -68,13 +73,153 @@ class LlmClient {
       );
     }
 
-    final headers = <String, dynamic>{
+    final headers = <String, String>{
       'Authorization': 'Bearer $apiKey',
+      'Content-Type': 'application/json',
     };
-    if (endpoint.contains('openrouter.ai')) {
+    if (_isOpenRouter) {
       headers['HTTP-Referer'] = 'https://github.com/yami-codes/Xuro';
       headers['X-Title'] = 'Xuro';
     }
+    return headers;
+  }
+
+  Future<String> chatCompletion({
+    required List<Map<String, String>> messages,
+    double temperature = 0.2,
+  }) async {
+    final result = await chatCompletionWithUsage(
+      messages: messages,
+      temperature: temperature,
+    );
+    return result.content;
+  }
+
+  Future<LlmChatResult> chatCompletionWithUsage({
+    required List<Map<String, String>> messages,
+    double temperature = 0.2,
+  }) =>
+      _chatCompletionInternal(
+        messages: messages,
+        temperature: temperature,
+        stream: false,
+      );
+
+  /// Streaming chat completion — yields text deltas, then a final [LlmChatResult]
+  /// event is available via the returned future after the stream ends.
+  Stream<String> chatCompletionStream({
+    required List<Map<String, String>> messages,
+    double temperature = 0.2,
+    void Function(LlmUsage? usage)? onUsage,
+  }) async* {
+    final headers = await _authHeaders();
+    final model = _settings.llmModel.trim();
+
+    try {
+      final response = await _dio.post<ResponseBody>(
+        '/chat/completions',
+        data: {
+          'model': model,
+          'temperature': temperature,
+          'stream': true,
+          'messages': messages,
+        },
+        options: Options(
+          headers: headers,
+          responseType: ResponseType.stream,
+        ),
+      );
+
+      final stream = response.data?.stream;
+      if (stream == null) {
+        throw const LlmTranslationException(
+          LlmTranslationErrorType.invalidResponse,
+          'empty stream',
+        );
+      }
+
+      LlmUsage? usage;
+      final buffer = StringBuffer();
+
+      await for (final chunk in stream) {
+        buffer.write(utf8.decode(chunk));
+        final text = buffer.toString();
+        buffer.clear();
+
+        // SSE events may be split across chunks — keep incomplete tail.
+        final events = text.split('\n');
+        var remainder = '';
+        if (!text.endsWith('\n')) {
+          remainder = events.removeLast();
+        }
+
+        for (final line in events) {
+          final trimmed = line.trim();
+          if (!trimmed.startsWith('data:')) continue;
+          final payload = trimmed.substring(5).trim();
+          if (payload == '[DONE]') continue;
+
+          try {
+            final json = jsonDecode(payload) as Map<String, dynamic>;
+            final usageJson = json['usage'];
+            if (usageJson is Map) {
+              usage = LlmUsage.fromJson(
+                usageJson.map((k, v) => MapEntry(k.toString(), v)),
+              );
+            }
+
+            final choices = json['choices'];
+            if (choices is List && choices.isNotEmpty) {
+              final choice = choices.first;
+              if (choice is Map) {
+                final delta = choice['delta'];
+                if (delta is Map) {
+                  final content = delta['content'];
+                  if (content is String && content.isNotEmpty) {
+                    yield content;
+                  }
+                }
+                // Some providers put final text in `message` on last chunk.
+                final message = choice['message'];
+                if (message is Map) {
+                  final content = message['content'];
+                  if (content is String && content.isNotEmpty) {
+                    yield content;
+                  }
+                }
+              }
+            }
+          } catch (_) {
+            // Ignore malformed SSE fragments mid-stream.
+          }
+        }
+
+        if (remainder.isNotEmpty) {
+          buffer.write(remainder);
+        }
+      }
+
+      onUsage?.call(usage);
+    } on LlmTranslationException {
+      rethrow;
+    } on DioException catch (e) {
+      AppLogger.warning('LlmClient stream failed: ${e.message}');
+      throw LlmTranslationException.fromDioException(e);
+    } catch (e) {
+      throw LlmTranslationException(
+        LlmTranslationErrorType.unknown,
+        e.toString(),
+      );
+    }
+  }
+
+  Future<LlmChatResult> _chatCompletionInternal({
+    required List<Map<String, String>> messages,
+    double temperature = 0.2,
+    required bool stream,
+  }) async {
+    final headers = await _authHeaders();
+    final model = _settings.llmModel.trim();
 
     try {
       final response = await _dio.post<Map<String, dynamic>>(
@@ -82,6 +227,7 @@ class LlmClient {
         data: {
           'model': model,
           'temperature': temperature,
+          'stream': stream,
           'messages': messages,
         },
         options: Options(headers: headers),
@@ -95,7 +241,16 @@ class LlmClient {
           'empty content',
         );
       }
-      return content.trim();
+
+      final usageMap = data?['usage'];
+      LlmUsage? usage;
+      if (usageMap is Map) {
+        usage = LlmUsage.fromJson(
+          usageMap.map((k, v) => MapEntry(k.toString(), v)),
+        );
+      }
+
+      return LlmChatResult(content: content.trim(), usage: usage);
     } on LlmTranslationException {
       rethrow;
     } on DioException catch (e) {
@@ -106,6 +261,63 @@ class LlmClient {
         LlmTranslationErrorType.unknown,
         e.toString(),
       );
+    }
+  }
+
+  /// Context window for the configured model (OpenRouter `/models` lookup).
+  Future<int?> fetchModelContextLength() async {
+    final model = _settings.llmModel.trim();
+    if (model.isEmpty) return null;
+
+    final cached = _modelContextCache[model];
+    if (cached != null) return cached;
+
+    if (!_isOpenRouter) return null;
+
+    try {
+      final headers = await _authHeaders();
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/models',
+        options: Options(headers: headers),
+      );
+      final data = response.data?['data'];
+      if (data is! List) return null;
+
+      for (final item in data) {
+        if (item is! Map) continue;
+        final map = item.map((k, v) => MapEntry(k.toString(), v));
+        if (map['id'] != model) continue;
+        final context = map['context_length'];
+        if (context is int) {
+          _modelContextCache[model] = context;
+          return context;
+        }
+        if (context is num) {
+          final value = context.toInt();
+          _modelContextCache[model] = value;
+          return value;
+        }
+      }
+    } catch (e) {
+      AppLogger.warning('LlmClient model context lookup failed: $e');
+    }
+    return null;
+  }
+
+  /// OpenRouter account usage / credit summary (`GET /auth/key`).
+  Future<LlmAccountBalance?> fetchOpenRouterBalance() async {
+    if (!_isOpenRouter) return null;
+
+    try {
+      final headers = await _authHeaders();
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/auth/key',
+        options: Options(headers: headers),
+      );
+      return LlmAccountBalance.fromOpenRouterJson(response.data);
+    } catch (e) {
+      AppLogger.warning('LlmClient balance lookup failed: $e');
+      return null;
     }
   }
 
