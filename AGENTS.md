@@ -131,3 +131,16 @@ fvm dart run build_runner build --delete-conflicting-outputs
 ## Tests
 
 Test suite is currently a single smoke test at `test/widget_test.dart`. There is no broader unit/widget test scaffolding — when adding tests for a new subsystem, set up the structure under `test/<subsystem>/` rather than expecting one to already exist.
+
+## Cursor Cloud specific instructions
+
+The VM is a **headless Linux** box (no physical device, **no `/dev/kvm`**). The toolchain is installed and persisted: Flutter **3.27.0** via FVM, Android SDK, JDK 17, and the Linux-desktop native deps (gtk/clang/ninja). `PATH` (fvm, `~/.pub-cache/bin`, `~/android-sdk`) and `JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64` are exported in `~/.bashrc`. On startup the update script only re-runs `fvm install` + `fvm flutter pub get`; run codegen yourself (`fvm dart run build_runner build --delete-conflicting-outputs`) after touching `lib/data/models/`.
+
+**Verification loop (all work headless, network-free):** `fvm flutter analyze` (expect ~54 pre-existing `info`/`warning`, zero errors — see CLAUDE.md), `fvm flutter test` (111 tests pass; the `flutter_secure_storage MissingPluginException → fallback to prefs` warnings are expected and by design), and `fvm flutter build apk --debug` (needs `JAVA_HOME`=17; proves the real Android target compiles).
+
+**Running the app — use the Linux desktop windowed build, NOT the Android emulator.** The emulator has no KVM here and is unusably slow; the product owner's directive for this dev environment is to boot the desktop window instead. (A true *Windows* `.exe` cannot be cross-built from Linux; the Linux desktop target is the runnable windowed equivalent.) Build+run with:
+```bash
+fvm flutter build linux --debug          # -> build/linux/x64/debug/bundle/xuro
+DISPLAY=:1 ./build/linux/x64/debug/bundle/xuro   # a TigerVNC X server runs on :1
+```
+Desktop caveats (non-fatal — the app boots and browsing works fully): `just_audio`/`audio_service` (playback), `sqflite` (DB: downloads/subtitles/playback-state), and `permission_handler` have **no Linux implementation**, so those features throw `MissingPluginException` at runtime, but their DI registrations are lazy so they don't block startup. A libsecret keyring password dialog may appear at launch (`flutter_secure_storage`) — dismiss/cancel it; auth degrades to `SharedPreferences`. The live `asmr.one` API is reachable from this VM and `/works` is public (no auth), so the Home/Popular grids, work detail (files/tracks), and search load real data end-to-end.
