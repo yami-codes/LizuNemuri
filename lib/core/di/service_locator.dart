@@ -117,6 +117,7 @@ Future<void> setupServiceLocator() async {
     () => SubtitleTranslationService(
       settings: getIt<AppSettingsService>(),
       client: getIt<LlmClient>(),
+      apiKeyRepo: getIt<LlmApiKeyRepository>(),
     ),
   );
 

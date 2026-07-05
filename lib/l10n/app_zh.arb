@@ -2200,7 +2200,7 @@
     }
   },
   "llmTranslationTitle": "LLM 字幕翻译",
-  "llmTranslationDesc": "使用 OpenAI 兼容或 OpenRouter API 在播放时自动翻译字幕。会附带作品、曲目与播放列表上下文。",
+  "llmTranslationDesc": "使用 OpenAI 兼容或 OpenRouter API 在播放时自动翻译字幕。请先在设置中配置 API 密钥，再在播放器字幕菜单点「使用 LLM 翻译字幕」。开启自动翻译后会在切换曲目或手动翻译时生效。",
   "llmTranslationEnabled": "启用 LLM 翻译",
   "llmTranslationConfigure": "API 与提示词",
   "llmApiEndpoint": "API 端点",
@@ -2235,5 +2235,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "llmTranslateNow": "使用 LLM 翻译字幕",
+  "llmShowOriginal": "显示原文字幕",
+  "llmTranslationDone": "字幕翻译完成",
+  "llmErrorNoSubtitles": "当前曲目没有可翻译的字幕",
+  "llmTranslationNoChange": "翻译结果与原文相同（请检查 API 配置或目标语言）"
 }

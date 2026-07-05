@@ -15,6 +15,8 @@ import 'package:xuro/core/platform/wakelock_controller.dart';
 import 'package:xuro/core/platform/sleep_timer_controller.dart';
 import 'package:xuro/screens/settings/sleep_timer_dialog.dart';
 import 'package:xuro/common/constants/strings.dart';
+import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:xuro/screens/settings/llm_translation_settings_screen.dart';
 import 'package:xuro/core/subtitle/subtitle_import_service.dart';
 
 class PlayerScreen extends StatefulWidget {
@@ -100,6 +102,21 @@ class _PlayerScreenState extends State<PlayerScreen> {
   void initState() {
     super.initState();
     _viewModel = GetIt.I<PlayerViewModel>();
+    _viewModel.addListener(_onViewModelUpdate);
+  }
+
+  @override
+  void dispose() {
+    _viewModel.removeListener(_onViewModelUpdate);
+    super.dispose();
+  }
+
+  void _onViewModelUpdate() {
+    final feedback = _viewModel.takeTranslationFeedback();
+    if (feedback == null || !mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(feedback)),
+    );
   }
 
   Widget _buildContent() {
@@ -266,12 +283,22 @@ class _PlayerScreenState extends State<PlayerScreen> {
             listenable: _viewModel,
             builder: (context, _) {
               return PopupMenuButton<String>(
-                icon: Icon(
-                  Icons.subtitles,
-                  color: _viewModel.isUserImportedSubtitle
-                      ? Theme.of(context).colorScheme.primary
-                      : null,
-                ),
+                icon: _viewModel.isTranslating
+                    ? SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      )
+                    : Icon(
+                        Icons.subtitles,
+                        color: _viewModel.isLlmTranslated ||
+                                _viewModel.isUserImportedSubtitle
+                            ? Theme.of(context).colorScheme.primary
+                            : null,
+                      ),
                 onSelected: (value) async {
                   if (value == 'import') {
                     final result = await _viewModel.importSubtitle();
@@ -295,12 +322,56 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(Strings.subtitleRemoved)),
                     );
+                  } else if (value == 'llm_translate') {
+                    final err = await _viewModel.translateSubtitlesNow();
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          err ?? Strings.llmTranslationDone,
+                        ),
+                      ),
+                    );
+                  } else if (value == 'llm_original') {
+                    final err = await _viewModel.restoreOriginalSubtitles();
+                    if (!context.mounted) return;
+                    if (err != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(err)),
+                      );
+                    }
+                  } else if (value == 'llm_settings') {
+                    if (!context.mounted) return;
+                    final settings = GetIt.I<AppSettingsService>();
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            LlmTranslationSettingsScreen(settings: settings),
+                      ),
+                    );
                   }
                 },
                 itemBuilder: (context) => [
                   PopupMenuItem(
                     value: 'import',
                     child: Text(Strings.importSubtitle),
+                  ),
+                  if (_viewModel.hasSubtitles)
+                    PopupMenuItem(
+                      value: 'llm_translate',
+                      enabled: !_viewModel.isTranslating,
+                      child: Text(Strings.llmTranslateNow),
+                    ),
+                  if (_viewModel.isLlmTranslated)
+                    PopupMenuItem(
+                      value: 'llm_original',
+                      enabled: !_viewModel.isTranslating,
+                      child: Text(Strings.llmShowOriginal),
+                    ),
+                  PopupMenuItem(
+                    value: 'llm_settings',
+                    child: Text(Strings.llmTranslationConfigure),
                   ),
                   if (_viewModel.isUserImportedSubtitle)
                     PopupMenuItem(
