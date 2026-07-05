@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/core/theme/app_radius.dart';
 import 'package:xuro/core/theme/app_spacing.dart';
 import 'package:xuro/core/theme/app_text_styles.dart';
@@ -129,9 +128,6 @@ class SidebarMenu extends StatelessWidget {
             _drawerMobileMaxWidth,
           );
 
-    // SidebarDecoration 仍按 ColorVariant 选「叶/月山」母题；颜色走当前主题
-    // colorScheme（已随 variant 轮换），不再强制深色。
-    final variant = context.watch<AppSettingsService>().colorVariant;
     final cs = Theme.of(context).colorScheme;
 
     return Drawer(
@@ -157,7 +153,7 @@ class SidebarMenu extends StatelessWidget {
               left: 0,
               right: 0,
               bottom: 0,
-              child: SidebarDecoration(variant: variant),
+              child: SidebarDecoration(),
             ),
             SafeArea(
               child: CustomScrollView(

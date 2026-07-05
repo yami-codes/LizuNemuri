@@ -118,6 +118,20 @@
   "downloadsPlayA11y": "เล่นเสียงที่ดาวน์โหลดแล้ว",
   "downloadsTitle": "ดาวน์โหลด",
   "librarySegmentBrowse": "เรียกดู",
+  "librarySegmentLocal": "ในเครื่อง",
+  "localLibraryAddFolder": "เพิ่มโฟลเดอร์",
+  "localLibraryEmpty": "เพิ่มโฟลเดอร์เพลงเพื่อสร้างคลังออฟไลน์",
+  "localLibraryNoAlbums": "ไม่พบเสียงในโฟลเดอร์ที่สแกน แตะสแกนเพื่อรีเฟรช",
+  "localLibraryScan": "สแกน",
+  "localLibraryScanFolders": "โฟลเดอร์สแกนในเครื่อง",
+  "localLibraryTrackCount": "{count} แทร็ก",
+  "@localLibraryTrackCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "playlistsTitle": "เพลย์ลิสต์",
   "drawerSectionContent": "เนื้อหา",
   "drawerSectionDiscover": "ค้นพบ",

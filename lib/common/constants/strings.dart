@@ -94,6 +94,14 @@ class Strings {
   static String get downloadsPlayA11y => _l10n.downloadsPlayA11y;
   static String get downloadsTitle => _l10n.downloadsTitle;
   static String get librarySegmentBrowse => _l10n.librarySegmentBrowse;
+  static String get librarySegmentLocal => _l10n.librarySegmentLocal;
+  static String localLibraryTrackCount(int count) =>
+      _l10n.localLibraryTrackCount(count);
+  static String get localLibraryAddFolder => _l10n.localLibraryAddFolder;
+  static String get localLibraryEmpty => _l10n.localLibraryEmpty;
+  static String get localLibraryNoAlbums => _l10n.localLibraryNoAlbums;
+  static String get localLibraryScan => _l10n.localLibraryScan;
+  static String get localLibraryScanFolders => _l10n.localLibraryScanFolders;
   static String get playlistsTitle => _l10n.playlistsTitle;
   static String get drawerSectionContent => _l10n.drawerSectionContent;
   static String get drawerSectionDiscover => _l10n.drawerSectionDiscover;

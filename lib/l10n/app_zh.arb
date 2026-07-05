@@ -118,6 +118,20 @@
   "downloadsPlayA11y": "播放已下载音频",
   "downloadsTitle": "下载",
   "librarySegmentBrowse": "浏览",
+  "librarySegmentLocal": "本地",
+  "localLibraryAddFolder": "添加文件夹",
+  "localLibraryEmpty": "添加音乐文件夹以建立离线曲库。",
+  "localLibraryNoAlbums": "扫描目录中未找到音频，请点「扫描」刷新。",
+  "localLibraryScan": "扫描",
+  "localLibraryScanFolders": "本地扫描目录",
+  "localLibraryTrackCount": "{count} 首",
+  "@localLibraryTrackCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "playlistsTitle": "播放列表",
   "drawerSectionContent": "内容",
   "drawerSectionDiscover": "发现",

@@ -1,4 +1,5 @@
 import 'package:xuro/core/theme/app_animations.dart';
+import 'package:xuro/core/theme/app_spacing.dart';
 import 'package:xuro/common/constants/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +8,7 @@ import 'package:xuro/widgets/work_grid_view.dart';
 import 'package:xuro/presentation/layouts/work_layout_strategy.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:xuro/widgets/pagination_controls.dart';
+import 'package:xuro/widgets/common/app_search_field.dart';
 import 'package:xuro/widgets/common/back_leading.dart';
 import 'package:xuro/common/constants/log_strings.dart';
 
@@ -118,43 +120,35 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: TextField(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.pageMobile,
+              AppSpacing.space8,
+              AppSpacing.pageMobile,
+              0,
+            ),
+            child: AppSearchField(
               controller: _searchController,
-              decoration: InputDecoration(
-                hintText: Strings.searchInputHint,
-                filled: true,
-                fillColor: Theme.of(context)
-                    .colorScheme
-                    .surfaceContainerHighest
-                    .withValues(alpha: 0.5),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, size: 20),
-                        onPressed: () {
-                          _searchController.clear();
-                          context.read<SearchViewModel>().clear();
-                        },
-                      )
-                    : null,
-                prefixIcon: const Icon(Icons.search, size: 20),
-                isDense: true,
-              ),
-              textInputAction: TextInputAction.search,
+              hintText: Strings.searchInputHint,
               onSubmitted: (_) => _onSearch(),
-              onChanged: (value) => setState(() {}),
+              onChanged: (_) => setState(() {}),
+              suffixIcon: _searchController.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear, size: 20),
+                      onPressed: () {
+                        _searchController.clear();
+                        context.read<SearchViewModel>().clear();
+                        setState(() {});
+                      },
+                    )
+                  : null,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.space8),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.pageMobile),
+            child: Wrap(
+              spacing: AppSpacing.space8,
+              runSpacing: AppSpacing.space4,
               children: [
                 Consumer<SearchViewModel>(
                   builder: (context, viewModel, _) => FilterChip(
@@ -164,15 +158,14 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                     showCheckmark: true,
                   ),
                 ),
-                const SizedBox(width: 8),
                 Consumer<SearchViewModel>(
                   builder: (context, viewModel, _) =>
                       PopupMenuButton<(String, String)>(
                     child: Chip(
                       label: Text(
-                          _getOrderText(viewModel.order, viewModel.sort)),
-                      deleteIcon: const Icon(Icons.arrow_drop_down, size: 18),
-                      onDeleted: null,
+                        _getOrderText(viewModel.order, viewModel.sort),
+                      ),
+                      avatar: const Icon(Icons.arrow_drop_down, size: 18),
                     ),
                     itemBuilder: (context) => [
                       PopupMenuItem(

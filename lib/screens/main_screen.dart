@@ -97,16 +97,6 @@ class _MainScreenState extends State<MainScreen> {
 
     return AppBar(
       title: Text(title),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.filter_list),
-          onPressed: () {
-            if (_currentIndex == 2) {
-              context.read<PopularViewModel>().toggleFilterPanel();
-            }
-          },
-        ),
-      ],
     );
   }
 

@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
@@ -9,9 +10,9 @@ import 'package:xuro/core/platform/lyric_overlay_manager.dart';
 import 'package:xuro/screens/settings/sleep_timer_dialog.dart';
 import 'package:xuro/core/settings/app_language.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:xuro/core/library/scan_roots_store.dart';
 import 'package:xuro/screens/settings/cache_manager_screen.dart';
 import 'package:xuro/screens/settings/audio_format_order_dialog.dart';
-import 'package:xuro/core/theme/app_colors.dart';
 import 'package:xuro/core/theme/app_spacing.dart';
 import 'package:xuro/screens/settings/widgets/settings_group.dart';
 import 'package:xuro/screens/settings/widgets/settings_tile.dart';
@@ -43,11 +44,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: AppSpacing.space24),
             _languageSection(),
             const SizedBox(height: AppSpacing.space24),
-            _colorVariantSection(),
-            const SizedBox(height: AppSpacing.space24),
             _networkSection(),
             const SizedBox(height: AppSpacing.space24),
             _contentSection(context),
+            const SizedBox(height: AppSpacing.space24),
+            _localLibrarySection(),
             const SizedBox(height: AppSpacing.space24),
             _playbackSection(),
             const SizedBox(height: AppSpacing.space24),
@@ -91,15 +92,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
-  }
-
-  // 配色行的 leading 是「色彩选择器内容」——显示该配色在当前亮暗下的
-  // 真实 primary（语义必需例外，非组件 chrome；其余 leading 仍中性）。
-  Color _variantSwatch(BuildContext context, ColorVariant v) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    return dark
-        ? AppColors.darkSchemeFor(v).primary
-        : AppColors.lightSchemeFor(v).primary;
   }
 
   Widget _languageSection() {
@@ -155,42 +147,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Widget _colorVariantSection() {
-    return Builder(builder: (context) {
-      final settings = GetIt.I<AppSettingsService>();
-      return ListenableBuilder(
-        listenable: settings,
-        builder: (context, _) => SettingsGroup(
-          header: Strings.colorVariantTitle,
-          footer: Strings.colorVariantDesc,
-          children: [
-            SettingsTile.selection(
-              title: Strings.colorVariantBlue,
-              leading: Icons.circle,
-              leadingColor: _variantSwatch(context, ColorVariant.blue),
-              selected: settings.colorVariant == ColorVariant.blue,
-              onTap: () => settings.setColorVariant(ColorVariant.blue),
-            ),
-            SettingsTile.selection(
-              title: Strings.colorVariantMono,
-              leading: Icons.circle,
-              leadingColor: _variantSwatch(context, ColorVariant.mono),
-              selected: settings.colorVariant == ColorVariant.mono,
-              onTap: () => settings.setColorVariant(ColorVariant.mono),
-            ),
-            SettingsTile.selection(
-              title: Strings.colorVariantGreen,
-              leading: Icons.circle,
-              leadingColor: _variantSwatch(context, ColorVariant.green),
-              selected: settings.colorVariant == ColorVariant.green,
-              onTap: () => settings.setColorVariant(ColorVariant.green),
-            ),
-          ],
-        ),
-      );
-    });
-  }
-
   Widget _networkSection() {
     return Builder(builder: (context) {
       final settings = GetIt.I<AppSettingsService>();
@@ -240,6 +196,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       );
     });
+  }
+
+  Widget _localLibrarySection() {
+    final store = GetIt.I<ScanRootsStore>();
+    final roots = store.roots;
+    return SettingsGroup(
+      header: Strings.localLibraryScanFolders,
+      children: [
+        SettingsTile.navigation(
+          title: Strings.localLibraryAddFolder,
+          leading: Icons.folder_outlined,
+          value: roots.isEmpty ? Strings.localLibraryEmpty : '${roots.length}',
+          onTap: () async {
+            final path = await FilePicker.platform.getDirectoryPath();
+            if (path == null || path.isEmpty) return;
+            await store.addRoot(path);
+            if (mounted) setState(() {});
+          },
+        ),
+        ...roots.map(
+          (path) => SettingsTile.navigation(
+            title: path,
+            leading: Icons.music_note_outlined,
+            value: '',
+            onTap: () async {
+              await store.removeRoot(path);
+              if (mounted) setState(() {});
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _playbackSection() {

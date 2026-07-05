@@ -4,15 +4,14 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/core/theme/app_spacing.dart';
 import 'package:xuro/presentation/viewmodels/downloads_viewmodel.dart';
 import 'package:xuro/presentation/viewmodels/home_viewmodel.dart';
+import 'package:xuro/presentation/viewmodels/local_library_viewmodel.dart';
 import 'package:xuro/screens/contents/downloads_hub_content.dart';
 import 'package:xuro/screens/contents/home_content.dart';
+import 'package:xuro/screens/contents/local_library_content.dart';
 
-enum _LibrarySegment { downloads, browse }
+enum _LibrarySegment { local, downloads, browse }
 
-/// Interim library shell: **Downloads** (offline) + **Browse** (asmr.one grid).
-///
-/// Replaces the old Home-only stub. Milestone F local scan will add a third
-/// segment or replace Browse — see `docs/eara_ui_north_star.md`.
+/// Library shell: **Local | Downloads | Browse** (Eara Milestone F + interim).
 class LibraryTabContent extends StatefulWidget {
   const LibraryTabContent({super.key});
 
@@ -22,8 +21,9 @@ class LibraryTabContent extends StatefulWidget {
 
 class _LibraryTabContentState extends State<LibraryTabContent>
     with AutomaticKeepAliveClientMixin {
-  _LibrarySegment _segment = _LibrarySegment.downloads;
+  _LibrarySegment _segment = _LibrarySegment.local;
   late final DownloadsViewModel _downloadsViewModel;
+  late final LocalLibraryViewModel _localLibraryViewModel;
 
   @override
   bool get wantKeepAlive => true;
@@ -32,25 +32,34 @@ class _LibraryTabContentState extends State<LibraryTabContent>
   void initState() {
     super.initState();
     _downloadsViewModel = DownloadsViewModel();
+    _localLibraryViewModel = LocalLibraryViewModel();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _downloadsViewModel.load();
+      _localLibraryViewModel.load();
     });
   }
 
   @override
   void dispose() {
     _downloadsViewModel.dispose();
+    _localLibraryViewModel.dispose();
     super.dispose();
   }
 
   String _title(BuildContext context) {
     switch (_segment) {
+      case _LibrarySegment.local:
+        final count = context.select<LocalLibraryViewModel, int>(
+          (vm) => vm.albums.length,
+        );
+        if (count <= 0) return Strings.librarySegmentLocal;
+        return '${Strings.librarySegmentLocal} ($count)';
       case _LibrarySegment.downloads:
         final count = context.select<DownloadsViewModel, int>(
           (vm) => vm.groups.length,
         );
-        if (count <= 0) return Strings.tabLibrary;
-        return '${Strings.tabLibrary} ($count)';
+        if (count <= 0) return Strings.downloadsTitle;
+        return '${Strings.downloadsTitle} ($count)';
       case _LibrarySegment.browse:
         final total = context.select<HomeViewModel, int?>(
           (vm) => vm.pagination?.totalCount,
@@ -63,8 +72,11 @@ class _LibraryTabContentState extends State<LibraryTabContent>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return ChangeNotifierProvider.value(
-      value: _downloadsViewModel,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: _downloadsViewModel),
+        ChangeNotifierProvider.value(value: _localLibraryViewModel),
+      ],
       child: Scaffold(
         appBar: AppBar(
           title: Text(_title(context)),
@@ -90,6 +102,11 @@ class _LibraryTabContentState extends State<LibraryTabContent>
               child: SegmentedButton<_LibrarySegment>(
                 segments: [
                   ButtonSegment(
+                    value: _LibrarySegment.local,
+                    label: Text(Strings.librarySegmentLocal),
+                    icon: const Icon(Icons.folder_outlined),
+                  ),
+                  ButtonSegment(
                     value: _LibrarySegment.downloads,
                     label: Text(Strings.downloadsTitle),
                     icon: const Icon(Icons.download_outlined),
@@ -110,6 +127,7 @@ class _LibraryTabContentState extends State<LibraryTabContent>
               child: IndexedStack(
                 index: _segment.index,
                 children: const [
+                  LocalLibraryContent(),
                   DownloadsHubContent(),
                   HomeContent(),
                 ],

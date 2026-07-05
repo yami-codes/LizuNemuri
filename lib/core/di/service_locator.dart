@@ -40,6 +40,9 @@ import 'package:xuro/data/services/llm_client.dart';
 import 'package:xuro/core/llm/subtitle_translation_service.dart';
 import 'package:xuro/core/llm/work_title_translation_service.dart';
 import 'package:xuro/core/download/download_service.dart';
+import 'package:xuro/core/library/scan_roots_store.dart';
+import 'package:xuro/core/library/storage/local_library_repository.dart';
+import 'package:xuro/core/theme/dynamic_hue_controller.dart';
 
 final getIt = GetIt.instance;
 
@@ -99,6 +102,18 @@ Future<void> setupServiceLocator() async {
       eventHub: getIt(),
       subtitleService: getIt(),
     ),
+  );
+
+  getIt.registerLazySingleton<DynamicHueController>(
+    () => DynamicHueController(playerViewModel: getIt<PlayerViewModel>()),
+  );
+
+  getIt.registerLazySingleton<ScanRootsStore>(
+    () => ScanRootsStore(prefs),
+  );
+
+  getIt.registerLazySingleton<LocalLibraryRepository>(
+    () => LocalLibraryRepository(getIt<DatabaseService>()),
   );
 
   // 注册 AppSettingsService

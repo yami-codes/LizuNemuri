@@ -118,6 +118,20 @@
   "downloadsPlayA11y": "Play downloaded audio",
   "downloadsTitle": "Downloads",
   "librarySegmentBrowse": "Browse",
+  "librarySegmentLocal": "Local",
+  "localLibraryAddFolder": "Add folder",
+  "localLibraryEmpty": "Add a music folder to build your offline library.",
+  "localLibraryNoAlbums": "No audio found in scan folders. Tap Scan to refresh.",
+  "localLibraryScan": "Scan",
+  "localLibraryScanFolders": "Local scan folders",
+  "localLibraryTrackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+  "@localLibraryTrackCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "playlistsTitle": "Playlists",
   "drawerSectionContent": "Content",
   "drawerSectionDiscover": "Discover",

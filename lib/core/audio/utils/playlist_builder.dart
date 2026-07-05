@@ -26,6 +26,13 @@ class PlaylistBuilder {
     for (var i = 0; i < files.length; i++) {
       try {
         AudioSource? source;
+        final url = files[i].mediaDownloadUrl;
+        if (url != null && url.startsWith('file://')) {
+          source = AudioSource.uri(Uri.parse(url));
+          sources.add(source);
+          originalIndices.add(i);
+          continue;
+        }
         if (downloadService != null) {
           final localPath =
               await downloadService.localPathIfDownloaded(workId!, files[i]);
