@@ -6,16 +6,15 @@ import 'package:xuro/widgets/player/player_immersive_scope.dart';
 class LyricLine extends StatelessWidget {
   final Subtitle subtitle;
   final String? secondaryText;
-  final bool isActive;
-  final double opacity;
+  /// 0–1 kinetic emphasis (viewport proximity + active line boost).
+  final double emphasis;
   final VoidCallback? onTap;
 
   const LyricLine({
     super.key,
     required this.subtitle,
     this.secondaryText,
-    this.isActive = false,
-    this.opacity = 1.0,
+    this.emphasis = 0.35,
     this.onTap,
   });
 
@@ -39,55 +38,71 @@ class LyricLine extends StatelessWidget {
           ]
         : null;
 
+    final t = emphasis.clamp(0.0, 1.0);
+    final scale = 0.94 + 0.06 * t;
+    final opacity = 0.42 + 0.58 * t;
+    final primarySize = 18.0 + 2.0 * t;
+    final secondarySize = 14.0 + 1.0 * t;
+    final fontWeight = FontWeight.lerp(FontWeight.w400, FontWeight.w600, t)!;
+
     final primaryStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
-          fontSize: 20,
+          fontSize: primarySize,
           height: 1.3,
-          color: isActive ? activeColor : inactiveColor,
-          fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+          color: Color.lerp(inactiveColor, activeColor, t),
+          fontWeight: fontWeight,
           shadows: shadow,
         );
 
     final secondaryStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
-          fontSize: 15,
+          fontSize: secondarySize,
           height: 1.25,
-          color: (isActive ? activeColor : inactiveColor)
-              .withValues(alpha: isActive ? 0.75 : 0.45),
-          fontWeight: FontWeight.normal,
+          color: Color.lerp(
+            inactiveColor.withValues(alpha: 0.45),
+            activeColor.withValues(alpha: 0.75),
+            t,
+          ),
+          fontWeight: FontWeight.lerp(FontWeight.w400, FontWeight.w500, t),
           shadows: shadow,
         );
 
     return RepaintBoundary(
       child: Center(
-        child: AnimatedOpacity(
+        child: AnimatedScale(
+          scale: scale,
           duration: AppAnimations.medium,
-          opacity: opacity,
-          child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-              child: secondaryText == null
-                  ? Text(
-                      subtitle.text,
-                      style: primaryStyle,
-                      textAlign: TextAlign.center,
-                    )
-                  : Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          secondaryText!,
-                          style: secondaryStyle,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          subtitle.text,
-                          style: primaryStyle,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
+          curve: AppAnimations.standard,
+          alignment: Alignment.center,
+          child: AnimatedOpacity(
+            duration: AppAnimations.medium,
+            opacity: opacity,
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: onTap,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                child: secondaryText == null
+                    ? Text(
+                        subtitle.text,
+                        style: primaryStyle,
+                        textAlign: TextAlign.center,
+                      )
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            secondaryText!,
+                            style: secondaryStyle,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            subtitle.text,
+                            style: primaryStyle,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+              ),
             ),
           ),
         ),
