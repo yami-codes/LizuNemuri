@@ -8,6 +8,13 @@
 
 ---
 
+## v2.0.0-rc.5 — 2026-07-05
+
+### 工程 / Internal
+- Re-trigger release CI after `KEYSTORE_BASE64` and signing secrets were updated in GitHub Actions.
+
+---
+
 ## v2.0.0-rc.4 — 2026-07-05
 
 ### 修复 / Fixed
