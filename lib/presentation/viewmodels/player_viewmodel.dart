@@ -12,6 +12,7 @@ import 'package:xuro/core/download/download_service.dart';
 import 'package:xuro/core/audio/events/playback_event_hub.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:xuro/core/llm/subtitle_translation_service.dart';
 import 'package:xuro/core/subtitle/subtitle_import_service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:xuro/utils/logger.dart';
@@ -24,6 +25,7 @@ class PlayerViewModel extends ChangeNotifier {
   final _subtitleLoader = GetIt.I<SubtitleLoader>();
   final _importService = GetIt.I<SubtitleImportService>();
   final _downloadService = GetIt.I<DownloadService>();
+  final _translationService = GetIt.I<SubtitleTranslationService>();
 
   bool _isPlaying = false;
   bool _isBuffering = false;
@@ -256,6 +258,24 @@ class PlayerViewModel extends ChangeNotifier {
     });
   }
 
+  Future<void> _presentSubtitleList(
+    SubtitleList list,
+    PlaybackContext context, {
+    required int version,
+  }) async {
+    SubtitleList toShow = list;
+    try {
+      toShow = await _translationService.translateIfEnabled(
+        source: list,
+        context: context,
+      );
+    } catch (e) {
+      AppLogger.warning('Subtitle translation fallback to source: $e');
+    }
+    if (_loadVersion != version) return;
+    await _subtitleService.loadSubtitleFromContent(toShow);
+  }
+
   Future<void> _loadSubtitleIfAvailable(PlaybackContext context) async {
     final version = ++_loadVersion;
     final workId = context.work.id?.toString();
@@ -269,7 +289,7 @@ class PlayerViewModel extends ChangeNotifier {
         final subtitleList = await _importService.loadLocalSubtitle(entry.subtitlePath);
         if (_loadVersion != version) return;
         if (subtitleList != null) {
-          await _subtitleService.loadSubtitleFromContent(subtitleList);
+          await _presentSubtitleList(subtitleList, context, version: version);
           if (_loadVersion != version) return;
           _isUserImportedSubtitle = true;
           notifyListeners();
@@ -302,7 +322,7 @@ class PlayerViewModel extends ChangeNotifier {
         final list = await _importService.loadLocalSubtitle(localPath);
         if (_loadVersion != version) return;
         if (list != null) {
-          await _subtitleService.loadSubtitleFromContent(list);
+          await _presentSubtitleList(list, context, version: version);
           AppLogger.debug(LogStrings.logUsingDownloadedLocalSubtitlef5b14(localPath));
           return;
         }
@@ -311,7 +331,14 @@ class PlayerViewModel extends ChangeNotifier {
 
     // 2b. 在线 URL（需网络）。
     if (subtitleFile.mediaDownloadUrl != null) {
-      await _subtitleService.loadSubtitle(subtitleFile.mediaDownloadUrl!);
+      final list =
+          await _subtitleLoader.loadSubtitleContent(subtitleFile.mediaDownloadUrl!);
+      if (_loadVersion != version) return;
+      if (list != null) {
+        await _presentSubtitleList(list, context, version: version);
+      } else {
+        _subtitleService.clearSubtitle();
+      }
     } else {
       _subtitleService.clearSubtitle();
       AppLogger.debug(LogStrings.logSubtitleUrlUnavailableCleari4443f);
@@ -333,7 +360,16 @@ class PlayerViewModel extends ChangeNotifier {
       final currentWorkId = currentContext?.work.id?.toString();
       final currentFileName = currentContext?.currentFile.title;
       if (currentWorkId == workId && currentFileName == fileName) {
-        await _subtitleService.loadSubtitleFromContent(response.subtitleList!);
+        final ctx = currentContext;
+        if (ctx != null) {
+          await _presentSubtitleList(
+            response.subtitleList!,
+            ctx,
+            version: _loadVersion,
+          );
+        } else {
+          await _subtitleService.loadSubtitleFromContent(response.subtitleList!);
+        }
         _isUserImportedSubtitle = true;
         notifyListeners();
       }

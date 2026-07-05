@@ -35,6 +35,9 @@ import 'package:xuro/core/subtitle/import/file_picker_service.dart';
 import 'package:xuro/core/subtitle/subtitle_import_service.dart';
 import 'package:xuro/core/download/storage/i_download_repository.dart';
 import 'package:xuro/core/download/storage/download_repository.dart';
+import 'package:xuro/data/repositories/llm_api_key_repository.dart';
+import 'package:xuro/data/services/llm_client.dart';
+import 'package:xuro/core/llm/subtitle_translation_service.dart';
 import 'package:xuro/core/download/download_service.dart';
 
 final getIt = GetIt.instance;
@@ -100,6 +103,21 @@ Future<void> setupServiceLocator() async {
   // 注册 AppSettingsService
   getIt.registerSingleton<AppSettingsService>(
     AppSettingsService(prefs),
+  );
+
+  getIt.registerLazySingleton<LlmApiKeyRepository>(
+    () => LlmApiKeyRepository(prefs),
+  );
+
+  getIt.registerLazySingleton<LlmClient>(
+    () => LlmClient(getIt<AppSettingsService>(), getIt<LlmApiKeyRepository>()),
+  );
+
+  getIt.registerLazySingleton<SubtitleTranslationService>(
+    () => SubtitleTranslationService(
+      settings: getIt<AppSettingsService>(),
+      client: getIt<LlmClient>(),
+    ),
   );
 
   // API 服务

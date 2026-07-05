@@ -2198,5 +2198,42 @@
         "type": "String"
       }
     }
+  },
+  "llmTranslationTitle": "LLM 字幕翻译",
+  "llmTranslationDesc": "使用 OpenAI 兼容或 OpenRouter API 在播放时自动翻译字幕。会附带作品、曲目与播放列表上下文。",
+  "llmTranslationEnabled": "启用 LLM 翻译",
+  "llmTranslationConfigure": "API 与提示词",
+  "llmApiEndpoint": "API 端点",
+  "llmApiKey": "API 密钥",
+  "llmModel": "模型",
+  "llmTargetLanguage": "翻译目标语言",
+  "llmSystemPrompt": "系统提示词（覆盖）",
+  "llmSystemPromptHint": "留空使用内置默认提示词",
+  "llmJailbreakPrompt": "越狱/稳定提示词",
+  "llmJailbreakPromptHint": "留空且开启自动时使用内置默认",
+  "llmJailbreakAuto": "自动越狱提示词",
+  "llmJailbreakAutoDesc": "为成人向/极端内容翻译提供更稳定的默认越狱提示；可在此覆盖自定义文本。",
+  "llmPresetOpenAi": "OpenAI",
+  "llmPresetOpenRouter": "OpenRouter",
+  "llmTargetLangSystem": "跟随应用语言",
+  "llmTargetLangEn": "英语",
+  "llmTargetLangZh": "中文",
+  "llmTargetLangJa": "日语",
+  "llmTargetLangTh": "泰语",
+  "llmTargetLangKo": "韩语",
+  "llmSettingsSaved": "LLM 设置已保存",
+  "llmErrorMissingApiKey": "请先在设置中配置 LLM API 密钥",
+  "llmErrorInvalidConfig": "LLM API 端点或模型配置无效",
+  "llmErrorAuth": "LLM API 认证失败，请检查密钥",
+  "llmErrorRateLimited": "LLM API 请求过于频繁，请稍后再试",
+  "llmErrorNetwork": "无法连接 LLM API，请检查网络与端点",
+  "llmErrorInvalidResponse": "LLM 返回了无法解析的翻译结果",
+  "llmErrorUnknown": "LLM 翻译失败：{message}",
+  "@llmErrorUnknown": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
   }
 }

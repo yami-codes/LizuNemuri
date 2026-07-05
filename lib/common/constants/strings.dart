@@ -277,6 +277,37 @@ class Strings {
   static String get fileUrlMissing => _l10n.fileUrlMissing;
   static String get fileListNotLoaded => _l10n.fileListNotLoaded;
 
+  static String get llmTranslationTitle => _l10n.llmTranslationTitle;
+  static String get llmTranslationDesc => _l10n.llmTranslationDesc;
+  static String get llmTranslationEnabled => _l10n.llmTranslationEnabled;
+  static String get llmTranslationConfigure => _l10n.llmTranslationConfigure;
+  static String get llmApiEndpoint => _l10n.llmApiEndpoint;
+  static String get llmApiKey => _l10n.llmApiKey;
+  static String get llmModel => _l10n.llmModel;
+  static String get llmTargetLanguage => _l10n.llmTargetLanguage;
+  static String get llmSystemPrompt => _l10n.llmSystemPrompt;
+  static String get llmSystemPromptHint => _l10n.llmSystemPromptHint;
+  static String get llmJailbreakPrompt => _l10n.llmJailbreakPrompt;
+  static String get llmJailbreakPromptHint => _l10n.llmJailbreakPromptHint;
+  static String get llmJailbreakAuto => _l10n.llmJailbreakAuto;
+  static String get llmJailbreakAutoDesc => _l10n.llmJailbreakAutoDesc;
+  static String get llmPresetOpenAi => _l10n.llmPresetOpenAi;
+  static String get llmPresetOpenRouter => _l10n.llmPresetOpenRouter;
+  static String get llmTargetLangSystem => _l10n.llmTargetLangSystem;
+  static String get llmTargetLangEn => _l10n.llmTargetLangEn;
+  static String get llmTargetLangZh => _l10n.llmTargetLangZh;
+  static String get llmTargetLangJa => _l10n.llmTargetLangJa;
+  static String get llmTargetLangTh => _l10n.llmTargetLangTh;
+  static String get llmTargetLangKo => _l10n.llmTargetLangKo;
+  static String get llmSettingsSaved => _l10n.llmSettingsSaved;
+  static String get llmErrorMissingApiKey => _l10n.llmErrorMissingApiKey;
+  static String get llmErrorInvalidConfig => _l10n.llmErrorInvalidConfig;
+  static String get llmErrorAuth => _l10n.llmErrorAuth;
+  static String get llmErrorRateLimited => _l10n.llmErrorRateLimited;
+  static String get llmErrorNetwork => _l10n.llmErrorNetwork;
+  static String get llmErrorInvalidResponse => _l10n.llmErrorInvalidResponse;
+  static String llmErrorUnknown(String message) => _l10n.llmErrorUnknown(message);
+
   static String playlistToggleResult(bool added, String name) =>
       added ? _l10n.playlistToggleResultAdded(name) : _l10n.playlistToggleResultRemoved(name);
 

@@ -2198,5 +2198,42 @@
         "type": "String"
       }
     }
+  },
+  "llmTranslationTitle": "แปลซับไตเติ้ลด้วย LLM",
+  "llmTranslationDesc": "แปลซับไตเติ้ลอัตโนมัติขณะเล่นผ่าน OpenAI-compatible หรือ OpenRouter พร้อมบริบทผลงาน แทร็ก และเพลย์ลิสต์",
+  "llmTranslationEnabled": "เปิดใช้แปล LLM",
+  "llmTranslationConfigure": "API และพรอมต์",
+  "llmApiEndpoint": "API endpoint",
+  "llmApiKey": "คีย์ API",
+  "llmModel": "โมเดล",
+  "llmTargetLanguage": "ภาษาเป้าหมาย",
+  "llmSystemPrompt": "พรอมต์ระบบ (แทนที่)",
+  "llmSystemPromptHint": "เว้นว่างเพื่อใช้ค่าเริ่มต้นในตัว",
+  "llmJailbreakPrompt": "พรอมต์ jailbreak / เสถียรภาพ",
+  "llmJailbreakPromptHint": "เว้นว่างพร้อมเปิดอัตโนมัติเพื่อใช้ค่าเริ่มต้นในตัว",
+  "llmJailbreakAuto": "พรอมต์ jailbreak อัตโนมัติ",
+  "llmJailbreakAutoDesc": "ใช้พรอมต์เริ่มต้นสำหรับเนื้อหาผู้ใหญ่/รุนแรง สามารถแทนที่ด้วยข้อความกำหนดเอง",
+  "llmPresetOpenAi": "OpenAI",
+  "llmPresetOpenRouter": "OpenRouter",
+  "llmTargetLangSystem": "ตามภาษาแอป",
+  "llmTargetLangEn": "อังกฤษ",
+  "llmTargetLangZh": "จีน",
+  "llmTargetLangJa": "ญี่ปุ่น",
+  "llmTargetLangTh": "ไทย",
+  "llmTargetLangKo": "เกาหลี",
+  "llmSettingsSaved": "บันทึกการตั้งค่า LLM แล้ว",
+  "llmErrorMissingApiKey": "กรุณาตั้งค่าคีย์ LLM API ในการตั้งค่าก่อน",
+  "llmErrorInvalidConfig": "API endpoint หรือโมเดล LLM ไม่ถูกต้อง",
+  "llmErrorAuth": "ยืนยันตัวตน LLM API ล้มเหลว — ตรวจสอบคีย์",
+  "llmErrorRateLimited": "LLM API ถูกจำกัดอัตรา — ลองใหม่ภายหลัง",
+  "llmErrorNetwork": "เชื่อมต่อ LLM API ไม่ได้ — ตรวจสอบเครือข่ายและ endpoint",
+  "llmErrorInvalidResponse": "LLM ส่งผลแปลที่แยกไม่ได้",
+  "llmErrorUnknown": "แปล LLM ล้มเหลว: {message}",
+  "@llmErrorUnknown": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
   }
 }
