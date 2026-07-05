@@ -8,6 +8,7 @@ import 'package:xuro/presentation/viewmodels/similar_works_viewmodel.dart';
 import 'package:xuro/widgets/work_grid_view.dart';
 import 'package:xuro/presentation/layouts/work_layout_strategy.dart';
 import 'package:xuro/widgets/common/back_leading.dart';
+import 'package:xuro/widgets/pagination_controls.dart';
 
 class SimilarWorksScreen extends StatefulWidget {
   final Work work;

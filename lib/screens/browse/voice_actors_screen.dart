@@ -5,6 +5,7 @@ import 'package:xuro/presentation/viewmodels/voice_actors_viewmodel.dart';
 import 'package:xuro/screens/browse/widgets/browse_search_bar.dart';
 import 'package:xuro/screens/browse/widgets/browse_grid_item.dart';
 import 'package:xuro/widgets/common/back_leading.dart';
+import 'package:xuro/utils/i18n_name_resolver.dart';
 
 class VoiceActorsScreen extends StatelessWidget {
   const VoiceActorsScreen({super.key});

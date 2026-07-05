@@ -5,6 +5,7 @@ import 'package:xuro/presentation/viewmodels/tags_viewmodel.dart';
 import 'package:xuro/screens/browse/widgets/browse_search_bar.dart';
 import 'package:xuro/screens/browse/widgets/browse_grid_item.dart';
 import 'package:xuro/widgets/common/back_leading.dart';
+import 'package:xuro/utils/i18n_name_resolver.dart';
 
 class TagsScreen extends StatelessWidget {
   const TagsScreen({super.key});
