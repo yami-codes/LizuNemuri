@@ -28,18 +28,18 @@ Match Eara’s player shell: **one shared cover backdrop** across mini → full 
 
 ## 3. 验收标准（Acceptance）
 
-- [ ] Opening full player from mini player: cover/backdrop continuity (no white flash)
-- [ ] Toggling lyrics: same palette/backdrop; animated cross-fade or slide
-- [ ] Clarity slider persists; live update on player
-- [ ] `flutter analyze` + player widget tests pass
+- [x] Opening full player from mini player: cover/backdrop continuity (no white flash)
+- [x] Toggling lyrics: same palette/backdrop; animated cross-fade or slide
+- [ ] Clarity slider persists; live update on player *(deferred — settings agent)*
+- [x] `flutter analyze` + player widget tests pass
 
 ## 4. 拆解步骤（Steps）
 
-- [ ] Audit Eara `NowPlayingMotion.kt` / `PlayerSharedBackdrop.kt` timings
-- [ ] `Hero` tag on mini + full cover; custom route or expand transition
-- [ ] Refactor `PlayerScreen` body into `PlayerSurface` / `LyricsSurface` on shared `Stack`
-- [ ] `AppSettingsService.playerBackdropClarity` + settings tile
-- [ ] Tests: clarity math, hero tag contract
+- [x] Audit Eara `NowPlayingMotion.kt` / `PlayerSharedBackdrop.kt` timings → `AppAnimations.medium` (300ms) surface / `long` (450ms) route
+- [x] `Hero` tag on mini + full cover; custom route or expand transition → `player_surface_transition.dart` + `createPlayerScreenRoute()`
+- [x] Refactor `PlayerScreen` body into `PlayerSurface` / `LyricsSurface` on shared `Stack` → `PlayerSurfaceSwitcher`
+- [ ] `AppSettingsService.playerBackdropClarity` + settings tile *(deferred — settings agent)*
+- [x] Tests: clarity math, hero tag contract → `test/widgets/player/player_surface_transition_test.dart`
 
 ## 5. 风险（Risks）
 

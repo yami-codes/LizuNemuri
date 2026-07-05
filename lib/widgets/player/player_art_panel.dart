@@ -5,6 +5,7 @@ import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
 import 'package:xuro/widgets/player/circular_cover.dart';
 import 'package:xuro/widgets/player/player_work_info.dart';
 import 'package:xuro/widgets/player/player_immersive_scope.dart';
+import 'package:xuro/widgets/player/player_surface_transition.dart';
 
 /// Cover art, track title, and work metadata column for the player.
 class PlayerArtPanel extends StatelessWidget {
@@ -34,7 +35,8 @@ class PlayerArtPanel extends StatelessWidget {
               width: coverSize,
               height: coverSize,
               child: Hero(
-                tag: 'mini-player-cover',
+                tag: kMiniPlayerCoverHeroTag,
+                flightShuttleBuilder: playerHeroFlightShuttle,
                 child: CircularCover(
                   coverUrl: viewModel.currentTrackInfo?.coverUrl,
                   maxSize: coverSize,
@@ -48,7 +50,8 @@ class PlayerArtPanel extends StatelessWidget {
               child: Column(
                 children: [
                   Hero(
-                    tag: 'player-title',
+                    tag: kPlayerTitleHeroTag,
+                    flightShuttleBuilder: playerHeroFlightShuttle,
                     child: Material(
                       color: Colors.transparent,
                       child: Text(

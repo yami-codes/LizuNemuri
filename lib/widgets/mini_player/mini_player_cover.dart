@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:xuro/widgets/common/skeleton_pulse.dart';
 import 'package:xuro/core/image/cache/image_cache_manager.dart';
 
+/// Mini player artwork — circular to match full-screen [CircularCover] Hero flight.
 class MiniPlayerCover extends StatelessWidget {
   final String? coverUrl;
   final double size;
@@ -10,13 +11,13 @@ class MiniPlayerCover extends StatelessWidget {
   const MiniPlayerCover({
     super.key,
     this.coverUrl,
-    this.size = 48,
+    this.size = 40,
   });
 
   @override
   Widget build(BuildContext context) {
     if (coverUrl == null) {
-      return _buildEmptyPlaceholder();
+      return _buildEmptyPlaceholder(context);
     }
 
     final dpr = MediaQuery.of(context).devicePixelRatio;
@@ -25,8 +26,7 @@ class MiniPlayerCover extends StatelessWidget {
       final p = (size * dpr).round();
       cacheWidth = p < 1 ? 1 : p;
     }
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
+    return ClipOval(
       child: CachedNetworkImage(
         imageUrl: coverUrl!,
         width: size,
@@ -36,20 +36,21 @@ class MiniPlayerCover extends StatelessWidget {
         fadeInDuration: const Duration(milliseconds: 150),
         cacheManager: ImageCacheManager.instance,
         placeholder: (context, url) => _buildPlaceholder(context),
-        errorWidget: (context, url, error) => _buildErrorWidget(),
+        errorWidget: (context, url, error) => _buildErrorWidget(context),
       ),
     );
   }
 
-  Widget _buildEmptyPlaceholder() {
+  Widget _buildEmptyPlaceholder(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(4),
+        shape: BoxShape.circle,
+        color: cs.surfaceContainerHighest,
       ),
-      child: const Icon(Icons.music_note, color: Colors.grey),
+      child: Icon(Icons.music_note, size: size * 0.45, color: cs.onSurfaceVariant),
     );
   }
 
@@ -59,22 +60,23 @@ class MiniPlayerCover extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
+          shape: BoxShape.circle,
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(4),
         ),
       ),
     );
   }
 
-  Widget _buildErrorWidget() {
+  Widget _buildErrorWidget(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(4),
+        shape: BoxShape.circle,
+        color: cs.errorContainer,
       ),
-      child: const Icon(Icons.broken_image, color: Colors.grey),
+      child: Icon(Icons.broken_image, size: size * 0.4, color: cs.error),
     );
   }
 }
