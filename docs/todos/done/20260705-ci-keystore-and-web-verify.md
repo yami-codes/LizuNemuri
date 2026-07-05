@@ -25,14 +25,22 @@ Android release CI still fails on `KEYSTORE_BASE64` decode; Web fix from rc.3 wa
 
 ## 3. 验收标准（Acceptance）
 
-- [ ] Keystore step strips whitespace, validates output, prints actionable error
-- [ ] Web build passes on CI (`workflow_dispatch` or tag)
-- [ ] Android passes once `KEYSTORE_BASE64` secret is valid
-- [ ] Tagged `v2.0.0-rc.4`
+- [x] Keystore step strips whitespace, validates output, prints actionable error
+- [x] Web build passes on CI (`v2.0.0-rc.4` run 28749094915 — `build-web: success`)
+- [ ] Android passes once `KEYSTORE_BASE64` secret is valid (still fails at Create keystore file)
+- [x] Tagged `v2.0.0-rc.4`
 
 ## 4. 步骤（Plan）
 
 - [x] Update `build.yml` (keystore + concurrency + dispatch inputs)
-- [ ] Bump version + CHANGELOG
-- [ ] Push branch, open PR, merge, tag rc.4
-- [ ] Confirm `build-web` green on Actions
+- [x] Bump version + CHANGELOG
+- [x] Push branch, open PR, merge, tag rc.4
+- [x] Confirm `build-web` green on Actions (run 28749094915)
+
+---
+
+## ✅ 完成标记
+
+- 完成时间：2026-07-05
+- 关联 commit：`850f3e4` / tag `v2.0.0-rc.3` → `v2.0.0-rc.4`
+- CI: Web/iOS/Windows green on run 28749094915; Android blocked on invalid `KEYSTORE_BASE64` secret
