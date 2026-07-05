@@ -2240,5 +2240,73 @@
   "llmShowOriginal": "แสดงซับไตเติ้ลต้นฉบับ",
   "llmTranslationDone": "แปลซับไตเติลเสร็จแล้ว",
   "llmErrorNoSubtitles": "ไม่มีซับไตเติลให้แปลสำหรับแทร็กนี้",
-  "llmTranslationNoChange": "ผลแปลเหมือนต้นฉบับ (ตรวจสอบ API หรือภาษาเป้าหมาย)"
+  "llmTranslationNoChange": "ผลแปลเหมือนต้นฉบับ (ตรวจสอบ API หรือภาษาเป้าหมาย)",
+  "llmTranslationFromCache": "โหลดคำแปลที่บันทึกไว้จากแคชแล้ว",
+  "llmTranslationStatusStarting": "กำลังเตรียมแปล…",
+  "llmTranslationStatusCheckingCache": "กำลังตรวจสอบคำแปลที่บันทึกไว้…",
+  "llmTranslationStatusTranslating": "กำลังแปลชุด {batch}/{total}…",
+  "@llmTranslationStatusTranslating": {
+    "placeholders": {
+      "batch": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "llmTranslationStatusSaving": "กำลังบันทึกคำแปลลงแคช…",
+  "batchTranslateTitle": "แปลซับไตเติลแบบกลุ่ม",
+  "batchTranslateTooltip": "แปลทั้งหมด",
+  "batchTranslateEmpty": "ไม่มีแทร็กที่จับคู่ซับไตเติลในโฟลเดอร์นี้",
+  "batchTranslateLoading": "กำลังสแกนแทร็กและสถานะแคช…",
+  "batchTranslateConfirm": "แปล {count} แทร็กที่เลือกด้วย LLM?",
+  "@batchTranslateConfirm": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "batchTranslateStart": "เริ่มแปล ({count})",
+  "@batchTranslateStart": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "batchTranslateSelectAll": "เลือกทั้งหมด",
+  "batchTranslateDeselectAll": "ยกเลิกเลือกทั้งหมด",
+  "batchTranslateCachedBadge": "บันทึกแล้ว — ข้ามการแปลซ้ำ",
+  "batchTranslateNeedsTranslate": "ยังไม่ได้แปล",
+  "batchTranslateCacheSummary": "ในรายการ {cachedInList}/{totalInList} บันทึกแล้ว · ผลงานนี้มี {savedOnDisk} ไฟล์แคช",
+  "@batchTranslateCacheSummary": {
+    "placeholders": {
+      "cachedInList": { "type": "int" },
+      "totalInList": { "type": "int" },
+      "savedOnDisk": { "type": "int" }
+    }
+  },
+  "batchTranslateProgress": "แทร็ก {index}/{total}: {name}",
+  "@batchTranslateProgress": {
+    "placeholders": {
+      "index": { "type": "int" },
+      "total": { "type": "int" },
+      "name": { "type": "String" }
+    }
+  },
+  "batchTranslatePhaseLoading": "กำลังโหลดซับไตเติล…",
+  "batchTranslatePhaseCheckingCache": "กำลังตรวจสอบแคช…",
+  "batchTranslatePhaseTranslating": "LLM ชุด {batch}/{total}…",
+  "@batchTranslatePhaseTranslating": {
+    "placeholders": {
+      "batch": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "batchTranslatePhaseTranslatingSimple": "กำลังแปลด้วย LLM…",
+  "batchTranslatePhaseCached": "บันทึกแล้ว — ข้าม",
+  "batchTranslatePhaseFailed": "ล้มเหลว — ข้าม",
+  "batchTranslateSummary": "เสร็จ: แปลใหม่ {translated}, แคช/ข้าม {cached}, ล้มเหลว {failed}",
+  "@batchTranslateSummary": {
+    "placeholders": {
+      "translated": { "type": "int" },
+      "cached": { "type": "int" },
+      "failed": { "type": "int" }
+    }
+  },
+  "batchTranslateCancelled": "ยกเลิกการแปลแบบกลุ่มแล้ว"
 }

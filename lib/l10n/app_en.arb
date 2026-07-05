@@ -2240,5 +2240,73 @@
   "llmShowOriginal": "Show original subtitles",
   "llmTranslationDone": "Subtitle translation complete",
   "llmErrorNoSubtitles": "No subtitles to translate for this track",
-  "llmTranslationNoChange": "Translation matched the original (check API config or target language)"
+  "llmTranslationNoChange": "Translation matched the original (check API config or target language)",
+  "llmTranslationFromCache": "Loaded saved translation from cache",
+  "llmTranslationStatusStarting": "Preparing translation…",
+  "llmTranslationStatusCheckingCache": "Checking saved translation…",
+  "llmTranslationStatusTranslating": "Translating batch {batch}/{total}…",
+  "@llmTranslationStatusTranslating": {
+    "placeholders": {
+      "batch": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "llmTranslationStatusSaving": "Saving translation to cache…",
+  "batchTranslateTitle": "Bulk translate subtitles",
+  "batchTranslateTooltip": "Translate all",
+  "batchTranslateEmpty": "No tracks with matched subtitles in this folder",
+  "batchTranslateLoading": "Scanning tracks and cache status…",
+  "batchTranslateConfirm": "Translate {count} selected tracks with LLM?",
+  "@batchTranslateConfirm": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "batchTranslateStart": "Translate ({count})",
+  "@batchTranslateStart": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "batchTranslateSelectAll": "Select all",
+  "batchTranslateDeselectAll": "Deselect all",
+  "batchTranslateCachedBadge": "Saved — skip re-translate",
+  "batchTranslateNeedsTranslate": "Not translated yet",
+  "batchTranslateCacheSummary": "{cachedInList}/{totalInList} in list already saved · {savedOnDisk} files cached for this work",
+  "@batchTranslateCacheSummary": {
+    "placeholders": {
+      "cachedInList": { "type": "int" },
+      "totalInList": { "type": "int" },
+      "savedOnDisk": { "type": "int" }
+    }
+  },
+  "batchTranslateProgress": "Track {index}/{total}: {name}",
+  "@batchTranslateProgress": {
+    "placeholders": {
+      "index": { "type": "int" },
+      "total": { "type": "int" },
+      "name": { "type": "String" }
+    }
+  },
+  "batchTranslatePhaseLoading": "Loading subtitle…",
+  "batchTranslatePhaseCheckingCache": "Checking cache…",
+  "batchTranslatePhaseTranslating": "LLM batch {batch}/{total}…",
+  "@batchTranslatePhaseTranslating": {
+    "placeholders": {
+      "batch": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "batchTranslatePhaseTranslatingSimple": "Translating with LLM…",
+  "batchTranslatePhaseCached": "Already saved — skipped",
+  "batchTranslatePhaseFailed": "Failed — skipped",
+  "batchTranslateSummary": "Done: {translated} translated, {cached} cached/skipped, {failed} failed",
+  "@batchTranslateSummary": {
+    "placeholders": {
+      "translated": { "type": "int" },
+      "cached": { "type": "int" },
+      "failed": { "type": "int" }
+    }
+  },
+  "batchTranslateCancelled": "Bulk translation cancelled"
 }

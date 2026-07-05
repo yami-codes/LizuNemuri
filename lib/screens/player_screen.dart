@@ -241,6 +241,42 @@ class _PlayerScreenState extends State<PlayerScreen> {
             Navigator.of(context).pop();
           },
         ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(36),
+          child: ListenableBuilder(
+            listenable: _viewModel,
+            builder: (context, _) {
+              final status = _viewModel.translationStatus;
+              if (!_viewModel.isTranslating || status == null) {
+                return const SizedBox.shrink();
+              }
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.space8),
+                    Expanded(
+                      child: Text(
+                        status,
+                        style: Theme.of(context).textTheme.bodySmall,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
         actions: [
           ListenableBuilder(
             listenable: sleepTimer,

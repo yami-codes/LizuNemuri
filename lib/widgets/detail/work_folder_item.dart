@@ -15,6 +15,7 @@ class WorkFolderItem extends StatelessWidget {
   final Function(Child file)? onFileTap;
   final Function(Child file)? onFileDownload;
   final void Function(Child? folderNode)? onFolderDownload;
+  final void Function(Child? folderNode)? onFolderTranslate;
 
   // 支持的音频格式列表，按优先级排序
   static List<String> get _audioFormats {
@@ -40,6 +41,7 @@ class WorkFolderItem extends StatelessWidget {
     this.onFileTap,
     this.onFileDownload,
     this.onFolderDownload,
+    this.onFolderTranslate,
   });
 
   bool _shouldExpandFolder(Child folder) {
@@ -95,6 +97,12 @@ class WorkFolderItem extends StatelessWidget {
                   tooltip: Strings.downloadAllTooltip,
                   onPressed: () => onFolderDownload!.call(folder),
                 ),
+              if (onFolderTranslate != null)
+                IconButton(
+                  icon: const Icon(Icons.translate, size: 20),
+                  tooltip: Strings.batchTranslateTooltip,
+                  onPressed: () => onFolderTranslate!.call(folder),
+                ),
             ],
           ),
           leading: Icon(
@@ -110,6 +118,7 @@ class WorkFolderItem extends StatelessWidget {
                           onFileTap: onFileTap,
                           onFileDownload: onFileDownload,
                           onFolderDownload: onFolderDownload,
+                          onFolderTranslate: onFolderTranslate,
                         )
                       : WorkFileItem(
                           file: child,

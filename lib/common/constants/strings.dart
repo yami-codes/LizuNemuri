@@ -312,6 +312,62 @@ class Strings {
   static String get llmTranslationDone => _l10n.llmTranslationDone;
   static String get llmErrorNoSubtitles => _l10n.llmErrorNoSubtitles;
   static String get llmTranslationNoChange => _l10n.llmTranslationNoChange;
+  static String get llmTranslationFromCache => _l10n.llmTranslationFromCache;
+  static String get llmTranslationStatusStarting =>
+      _l10n.llmTranslationStatusStarting;
+  static String get llmTranslationStatusCheckingCache =>
+      _l10n.llmTranslationStatusCheckingCache;
+  static String llmTranslationStatusTranslating(int batch, int total) =>
+      _l10n.llmTranslationStatusTranslating(batch, total);
+  static String get llmTranslationStatusSaving =>
+      _l10n.llmTranslationStatusSaving;
+  static String get batchTranslateTitle => _l10n.batchTranslateTitle;
+  static String get batchTranslateTooltip => _l10n.batchTranslateTooltip;
+  static String get batchTranslateEmpty => _l10n.batchTranslateEmpty;
+  static String get batchTranslateLoading => _l10n.batchTranslateLoading;
+  static String batchTranslateConfirm(int count) =>
+      _l10n.batchTranslateConfirm(count);
+  static String batchTranslateStart(int count) =>
+      _l10n.batchTranslateStart(count);
+  static String get batchTranslateSelectAll => _l10n.batchTranslateSelectAll;
+  static String get batchTranslateDeselectAll =>
+      _l10n.batchTranslateDeselectAll;
+  static String get batchTranslateCachedBadge =>
+      _l10n.batchTranslateCachedBadge;
+  static String get batchTranslateNeedsTranslate =>
+      _l10n.batchTranslateNeedsTranslate;
+  static String batchTranslateCacheSummary(
+    int cachedInList,
+    int totalInList,
+    int savedOnDisk,
+  ) =>
+      _l10n.batchTranslateCacheSummary(
+        cachedInList,
+        totalInList,
+        savedOnDisk,
+      );
+  static String batchTranslateProgress(int index, int total, String name) =>
+      _l10n.batchTranslateProgress(index, total, name);
+  static String get batchTranslatePhaseLoading =>
+      _l10n.batchTranslatePhaseLoading;
+  static String get batchTranslatePhaseCheckingCache =>
+      _l10n.batchTranslatePhaseCheckingCache;
+  static String batchTranslatePhaseTranslating(int batch, int total) =>
+      _l10n.batchTranslatePhaseTranslating(batch, total);
+  static String get batchTranslatePhaseTranslatingSimple =>
+      _l10n.batchTranslatePhaseTranslatingSimple;
+  static String get batchTranslatePhaseCached =>
+      _l10n.batchTranslatePhaseCached;
+  static String get batchTranslatePhaseFailed =>
+      _l10n.batchTranslatePhaseFailed;
+  static String batchTranslateSummary(
+    int translated,
+    int cached,
+    int failed,
+  ) =>
+      _l10n.batchTranslateSummary(translated, cached, failed);
+  static String get batchTranslateCancelled =>
+      _l10n.batchTranslateCancelled;
 
   static String playlistToggleResult(bool added, String name) =>
       added ? _l10n.playlistToggleResultAdded(name) : _l10n.playlistToggleResultRemoved(name);

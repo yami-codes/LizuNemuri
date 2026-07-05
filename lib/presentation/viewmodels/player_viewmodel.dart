@@ -13,6 +13,7 @@ import 'package:xuro/core/audio/events/playback_event_hub.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:xuro/core/llm/subtitle_translation_service.dart';
+import 'package:xuro/core/llm/subtitle_translation_progress.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/core/subtitle/subtitle_import_service.dart';
 import 'package:rxdart/rxdart.dart';
@@ -37,6 +38,7 @@ class PlayerViewModel extends ChangeNotifier {
   bool _isLlmTranslated = false;
   bool _isTranslating = false;
   String? _translationFeedback;
+  String? _translationStatus;
   SubtitleList? _subtitleSourceList;
   int _loadVersion = 0;
   Duration? _position;
@@ -61,6 +63,7 @@ class PlayerViewModel extends ChangeNotifier {
 
   bool get isLlmTranslated => _isLlmTranslated;
   bool get isTranslating => _isTranslating;
+  String? get translationStatus => _translationStatus;
   bool get hasSubtitles =>
       _subtitleService.subtitleList != null &&
       _subtitleService.subtitleList!.subtitles.isNotEmpty;
@@ -358,20 +361,45 @@ class PlayerViewModel extends ChangeNotifier {
     bool forceRefresh = false,
   }) async {
     _isTranslating = true;
+    _translationStatus = Strings.llmTranslationStatusStarting;
     notifyListeners();
+
+    void onProgress(SubtitleTranslationProgress p) {
+      _translationStatus = switch (p.phase) {
+        SubtitleTranslationPhase.checkingCache =>
+          Strings.llmTranslationStatusCheckingCache,
+        SubtitleTranslationPhase.translating =>
+          Strings.llmTranslationStatusTranslating(
+            p.batchIndex ?? 1,
+            p.batchTotal ?? 1,
+          ),
+        SubtitleTranslationPhase.saving =>
+          Strings.llmTranslationStatusSaving,
+        SubtitleTranslationPhase.cached =>
+          Strings.llmTranslationFromCache,
+        SubtitleTranslationPhase.done =>
+          Strings.llmTranslationDone,
+        SubtitleTranslationPhase.loading =>
+          Strings.llmTranslationStatusStarting,
+      };
+      notifyListeners();
+    }
 
     final result = auto
         ? await _translationService.translateIfEnabled(
             source: source,
             context: context,
+            onProgress: onProgress,
           )
         : await _translationService.translateNow(
             source: source,
             context: context,
             forceRefresh: forceRefresh,
+            onProgress: onProgress,
           );
 
     _isTranslating = false;
+    _translationStatus = null;
     if (version != null && _loadVersion != version) return null;
 
     if (result.isFailure) {
@@ -386,7 +414,7 @@ class PlayerViewModel extends ChangeNotifier {
     notifyListeners();
 
     if (!auto && result.translated) {
-      return null;
+      return result.fromCache ? Strings.llmTranslationFromCache : null;
     }
     if (!auto && !result.translated && !result.skipped) {
       return Strings.llmTranslationNoChange;

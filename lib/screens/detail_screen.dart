@@ -12,6 +12,8 @@ import 'package:xuro/presentation/viewmodels/detail_viewmodel.dart';
 import 'package:xuro/widgets/detail/work_action_buttons.dart';
 import 'package:xuro/widgets/detail/media_download_dialog.dart';
 import 'package:xuro/widgets/detail/batch_download_dialog.dart';
+import 'package:xuro/widgets/detail/batch_translate_dialog.dart';
+import 'package:xuro/widgets/detail/batch_translate_selection_dialog.dart';
 import 'package:xuro/core/download/download_service.dart';
 import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/utils/user_facing_error.dart';
@@ -187,9 +189,52 @@ class DetailScreen extends StatelessWidget {
                       ));
                     }
 
+                    Future<void> runBulkTranslate(Child? folderNode) async {
+                      final selected =
+                          await showDialog<List<DownloadPair>>(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (_) => BatchTranslateSelectionDialog(
+                          loadItems: () =>
+                              viewModel.prepareTranslateSelection(folderNode),
+                          cachedCount: viewModel.cachedTranslationCount,
+                        ),
+                      );
+                      if (selected == null || selected.isEmpty || !context.mounted) {
+                        return;
+                      }
+
+                      final outcome =
+                          await showDialog<BatchTranslateOutcome>(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (_) => BatchTranslateDialog(
+                          trackCount: selected.length,
+                          skipConfirm: true,
+                          translate: (ct, onP) => viewModel.translatePairs(
+                            items: selected,
+                            onProgress: onP,
+                            cancelToken: ct,
+                          ),
+                        ),
+                      );
+                      if (outcome == null || !context.mounted) return;
+                      final messenger = ScaffoldMessenger.of(context);
+                      messenger.showSnackBar(SnackBar(
+                        content: Text(outcome.cancelled
+                            ? Strings.batchTranslateCancelled
+                            : Strings.batchTranslateSummary(
+                                outcome.translated,
+                                outcome.cached,
+                                outcome.failed,
+                              )),
+                      ));
+                    }
+
                     return WorkFilesList(
                       files: viewModel.files!,
                       onFolderDownload: runBatch,
+                      onFolderTranslate: runBulkTranslate,
                       onFileTap: (file) async {
                         // 视频判断前置：视频扩展名优先于不可靠的 API
                         // `type`（会把视频错标 audio）。视频走下载+外部

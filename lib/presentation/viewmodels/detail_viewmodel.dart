@@ -10,7 +10,6 @@ import 'package:xuro/data/services/api_service.dart';
 import 'package:xuro/core/audio/i_audio_player_service.dart';
 import 'package:xuro/core/download/download_service.dart';
 import 'package:xuro/utils/mark_status_strings.dart';
-import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:xuro/core/audio/models/playback_context.dart';
@@ -21,6 +20,11 @@ import 'package:xuro/data/models/works/work_info.dart';
 import 'package:xuro/widgets/detail/work_folder_item.dart';
 import 'package:xuro/core/audio/models/file_path.dart';
 import 'package:xuro/core/subtitle/utils/subtitle_matcher.dart';
+import 'package:xuro/core/llm/subtitle_translation_service.dart';
+import 'package:xuro/core/llm/subtitle_translation_progress.dart';
+import 'package:xuro/core/subtitle/subtitle_loader.dart';
+import 'package:xuro/core/subtitle/subtitle_import_service.dart';
+import 'package:xuro/core/audio/models/subtitle.dart';
 import 'package:dio/dio.dart';
 import 'package:xuro/common/constants/log_strings.dart';
 
@@ -41,10 +45,41 @@ class BatchDownloadOutcome {
   });
 }
 
+/// One checklist row for bulk LLM translate on a work.
+class TranslateSelectionItem {
+  final DownloadPair pair;
+  final String title;
+  final bool isCached;
+
+  const TranslateSelectionItem({
+    required this.pair,
+    required this.title,
+    required this.isCached,
+  });
+}
+
+/// Bulk LLM subtitle translation result.
+class BatchTranslateOutcome {
+  final int translated;
+  final int cached;
+  final int failed;
+  final bool cancelled;
+
+  const BatchTranslateOutcome({
+    required this.translated,
+    required this.cached,
+    required this.failed,
+    required this.cancelled,
+  });
+}
+
 class DetailViewModel extends ChangeNotifier {
   late final ApiService _apiService;
   late final IAudioPlayerService _audioService;
   late final DownloadService _downloadService;
+  late final SubtitleTranslationService _translationService;
+  late final SubtitleLoader _subtitleLoader;
+  late final SubtitleImportService _importService;
   final Work work;
 
   static const _videoExtensions = {'mp4', 'mkv', 'mov', 'avi', 'webm', 'm4v'};
@@ -84,6 +119,9 @@ class DetailViewModel extends ChangeNotifier {
     _audioService = GetIt.I<IAudioPlayerService>();
     _apiService = GetIt.I<ApiService>();
     _downloadService = GetIt.I<DownloadService>();
+    _translationService = GetIt.I<SubtitleTranslationService>();
+    _subtitleLoader = GetIt.I<SubtitleLoader>();
+    _importService = GetIt.I<SubtitleImportService>();
     _checkRecommendations();
   }
 
@@ -358,6 +396,211 @@ class DetailViewModel extends ChangeNotifier {
       failed: failed,
       cancelled: cancelled,
     );
+  }
+
+  /// Audio + matched subtitle pairs under [folder] (null = whole work).
+  List<DownloadPair> translatablePairs(Child? folder) =>
+      collectAudioWithSubtitles(_nodeChildren(folder))
+          .where((p) => p.subtitle != null)
+          .toList();
+
+  int batchTranslateCount(Child? folder) => translatablePairs(folder).length;
+
+  /// Cached translation file count saved for this work (all target langs).
+  Future<int> cachedTranslationCount() =>
+      _translationService.cachedCountForWork(work.id.toString());
+
+  /// Build selection rows with per-track cache status (loads subtitle text).
+  Future<List<TranslateSelectionItem>> prepareTranslateSelection(
+    Child? folder,
+  ) async {
+    if (_files == null) return [];
+    final pairs = translatablePairs(folder);
+    final items = <TranslateSelectionItem>[];
+    for (final pair in pairs) {
+      final title = pair.audio.title ?? '';
+      var isCached = false;
+      final list = await _loadSubtitleListForPair(pair);
+      if (list != null) {
+        final ctx = PlaybackContext(
+          work: work,
+          files: _files!,
+          currentFile: pair.audio,
+        );
+        isCached = await _translationService.isCached(
+          source: list,
+          context: ctx,
+        );
+      }
+      items.add(TranslateSelectionItem(
+        pair: pair,
+        title: title,
+        isCached: isCached,
+      ));
+    }
+    return items;
+  }
+
+  /// Pre-translate selected audio+subtitle pairs; skips already-cached by default.
+  Future<BatchTranslateOutcome> translatePairs({
+    required List<DownloadPair> items,
+    required BatchTranslateProgressCallback onProgress,
+    CancelToken? cancelToken,
+    bool skipCached = true,
+    bool forceRefresh = false,
+  }) async {
+    if (_files == null) {
+      return const BatchTranslateOutcome(
+        translated: 0,
+        cached: 0,
+        failed: 0,
+        cancelled: false,
+      );
+    }
+
+    var translated = 0, cached = 0, failed = 0;
+    var cancelled = false;
+
+    for (var i = 0; i < items.length; i++) {
+      if (cancelToken?.isCancelled ?? false) {
+        cancelled = true;
+        break;
+      }
+
+      final pair = items[i];
+      final subtitle = pair.subtitle;
+      if (subtitle == null) continue;
+
+      final name = pair.audio.title ?? '';
+      onProgress(BatchTranslateProgress(
+        index: i + 1,
+        total: items.length,
+        trackName: name,
+        phase: BatchTranslatePhase.loadingSubtitle,
+      ));
+
+      final list = await _loadSubtitleListForPair(pair);
+      if (list == null) {
+        failed++;
+        onProgress(BatchTranslateProgress(
+          index: i + 1,
+          total: items.length,
+          trackName: name,
+          phase: BatchTranslatePhase.failed,
+        ));
+        continue;
+      }
+
+      final ctx = PlaybackContext(
+        work: work,
+        files: _files!,
+        currentFile: pair.audio,
+      );
+
+      if (!forceRefresh && skipCached) {
+        onProgress(BatchTranslateProgress(
+          index: i + 1,
+          total: items.length,
+          trackName: name,
+          phase: BatchTranslatePhase.checkingCache,
+        ));
+        if (await _translationService.isCached(source: list, context: ctx)) {
+          cached++;
+          onProgress(BatchTranslateProgress(
+            index: i + 1,
+            total: items.length,
+            trackName: name,
+            phase: BatchTranslatePhase.cached,
+          ));
+          continue;
+        }
+      }
+
+      if (cancelToken?.isCancelled ?? false) {
+        cancelled = true;
+        break;
+      }
+
+      onProgress(BatchTranslateProgress(
+        index: i + 1,
+        total: items.length,
+        trackName: name,
+        phase: BatchTranslatePhase.translating,
+      ));
+
+      final result = await _translationService.translateNow(
+        source: list,
+        context: ctx,
+        forceRefresh: forceRefresh,
+        onProgress: (p) {
+          if (p.phase == SubtitleTranslationPhase.translating) {
+            onProgress(BatchTranslateProgress(
+              index: i + 1,
+              total: items.length,
+              trackName: name,
+              phase: BatchTranslatePhase.translating,
+              llmBatchIndex: p.batchIndex,
+              llmBatchTotal: p.batchTotal,
+            ));
+          }
+        },
+      );
+
+      if (result.isFailure) {
+        failed++;
+        onProgress(BatchTranslateProgress(
+          index: i + 1,
+          total: items.length,
+          trackName: name,
+          phase: BatchTranslatePhase.failed,
+        ));
+      } else if (result.fromCache) {
+        cached++;
+        onProgress(BatchTranslateProgress(
+          index: i + 1,
+          total: items.length,
+          trackName: name,
+          phase: BatchTranslatePhase.cached,
+        ));
+      } else if (result.translated) {
+        translated++;
+      } else {
+        cached++;
+      }
+
+      if (cancelToken?.isCancelled ?? false) {
+        cancelled = true;
+        break;
+      }
+    }
+
+    return BatchTranslateOutcome(
+      translated: translated,
+      cached: cached,
+      failed: failed,
+      cancelled: cancelled,
+    );
+  }
+
+  Future<SubtitleList?> _loadSubtitleListForPair(DownloadPair pair) async {
+    final subtitle = pair.subtitle;
+    if (subtitle == null || _files == null) return null;
+    final workId = work.id?.toString();
+    if (workId != null) {
+      final localPath =
+          await _downloadService.localPathIfDownloaded(workId, subtitle);
+      if (localPath != null) {
+        return _importService.loadLocalSubtitle(localPath);
+      }
+    }
+    final url = subtitle.mediaDownloadUrl;
+    if (url == null) return null;
+    try {
+      return await _subtitleLoader.loadSubtitleContent(url);
+    } catch (e) {
+      AppLogger.warning('Bulk translate subtitle load failed: $e');
+      return null;
+    }
   }
 
   Future<void> playFile(Child file, BuildContext context) async {
