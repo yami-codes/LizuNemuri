@@ -2228,6 +2228,7 @@
   "llmErrorRateLimited": "LLM API rate limited — try again later",
   "llmErrorNetwork": "Cannot reach LLM API — check network and endpoint",
   "llmErrorInvalidResponse": "LLM returned an unparseable translation",
+  "llmErrorContentBlocked": "Translation was blocked by the provider content filter",
   "llmErrorUnknown": "LLM translation failed: {message}",
   "@llmErrorUnknown": {
     "placeholders": {
@@ -2252,6 +2253,20 @@
     }
   },
   "llmTranslationStatusSaving": "Saving translation to cache…",
+  "llmTranslationStatusResuming": "Resuming translation ({done}/{total} already done)…",
+  "@llmTranslationStatusResuming": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "llmTranslationPartialSaved": "Saved partial translation ({done}/{total}). Tap translate again to resume.",
+  "@llmTranslationPartialSaved": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
   "llmTranslationStatusStreaming": "Translated {done}/{total} lines (batch {batch}/{batches})…",
   "@llmTranslationStatusStreaming": {
     "placeholders": {

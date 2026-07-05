@@ -2228,6 +2228,7 @@
   "llmErrorRateLimited": "LLM API 请求过于频繁，请稍后再试",
   "llmErrorNetwork": "无法连接 LLM API，请检查网络与端点",
   "llmErrorInvalidResponse": "LLM 返回了无法解析的翻译结果",
+  "llmErrorContentBlocked": "翻译被服务商内容安全策略拦截",
   "llmErrorUnknown": "LLM 翻译失败：{message}",
   "@llmErrorUnknown": {
     "placeholders": {
@@ -2252,6 +2253,20 @@
     }
   },
   "llmTranslationStatusSaving": "正在保存翻译到缓存…",
+  "llmTranslationStatusResuming": "正在续翻（已完成 {done}/{total}）…",
+  "@llmTranslationStatusResuming": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "llmTranslationPartialSaved": "已保存部分翻译（{done}/{total}）。再次点击翻译可续翻。",
+  "@llmTranslationPartialSaved": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
   "llmTranslationStatusStreaming": "已翻译 {done}/{total} 行（第 {batch}/{batches} 批）…",
   "@llmTranslationStatusStreaming": {
     "placeholders": {

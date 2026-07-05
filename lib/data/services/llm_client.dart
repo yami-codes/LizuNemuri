@@ -140,16 +140,20 @@ class LlmClient {
 
       LlmUsage? usage;
       final buffer = StringBuffer();
+      final utf8ChunkStream = stream.cast<List<int>>().transform(utf8.decoder);
 
-      await for (final chunk in stream) {
-        buffer.write(utf8.decode(chunk));
-        final text = buffer.toString();
+      await for (final textChunk in utf8ChunkStream) {
+        final text = textChunk;
+        if (text.isEmpty) continue;
+
+        // SSE events may be split across chunks — keep incomplete tail in [buffer].
+        buffer.write(text);
+        final buffered = buffer.toString();
         buffer.clear();
 
-        // SSE events may be split across chunks — keep incomplete tail.
-        final events = text.split('\n');
+        final events = buffered.split('\n');
         var remainder = '';
-        if (!text.endsWith('\n')) {
+        if (!buffered.endsWith('\n')) {
           remainder = events.removeLast();
         }
 
@@ -160,27 +164,46 @@ class LlmClient {
           if (payload == '[DONE]') continue;
 
           try {
-            final json = jsonDecode(payload) as Map<String, dynamic>;
-            final usageJson = json['usage'];
+            final json = jsonDecode(payload);
+            if (json is! Map) continue;
+            final map = json.map((k, v) => MapEntry(k.toString(), v));
+
+            final error = map['error'];
+            if (error != null) {
+              throw LlmTranslationException(
+                LlmTranslationErrorType.unknown,
+                error is Map ? (error['message']?.toString() ?? 'stream error') : error.toString(),
+              );
+            }
+
+            final usageJson = map['usage'];
             if (usageJson is Map) {
               usage = LlmUsage.fromJson(
                 usageJson.map((k, v) => MapEntry(k.toString(), v)),
               );
             }
 
-            final choices = json['choices'];
+            final choices = map['choices'];
             if (choices is List && choices.isNotEmpty) {
               final choice = choices.first;
               if (choice is Map) {
-                final delta = choice['delta'];
+                final choiceMap = choice.map((k, v) => MapEntry(k.toString(), v));
+                final finishReason = choiceMap['finish_reason']?.toString();
+                if (finishReason == 'content_filter') {
+                  throw const LlmTranslationException(
+                    LlmTranslationErrorType.contentBlocked,
+                    'content_filter',
+                  );
+                }
+
+                final delta = choiceMap['delta'];
                 if (delta is Map) {
                   final content = delta['content'];
                   if (content is String && content.isNotEmpty) {
                     yield content;
                   }
                 }
-                // Some providers put final text in `message` on last chunk.
-                final message = choice['message'];
+                final message = choiceMap['message'];
                 if (message is Map) {
                   final content = message['content'];
                   if (content is String && content.isNotEmpty) {
@@ -189,6 +212,8 @@ class LlmClient {
                 }
               }
             }
+          } on LlmTranslationException {
+            rethrow;
           } catch (_) {
             // Ignore malformed SSE fragments mid-stream.
           }

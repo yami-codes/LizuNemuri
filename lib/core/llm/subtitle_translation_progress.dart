@@ -4,6 +4,7 @@ import 'package:xuro/core/audio/models/subtitle.dart';
 enum SubtitleTranslationPhase {
   checkingCache,
   loading,
+  resuming,
   translating,
   saving,
   cached,

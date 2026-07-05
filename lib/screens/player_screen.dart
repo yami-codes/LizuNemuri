@@ -7,6 +7,7 @@ import 'package:xuro/core/theme/app_spacing.dart';
 import 'package:xuro/widgets/player/player_controls.dart';
 import 'package:xuro/widgets/player/waveform_progress.dart';
 import 'package:xuro/widgets/player/player_art_panel.dart';
+import 'package:xuro/widgets/player/player_view_toggle.dart';
 import 'package:xuro/widgets/player/volume_control.dart';
 import 'package:xuro/presentation/layouts/player_layout_config.dart';
 import 'package:xuro/screens/detail_screen.dart';
@@ -122,63 +123,21 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   Widget _buildViewModeToggle({required bool isWide}) {
     if (isWide) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.space16,
-        AppSpacing.space8,
-        AppSpacing.space16,
-        0,
-      ),
-      child: SegmentedButton<bool>(
-        segments: [
-          ButtonSegment<bool>(
-            value: false,
-            label: Text(Strings.playerViewCover),
-            icon: const Icon(Icons.album_outlined, size: 18),
-          ),
-          ButtonSegment<bool>(
-            value: true,
-            label: Text(Strings.playerViewSubtitles),
-            icon: const Icon(Icons.subtitles_outlined, size: 18),
-          ),
-        ],
-        selected: {_showLyrics},
-        onSelectionChanged: (selection) {
-          setState(() => _showLyrics = selection.first);
-        },
-      ),
+    return PlayerViewToggle(
+      showSubtitles: _showLyrics,
+      coverLabel: Strings.playerViewCover,
+      subtitlesLabel: Strings.playerViewSubtitles,
+      onChanged: (showSubs) => setState(() => _showLyrics = showSubs),
     );
   }
 
   Widget _buildNarrowContent(double coverSize) {
     return AnimatedSwitcher(
-      duration: AppAnimations.long,
+      duration: AppAnimations.medium,
       switchInCurve: AppAnimations.smoothScroll,
       switchOutCurve: AppAnimations.exit,
-      transitionBuilder: (Widget child, Animation<double> animation) {
-        final isLyrics = (child as dynamic).key == const ValueKey('lyrics');
-        return FadeTransition(
-          opacity: animation,
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: Offset(0, isLyrics ? 0.1 : -0.1),
-              end: Offset.zero,
-            ).animate(animation),
-            child: ScaleTransition(
-              scale: Tween<double>(begin: 0.95, end: 1.0).animate(animation),
-              child: child,
-            ),
-          ),
-        );
-      },
-      layoutBuilder: (currentChild, previousChildren) {
-        return Stack(
-          alignment: Alignment.center,
-          children: [
-            ...previousChildren,
-            if (currentChild != null) currentChild,
-          ],
-        );
+      transitionBuilder: (child, animation) {
+        return FadeTransition(opacity: animation, child: child);
       },
       child: _showLyrics
           ? PlayerLyricView(

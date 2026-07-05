@@ -306,6 +306,7 @@ class Strings {
   static String get llmErrorRateLimited => _l10n.llmErrorRateLimited;
   static String get llmErrorNetwork => _l10n.llmErrorNetwork;
   static String get llmErrorInvalidResponse => _l10n.llmErrorInvalidResponse;
+  static String get llmErrorContentBlocked => _l10n.llmErrorContentBlocked;
   static String llmErrorUnknown(String message) => _l10n.llmErrorUnknown(message);
   static String get llmTranslateNow => _l10n.llmTranslateNow;
   static String get llmShowOriginal => _l10n.llmShowOriginal;
@@ -321,6 +322,10 @@ class Strings {
       _l10n.llmTranslationStatusTranslating(batch, total);
   static String get llmTranslationStatusSaving =>
       _l10n.llmTranslationStatusSaving;
+  static String llmTranslationStatusResuming(int done, int total) =>
+      _l10n.llmTranslationStatusResuming(done, total);
+  static String llmTranslationPartialSaved(int done, int total) =>
+      _l10n.llmTranslationPartialSaved(done, total);
   static String llmTranslationStatusStreaming(
     int done,
     int total,

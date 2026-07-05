@@ -2228,6 +2228,7 @@
   "llmErrorRateLimited": "LLM API ถูกจำกัดอัตรา — ลองใหม่ภายหลัง",
   "llmErrorNetwork": "เชื่อมต่อ LLM API ไม่ได้ — ตรวจสอบเครือข่ายและ endpoint",
   "llmErrorInvalidResponse": "LLM ส่งผลแปลที่แยกไม่ได้",
+  "llmErrorContentBlocked": "การแปลถูกบล็อกโดนตัวกรองเนื้อหาของผู้ให้บริการ",
   "llmErrorUnknown": "แปล LLM ล้มเหลว: {message}",
   "@llmErrorUnknown": {
     "placeholders": {
@@ -2252,6 +2253,20 @@
     }
   },
   "llmTranslationStatusSaving": "กำลังบันทึกคำแปลลงแคช…",
+  "llmTranslationStatusResuming": "กำลังแปลต่อ ({done}/{total} เสร็จแล้ว)…",
+  "@llmTranslationStatusResuming": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "llmTranslationPartialSaved": "บันทึกคำแปลบางส่วนแล้ว ({done}/{total}) แตะแปลอีกครั้งเพื่อทำต่อ",
+  "@llmTranslationPartialSaved": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
   "llmTranslationStatusStreaming": "แปลแล้ว {done}/{total} บรรทัด (ชุด {batch}/{batches})…",
   "@llmTranslationStatusStreaming": {
     "placeholders": {

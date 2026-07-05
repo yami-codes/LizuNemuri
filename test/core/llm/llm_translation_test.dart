@@ -5,6 +5,7 @@ import 'package:xuro/core/llm/llm_batch_planner.dart';
 import 'package:xuro/core/llm/llm_translation_context_builder.dart';
 import 'package:xuro/core/llm/llm_usage.dart';
 import 'package:xuro/core/llm/streaming_translation_parser.dart';
+import 'package:xuro/core/llm/subtitle_translation_completeness.dart';
 import 'package:xuro/core/settings/llm_batch_split_mode.dart';
 import 'package:xuro/data/models/files/child.dart';
 import 'package:xuro/data/models/files/files.dart';
@@ -126,6 +127,46 @@ void main() {
       });
       expect(usage?.totalTokens, 30);
       expect(usage?.totalCostUsd, closeTo(0.00042, 0.000001));
+    });
+  });
+
+  group('SubtitleTranslationCompleteness', () {
+    final source = SubtitleList([
+      Subtitle(
+        start: Duration.zero,
+        end: const Duration(seconds: 1),
+        text: 'A',
+        index: 0,
+      ),
+      Subtitle(
+        start: const Duration(seconds: 1),
+        end: const Duration(seconds: 2),
+        text: 'B',
+        index: 1,
+      ),
+    ]);
+
+    test('pending excludes already translated lines', () {
+      final lines = {0: 'α', 1: 'B'};
+      expect(
+        SubtitleTranslationCompleteness.pendingLines(source, lines),
+        hasLength(1),
+      );
+      expect(
+        SubtitleTranslationCompleteness.pendingLines(source, lines).first.index,
+        1,
+      );
+    });
+
+    test('isComplete requires every line translated', () {
+      expect(
+        SubtitleTranslationCompleteness.isComplete(source, {0: 'α', 1: 'β'}),
+        isTrue,
+      );
+      expect(
+        SubtitleTranslationCompleteness.isComplete(source, {0: 'α', 1: 'B'}),
+        isFalse,
+      );
     });
   });
 
