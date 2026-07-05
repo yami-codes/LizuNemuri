@@ -13,10 +13,12 @@ class CircularCover extends StatelessWidget {
     super.key,
     this.coverUrl,
     this.maxSize = 320,
+    this.ringColor,
   });
 
   final String? coverUrl;
   final double maxSize;
+  final Color? ringColor;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,7 @@ class CircularCover extends StatelessWidget {
           shape: BoxShape.circle,
           color: cs.surfaceContainerHighest,
           border: Border.all(
-            color: cs.primary.withValues(alpha: 0.25),
+            color: ringColor ?? cs.primary.withValues(alpha: 0.25),
             width: 2,
           ),
           boxShadow: [

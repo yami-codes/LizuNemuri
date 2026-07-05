@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:xuro/core/audio/models/subtitle.dart';
 import 'package:xuro/core/theme/app_animations.dart';
+import 'package:xuro/widgets/player/player_immersive_scope.dart';
 
 class LyricLine extends StatelessWidget {
   final Subtitle subtitle;
@@ -18,6 +19,15 @@ class LyricLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final immersive = PlayerImmersiveScope.maybeOf(context);
+    final cs = Theme.of(context).colorScheme;
+    final activeColor = immersive?.enabled == true
+        ? immersive!.activeLyric
+        : cs.primary;
+    final inactiveColor = immersive?.enabled == true
+        ? immersive!.inactiveLyric
+        : cs.onSurface.withValues(alpha: 0.7);
+
     return RepaintBoundary(
       child: Center(
         child: AnimatedOpacity(
@@ -33,14 +43,17 @@ class LyricLine extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontSize: 20,
                       height: 1.3,
-                      color: isActive
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withValues(alpha: 0.7),
+                      color: isActive ? activeColor : inactiveColor,
                       fontWeight:
                           isActive ? FontWeight.w600 : FontWeight.normal,
+                      shadows: immersive?.enabled == true
+                          ? [
+                              Shadow(
+                                color: Colors.black.withValues(alpha: 0.35),
+                                blurRadius: 8,
+                              ),
+                            ]
+                          : null,
                     ),
                 textAlign: TextAlign.center,
               ),
