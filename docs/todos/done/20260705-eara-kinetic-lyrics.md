@@ -63,4 +63,4 @@ Bring Apple/Eara-style **kinetic centered lyrics** to the player: active line st
 - 完成时间：2026-07-05 09:30 UTC
 - 执行命令：`/init`
 - CLAUDE.md 更新摘要：Added kinetic lyrics invariants under `lib/widgets/` + `test/widgets/lyrics/` coverage in Tests section.
-- 关联 commit：`6768818`
+- 关联 commit：`87bbbb4`
