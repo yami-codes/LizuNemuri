@@ -7,7 +7,7 @@ import 'package:xuro/widgets/common/skeleton_pulse.dart';
 ///
 /// 图片加载与 [PlayerCover] 一致（`ImageCacheManager` + `SkeletonPulse`），
 /// 但形状改为圆形并加 accent 细环；透明度用 `.withValues`（非 `withOpacity`）。
-/// 调用方负责包 `Hero(tag:'mini-player-cover')`（保留现有过渡）。
+/// 调用方负责包 `Hero(tag: kMiniPlayerCoverHeroTag)`（见 [player_surface_transition.dart]）。
 class CircularCover extends StatelessWidget {
   const CircularCover({
     super.key,

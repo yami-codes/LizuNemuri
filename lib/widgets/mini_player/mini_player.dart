@@ -1,8 +1,7 @@
-import 'package:xuro/core/theme/app_animations.dart';
 import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/screens/player_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
+import 'package:xuro/widgets/player/player_surface_transition.dart';
 import 'mini_player_controls.dart';
 import 'mini_player_progress.dart';
 import 'package:get_it/get_it.dart';
@@ -28,47 +27,7 @@ class MiniPlayer extends StatelessWidget {
       builder: (context, _) {
         return GestureDetector(
           onTap: () {
-            Navigator.of(context).push(
-              PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) {
-                  return const PlayerScreen();
-                },
-                transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                  // 创建一个曲线动画
-                  final curvedAnimation = CurvedAnimation(
-                    parent: animation,
-                    curve: AppAnimations.smoothScroll,
-                  );
-                  
-                  return Stack(
-                    children: [
-                      // 背景淡入效果
-                      FadeTransition(
-                        opacity: curvedAnimation,
-                        child: Container(
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                        ),
-                      ),
-                      // 内容从底部滑入并淡入
-                      FadeTransition(
-                        opacity: Tween<double>(
-                          begin: 0.3,
-                          end: 1.0,
-                        ).animate(curvedAnimation),
-                        child: SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(0, 0.3),
-                            end: Offset.zero,
-                          ).animate(curvedAnimation),
-                          child: child,
-                        ),
-                      ),
-                    ],
-                  );
-                },
-                transitionDuration: AppAnimations.long,
-              ),
-            );
+            Navigator.of(context).push(createPlayerScreenRoute());
           },
           child: Container(
             height: height,
@@ -85,7 +44,8 @@ class MiniPlayer extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 4, 8, 4),
                         child: Hero(
-                          tag: 'mini-player-cover',
+                          tag: kMiniPlayerCoverHeroTag,
+                          flightShuttleBuilder: playerHeroFlightShuttle,
                           child: MiniPlayerCover(
                             coverUrl: viewModel.currentTrackInfo?.coverUrl,
                           ),
@@ -95,7 +55,8 @@ class MiniPlayer extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Hero(
-                            tag: 'player-title',
+                            tag: kPlayerTitleHeroTag,
+                            flightShuttleBuilder: playerHeroFlightShuttle,
                             child: Material(
                               color: Colors.transparent,
                               child: Text(

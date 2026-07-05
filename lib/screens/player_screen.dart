@@ -1,5 +1,4 @@
 import 'package:xuro/core/platform/lyric_overlay_manager.dart';
-import 'package:xuro/core/theme/app_animations.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
@@ -13,6 +12,7 @@ import 'package:xuro/widgets/player/sleep_mode_dim_overlay.dart';
 import 'package:xuro/widgets/player/cover_artwork_background.dart';
 import 'package:xuro/widgets/player/player_cover_palette_loader.dart';
 import 'package:xuro/widgets/player/player_immersive_scope.dart';
+import 'package:xuro/widgets/player/player_surface_transition.dart';
 import 'package:xuro/presentation/layouts/player_layout_config.dart';
 import 'package:xuro/screens/detail_screen.dart';
 import 'package:xuro/widgets/lyrics/components/player_lyric_view.dart';
@@ -156,49 +156,19 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Widget _buildNarrowContent(double coverSize) {
-    return AnimatedSwitcher(
-      duration: AppAnimations.long,
-      switchInCurve: AppAnimations.smoothScroll,
-      switchOutCurve: AppAnimations.exit,
-      transitionBuilder: (Widget child, Animation<double> animation) {
-        final isLyrics = (child as dynamic).key == const ValueKey('lyrics');
-        return FadeTransition(
-          opacity: animation,
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: Offset(0, isLyrics ? 0.1 : -0.1),
-              end: Offset.zero,
-            ).animate(animation),
-            child: ScaleTransition(
-              scale: Tween<double>(begin: 0.95, end: 1.0).animate(animation),
-              child: child,
-            ),
-          ),
-        );
-      },
-      layoutBuilder: (currentChild, previousChildren) {
-        return Stack(
-          alignment: Alignment.center,
-          children: [
-            ...previousChildren,
-            if (currentChild != null) currentChild,
-          ],
-        );
-      },
-      child: _showLyrics
-          ? PlayerLyricView(
-              key: const ValueKey('lyrics'),
-              onScrollStateChanged: (canSwitch) {
-                setState(() => _canSwitchView = canSwitch);
-              },
-            )
-          : Center(
-              key: const ValueKey('cover'),
-              child: PlayerArtPanel(
-                viewModel: _viewModel,
-                coverSize: coverSize,
-              ),
-            ),
+    return PlayerSurfaceSwitcher(
+      showLyrics: _showLyrics,
+      coverChild: Center(
+        child: PlayerArtPanel(
+          viewModel: _viewModel,
+          coverSize: coverSize,
+        ),
+      ),
+      lyricsChild: PlayerLyricView(
+        onScrollStateChanged: (canSwitch) {
+          setState(() => _canSwitchView = canSwitch);
+        },
+      ),
     );
   }
 
