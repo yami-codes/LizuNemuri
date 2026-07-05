@@ -2200,7 +2200,7 @@
     }
   },
   "llmTranslationTitle": "แปลซับไตเติ้ลด้วย LLM",
-  "llmTranslationDesc": "แปลซับไตเติ้ลอัตโนมัติขณะเล่นผ่าน OpenAI-compatible หรือ OpenRouter พร้อมบริบทผลงาน แทร็ก และเพลย์ลิสต์",
+  "llmTranslationDesc": "แปลซับไตเติ้ลอัตโนมัติผ่าน OpenAI-compatible หรือ OpenRouter ตั้งค่า API key แล้วใช้เมนูซับไตเติ้ลในหน้าเล่น → แปลด้วย LLM",
   "llmTranslationEnabled": "เปิดใช้แปล LLM",
   "llmTranslationConfigure": "API และพรอมต์",
   "llmApiEndpoint": "API endpoint",
@@ -2235,5 +2235,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "llmTranslateNow": "แปลซับไตเติลด้วย LLM",
+  "llmShowOriginal": "แสดงซับไตเติ้ลต้นฉบับ",
+  "llmTranslationDone": "แปลซับไตเติลเสร็จแล้ว",
+  "llmErrorNoSubtitles": "ไม่มีซับไตเติลให้แปลสำหรับแทร็กนี้",
+  "llmTranslationNoChange": "ผลแปลเหมือนต้นฉบับ (ตรวจสอบ API หรือภาษาเป้าหมาย)"
 }

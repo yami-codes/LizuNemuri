@@ -5,8 +5,10 @@ import 'package:xuro/core/audio/models/playback_context.dart';
 import 'package:xuro/core/audio/models/subtitle.dart';
 import 'package:xuro/core/llm/llm_translation_context_builder.dart';
 import 'package:xuro/core/llm/subtitle_translation_cache.dart';
+import 'package:xuro/core/llm/subtitle_translation_result.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/core/settings/llm_subtitle_target_language.dart';
+import 'package:xuro/data/repositories/llm_api_key_repository.dart';
 import 'package:xuro/data/services/exceptions/llm_translation_exception.dart';
 import 'package:xuro/data/services/llm_client.dart';
 import 'package:xuro/utils/logger.dart';
@@ -28,6 +30,7 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
 
   final AppSettingsService _settings;
   final LlmClient _client;
+  final LlmApiKeyRepository _apiKeyRepo;
   final SubtitleTranslationCache _cache;
 
   final Map<String, Map<int, String>> _memoryCache = {};
@@ -35,17 +38,62 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
   SubtitleTranslationService({
     required AppSettingsService settings,
     required LlmClient client,
+    required LlmApiKeyRepository apiKeyRepo,
     SubtitleTranslationCache? cache,
   })  : _settings = settings,
         _client = client,
+        _apiKeyRepo = apiKeyRepo,
         _cache = cache ?? SubtitleTranslationCache();
 
-  Future<SubtitleList> translateIfEnabled({
+  bool get isEnabled => _settings.llmTranslationEnabled;
+
+  /// Auto path on subtitle load — respects the settings toggle.
+  Future<SubtitleTranslationResult> translateIfEnabled({
     required SubtitleList source,
     required PlaybackContext? context,
+  }) =>
+      translate(
+        source: source,
+        context: context,
+        requireEnabled: true,
+      );
+
+  /// Manual translate from the player — works even when auto is off.
+  Future<SubtitleTranslationResult> translateNow({
+    required SubtitleList source,
+    required PlaybackContext? context,
+    bool forceRefresh = false,
+  }) =>
+      translate(
+        source: source,
+        context: context,
+        requireEnabled: false,
+        forceRefresh: forceRefresh,
+      );
+
+  Future<SubtitleTranslationResult> translate({
+    required SubtitleList source,
+    required PlaybackContext? context,
+    bool requireEnabled = false,
+    bool forceRefresh = false,
   }) async {
-    if (!_settings.llmTranslationEnabled) return source;
-    if (source.subtitles.isEmpty) return source;
+    if (requireEnabled && !_settings.llmTranslationEnabled) {
+      return SubtitleTranslationResult.skipped(source);
+    }
+    if (source.subtitles.isEmpty) {
+      return SubtitleTranslationResult.skipped(source);
+    }
+
+    final key = await _apiKeyRepo.getApiKey();
+    if (key == null || key.trim().isEmpty) {
+      return SubtitleTranslationResult.failure(
+        source,
+        const LlmTranslationException(
+          LlmTranslationErrorType.missingApiKey,
+          'missing api key',
+        ),
+      );
+    }
 
     final targetLang =
         _settings.llmTargetLanguage.resolveCode(_settings.stringsLocale);
@@ -53,14 +101,18 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     final fileName = context?.currentFile.title ?? 'track';
     final hash = _cache.sourceHash(source);
 
-    final cached = await _loadCached(
-      workId: workId,
-      fileName: fileName,
-      targetLang: targetLang,
-      hash: hash,
-    );
-    if (cached != null && cached.length == source.subtitles.length) {
-      return _applyTranslations(source, cached);
+    if (!forceRefresh) {
+      final cached = await _loadCached(
+        workId: workId,
+        fileName: fileName,
+        targetLang: targetLang,
+        hash: hash,
+      );
+      if (cached != null && cached.length == source.subtitles.length) {
+        final list = _applyTranslations(source, cached);
+        final changed = _hasTextChanges(source, list);
+        return SubtitleTranslationResult.success(list, translated: changed);
+      }
     }
 
     try {
@@ -74,18 +126,28 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
         fileName: fileName,
         targetLang: targetLang,
         hash: hash,
-        lines: {
-          for (final s in translated.subtitles) s.index: s.text,
-        },
+        lines: {for (final s in translated.subtitles) s.index: s.text},
       );
-      return translated;
+      final changed = _hasTextChanges(source, translated);
+      return SubtitleTranslationResult.success(translated, translated: changed);
     } on LlmTranslationException catch (e) {
-      AppLogger.warning('Subtitle translation skipped: ${e.message}');
-      return source;
+      AppLogger.warning('Subtitle translation failed: ${e.message}');
+      return SubtitleTranslationResult.failure(source, e);
     } catch (e, st) {
       AppLogger.error('Subtitle translation failed', e, st);
-      return source;
+      return SubtitleTranslationResult.failure(
+        source,
+        LlmTranslationException(LlmTranslationErrorType.unknown, e.toString()),
+      );
     }
+  }
+
+  bool _hasTextChanges(SubtitleList a, SubtitleList b) {
+    if (a.subtitles.length != b.subtitles.length) return true;
+    for (var i = 0; i < a.subtitles.length; i++) {
+      if (a.subtitles[i].text != b.subtitles[i].text) return true;
+    }
+    return false;
   }
 
   Future<SubtitleList> _translateBatches({

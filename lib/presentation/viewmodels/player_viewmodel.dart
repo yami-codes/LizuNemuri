@@ -13,6 +13,7 @@ import 'package:xuro/core/audio/events/playback_event_hub.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:xuro/core/llm/subtitle_translation_service.dart';
+import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/core/subtitle/subtitle_import_service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:xuro/utils/logger.dart';
@@ -26,12 +27,17 @@ class PlayerViewModel extends ChangeNotifier {
   final _importService = GetIt.I<SubtitleImportService>();
   final _downloadService = GetIt.I<DownloadService>();
   final _translationService = GetIt.I<SubtitleTranslationService>();
+  final _settings = GetIt.I<AppSettingsService>();
 
   bool _isPlaying = false;
   bool _isBuffering = false;
   bool _isToggling = false;
   String? _errorMessage;
   bool _isUserImportedSubtitle = false;
+  bool _isLlmTranslated = false;
+  bool _isTranslating = false;
+  String? _translationFeedback;
+  SubtitleList? _subtitleSourceList;
   int _loadVersion = 0;
   Duration? _position;
   Duration? _duration;
@@ -48,8 +54,42 @@ class PlayerViewModel extends ChangeNotifier {
   }) : _audioService = audioService,
        _eventHub = eventHub,
        _subtitleService = subtitleService {
+    _settings.addListener(_onLlmSettingsChanged);
     _initStreams();
     _requestInitialState();
+  }
+
+  bool get isLlmTranslated => _isLlmTranslated;
+  bool get isTranslating => _isTranslating;
+  bool get hasSubtitles =>
+      _subtitleService.subtitleList != null &&
+      _subtitleService.subtitleList!.subtitles.isNotEmpty;
+
+  /// One-shot snackbar message for auto-translate failures (consumed by UI).
+  String? takeTranslationFeedback() {
+    final message = _translationFeedback;
+    _translationFeedback = null;
+    return message;
+  }
+
+  void _onLlmSettingsChanged() {
+    if (!_settings.llmTranslationEnabled || _isLlmTranslated || _isTranslating) {
+      return;
+    }
+    final source = _subtitleSourceList ?? _subtitleService.subtitleList;
+    final context = currentContext;
+    if (source == null || context == null || source.subtitles.isEmpty) return;
+    unawaited(() async {
+      final err = await _runTranslation(
+        source: source,
+        context: context,
+        auto: true,
+      );
+      if (err != null) {
+        _translationFeedback = err;
+        notifyListeners();
+      }
+    }());
   }
 
   void _initStreams() {
@@ -244,6 +284,7 @@ class PlayerViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _settings.removeListener(_onLlmSettingsChanged);
     for (var subscription in _subscriptions) {
       subscription.cancel();
     }
@@ -263,17 +304,94 @@ class PlayerViewModel extends ChangeNotifier {
     PlaybackContext context, {
     required int version,
   }) async {
-    SubtitleList toShow = list;
-    try {
-      toShow = await _translationService.translateIfEnabled(
+    _subtitleSourceList = list;
+    _isLlmTranslated = false;
+
+    if (_settings.llmTranslationEnabled) {
+      final err = await _runTranslation(
         source: list,
         context: context,
+        auto: true,
+        version: version,
       );
-    } catch (e) {
-      AppLogger.warning('Subtitle translation fallback to source: $e');
+      if (_loadVersion != version) return;
+      if (err != null) {
+        _translationFeedback = err;
+        notifyListeners();
+      }
+      return;
     }
+
     if (_loadVersion != version) return;
-    await _subtitleService.loadSubtitleFromContent(toShow);
+    await _subtitleService.loadSubtitleFromContent(list);
+    notifyListeners();
+  }
+
+  Future<String?> translateSubtitlesNow({bool forceRefresh = false}) async {
+    final context = currentContext;
+    final source = _subtitleSourceList ?? _subtitleService.subtitleList;
+    if (context == null || source == null || source.subtitles.isEmpty) {
+      return Strings.llmErrorNoSubtitles;
+    }
+    return _runTranslation(
+      source: source,
+      context: context,
+      auto: false,
+      forceRefresh: forceRefresh,
+    );
+  }
+
+  Future<String?> restoreOriginalSubtitles() async {
+    final source = _subtitleSourceList;
+    if (source == null) return Strings.llmErrorNoSubtitles;
+    await _subtitleService.loadSubtitleFromContent(source);
+    _isLlmTranslated = false;
+    notifyListeners();
+    return null;
+  }
+
+  Future<String?> _runTranslation({
+    required SubtitleList source,
+    required PlaybackContext context,
+    required bool auto,
+    int? version,
+    bool forceRefresh = false,
+  }) async {
+    _isTranslating = true;
+    notifyListeners();
+
+    final result = auto
+        ? await _translationService.translateIfEnabled(
+            source: source,
+            context: context,
+          )
+        : await _translationService.translateNow(
+            source: source,
+            context: context,
+            forceRefresh: forceRefresh,
+          );
+
+    _isTranslating = false;
+    if (version != null && _loadVersion != version) return null;
+
+    if (result.isFailure) {
+      await _subtitleService.loadSubtitleFromContent(source);
+      _isLlmTranslated = false;
+      notifyListeners();
+      return result.error!.userMessage;
+    }
+
+    await _subtitleService.loadSubtitleFromContent(result.list);
+    _isLlmTranslated = result.translated;
+    notifyListeners();
+
+    if (!auto && result.translated) {
+      return null;
+    }
+    if (!auto && !result.translated && !result.skipped) {
+      return Strings.llmTranslationNoChange;
+    }
+    return null;
   }
 
   Future<void> _loadSubtitleIfAvailable(PlaybackContext context) async {

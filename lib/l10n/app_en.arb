@@ -2200,7 +2200,7 @@
     }
   },
   "llmTranslationTitle": "LLM subtitle translation",
-  "llmTranslationDesc": "Auto-translate subtitles during playback via OpenAI-compatible or OpenRouter APIs. Includes work, track, and playlist context.",
+  "llmTranslationDesc": "Auto-translate subtitles during playback via OpenAI-compatible or OpenRouter APIs. Configure API key in Settings, then use Player → subtitle menu → Translate with LLM. Enabling auto-translate applies on the next track or when you tap translate.",
   "llmTranslationEnabled": "Enable LLM translation",
   "llmTranslationConfigure": "API & prompts",
   "llmApiEndpoint": "API endpoint",
@@ -2235,5 +2235,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "llmTranslateNow": "Translate subtitles with LLM",
+  "llmShowOriginal": "Show original subtitles",
+  "llmTranslationDone": "Subtitle translation complete",
+  "llmErrorNoSubtitles": "No subtitles to translate for this track",
+  "llmTranslationNoChange": "Translation matched the original (check API config or target language)"
 }

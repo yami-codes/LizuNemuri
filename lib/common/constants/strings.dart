@@ -307,6 +307,11 @@ class Strings {
   static String get llmErrorNetwork => _l10n.llmErrorNetwork;
   static String get llmErrorInvalidResponse => _l10n.llmErrorInvalidResponse;
   static String llmErrorUnknown(String message) => _l10n.llmErrorUnknown(message);
+  static String get llmTranslateNow => _l10n.llmTranslateNow;
+  static String get llmShowOriginal => _l10n.llmShowOriginal;
+  static String get llmTranslationDone => _l10n.llmTranslationDone;
+  static String get llmErrorNoSubtitles => _l10n.llmErrorNoSubtitles;
+  static String get llmTranslationNoChange => _l10n.llmTranslationNoChange;
 
   static String playlistToggleResult(bool added, String name) =>
       added ? _l10n.playlistToggleResultAdded(name) : _l10n.playlistToggleResultRemoved(name);
