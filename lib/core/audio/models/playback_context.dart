@@ -1,4 +1,5 @@
 import 'package:xuro/core/audio/utils/audio_error_handler.dart';
+import 'package:xuro/core/audio/utils/audio_file_classifier.dart';
 import 'package:xuro/data/models/works/work.dart';
 import 'package:xuro/data/models/files/files.dart';
 import 'package:xuro/data/models/files/child.dart';
@@ -55,9 +56,24 @@ class PlaybackContext {
     required Child currentFile,
     PlayMode playMode = PlayMode.sequence,
   }) {
-    final playlist = _getPlaylistFromSameDirectory(currentFile, files);
-    final currentIndex = playlist.indexWhere((file) => file.title == currentFile.title);
-    
+    var playlist = _getPlaylistFromSameDirectory(currentFile, files);
+    if (playlist.isEmpty && AudioFileClassifier.isPlayableAudio(currentFile)) {
+      playlist = [currentFile];
+    }
+    final currentIndex = playlist.indexWhere((file) => file == currentFile);
+    if (currentIndex < 0) {
+      final byTitle = playlist.indexWhere((file) => file.title == currentFile.title);
+      final index = byTitle >= 0 ? byTitle : 0;
+      return PlaybackContext._(
+        work: work,
+        files: files,
+        currentFile: playlist[index],
+        playlist: playlist,
+        currentIndex: index,
+        playMode: playMode,
+      );
+    }
+
     return PlaybackContext._(
       work: work,
       files: files,
@@ -68,35 +84,24 @@ class PlaybackContext {
     );
   }
 
-  // 获取同级文件列表
+  // 获取同级文件列表（同目录 + 同扩展名 + 可播放音频）
   static List<Child> _getPlaylistFromSameDirectory(Child currentFile, Files files) {
-    // AppLogger.debug(LogStrings.logStartBuildingPlaylist3066d);
-    // AppLogger.debug(LogStrings.logCurrentFileCurrentfileTitle51690(currentFile.title));
-    // AppLogger.debug(LogStrings.logCurrentFileTypeCurrentfileTyd7c12(currentFile.type));
-
-    // 获取当前文件的扩展名
-    final extension = currentFile.title?.split('.').last.toLowerCase();
-    // AppLogger.debug(LogStrings.logCurrentFileExtensionExtensiof67a2(extension));
-    
-    if (extension != 'mp3' && extension != 'wav') {
+    if (!AudioFileClassifier.isPlayableAudio(currentFile)) {
+      final extension = currentFile.title?.split('.').last.toLowerCase();
       AppLogger.debug(LogStrings.logUnsupportedFileTypeExtension332f4(extension));
       return [];
     }
 
-    // 使用 FilePath 获取同级文件
+    final extension = currentFile.title!.split('.').last.toLowerCase();
     final siblings = FilePath.getSiblings(currentFile, files);
-    
-    // 过滤出相同扩展名的文件
-    final playlist = siblings.where((file) => 
-      file.title?.toLowerCase().endsWith('.$extension') ?? false
-    ).toList();
-    
-    // AppLogger.debug(LogStrings.logFoundPlaylistLengthPlayableFa7c85(playlist.length));
-    // for (var file in playlist) {
-    //   AppLogger.debug('- [${file.type}] ${file.title} (URL: ${file.mediaDownloadUrl != null ? '有' : '无'})');
-    // }
-    
-    return playlist;
+
+    return siblings
+        .where(
+          (file) =>
+              AudioFileClassifier.isPlayableAudio(file) &&
+              (file.title?.toLowerCase().endsWith('.$extension') ?? false),
+        )
+        .toList();
   }
 
   /// Create a context with a pre-filtered playlist (e.g. after skipping failed audio sources).
