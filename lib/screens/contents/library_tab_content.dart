@@ -77,64 +77,71 @@ class _LibraryTabContentState extends State<LibraryTabContent>
         ChangeNotifierProvider.value(value: _downloadsViewModel),
         ChangeNotifierProvider.value(value: _localLibraryViewModel),
       ],
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(_title(context)),
-          actions: [
-            if (_segment == _LibrarySegment.browse)
-              IconButton(
-                icon: const Icon(Icons.filter_list),
-                onPressed: () =>
-                    context.read<HomeViewModel>().toggleFilterPanel(),
-              ),
-          ],
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.pageMobile,
-                AppSpacing.space8,
-                AppSpacing.pageMobile,
-                AppSpacing.space8,
-              ),
-              child: SegmentedButton<_LibrarySegment>(
-                segments: [
-                  ButtonSegment(
-                    value: _LibrarySegment.local,
-                    label: Text(Strings.librarySegmentLocal),
-                    icon: const Icon(Icons.folder_outlined),
+      // Providers are scoped to [child]; AppBar title must read them from a
+      // descendant context, not the outer build context (ProviderNotFound).
+      child: Builder(
+        builder: (scopedContext) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(_title(scopedContext)),
+              actions: [
+                if (_segment == _LibrarySegment.browse)
+                  IconButton(
+                    icon: const Icon(Icons.filter_list),
+                    onPressed: () => scopedContext
+                        .read<HomeViewModel>()
+                        .toggleFilterPanel(),
                   ),
-                  ButtonSegment(
-                    value: _LibrarySegment.downloads,
-                    label: Text(Strings.downloadsTitle),
-                    icon: const Icon(Icons.download_outlined),
-                  ),
-                  ButtonSegment(
-                    value: _LibrarySegment.browse,
-                    label: Text(Strings.librarySegmentBrowse),
-                    icon: const Icon(Icons.explore_outlined),
-                  ),
-                ],
-                selected: {_segment},
-                onSelectionChanged: (selection) {
-                  setState(() => _segment = selection.first);
-                },
-              ),
+              ],
             ),
-            Expanded(
-              child: IndexedStack(
-                index: _segment.index,
-                children: const [
-                  LocalLibraryContent(),
-                  DownloadsHubContent(),
-                  HomeContent(),
-                ],
-              ),
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.pageMobile,
+                    AppSpacing.space8,
+                    AppSpacing.pageMobile,
+                    AppSpacing.space8,
+                  ),
+                  child: SegmentedButton<_LibrarySegment>(
+                    segments: [
+                      ButtonSegment(
+                        value: _LibrarySegment.local,
+                        label: Text(Strings.librarySegmentLocal),
+                        icon: const Icon(Icons.folder_outlined),
+                      ),
+                      ButtonSegment(
+                        value: _LibrarySegment.downloads,
+                        label: Text(Strings.downloadsTitle),
+                        icon: const Icon(Icons.download_outlined),
+                      ),
+                      ButtonSegment(
+                        value: _LibrarySegment.browse,
+                        label: Text(Strings.librarySegmentBrowse),
+                        icon: const Icon(Icons.explore_outlined),
+                      ),
+                    ],
+                    selected: {_segment},
+                    onSelectionChanged: (selection) {
+                      setState(() => _segment = selection.first);
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: IndexedStack(
+                    index: _segment.index,
+                    children: const [
+                      LocalLibraryContent(),
+                      DownloadsHubContent(),
+                      HomeContent(),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
