@@ -170,7 +170,7 @@ jobs:
           path: xuro-web.zip
 
   build-windows:
-    runs-on: windows-latest
+    runs-on: windows-2022
     permissions:
       contents: read
 
@@ -178,11 +178,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Setup MSVC
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -201,8 +196,16 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Clean Windows CMake cache
+        shell: pwsh
+        run: |
+          if (Test-Path build/windows) { Remove-Item -Recurse -Force build/windows }
+
       - name: Build Windows
         run: flutter build windows --release
+        env:
+          CMAKE_GENERATOR: Visual Studio 17 2022
+          CMAKE_GENERATOR_PLATFORM: x64
 
       - name: Package Windows
         shell: pwsh
