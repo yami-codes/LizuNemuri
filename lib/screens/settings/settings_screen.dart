@@ -16,6 +16,7 @@ import 'package:xuro/core/theme/app_spacing.dart';
 import 'package:xuro/screens/settings/widgets/settings_group.dart';
 import 'package:xuro/screens/settings/widgets/settings_tile.dart';
 import 'package:xuro/screens/settings/widgets/settings_theme.dart';
+import 'package:xuro/screens/settings/llm_translation_settings_screen.dart';
 import 'package:xuro/utils/platform_capabilities.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -49,6 +50,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _contentSection(context),
             const SizedBox(height: AppSpacing.space24),
             _playbackSection(),
+            const SizedBox(height: AppSpacing.space24),
+            _llmTranslationSection(context),
             const SizedBox(height: AppSpacing.space24),
             if (PlatformCapabilities.supportsFloatingLyrics) ...[
               _lyricOverlaySection(),
@@ -278,6 +281,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       );
     });
+  }
+
+  Widget _llmTranslationSection(BuildContext context) {
+    final settings = GetIt.I<AppSettingsService>();
+    return ListenableBuilder(
+      listenable: settings,
+      builder: (context, _) => SettingsGroup(
+        header: Strings.llmTranslationTitle,
+        footer: Strings.llmTranslationDesc,
+        children: [
+          SettingsTile.toggle(
+            title: Strings.llmTranslationEnabled,
+            leading: Icons.translate_outlined,
+            value: settings.llmTranslationEnabled,
+            onChanged: settings.setLlmTranslationEnabled,
+          ),
+          SettingsTile.navigation(
+            title: Strings.llmTranslationConfigure,
+            leading: Icons.tune_outlined,
+            value: settings.llmModel,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    LlmTranslationSettingsScreen(settings: settings),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _lyricOverlaySection() {

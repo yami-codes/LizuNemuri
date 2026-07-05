@@ -2198,5 +2198,42 @@
         "type": "String"
       }
     }
+  },
+  "llmTranslationTitle": "LLM subtitle translation",
+  "llmTranslationDesc": "Auto-translate subtitles during playback via OpenAI-compatible or OpenRouter APIs. Includes work, track, and playlist context.",
+  "llmTranslationEnabled": "Enable LLM translation",
+  "llmTranslationConfigure": "API & prompts",
+  "llmApiEndpoint": "API endpoint",
+  "llmApiKey": "API key",
+  "llmModel": "Model",
+  "llmTargetLanguage": "Target language",
+  "llmSystemPrompt": "System prompt (override)",
+  "llmSystemPromptHint": "Leave empty to use the built-in default",
+  "llmJailbreakPrompt": "Jailbreak / stability prompt",
+  "llmJailbreakPromptHint": "Leave empty with auto on to use the built-in default",
+  "llmJailbreakAuto": "Auto jailbreak prompt",
+  "llmJailbreakAutoDesc": "Uses a built-in stability prompt for adult/extreme content; override with custom text below.",
+  "llmPresetOpenAi": "OpenAI",
+  "llmPresetOpenRouter": "OpenRouter",
+  "llmTargetLangSystem": "Follow app language",
+  "llmTargetLangEn": "English",
+  "llmTargetLangZh": "Chinese",
+  "llmTargetLangJa": "Japanese",
+  "llmTargetLangTh": "Thai",
+  "llmTargetLangKo": "Korean",
+  "llmSettingsSaved": "LLM settings saved",
+  "llmErrorMissingApiKey": "Configure an LLM API key in Settings first",
+  "llmErrorInvalidConfig": "Invalid LLM API endpoint or model",
+  "llmErrorAuth": "LLM API authentication failed — check your key",
+  "llmErrorRateLimited": "LLM API rate limited — try again later",
+  "llmErrorNetwork": "Cannot reach LLM API — check network and endpoint",
+  "llmErrorInvalidResponse": "LLM returned an unparseable translation",
+  "llmErrorUnknown": "LLM translation failed: {message}",
+  "@llmErrorUnknown": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
   }
 }

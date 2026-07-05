@@ -3,6 +3,7 @@ import 'dart:ui' show Locale, PlatformDispatcher;
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xuro/core/settings/app_language.dart';
+import 'package:xuro/core/settings/llm_subtitle_target_language.dart';
 
 /// Top-level accent color variants. Surfaces stay neutral (white/black) across
 /// all variants — only the `primary` token rotates. Persisted by
@@ -24,8 +25,18 @@ class AppSettingsService extends ChangeNotifier {
   // 取代各 VM 自行 SharedPreferences.getInstance() + dispose 回写陈旧值。
   static const String _subtitleFilterKey = 'subtitle_filter';
   static const String _appLanguageKey = 'app_language';
+  static const String _llmTranslationEnabledKey = 'llm_translation_enabled';
+  static const String _llmApiEndpointKey = 'llm_api_endpoint';
+  static const String _llmModelKey = 'llm_model';
+  static const String _llmTargetLanguageKey = 'llm_target_language';
+  static const String _llmSystemPromptKey = 'llm_system_prompt';
+  static const String _llmJailbreakPromptKey = 'llm_jailbreak_prompt';
+  static const String _llmJailbreakAutoKey = 'llm_jailbreak_auto';
 
   static const String defaultServerUrl = 'https://api.asmr.one/api';
+  static const String defaultLlmApiEndpoint = 'https://api.openai.com/v1';
+  static const String defaultLlmModel = 'gpt-4o-mini';
+  static const String defaultOpenRouterEndpoint = 'https://openrouter.ai/api/v1';
   static const ColorVariant defaultColorVariant = ColorVariant.blue;
   static const AppLanguage defaultAppLanguage = AppLanguage.system;
   static const List<String> defaultAudioFormatOrder = [
@@ -50,6 +61,13 @@ class AppSettingsService extends ChangeNotifier {
   late bool _backgroundPlayEnabled;
   late bool _hasSubtitleFilter;
   late AppLanguage _appLanguage;
+  late bool _llmTranslationEnabled;
+  late String _llmApiEndpoint;
+  late String _llmModel;
+  late LlmSubtitleTargetLanguage _llmTargetLanguage;
+  late String _llmSystemPromptOverride;
+  late String _llmJailbreakPrompt;
+  late bool _llmJailbreakAuto;
 
   AppSettingsService(this._prefs) {
     _serverUrl = _prefs.getString(_serverUrlKey) ?? defaultServerUrl;
@@ -69,6 +87,19 @@ class AppSettingsService extends ChangeNotifier {
       (v) => v.name == savedLang,
       orElse: () => defaultAppLanguage,
     );
+    _llmTranslationEnabled =
+        _prefs.getBool(_llmTranslationEnabledKey) ?? false;
+    _llmApiEndpoint =
+        _prefs.getString(_llmApiEndpointKey) ?? defaultLlmApiEndpoint;
+    _llmModel = _prefs.getString(_llmModelKey) ?? defaultLlmModel;
+    final savedTarget = _prefs.getString(_llmTargetLanguageKey);
+    _llmTargetLanguage = LlmSubtitleTargetLanguage.values.firstWhere(
+      (v) => v.name == savedTarget,
+      orElse: () => LlmSubtitleTargetLanguage.system,
+    );
+    _llmSystemPromptOverride = _prefs.getString(_llmSystemPromptKey) ?? '';
+    _llmJailbreakPrompt = _prefs.getString(_llmJailbreakPromptKey) ?? '';
+    _llmJailbreakAuto = _prefs.getBool(_llmJailbreakAutoKey) ?? true;
   }
 
   // === UI Language ===
@@ -188,5 +219,71 @@ class AppSettingsService extends ChangeNotifier {
     _colorVariant = variant;
     notifyListeners();
     await _prefs.setString(_colorVariantKey, variant.name);
+  }
+
+  // === LLM subtitle translation ===
+  bool get llmTranslationEnabled => _llmTranslationEnabled;
+
+  Future<void> setLlmTranslationEnabled(bool enabled) async {
+    if (_llmTranslationEnabled == enabled) return;
+    _llmTranslationEnabled = enabled;
+    notifyListeners();
+    await _prefs.setBool(_llmTranslationEnabledKey, enabled);
+  }
+
+  String get llmApiEndpoint => _llmApiEndpoint;
+
+  Future<void> setLlmApiEndpoint(String endpoint) async {
+    final trimmed = endpoint.trim();
+    if (_llmApiEndpoint == trimmed) return;
+    _llmApiEndpoint = trimmed;
+    notifyListeners();
+    await _prefs.setString(_llmApiEndpointKey, trimmed);
+  }
+
+  String get llmModel => _llmModel;
+
+  Future<void> setLlmModel(String model) async {
+    final trimmed = model.trim();
+    if (_llmModel == trimmed) return;
+    _llmModel = trimmed;
+    notifyListeners();
+    await _prefs.setString(_llmModelKey, trimmed);
+  }
+
+  LlmSubtitleTargetLanguage get llmTargetLanguage => _llmTargetLanguage;
+
+  Future<void> setLlmTargetLanguage(LlmSubtitleTargetLanguage language) async {
+    if (_llmTargetLanguage == language) return;
+    _llmTargetLanguage = language;
+    notifyListeners();
+    await _prefs.setString(_llmTargetLanguageKey, language.name);
+  }
+
+  String get llmSystemPromptOverride => _llmSystemPromptOverride;
+
+  Future<void> setLlmSystemPromptOverride(String prompt) async {
+    if (_llmSystemPromptOverride == prompt) return;
+    _llmSystemPromptOverride = prompt;
+    notifyListeners();
+    await _prefs.setString(_llmSystemPromptKey, prompt);
+  }
+
+  String get llmJailbreakPrompt => _llmJailbreakPrompt;
+
+  Future<void> setLlmJailbreakPrompt(String prompt) async {
+    if (_llmJailbreakPrompt == prompt) return;
+    _llmJailbreakPrompt = prompt;
+    notifyListeners();
+    await _prefs.setString(_llmJailbreakPromptKey, prompt);
+  }
+
+  bool get llmJailbreakAuto => _llmJailbreakAuto;
+
+  Future<void> setLlmJailbreakAuto(bool enabled) async {
+    if (_llmJailbreakAuto == enabled) return;
+    _llmJailbreakAuto = enabled;
+    notifyListeners();
+    await _prefs.setBool(_llmJailbreakAutoKey, enabled);
   }
 }

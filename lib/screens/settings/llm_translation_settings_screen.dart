@@ -1,0 +1,275 @@
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:xuro/common/constants/strings.dart';
+import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:xuro/core/settings/llm_subtitle_target_language.dart';
+import 'package:xuro/data/repositories/llm_api_key_repository.dart';
+import 'package:xuro/screens/settings/widgets/settings_group.dart';
+import 'package:xuro/screens/settings/widgets/settings_tile.dart';
+import 'package:xuro/screens/settings/widgets/settings_theme.dart';
+
+/// LLM subtitle translation API + prompt configuration.
+class LlmTranslationSettingsScreen extends StatefulWidget {
+  final AppSettingsService settings;
+
+  const LlmTranslationSettingsScreen({super.key, required this.settings});
+
+  @override
+  State<LlmTranslationSettingsScreen> createState() =>
+      _LlmTranslationSettingsScreenState();
+}
+
+class _LlmTranslationSettingsScreenState
+    extends State<LlmTranslationSettingsScreen> {
+  late final TextEditingController _endpointCtrl;
+  late final TextEditingController _modelCtrl;
+  late final TextEditingController _apiKeyCtrl;
+  late final TextEditingController _systemPromptCtrl;
+  late final TextEditingController _jailbreakPromptCtrl;
+  bool _obscureKey = true;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _endpointCtrl = TextEditingController(text: widget.settings.llmApiEndpoint);
+    _modelCtrl = TextEditingController(text: widget.settings.llmModel);
+    _apiKeyCtrl = TextEditingController();
+    _systemPromptCtrl =
+        TextEditingController(text: widget.settings.llmSystemPromptOverride);
+    _jailbreakPromptCtrl =
+        TextEditingController(text: widget.settings.llmJailbreakPrompt);
+    _loadApiKey();
+  }
+
+  Future<void> _loadApiKey() async {
+    final key = await GetIt.I<LlmApiKeyRepository>().getApiKey();
+    if (!mounted) return;
+    _apiKeyCtrl.text = key ?? '';
+  }
+
+  @override
+  void dispose() {
+    _endpointCtrl.dispose();
+    _modelCtrl.dispose();
+    _apiKeyCtrl.dispose();
+    _systemPromptCtrl.dispose();
+    _jailbreakPromptCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    if (_saving) return;
+    setState(() => _saving = true);
+    try {
+      await widget.settings.setLlmApiEndpoint(_endpointCtrl.text);
+      await widget.settings.setLlmModel(_modelCtrl.text);
+      await widget.settings.setLlmSystemPromptOverride(_systemPromptCtrl.text);
+      await widget.settings.setLlmJailbreakPrompt(_jailbreakPromptCtrl.text);
+      final key = _apiKeyCtrl.text.trim();
+      final repo = GetIt.I<LlmApiKeyRepository>();
+      if (key.isEmpty) {
+        await repo.clearApiKey();
+      } else {
+        await repo.saveApiKey(key);
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(Strings.llmSettingsSaved)),
+        );
+        Navigator.pop(context);
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bg = SettingsTheme.pageBackground(context);
+
+    return Scaffold(
+      appBar: AppBar(title: Text(Strings.llmTranslationConfigure)),
+      backgroundColor: bg,
+      body: SettingsTheme.noSplashTheme(
+        context: context,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            SettingsGroup(
+              header: Strings.llmApiEndpoint,
+              children: [
+                _presetRow(
+                  Strings.llmPresetOpenAi,
+                  AppSettingsService.defaultLlmApiEndpoint,
+                ),
+                _presetRow(
+                  Strings.llmPresetOpenRouter,
+                  AppSettingsService.defaultOpenRouterEndpoint,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: TextField(
+                    controller: _endpointCtrl,
+                    decoration: InputDecoration(
+                      labelText: Strings.llmApiEndpoint,
+                      border: const OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.url,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SettingsGroup(
+              header: Strings.llmModel,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: TextField(
+                    controller: _modelCtrl,
+                    decoration: InputDecoration(
+                      labelText: Strings.llmModel,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SettingsGroup(
+              header: Strings.llmApiKey,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: TextField(
+                    controller: _apiKeyCtrl,
+                    obscureText: _obscureKey,
+                    decoration: InputDecoration(
+                      labelText: Strings.llmApiKey,
+                      border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureKey ? Icons.visibility_off : Icons.visibility,
+                        ),
+                        onPressed: () =>
+                            setState(() => _obscureKey = !_obscureKey),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ListenableBuilder(
+              listenable: widget.settings,
+              builder: (context, _) => SettingsGroup(
+                header: Strings.llmTargetLanguage,
+                children: LlmSubtitleTargetLanguage.values
+                    .map(
+                      (lang) => SettingsTile.selection(
+                        title: _targetLangLabel(lang),
+                        leading: Icons.language_outlined,
+                        selected: widget.settings.llmTargetLanguage == lang,
+                        onTap: () => widget.settings.setLlmTargetLanguage(lang),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListenableBuilder(
+              listenable: widget.settings,
+              builder: (context, _) => SettingsGroup(
+                header: Strings.llmJailbreakPrompt,
+                footer: Strings.llmJailbreakAutoDesc,
+                children: [
+                  SettingsTile.toggle(
+                    title: Strings.llmJailbreakAuto,
+                    leading: Icons.shield_outlined,
+                    value: widget.settings.llmJailbreakAuto,
+                    onChanged: widget.settings.setLlmJailbreakAuto,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            SettingsGroup(
+              header: Strings.llmSystemPrompt,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: TextField(
+                    controller: _systemPromptCtrl,
+                    maxLines: 5,
+                    decoration: InputDecoration(
+                      hintText: Strings.llmSystemPromptHint,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SettingsGroup(
+              header: Strings.llmJailbreakPrompt,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: TextField(
+                    controller: _jailbreakPromptCtrl,
+                    maxLines: 5,
+                    decoration: InputDecoration(
+                      hintText: Strings.llmJailbreakPromptHint,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            FilledButton(
+              onPressed: _saving ? null : _save,
+              child: _saving
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(Strings.save),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _presetRow(String label, String endpoint) {
+    return SettingsTile.selection(
+      title: label,
+      subtitle: endpoint,
+      leading: Icons.link_outlined,
+      selected: _endpointCtrl.text.trim() == endpoint,
+      onTap: () {
+        setState(() => _endpointCtrl.text = endpoint);
+      },
+    );
+  }
+
+  String _targetLangLabel(LlmSubtitleTargetLanguage lang) {
+    switch (lang) {
+      case LlmSubtitleTargetLanguage.system:
+        return Strings.llmTargetLangSystem;
+      case LlmSubtitleTargetLanguage.en:
+        return Strings.llmTargetLangEn;
+      case LlmSubtitleTargetLanguage.zh:
+        return Strings.llmTargetLangZh;
+      case LlmSubtitleTargetLanguage.ja:
+        return Strings.llmTargetLangJa;
+      case LlmSubtitleTargetLanguage.th:
+        return Strings.llmTargetLangTh;
+      case LlmSubtitleTargetLanguage.ko:
+        return Strings.llmTargetLangKo;
+    }
+  }
+}
