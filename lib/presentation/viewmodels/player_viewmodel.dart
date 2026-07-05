@@ -15,6 +15,7 @@ import 'package:get_it/get_it.dart';
 import 'package:xuro/core/llm/subtitle_translation_service.dart';
 import 'package:xuro/core/llm/subtitle_translation_progress.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:xuro/core/settings/llm_subtitle_display_mode.dart';
 import 'package:xuro/core/subtitle/subtitle_import_service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:xuro/utils/logger.dart';
@@ -65,6 +66,10 @@ class PlayerViewModel extends ChangeNotifier {
   bool get isLlmTranslated => _isLlmTranslated;
   bool get isTranslating => _isTranslating;
   String? get translationStatus => _translationStatus;
+  bool get showDualSubtitles =>
+      _settings.llmSubtitleDisplayMode == LlmSubtitleDisplayMode.dual &&
+      _isLlmTranslated &&
+      _subtitleSourceList != null;
   bool get hasSubtitles =>
       _subtitleService.subtitleList != null &&
       _subtitleService.subtitleList!.subtitles.isNotEmpty;
@@ -79,6 +84,8 @@ class PlayerViewModel extends ChangeNotifier {
   }
 
   void _onLlmSettingsChanged() {
+    notifyListeners();
+
     if (!_settings.llmTranslationEnabled || _isLlmTranslated || _isTranslating) {
       return;
     }
@@ -368,6 +375,29 @@ class PlayerViewModel extends ChangeNotifier {
     _isLlmTranslated = false;
     notifyListeners();
     return null;
+  }
+
+  /// Original line text for dual display at [index], or null when unavailable.
+  String? originalSubtitleTextAt(int index) {
+    if (!showDualSubtitles) return null;
+    final source = _subtitleSourceList;
+    if (source == null || index < 0 || index >= source.subtitles.length) {
+      return null;
+    }
+    final original = source.subtitles[index].text.trim();
+    if (original.isEmpty) return null;
+    final translated =
+        _subtitleService.subtitleList?.subtitles[index].text.trim();
+    if (translated != null && translated == original) return null;
+    return original;
+  }
+
+  /// Overlay / notification friendly dual-line text.
+  String overlayTextForSubtitle(Subtitle? subtitle) {
+    if (subtitle == null) return Strings.noLyrics;
+    final secondary = originalSubtitleTextAt(subtitle.index);
+    if (secondary == null) return subtitle.text;
+    return '$secondary\n${subtitle.text}';
   }
 
   Future<String?> _runTranslation({

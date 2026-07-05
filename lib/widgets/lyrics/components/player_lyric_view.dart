@@ -1,14 +1,15 @@
 import 'dart:async';
 
-import 'package:xuro/core/theme/app_animations.dart';
-import 'package:xuro/common/constants/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:xuro/core/theme/app_animations.dart';
+import 'package:xuro/common/constants/strings.dart';
+import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:xuro/core/subtitle/i_subtitle_service.dart';
 import 'package:xuro/core/audio/models/subtitle.dart';
 import 'lyric_line.dart';
-import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
 
 class PlayerLyricView extends StatefulWidget {
   final bool immediateScroll;
@@ -31,6 +32,7 @@ class PlayerLyricView extends StatefulWidget {
 class _PlayerLyricViewState extends State<PlayerLyricView> {
   final ISubtitleService _subtitleService = GetIt.I<ISubtitleService>();
   final PlayerViewModel _viewModel = GetIt.I<PlayerViewModel>();
+  final AppSettingsService _settings = GetIt.I<AppSettingsService>();
   final ItemScrollController _itemScrollController = ItemScrollController();
   final ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
   
@@ -106,7 +108,10 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
     final screenHeight = MediaQuery.of(context).size.height;
     final baseUnit = screenHeight * 0.04;
     
-    return StreamBuilder<SubtitleWithState?>(
+    return ListenableBuilder(
+      listenable: Listenable.merge([_viewModel, _settings]),
+      builder: (context, _) {
+        return StreamBuilder<SubtitleWithState?>(
       stream: _subtitleService.currentSubtitleWithStateStream,
       initialData: _subtitleService.currentSubtitleWithState,
       builder: (context, snapshot) {
@@ -178,6 +183,8 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
                 ),
                 child: LyricLine(
                   subtitle: subtitle,
+                  secondaryText:
+                      _viewModel.originalSubtitleTextAt(subtitle.index),
                   isActive: isActive,
                   opacity: isActive ? 1.0 : 0.5,
                   onTap: () async {
@@ -200,6 +207,8 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
             },
           ),
         );
+      },
+    );
       },
     );
   }

@@ -2252,6 +2252,11 @@
     }
   },
   "llmTranslationStatusSaving": "正在保存翻译到缓存…",
+  "llmSubtitleDisplayMode": "字幕显示",
+  "llmSubtitleDisplayDual": "原文 + 译文",
+  "llmSubtitleDisplayDualDesc": "启用 LLM 翻译后，每行上方显示原文、下方显示译文。",
+  "llmSubtitleDisplayTranslationOnly": "仅显示译文",
+  "llmSubtitleDisplayTranslationOnlyDesc": "只显示一行（有译文时显示译文，否则显示原文）。",
   "batchTranslateTitle": "批量翻译字幕",
   "batchTranslateTooltip": "全部翻译",
   "batchTranslateEmpty": "此文件夹内没有可配对字幕的音频",

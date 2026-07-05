@@ -206,6 +206,7 @@ void setupSubtitleServices() {
     controller: getIt(),
     subtitleService: getIt(),
     settings: getIt<AppSettingsService>(),
+    playerViewModel: getIt<PlayerViewModel>(),
   ));
 }
 

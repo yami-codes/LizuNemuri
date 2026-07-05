@@ -321,6 +321,14 @@ class Strings {
       _l10n.llmTranslationStatusTranslating(batch, total);
   static String get llmTranslationStatusSaving =>
       _l10n.llmTranslationStatusSaving;
+  static String get llmSubtitleDisplayMode => _l10n.llmSubtitleDisplayMode;
+  static String get llmSubtitleDisplayDual => _l10n.llmSubtitleDisplayDual;
+  static String get llmSubtitleDisplayDualDesc =>
+      _l10n.llmSubtitleDisplayDualDesc;
+  static String get llmSubtitleDisplayTranslationOnly =>
+      _l10n.llmSubtitleDisplayTranslationOnly;
+  static String get llmSubtitleDisplayTranslationOnlyDesc =>
+      _l10n.llmSubtitleDisplayTranslationOnlyDesc;
   static String get batchTranslateTitle => _l10n.batchTranslateTitle;
   static String get batchTranslateTooltip => _l10n.batchTranslateTooltip;
   static String get batchTranslateEmpty => _l10n.batchTranslateEmpty;

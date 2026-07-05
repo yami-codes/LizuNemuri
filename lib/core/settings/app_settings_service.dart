@@ -3,6 +3,7 @@ import 'dart:ui' show Locale, PlatformDispatcher;
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xuro/core/settings/app_language.dart';
+import 'package:xuro/core/settings/llm_subtitle_display_mode.dart';
 import 'package:xuro/core/settings/llm_subtitle_target_language.dart';
 
 /// Top-level accent color variants. Surfaces stay neutral (white/black) across
@@ -32,6 +33,7 @@ class AppSettingsService extends ChangeNotifier {
   static const String _llmSystemPromptKey = 'llm_system_prompt';
   static const String _llmJailbreakPromptKey = 'llm_jailbreak_prompt';
   static const String _llmJailbreakAutoKey = 'llm_jailbreak_auto';
+  static const String _llmSubtitleDisplayModeKey = 'llm_subtitle_display_mode';
   static const String _playbackVolumeKey = 'playback_volume';
 
   static const String defaultServerUrl = 'https://api.asmr.one/api';
@@ -69,6 +71,7 @@ class AppSettingsService extends ChangeNotifier {
   late String _llmSystemPromptOverride;
   late String _llmJailbreakPrompt;
   late bool _llmJailbreakAuto;
+  late LlmSubtitleDisplayMode _llmSubtitleDisplayMode;
   late double _playbackVolume;
 
   AppSettingsService(this._prefs) {
@@ -102,6 +105,11 @@ class AppSettingsService extends ChangeNotifier {
     _llmSystemPromptOverride = _prefs.getString(_llmSystemPromptKey) ?? '';
     _llmJailbreakPrompt = _prefs.getString(_llmJailbreakPromptKey) ?? '';
     _llmJailbreakAuto = _prefs.getBool(_llmJailbreakAutoKey) ?? true;
+    final savedDisplayMode = _prefs.getString(_llmSubtitleDisplayModeKey);
+    _llmSubtitleDisplayMode = LlmSubtitleDisplayMode.values.firstWhere(
+      (v) => v.name == savedDisplayMode,
+      orElse: () => LlmSubtitleDisplayMode.dual,
+    );
     _playbackVolume = _prefs.getDouble(_playbackVolumeKey) ?? 1.0;
   }
 
@@ -288,6 +296,15 @@ class AppSettingsService extends ChangeNotifier {
     _llmJailbreakAuto = enabled;
     notifyListeners();
     await _prefs.setBool(_llmJailbreakAutoKey, enabled);
+  }
+
+  LlmSubtitleDisplayMode get llmSubtitleDisplayMode => _llmSubtitleDisplayMode;
+
+  Future<void> setLlmSubtitleDisplayMode(LlmSubtitleDisplayMode mode) async {
+    if (_llmSubtitleDisplayMode == mode) return;
+    _llmSubtitleDisplayMode = mode;
+    notifyListeners();
+    await _prefs.setString(_llmSubtitleDisplayModeKey, mode.name);
   }
 
   // === Playback volume (0.0–1.0) ===

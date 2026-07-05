@@ -2252,6 +2252,11 @@
     }
   },
   "llmTranslationStatusSaving": "กำลังบันทึกคำแปลลงแคช…",
+  "llmSubtitleDisplayMode": "การแสดงซับไตเติล",
+  "llmSubtitleDisplayDual": "ต้นฉบับ + คำแปล",
+  "llmSubtitleDisplayDualDesc": "เมื่อแปลด้วย LLM แล้ว แสดงบรรทัดต้นฉบับด้านบนและคำแปลด้านล่าง",
+  "llmSubtitleDisplayTranslationOnly": "คำแปลเท่านั้น",
+  "llmSubtitleDisplayTranslationOnlyDesc": "แสดงบรรทัดเดียว (คำแปลเมื่อมี ไม่เช่นนั้นแสดงต้นฉบับ)",
   "batchTranslateTitle": "แปลซับไตเติลแบบกลุ่ม",
   "batchTranslateTooltip": "แปลทั้งหมด",
   "batchTranslateEmpty": "ไม่มีแทร็กที่จับคู่ซับไตเติลในโฟลเดอร์นี้",
