@@ -4,40 +4,36 @@ import 'package:xuro/widgets/work_card/work_card.dart';
 
 class WorkRow extends StatelessWidget {
   final List<Work> works;
+  final int columnCount;
   final void Function(Work work)? onWorkTap;
   final double spacing;
 
   const WorkRow({
     super.key,
     required this.works,
+    required this.columnCount,
     this.onWorkTap,
     this.spacing = 8.0,
   });
 
   @override
   Widget build(BuildContext context) {
+    final slots = columnCount < 1 ? 1 : columnCount;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 第一个卡片
-        Expanded(
-          child: works.isNotEmpty
-              ? WorkCard(
-                  work: works[0],
-                  onTap: onWorkTap != null ? () => onWorkTap!(works[0]) : null,
-                )
-              : const SizedBox.shrink(),
-        ),
-        SizedBox(width: spacing),
-        // 第二个卡片或占位符
-        Expanded(
-          child: works.length > 1
-              ? WorkCard(
-                  work: works[1],
-                  onTap: onWorkTap != null ? () => onWorkTap!(works[1]) : null,
-                )
-              : const SizedBox.shrink(),
-        ),
+        for (var i = 0; i < slots; i++) ...[
+          if (i > 0) SizedBox(width: spacing),
+          Expanded(
+            child: i < works.length
+                ? WorkCard(
+                    work: works[i],
+                    onTap:
+                        onWorkTap != null ? () => onWorkTap!(works[i]) : null,
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
       ],
     );
   }
