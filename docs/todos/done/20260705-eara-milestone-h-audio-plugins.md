@@ -25,4 +25,4 @@ Evaluate Flutter audio FX path; ship recommendation doc + Android EQ prototype.
 - 完成时间：2026-07-05 10:00 UTC
 - 执行命令：`/init`
 - CLAUDE.md 更新摘要：Added Android EQ invariants under `audio/` + `audio_effects_controller_test` in Tests.
-- 关联 commit：pending
+- 关联 commit：`2829586`
