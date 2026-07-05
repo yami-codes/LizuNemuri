@@ -23,20 +23,20 @@ Stream-parse subtitle translations line-by-line, fix mobile player translation l
 
 ## 3. 验收标准
 
-- [ ] Mobile player shows translation progress without AppBar overflow
-- [ ] Subtitles update incrementally while LLM streams NDJSON lines
-- [ ] Split mode none/provider/manual respected in batch planner
-- [ ] Usage records prompt/completion tokens + cost; history screen lists entries
-- [ ] README.md is English; zh/th linked as subs
-- [ ] `fvm flutter test` + analyze on touched files pass
+- [x] Mobile player shows translation progress without AppBar overflow
+- [x] Subtitles update incrementally while LLM streams NDJSON lines
+- [x] Split mode none/provider/manual respected in batch planner
+- [x] Usage records prompt/completion tokens + cost; history screen lists entries
+- [x] README.md is English; zh/th linked as subs
+- [x] `fvm flutter test` + analyze on touched files pass
 
 ## 4. 步骤
 
-- [ ] Core: streaming client, parser, batch planner, usage repo
-- [ ] Service + ViewModel partial translation callbacks
-- [ ] Settings UI: split mode, usage history screen
-- [ ] Player mobile layout fix
-- [ ] L10n + README + tests + PR
+- [x] Core: streaming client, parser, batch planner, usage repo
+- [x] Service + ViewModel partial translation callbacks
+- [x] Settings UI: split mode, usage history screen
+- [x] Player mobile layout fix
+- [x] L10n + README + tests + PR (#10, commit 8f0ff7d)
 
 ## 5. 风险与回滚
 
