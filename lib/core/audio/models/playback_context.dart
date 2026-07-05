@@ -5,6 +5,7 @@ import 'package:xuro/data/models/files/child.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:xuro/core/audio/models/play_mode.dart';
 import 'package:xuro/core/audio/models/file_path.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class PlaybackContext {
   final Work work;
@@ -18,21 +19,21 @@ class PlaybackContext {
     if (playlist.isEmpty) {
       throw AudioError(
         AudioErrorType.state,
-        '无效的播放列表状态：播放列表为空',
+        LogStrings.logPlaylistEmpty,
       );
     }
     
     if (currentIndex < 0 || currentIndex >= playlist.length) {
       throw AudioError(
         AudioErrorType.state,
-        '无效的播放列表索引：$currentIndex，列表长度：${playlist.length}',
+        LogStrings.logPlaylistIndexInvalid(currentIndex.toString(), playlist.length.toString()),
       );
     }
 
     if (!playlist.contains(currentFile)) {
       throw AudioError(
         AudioErrorType.state,
-        '当前文件不在播放列表中',
+        LogStrings.logCurrentFileNotInPlaylist,
       );
     }
   }
@@ -69,16 +70,16 @@ class PlaybackContext {
 
   // 获取同级文件列表
   static List<Child> _getPlaylistFromSameDirectory(Child currentFile, Files files) {
-    // AppLogger.debug('开始获取播放列表...');
-    // AppLogger.debug('当前文件: ${currentFile.title}');
-    // AppLogger.debug('当前文件类型: ${currentFile.type}');
+    // AppLogger.debug(LogStrings.logStartBuildingPlaylist3066d);
+    // AppLogger.debug(LogStrings.logCurrentFileCurrentfileTitle51690(currentFile.title));
+    // AppLogger.debug(LogStrings.logCurrentFileTypeCurrentfileTyd7c12(currentFile.type));
 
     // 获取当前文件的扩展名
     final extension = currentFile.title?.split('.').last.toLowerCase();
-    // AppLogger.debug('当前文件扩展名: $extension');
+    // AppLogger.debug(LogStrings.logCurrentFileExtensionExtensiof67a2(extension));
     
     if (extension != 'mp3' && extension != 'wav') {
-      AppLogger.debug('不支持的文件类型: $extension');
+      AppLogger.debug(LogStrings.logUnsupportedFileTypeExtension332f4(extension));
       return [];
     }
 
@@ -90,7 +91,7 @@ class PlaybackContext {
       file.title?.toLowerCase().endsWith('.$extension') ?? false
     ).toList();
     
-    // AppLogger.debug('找到 ${playlist.length} 个可播放文件:');
+    // AppLogger.debug(LogStrings.logFoundPlaylistLengthPlayableFa7c85(playlist.length));
     // for (var file in playlist) {
     //   AppLogger.debug('- [${file.type}] ${file.title} (URL: ${file.mediaDownloadUrl != null ? '有' : '无'})');
     // }

@@ -1,8 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:xuro/data/models/circles/circle_item.dart';
 import 'package:xuro/data/services/api_service.dart';
+import 'package:xuro/utils/i18n_name_resolver.dart';
+import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:get_it/get_it.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class CirclesViewModel extends ChangeNotifier {
   final ApiService _apiService = GetIt.I<ApiService>();
@@ -32,10 +35,10 @@ class CirclesViewModel extends ChangeNotifier {
       _allCircles = await _apiService.getCircles();
       _allCircles.sort((a, b) => (b.count ?? 0).compareTo(a.count ?? 0));
       _applyFilter();
-      AppLogger.info('社团列表加载成功: ${_allCircles.length}个社团');
+      AppLogger.info(LogStrings.logCirclesLoadedAllcirclesLengtbf4e0(_allCircles.length));
     } catch (e) {
-      AppLogger.error('加载社团列表失败', e);
-      _error = e.toString();
+      AppLogger.error(LogStrings.logLoadCirclesFailed, e);
+      _error = userFacingError(e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -55,7 +58,10 @@ class CirclesViewModel extends ChangeNotifier {
       final lowerQuery = _searchQuery.toLowerCase();
       _filteredCircles = _allCircles.where((circle) {
         final name = circle.name?.toLowerCase() ?? '';
-        return name.contains(lowerQuery);
+        final localized = I18nNameResolver.searchableNames(circle.i18n)
+            .map((n) => n.toLowerCase())
+            .any((n) => n.contains(lowerQuery));
+        return name.contains(lowerQuery) || localized;
       }).toList();
     }
   }

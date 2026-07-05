@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 part 'update_info.freezed.dart';
 
@@ -28,7 +29,7 @@ class UpdateInfo with _$UpdateInfo {
     final tag = json['tag_name'];
     final html = json['html_url'];
     if (tag is! String || tag.isEmpty || html is! String || html.isEmpty) {
-      throw const FormatException('GitHub release 缺少 tag_name 或 html_url');
+      throw FormatException(LogStrings.logGithubReleaseMissingFields);
     }
 
     String? apkUrl;

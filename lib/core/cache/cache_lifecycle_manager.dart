@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:xuro/core/cache/cache_coordinator.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 /// 缓存生命周期管理器
 /// 监听应用生命周期事件，自动触发缓存维护
@@ -45,9 +46,9 @@ class CacheLifecycleManager with WidgetsBindingObserver {
     _isCleanupRunning = true;
     CacheCoordinator().cleanAll().then((_) {
       _lastCleanup = DateTime.now();
-      AppLogger.debug('自动缓存清理完成');
+      AppLogger.debug(LogStrings.logAutoCacheCleanupDone9b23a);
     }).catchError((e) {
-      AppLogger.error('自动缓存清理失败', e);
+      AppLogger.error(LogStrings.logAutoCacheCleanupFailed7cdd2, e);
     }).whenComplete(() {
       _isCleanupRunning = false;
     });

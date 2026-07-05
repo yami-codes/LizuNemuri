@@ -7,6 +7,7 @@ import 'package:xuro/core/subtitle/models/user_subtitle_entry.dart';
 import 'package:xuro/core/subtitle/parsers/subtitle_parser_factory.dart';
 import 'package:xuro/core/audio/models/subtitle.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 enum ImportResult {
   success,
@@ -50,14 +51,14 @@ class SubtitleImportService {
 
       // 2. Validate extension
       if (!_supportedExtensions.contains(ext)) {
-        AppLogger.warning('字幕格式不支持: $ext');
+        AppLogger.warning(LogStrings.logSubtitleFormatUnsupportedExtd85b3(ext));
         return const ImportResponse(ImportResult.invalidFormat);
       }
 
       // 3. File size guard
       final fileSize = await file.length();
       if (fileSize > _maxFileSizeBytes) {
-        AppLogger.warning('字幕文件过大: ${fileSize ~/ 1024}KB');
+        AppLogger.warning(LogStrings.logSubtitleFileTooLargeFilesizeab4da(fileSize ~/ 1024));
         return const ImportResponse(ImportResult.fileTooLarge);
       }
 
@@ -65,7 +66,7 @@ class SubtitleImportService {
       final content = await file.readAsString();
       final parser = SubtitleParserFactory.getParser(content);
       if (parser == null) {
-        AppLogger.warning('字幕内容解析失败: $originalName');
+        AppLogger.warning(LogStrings.logSubtitleContentParseFailedOr9cb41(originalName));
         return const ImportResponse(ImportResult.parseFailed);
       }
 
@@ -73,11 +74,11 @@ class SubtitleImportService {
       try {
         subtitleList = parser.parse(content);
         if (subtitleList.subtitles.isEmpty) {
-          AppLogger.warning('字幕文件无有效内容: $originalName');
+          AppLogger.warning(LogStrings.logSubtitleFileHasNoValidConten02363(originalName));
           return const ImportResponse(ImportResult.parseFailed);
         }
       } catch (e) {
-        AppLogger.error('字幕解析异常', e);
+        AppLogger.error(LogStrings.logSubtitleParseException, e);
         return const ImportResponse(ImportResult.parseFailed);
       }
 
@@ -145,17 +146,17 @@ class SubtitleImportService {
           final oldFile = File(existingEntry.subtitlePath);
           if (await oldFile.exists()) {
             await oldFile.delete();
-            AppLogger.debug('删除旧的导入字幕文件: ${existingEntry.subtitlePath}');
+            AppLogger.debug(LogStrings.logDeleteOldImportedSubtitleFil9e249(existingEntry.subtitlePath));
           }
         } catch (e) {
-          AppLogger.warning('旧字幕文件清理失败（已成功导入新字幕，孤儿无害）: $e');
+          AppLogger.warning(LogStrings.logOldSubtitleCleanupFailedImpo6282e(e));
         }
       }
 
-      AppLogger.debug('字幕导入成功: $originalName -> $workId/$fileName');
+      AppLogger.debug(LogStrings.logSubtitleImportSucceededOrigi127da(originalName, workId, fileName));
       return ImportResponse(ImportResult.success, subtitleList);
     } catch (e) {
-      AppLogger.error('字幕导入失败', e);
+      AppLogger.error(LogStrings.logSubtitleImportFailed, e);
       return const ImportResponse(ImportResult.ioError);
     }
   }
@@ -170,7 +171,7 @@ class SubtitleImportService {
     try {
       final file = File(filePath);
       if (!await file.exists()) {
-        AppLogger.warning('本地字幕文件不存在: $filePath');
+        AppLogger.warning(LogStrings.logLocalSubtitleFileMissingFile59c5c(filePath));
         return null;
       }
       final content = await file.readAsString();
@@ -179,7 +180,7 @@ class SubtitleImportService {
       final subtitleList = parser.parse(content);
       return subtitleList.subtitles.isNotEmpty ? subtitleList : null;
     } catch (e) {
-      AppLogger.error('加载本地字幕失败', e);
+      AppLogger.error(LogStrings.logLoadLocalSubtitleFailed5afd7, e);
       return null;
     }
   }
@@ -194,7 +195,7 @@ class SubtitleImportService {
       final entry = await _repository.find(workId, fileName);
       filePath = entry?.subtitlePath;
     } catch (e) {
-      AppLogger.error('查询待移除字幕关联失败', e);
+      AppLogger.error(LogStrings.logQueryRemovesubtitleFailed292b7, e);
     }
 
     var dbRemoved = false;
@@ -202,7 +203,7 @@ class SubtitleImportService {
       await _repository.remove(workId, fileName);
       dbRemoved = true;
     } catch (e) {
-      AppLogger.error('移除字幕 DB 关联失败（一致性关键），保留本地文件以免产生指向缺失文件的失效行', e);
+      AppLogger.error(LogStrings.logRemoveSubtitleDbRowFailedKeea4675, e);
     }
 
     // 仅在 DB 行确实删除后才删本地文件：否则会留下"文件已删、DB 行还在"
@@ -212,11 +213,11 @@ class SubtitleImportService {
         final file = File(filePath);
         if (await file.exists()) await file.delete();
       } catch (e) {
-        AppLogger.warning('移除字幕本地文件失败（DB 关联已删，孤儿无害）: $e');
+        AppLogger.warning(LogStrings.logRemoveSubtitleFileFailedDbRoe5275(e));
       }
     }
     if (dbRemoved) {
-      AppLogger.debug('已移除导入字幕: $workId/$fileName');
+      AppLogger.debug(LogStrings.logRemovedImportedSubtitleWorkibd879(workId, fileName));
     }
   }
 

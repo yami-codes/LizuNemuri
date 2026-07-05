@@ -1,6 +1,7 @@
 import 'package:xuro/core/audio/models/subtitle.dart';
 import 'package:xuro/core/subtitle/parsers/subtitle_parser.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class LrcParser extends BaseSubtitleParser {
   static final _timeTagRegex = RegExp(r'\[(\d{2}):(\d{2})\.(\d{2})\]');
@@ -53,7 +54,7 @@ class LrcParser extends BaseSubtitleParser {
             index: subtitles.length,
           ));
         } catch (e) {
-          AppLogger.debug('解析LRC时间标签失败: $e');
+          AppLogger.debug(LogStrings.logLrcTimeTagParseFailedE0589e(e));
           continue;
         }
       }
@@ -72,7 +73,7 @@ class LrcParser extends BaseSubtitleParser {
       );
     }
     
-    AppLogger.debug('LRC解析完成: ${subtitles.length}条字幕, ${metadata.length}个元数据');
+    AppLogger.debug(LogStrings.logLrcParseCompleteSubtitlesLen8f25e(subtitles.length, metadata.length));
     return SubtitleList(subtitles);
   }
   

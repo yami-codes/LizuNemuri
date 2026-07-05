@@ -54,7 +54,7 @@ class LyricOverlayPlugin(private val context: Context) : MethodCallHandler {
             }
             "updateLyric" -> {
                 val arguments = call.arguments as? Map<*, *>
-                val text = arguments?.get("text") as? String ?: "无字幕"
+                val text = arguments?.get("text") as? String ?: ""
                 service?.showLyric(text)
                 result.success(null)
             }

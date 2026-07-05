@@ -7,6 +7,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:xuro/utils/logger.dart';
 import '../models/audio_track_info.dart';
 import '../audio_player_handler.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class AudioNotificationService {
   final AudioPlayer _player;
@@ -41,18 +42,18 @@ class AudioNotificationService {
 
       _audioHandler = await AudioService.init(
         builder: () => AudioPlayerHandler(_player, _eventHub),
-        config: const AudioServiceConfig(
+        config: AudioServiceConfig(
           androidNotificationChannelId: 'com.xuro.audio',
-          androidNotificationChannelName: 'ASMR One 播放器',
+          androidNotificationChannelName: LogStrings.logNotificationChannelName,
           androidNotificationOngoing: true,
           androidStopForegroundOnPause: true,
         ),
       );
 
       _setupEventListeners();
-      AppLogger.debug('通知栏服务初始化成功');
+      AppLogger.debug(LogStrings.logNotificationServiceInitializc2ef2);
     } catch (e) {
-      AppLogger.error('通知栏服务初始化失败', e);
+      AppLogger.error(LogStrings.logNotificationServiceInitFailef5f41, e);
       rethrow;
     }
   }

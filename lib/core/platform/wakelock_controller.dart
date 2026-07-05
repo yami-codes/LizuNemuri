@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:xuro/utils/logger.dart';
@@ -24,7 +25,7 @@ class WakeLockController extends ChangeNotifier {
       }
       notifyListeners();
     } catch (e) {
-      AppLogger.error('[$_tag] 加载状态失败', e);
+      AppLogger.error(LogStrings.logTagLoadStateFailedb0232(_tag), e);
     }
   }
 
@@ -39,7 +40,7 @@ class WakeLockController extends ChangeNotifier {
       await _prefs.setBool(_wakeLockKey, _enabled);
       notifyListeners();
     } catch (e) {
-      AppLogger.error('[$_tag] 切换状态失败', e);
+      AppLogger.error(LogStrings.logTagToggleStateFailed284fe(_tag), e);
       // 恢复状态
       _enabled = !_enabled;
       notifyListeners();
@@ -51,7 +52,7 @@ class WakeLockController extends ChangeNotifier {
     try {
       await WakelockPlus.disable();
     } catch (e) {
-      AppLogger.error('[$_tag] 释放失败', e);
+      AppLogger.error(LogStrings.logTagDisposeFailede13c8(_tag), e);
     }
     super.dispose();
   }

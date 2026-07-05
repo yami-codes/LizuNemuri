@@ -1,5 +1,8 @@
+import 'dart:ui' show Locale, PlatformDispatcher;
+
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xuro/core/settings/app_language.dart';
 
 /// Top-level accent color variants. Surfaces stay neutral (white/black) across
 /// all variants — only the `primary` token rotates. Persisted by
@@ -20,20 +23,22 @@ class AppSettingsService extends ChangeNotifier {
   // 跨多个列表 ViewModel 共享的「仅看带字幕作品」筛选。收敛到此单点，
   // 取代各 VM 自行 SharedPreferences.getInstance() + dispose 回写陈旧值。
   static const String _subtitleFilterKey = 'subtitle_filter';
+  static const String _appLanguageKey = 'app_language';
 
   static const String defaultServerUrl = 'https://api.asmr.one/api';
   static const ColorVariant defaultColorVariant = ColorVariant.blue;
+  static const AppLanguage defaultAppLanguage = AppLanguage.system;
   static const List<String> defaultAudioFormatOrder = [
     'mp3', 'flac', 'wav', 'opus', 'm4a', 'aac'
   ];
 
-  /// Available server options
-  static const Map<String, String> serverOptions = {
-    'https://api.asmr.one/api': '主站 (asmr.one)',
-    'https://api.asmr-100.com/api': '节点1 (asmr-100.com)',
-    'https://api.asmr-200.com/api': '节点2 (asmr-200.com)',
-    'https://api.asmr-300.com/api': '节点3 (asmr-300.com)',
-  };
+  /// Available API nodes (labels via [Strings.serverMain] etc. at UI layer).
+  static const List<String> serverUrls = [
+    defaultServerUrl,
+    'https://api.asmr-100.com/api',
+    'https://api.asmr-200.com/api',
+    'https://api.asmr-300.com/api',
+  ];
 
   final SharedPreferences _prefs;
 
@@ -44,6 +49,7 @@ class AppSettingsService extends ChangeNotifier {
   late bool _lyricOverlayUnlocked;
   late bool _backgroundPlayEnabled;
   late bool _hasSubtitleFilter;
+  late AppLanguage _appLanguage;
 
   AppSettingsService(this._prefs) {
     _serverUrl = _prefs.getString(_serverUrlKey) ?? defaultServerUrl;
@@ -58,6 +64,51 @@ class AppSettingsService extends ChangeNotifier {
     _lyricOverlayUnlocked = _prefs.getBool(_lyricOverlayUnlockedKey) ?? false;
     _backgroundPlayEnabled = _prefs.getBool(_backgroundPlayKey) ?? true;
     _hasSubtitleFilter = _prefs.getBool(_subtitleFilterKey) ?? false;
+    final savedLang = _prefs.getString(_appLanguageKey);
+    _appLanguage = AppLanguage.values.firstWhere(
+      (v) => v.name == savedLang,
+      orElse: () => defaultAppLanguage,
+    );
+  }
+
+  // === UI Language ===
+  AppLanguage get appLanguage => _appLanguage;
+
+  /// `null` → follow the OS locale in [MaterialApp].
+  Locale? get materialLocale {
+    switch (_appLanguage) {
+      case AppLanguage.system:
+        return null;
+      case AppLanguage.zh:
+        return const Locale('zh');
+      case AppLanguage.en:
+        return const Locale('en');
+      case AppLanguage.th:
+        return const Locale('th');
+    }
+  }
+
+  /// Concrete locale for [Strings] / API i18n when no [BuildContext] exists.
+  Locale get stringsLocale {
+    final forced = materialLocale;
+    if (forced != null) return forced;
+    return _normalizePlatformLocale(
+      PlatformDispatcher.instance.locale,
+    );
+  }
+
+  static Locale _normalizePlatformLocale(Locale locale) {
+    final code = locale.languageCode;
+    if (code == 'en' || code == 'th') return Locale(code);
+    if (code.startsWith('zh')) return const Locale('zh');
+    return const Locale('zh');
+  }
+
+  Future<void> setAppLanguage(AppLanguage language) async {
+    if (_appLanguage == language) return;
+    _appLanguage = language;
+    notifyListeners();
+    await _prefs.setString(_appLanguageKey, language.name);
   }
 
   // === Server URL ===

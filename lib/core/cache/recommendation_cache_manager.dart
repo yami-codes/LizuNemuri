@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'package:xuro/data/services/api_service.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class RecommendationCacheManager {
   // 单例模式
@@ -32,11 +33,11 @@ class RecommendationCacheManager {
     // 检查是否过期
     if (item.isExpired) {
       _cache.remove(key);
-      AppLogger.debug('缓存已过期: $key');
+      AppLogger.debug(LogStrings.logCacheExpiredKey3dbc2(key));
       return null;
     }
 
-    AppLogger.debug('命中缓存: $key');
+    AppLogger.debug(LogStrings.logCacheHitKeyebd0f(key));
     return item.data;
   }
 
@@ -50,19 +51,19 @@ class RecommendationCacheManager {
     }
 
     _cache[key] = _CacheItem(data);
-    AppLogger.debug('添加缓存: $key');
+    AppLogger.debug(LogStrings.logCacheAddKey26f96(key));
   }
 
   /// 清除所有缓存
   void clear() {
     _cache.clear();
-    AppLogger.debug('清除所有推荐缓存');
+    AppLogger.debug(LogStrings.logClearAllRecommendationCache6c408);
   }
 
   /// 移除指定作品的缓存
   void remove(String itemId) {
     _cache.removeWhere((key, _) => key.startsWith('$itemId-'));
-    AppLogger.debug('移除作品缓存: $itemId');
+    AppLogger.debug(LogStrings.logRemoveWorkCacheItemid82faf(itemId));
   }
 }
 

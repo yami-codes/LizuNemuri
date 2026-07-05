@@ -5,6 +5,7 @@ import 'package:xuro/core/subtitle/i_subtitle_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:xuro/core/subtitle/subtitle_loader.dart';
 import 'package:xuro/core/subtitle/managers/subtitle_state_manager.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 
 class SubtitleService implements ISubtitleService {
@@ -27,7 +28,7 @@ class SubtitleService implements ISubtitleService {
       final subtitleList = await _subtitleLoader.loadSubtitleContent(url);
       _stateManager.setSubtitleList(subtitleList);
     } catch (e) {
-      AppLogger.debug('字幕加载失败: $e');
+      AppLogger.debug(LogStrings.logSubtitleLoadFailedEfb464(e));
       clearSubtitle();
       rethrow;
     }

@@ -26,7 +26,7 @@ class LyricOverlayManager {
     await _controller.initialize();
     _subscription = _subtitleService.currentSubtitleStream.listen((subtitle) {
       if (_isShowing) {
-        _controller.updateLyric(subtitle?.text);
+        _controller.updateLyric(subtitle?.text ?? Strings.noLyrics);
       }
     });
     
@@ -54,9 +54,9 @@ class LyricOverlayManager {
     await _controller.show();
     _isShowing = true;
     final currentSubtitle = _subtitleService.currentSubtitleWithState;
-    if (currentSubtitle != null) {
-      await _controller.updateLyric(currentSubtitle.subtitle.text);
-    }
+    await _controller.updateLyric(
+      currentSubtitle?.subtitle.text ?? Strings.noLyrics,
+    );
     // 显示后统一以持久化偏好为准（锁定 / 解锁拖动）。
     await setEditable(_settings.lyricOverlayUnlocked);
   }
@@ -114,16 +114,16 @@ class LyricOverlayManager {
     return await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text(Strings.lyricOverlayPermTitle),
-        content: const Text(Strings.lyricOverlayPermContent),
+        title: Text(Strings.lyricOverlayPermTitle),
+        content: Text(Strings.lyricOverlayPermContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text(Strings.cancel),
+            child: Text(Strings.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text(Strings.dialogConfirm),
+            child: Text(Strings.dialogConfirm),
           ),
         ],
       ),

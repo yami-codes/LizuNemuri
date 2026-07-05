@@ -1,8 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:xuro/data/models/vas/voice_actor.dart';
 import 'package:xuro/data/services/api_service.dart';
+import 'package:xuro/utils/i18n_name_resolver.dart';
+import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:get_it/get_it.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class VoiceActorsViewModel extends ChangeNotifier {
   final ApiService _apiService = GetIt.I<ApiService>();
@@ -32,10 +35,10 @@ class VoiceActorsViewModel extends ChangeNotifier {
       _allVoiceActors = await _apiService.getVoiceActors();
       _allVoiceActors.sort((a, b) => (b.count ?? 0).compareTo(a.count ?? 0));
       _applyFilter();
-      AppLogger.info('声优列表加载成功: ${_allVoiceActors.length}个声优');
+      AppLogger.info(LogStrings.logVoiceActorsLoadedAllvoiceact8347d(_allVoiceActors.length));
     } catch (e) {
-      AppLogger.error('加载声优列表失败', e);
-      _error = e.toString();
+      AppLogger.error(LogStrings.logLoadVoiceActorsFailed, e);
+      _error = userFacingError(e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -55,7 +58,10 @@ class VoiceActorsViewModel extends ChangeNotifier {
       final lowerQuery = _searchQuery.toLowerCase();
       _filteredVoiceActors = _allVoiceActors.where((va) {
         final name = va.name?.toLowerCase() ?? '';
-        return name.contains(lowerQuery);
+        final localized = I18nNameResolver.searchableNames(va.i18n)
+            .map((n) => n.toLowerCase())
+            .any((n) => n.contains(lowerQuery));
+        return name.contains(lowerQuery) || localized;
       }).toList();
     }
   }

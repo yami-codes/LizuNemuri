@@ -3,7 +3,9 @@ import 'package:xuro/data/models/works/work.dart';
 import 'package:xuro/data/models/works/pagination.dart';
 import 'package:xuro/data/services/api_service.dart';
 import 'package:xuro/data/services/exceptions/network_exception.dart';
+import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 abstract class PaginatedWorksViewModel extends ChangeNotifier {
   final ApiService _apiService;
@@ -65,22 +67,22 @@ abstract class PaginatedWorksViewModel extends ChangeNotifier {
         response = _prefetchedResponse!;
         _prefetchedResponse = null;
         _prefetchedPage = null;
-        AppLogger.info('使用预加载数据: 第$page页$pageName');
+        AppLogger.info(LogStrings.logUsingPreloadedData(page.toString(), pageName));
       } else {
-        AppLogger.info('加载$pageName: 第$page页');
+        AppLogger.info(LogStrings.logLoadingPageName(pageName, page.toString()));
         response = await fetchPage(page);
       }
       _works = response.works;
       _pagination = response.pagination;
       _currentPage = page;
-      AppLogger.info('第$page页$pageName加载成功: ${response.works.length}个作品');
+      AppLogger.info(LogStrings.logPageWorksLoaded(page.toString(), pageName, response.works.length.toString()));
     } catch (e) {
-      AppLogger.error('加载$pageName失败', e);
+      AppLogger.error(LogStrings.logPageLoadFailed(pageName), e);
       if (e is NetworkException) {
         _error = e.userMessage;
         _isLoginError = e.isAuthError;
       } else {
-        _error = e.toString();
+        _error = userFacingError(e);
         _isLoginError = false;
       }
     } finally {
@@ -101,9 +103,9 @@ abstract class PaginatedWorksViewModel extends ChangeNotifier {
     fetchPage(nextPage).then((response) {
       _prefetchedResponse = response;
       _prefetchedPage = nextPage;
-      AppLogger.debug('预加载$pageName第$nextPage页完成');
+      AppLogger.debug(LogStrings.logPreloadDone(pageName, nextPage.toString()));
     }).catchError((e) {
-      AppLogger.debug('预加载$pageName第$nextPage页失败: $e');
+      AppLogger.debug(LogStrings.logPreloadFailed(pageName, nextPage.toString(), e.toString()));
     }).whenComplete(() {
       _isPrefetching = false;
     });
@@ -118,13 +120,13 @@ abstract class PaginatedWorksViewModel extends ChangeNotifier {
   // 刷新方法
   Future<void> refresh() async {
     _invalidatePrefetch();
-    AppLogger.info('刷新$pageName');
+    AppLogger.info(LogStrings.logRefreshingPagenamee3eb2(pageName));
     await loadPage(1);
   }
 
   @override
   void dispose() {
-    AppLogger.info('销毁$pageName ViewModel');
+    AppLogger.info(LogStrings.logDisposingPagenameViewmodelfc71e(pageName));
     super.dispose();
   }
 

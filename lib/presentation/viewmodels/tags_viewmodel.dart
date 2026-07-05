@@ -1,8 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:xuro/data/models/tags/tag_item.dart';
 import 'package:xuro/data/services/api_service.dart';
+import 'package:xuro/utils/i18n_name_resolver.dart';
+import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:get_it/get_it.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class TagsViewModel extends ChangeNotifier {
   final ApiService _apiService = GetIt.I<ApiService>();
@@ -32,10 +35,10 @@ class TagsViewModel extends ChangeNotifier {
       _allTags = await _apiService.getTags();
       _allTags.sort((a, b) => (b.count ?? 0).compareTo(a.count ?? 0));
       _applyFilter();
-      AppLogger.info('标签列表加载成功: ${_allTags.length}个标签');
+      AppLogger.info(LogStrings.logTagsLoadedAlltagsLengthTags7b78a(_allTags.length));
     } catch (e) {
-      AppLogger.error('加载标签列表失败', e);
-      _error = e.toString();
+      AppLogger.error(LogStrings.logLoadTagsFailed, e);
+      _error = userFacingError(e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -55,13 +58,10 @@ class TagsViewModel extends ChangeNotifier {
       final lowerQuery = _searchQuery.toLowerCase();
       _filteredTags = _allTags.where((tag) {
         final name = tag.name?.toLowerCase() ?? '';
-        final zhName = tag.i18n?.zhCn?.name?.toLowerCase() ?? '';
-        final enName = tag.i18n?.enUs?.name?.toLowerCase() ?? '';
-        final jaName = tag.i18n?.jaJp?.name?.toLowerCase() ?? '';
-        return name.contains(lowerQuery) ||
-            zhName.contains(lowerQuery) ||
-            enName.contains(lowerQuery) ||
-            jaName.contains(lowerQuery);
+        final localized = I18nNameResolver.searchableNames(tag.i18n)
+            .map((n) => n.toLowerCase())
+            .any((n) => n.contains(lowerQuery));
+        return name.contains(lowerQuery) || localized;
       }).toList();
     }
   }

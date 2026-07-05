@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 import 'package:xuro/core/audio/i_audio_player_service.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
@@ -41,7 +42,7 @@ class BackgroundPlayController with WidgetsBindingObserver {
     if (state != AppLifecycleState.paused) return;
     if (_settings.backgroundPlayEnabled) return;
     _audioService.pause().catchError(
-      (Object e) => AppLogger.error('[$_tag] 切后台暂停失败', e),
+      (Object e) => AppLogger.error(LogStrings.logTagBackgroundPauseFailed79342(_tag), e),
     );
   }
 }

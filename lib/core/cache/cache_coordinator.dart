@@ -3,6 +3,7 @@ import 'package:xuro/core/subtitle/cache/subtitle_cache_manager.dart';
 import 'package:xuro/core/image/cache/image_cache_manager.dart';
 import 'package:xuro/core/cache/recommendation_cache_manager.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 /// 统一缓存协调器
 /// 提供单一 API 查询、清理和清除所有应用缓存
@@ -27,23 +28,23 @@ class CacheCoordinator {
 
   /// 运行所有缓存的过期清理（自动维护用）
   Future<void> cleanAll() async {
-    AppLogger.info('开始统一缓存清理...');
+    AppLogger.info(LogStrings.logStartUnifiedCacheCleanup964c6);
     await AudioCacheManager.cleanCache();
     // SubtitleCacheManager 和 ImageCacheManager 使用 flutter_cache_manager 内置的过期策略
     _cleanRecommendationExpired();
-    AppLogger.info('统一缓存清理完成');
+    AppLogger.info(LogStrings.logUnifiedCacheCleanupDoneea48b);
   }
 
   /// 清除所有缓存数据（用户主动清理）
   Future<void> clearAll() async {
-    AppLogger.info('清除所有缓存...');
+    AppLogger.info(LogStrings.logClearingAllCache16985);
     await Future.wait([
       AudioCacheManager.clearAllCache(),
       SubtitleCacheManager.clearCache(),
       ImageCacheManager.clearCache(),
     ]);
     RecommendationCacheManager().clear();
-    AppLogger.info('所有缓存已清除');
+    AppLogger.info(LogStrings.logAllCacheCleared0da32);
   }
 
   void _cleanRecommendationExpired() {

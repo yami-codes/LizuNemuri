@@ -1,4 +1,5 @@
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 enum AudioErrorType {
   playback,    // 播放错误
@@ -42,15 +43,15 @@ class AudioErrorHandler {
   static String _getErrorMessage(AudioErrorType type, String operation) {
     switch (type) {
       case AudioErrorType.playback:
-        return '播放操作失败: $operation';
+        return LogStrings.logPlaybackOperationFailed(operation);
       case AudioErrorType.playlist:
-        return '播放列表操作失败: $operation';
+        return LogStrings.logPlaylistOperationFailed(operation);
       case AudioErrorType.state:
-        return '状态操作失败: $operation';
+        return LogStrings.logStateOperationFailed(operation);
       case AudioErrorType.context:
-        return '上下文操作失败: $operation';
+        return LogStrings.logContextOperationFailed(operation);
       case AudioErrorType.init:
-        return '初始化失败: $operation';
+        return LogStrings.logInitOperationFailed(operation);
     }
   }
 } 

@@ -1,316 +1,294 @@
+import 'dart:ui' show Locale;
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:xuro/core/di/service_locator.dart';
+import 'package:xuro/core/settings/app_settings_service.dart';
+
+/// Central UI copy — backed by generated [AppLocalizations].
 class Strings {
-  // App
-  static const String appName = 'asmr.one';
+  Strings._();
 
-  // Common
-  static const String loading = '加载中...';
-  static const String error = '出错了';
-  static const String retry = '重试';
-  static const String cancel = '取消';
-  static const String confirm = '确认';
-
-  // Error prompts — connection & login state
-  static const String networkVpnHint = '请先连接 VPN 服务';
-  static const String loginRequired = '请先登录';
-  static const String goLogin = '去登录';
-
-  // Home
-  static const String search = '搜索';
-  static const String homeSearchHint = '搜索你喜欢的声音...';
-  static const String musicList = '音乐列表将在这里显示';
-
-  // Player
-  static const String nowPlaying = '正在播放';
-  static const String playerPlaceholder = '播放器控件将在这里显示';
-  static const String notPlaying = '未在播放';
-  static const String unknownWork = '未知作品';
-  static const String unknownArtist = '未知演员';
-  static const String noLyrics = '无歌词';
-  static const String screenAwakeOn = '开启屏幕常亮';
-  static const String screenAwakeOff = '关闭屏幕常亮';
-  static const String playerSeekBack10 = '快退 10 秒';
-  static const String playerPrevTrack = '上一曲';
-  static const String playerNextTrack = '下一曲';
-  static const String playerSeekForward10 = '快进 10 秒';
-
-  // Main tabs / navigation
-  static const String navRecommend = '推荐';
-  static const String navPopular = '热门';
-  static const String tabFavorites = '收藏';
-  static const String homeTitleRecommend = '为你推荐';
-  static const String homeTitlePopular = '热门作品';
-
-  // Similar works
-  static const String similarWorks = '相关推荐';
-
-  // Cache manager
-  static const String audioCache = '音频缓存';
-  static const String subtitleCache = '字幕缓存';
-  static const String imageCache = '图片缓存';
-  static const String totalCacheSize = '总缓存大小';
-  static const String cacheClean = '清理';
-  static const String cacheCleanAll = '清理全部';
-  static const String cacheExplainTitle = '缓存说明';
-  static const String cacheExplainBody =
-      '缓存用于存储最近播放的音频文件、字幕文件和图片，以提高加载速度。'
-      '清理全部会同时清除所有类型的缓存数据。';
-
-  // Search — sort labels & states
-  static const String sortLatest = '最新收录';
-  static const String sortOldest = '最早收录';
-  static const String sortReleaseDesc = '发售日期倒序';
-  static const String sortReleaseAsc = '发售日期顺序';
-  static const String sortSalesDesc = '销量倒序';
-  static const String sortSalesAsc = '销量顺序';
-  static const String sortPriceDesc = '价格倒序';
-  static const String sortPriceAsc = '价格顺序';
-  static const String sortRatingDesc = '评价倒序';
-  static const String sortReviewDesc = '评论数量倒序';
-  static const String sortRjDesc = 'RJ号倒序';
-  static const String sortRjAsc = 'RJ号顺序';
-  static const String sortRandom = '随机排序';
-  static const String sortLabel = '排序';
-  static const String searchInputHint = '搜索...';
-  static const String searchEmptyPrompt = '输入关键词开始搜索';
-  static const String searchNoResults = '没有找到相关结果';
-  static const String subtitleChip = '字幕';
-
-  // Browse — tags / voice actors / circles
-  static const String browseAllTags = '全部标签';
-  static const String browseAllVoiceActors = '全部声优';
-  static const String browseAllCircles = '全部社团';
-  static const String browseSearchTagsHint = '搜索标签...';
-  static const String browseSearchVoiceActorsHint = '搜索声优...';
-  static const String browseSearchCirclesHint = '搜索社团...';
-  static const String loadFailed = '加载失败';
-  static const String browseEmptyTags = '暂无标签';
-  static const String browseEmptyVoiceActors = '暂无声优';
-  static const String browseEmptyCircles = '暂无社团';
-
-  // Auth / dialogs
-  static const String loginAction = '登录';
-  static const String dialogHint = '提示';
-  static const String confirmLogout = '确认退出登录？';
-  static const String logout = '退出登录';
-  static const String a11yUserAccount = '用户账户';
-
-  // Audio format order dialog
-  static const String audioFormatHint = '拖拽调整优先级，排在前面的格式优先播放';
-  static const String reset = '重置';
-  static const String save = '保存';
-
-  // Filter panel — order fields & direction
-  static const String filterOrderCreateDate = '收录时间';
-  static const String filterOrderRelease = '发售日期';
-  static const String filterOrderSales = '销量';
-  static const String filterOrderPrice = '价格';
-  static const String filterOrderRating = '评价';
-  static const String filterOrderReview = '评论数量';
-  static const String filterOrderRj = 'RJ号';
-  static const String filterOrderMyRating = '我的评价';
-  static const String filterOrderAllAges = '全年龄';
-  static const String filterOrderRandom = '随机';
-  static const String filterOrderDefault = '排序';
-  static const String hasSubtitle = '有字幕';
-  static const String sortDescending = '降序';
-  static const String sortAscending = '升序';
-
-  // Work action buttons
-  static const String actionFavorite = '收藏';
-  static const String actionMark = '标记';
-  static const String actionRate = '评分';
-  static const String actionChecking = '检查中';
-  static const String actionNoRecommend = '暂无推荐';
-
-  // Detail / files
-  static const String fileList = '文件列表';
-  static const String downloadToLocalTooltip = '下载到本地（离线播放）';
-  static const String gridEmpty = '暂无内容';
-  static const String noWorks = '暂无作品';
-
-  // Playlist
-  static const String addToPlaylist = '添加到收藏夹';
-  static const String playlistEmpty = '暂无收藏夹';
-  static const String playlistMarked = '我标记的';
-  static const String playlistLiked = '我喜欢的';
-  static String worksCountLabel(int n) => '$n 个作品';
-  static String playlistToggleResult(bool added, String name) =>
-      '${added ? '添加成功' : '移除成功'}: $name';
-
-  // Lyric overlay permission dialog
-  static const String lyricOverlayPermTitle = '开启悬浮歌词';
-  static const String lyricOverlayPermContent = '需要悬浮窗权限来显示歌词，是否授予权限？';
-  static const String dialogConfirm = '确定';
-
-  // Detail SnackBars (interpolated)
-  static String playFailed(Object e) => '播放失败: $e';
-  static String operationFailed(Object e) => '操作失败: $e';
-  static String markedAs(String label) => '已标记为$label';
-  static String markFailed(Object e) => '标记失败: $e';
-
-  // Detail
-  static const String detail = '音乐详情';
-  static const String detailPlaceholder = '音乐详细信息将在这里显示';
-
-  // Subtitle Import
-  static const String importSubtitle = '导入字幕文件';
-  static const String removeImportedSubtitle = '移除导入字幕';
-  static const String importSuccess = '字幕导入成功';
-  static const String importInvalidFormat = '不支持的字幕格式（仅支持 .vtt/.lrc）';
-  static const String importFileTooLarge = '文件过大（最大 5MB）';
-  static const String importParseFailed = '字幕解析失败，请检查文件内容';
-  static const String importIoError = '文件读取失败';
-  static const String subtitleRemoved = '已移除导入字幕';
-
-  // Batch / folder download
-  static const String downloadAllTooltip = '下载全部（含字幕）';
-  static const String batchDownloadTitle = '批量下载';
-  static const String batchDownloadEmpty = '该目录下没有可下载的音频';
-  static const String batchDownloadCancelled = '已取消批量下载';
-  static String batchDownloadConfirm(int audioCount) =>
-      '将顺序下载 $audioCount 个音频（含匹配字幕），是否继续？';
-  static String batchDownloadProgress(int index, int total, String name) =>
-      '正在下载 $index/$total：$name';
-  static String batchDownloadSummary(int ok, int skipped, int failed) =>
-      '下载完成：成功 $ok，已存在 $skipped，失败 $failed';
-
-  // Subtitle preview
-  static const String subtitlePreviewTitle = '字幕预览';
-  static const String subtitlePreviewLoading = '正在加载字幕...';
-  static const String subtitlePreviewEmpty = '该字幕没有可显示的内容';
-  static const String subtitlePreviewError = '字幕加载失败';
-  static const String subtitlePreviewRawNotice = '无法按时间轴解析，显示原始内容';
-
-  // Drawer
-  static const String home = '主页';
-  static const String favorites = '我的收藏';
-  static const String settings = '设置';
-  static const String drawerSectionContent = '内容';
-  static const String drawerSectionDiscover = '发现';
-  static const String drawerSectionSystem = '系统';
-  static const String recentPlay = '最近播放';
-  static const String tags = '标签';
-  static const String circles = '社团';
-  static const String voiceActors = '声优';
-  static const String ranking = '排行榜';
-  static const String darkModeMenu = '深色模式';
-  static const String aboutUs = '关于我们';
-  static const String comingSoon = '敬请期待';
-  static const String loginCta = '立即登录';
-  static const String loginCtaSubtitle = '同步收藏与记录';
-  static const String loggedInFallback = '已登录';
-  static const String loggedInSubtitle = '点击管理账户';
-  static const String themeModeLight = '浅色';
-  static const String themeModeDark = '深色';
-  static const String themeModeSystem = '系统';
-
-  // Settings sections
-  static const String appearance = '外观';
-  static const String network = '网络';
-  static const String content = '内容';
-  static const String playback = '播放';
-  static const String storage = '存储';
-  static const String about = '关于';
-
-  // Settings items
-  static const String followSystem = '跟随系统';
-  static const String lightMode = '浅色模式';
-  static const String darkMode = '深色模式';
-  static const String smartPath = '智能路径';
-  static const String smartPathDesc = '打开作品后，自动展开包含音频的文件夹';
-  static const String audioFormatPreference = '音频格式偏好';
-  static const String screenKeepAwake = '屏幕常亮';
-  static const String screenKeepAwakeDesc = '播放时保持屏幕开启';
-  static const String sleepTimer = '睡眠定时';
-  static const String sleepTimerOff = '关闭';
-  static String sleepTimerMinutes(int m) => '$m 分钟';
-  static const String backgroundPlay = '后台播放';
-  static const String backgroundPlayDesc = '关闭后切到后台自动暂停播放';
-  static const String cacheManager = '缓存管理';
-  static const String themeAutoDesc = '自动切换深浅色模式';
-
-  // About section
-  static const String aboutAppName = 'Xuro';
-  static const String aboutAppDescription =
-      'Xuro 是一个第三方 ASMR.ONE 客户端，支持后台播放、字幕/悬浮歌词、播放列表与缓存。基于 CC BY-NC-SA 协议开源。';
-  static const String versionLabel = '版本';
-  static const String aboutFooter = '© Xuro · 基于 CC BY-NC-SA 4.0 开源';
-  static const String versionInfo = '版本信息';
-  static const String openSourceLicenses = '开源许可';
-  static const String feedback = '问题反馈';
-  static const String sourceCode = '源代码';
-  static const String cannotOpenLink = '无法打开链接';
   static const String feedbackUrl = 'https://github.com/WuMe-sicx/Xuro/issues';
   static const String repoUrl = 'https://github.com/WuMe-sicx/Xuro';
-  static const String originalRepo = '原作者仓库';
   static const String originalRepoUrl = 'https://github.com/asmroneapp/Yuro';
-  static const String telegramChannel = 'Telegram 频道';
   static const String telegramChannelUrl = 'https://t.me/XuroAsmr';
 
-  // Update checking
-  static const String checkForUpdates = '检查更新';
-  static const String updateChecking = '正在检查更新...';
-  static const String updateUpToDate = '已是最新版本';
-  static const String updateNewVersionTitle = '发现新版本';
-  static const String updateDownload = '立即下载';
-  static const String updateLater = '稍后';
-  static const String updateOk = '好的';
-  static const String updateCurrentVersionLabel = '当前版本';
-  static const String updateErrorNetwork = '网络连接失败，请检查网络后重试';
-  static const String updateErrorRateLimited = 'GitHub 请求过于频繁，请稍后再试';
-  static const String updateErrorNotFound = '未找到发布信息';
-  static const String updateErrorNoRelease = '暂无可用发布';
-  static const String updateErrorInvalidPayload = '发布信息解析失败';
-  static const String updateErrorUnknown = '检查更新失败，请稍后再试';
+  static AppLocalizations get _l10n {
+    try {
+      return lookupAppLocalizations(getIt<AppSettingsService>().stringsLocale);
+    } catch (_) {
+      return lookupAppLocalizations(const Locale('zh'));
+    }
+  }
 
-  // Auth — register
-  static const String register = '注册';
-  static const String registerTitle = '注册账号';
-  static const String registerCta = '没有账号？去注册';
-  static const String haveAccountCta = '已有账号？去登录';
-  static const String username = '用户名';
-  static const String password = '密码';
-  static const String passwordConfirm = '确认密码';
-  static const String nameTooShort = '用户名至少 5 位';
-  static const String passwordTooShort = '密码至少 5 位';
-  static const String passwordMismatch = '两次输入的密码不一致';
-  static const String registerSuccess = '注册成功，已自动登录';
-  static const String registerOkButLoginFailed =
-      '注册成功，但自动登录失败，请用刚才的账号密码登录';
+  static String get a11yUserAccount => _l10n.a11yUserAccount;
+  static String get about => _l10n.about;
+  static String get aboutAppDescription => _l10n.aboutAppDescription;
+  static String get aboutAppName => _l10n.aboutAppName;
+  static String get aboutFooter => _l10n.aboutFooter;
+  static String get aboutUs => _l10n.aboutUs;
+  static String get actionChecking => _l10n.actionChecking;
+  static String get actionFavorite => _l10n.actionFavorite;
+  static String get actionMark => _l10n.actionMark;
+  static String get actionNoRecommend => _l10n.actionNoRecommend;
+  static String get actionRate => _l10n.actionRate;
+  static String get addToPlaylist => _l10n.addToPlaylist;
+  static String get appName => _l10n.appName;
+  static String get appearance => _l10n.appearance;
+  static String get audioCache => _l10n.audioCache;
+  static String get audioDownloadPrompt => _l10n.audioDownloadPrompt;
+  static String get audioDownloadTitle => _l10n.audioDownloadTitle;
+  static String get audioFormatHint => _l10n.audioFormatHint;
+  static String get audioFormatPreference => _l10n.audioFormatPreference;
+  static String get backgroundPlay => _l10n.backgroundPlay;
+  static String get backgroundPlayDesc => _l10n.backgroundPlayDesc;
+  static String get batchDownloadCancelled => _l10n.batchDownloadCancelled;
+  static String get batchDownloadEmpty => _l10n.batchDownloadEmpty;
+  static String get batchDownloadTitle => _l10n.batchDownloadTitle;
+  static String get browseAllCircles => _l10n.browseAllCircles;
+  static String get browseAllTags => _l10n.browseAllTags;
+  static String get browseAllVoiceActors => _l10n.browseAllVoiceActors;
+  static String get browseEmptyCircles => _l10n.browseEmptyCircles;
+  static String get browseEmptyTags => _l10n.browseEmptyTags;
+  static String get browseEmptyVoiceActors => _l10n.browseEmptyVoiceActors;
+  static String get browseSearchCirclesHint => _l10n.browseSearchCirclesHint;
+  static String get browseSearchTagsHint => _l10n.browseSearchTagsHint;
+  static String get browseSearchVoiceActorsHint => _l10n.browseSearchVoiceActorsHint;
+  static String get cacheClean => _l10n.cacheClean;
+  static String get cacheCleanAll => _l10n.cacheCleanAll;
+  static String get cacheExplainBody => _l10n.cacheExplainBody;
+  static String get cacheExplainTitle => _l10n.cacheExplainTitle;
+  static String get cacheManager => _l10n.cacheManager;
+  static String get cancel => _l10n.cancel;
+  static String get cannotOpenLink => _l10n.cannotOpenLink;
+  static String get checkForUpdates => _l10n.checkForUpdates;
+  static String get circles => _l10n.circles;
+  static String get colorVariantBlue => _l10n.colorVariantBlue;
+  static String get colorVariantDesc => _l10n.colorVariantDesc;
+  static String get colorVariantGreen => _l10n.colorVariantGreen;
+  static String get colorVariantMono => _l10n.colorVariantMono;
+  static String get colorVariantTitle => _l10n.colorVariantTitle;
+  static String get comingSoon => _l10n.comingSoon;
+  static String get confirm => _l10n.confirm;
+  static String get confirmLogout => _l10n.confirmLogout;
+  static String get content => _l10n.content;
+  static String get darkMode => _l10n.darkMode;
+  static String get darkModeMenu => _l10n.darkModeMenu;
+  static String get detail => _l10n.detail;
+  static String get detailPlaceholder => _l10n.detailPlaceholder;
+  static String get dialogConfirm => _l10n.dialogConfirm;
+  static String get dialogHint => _l10n.dialogHint;
+  static String get downloadAllTooltip => _l10n.downloadAllTooltip;
+  static String get downloadCancel => _l10n.downloadCancel;
+  static String get downloadCancelled => _l10n.downloadCancelled;
+  static String get downloadConfirm => _l10n.downloadConfirm;
+  static String get downloadIoError => _l10n.downloadIoError;
+  static String get downloadNetworkError => _l10n.downloadNetworkError;
+  static String get downloadOpenFailed => _l10n.downloadOpenFailed;
+  static String get downloadSuccess => _l10n.downloadSuccess;
+  static String get downloadToLocalTooltip => _l10n.downloadToLocalTooltip;
+  static String get downloading => _l10n.downloading;
+  static String get drawerSectionContent => _l10n.drawerSectionContent;
+  static String get drawerSectionDiscover => _l10n.drawerSectionDiscover;
+  static String get drawerSectionSystem => _l10n.drawerSectionSystem;
+  static String get error => _l10n.error;
+  static String get favorites => _l10n.favorites;
+  static String get feedback => _l10n.feedback;
+  static String get fileList => _l10n.fileList;
+  static String get filterOrderAllAges => _l10n.filterOrderAllAges;
+  static String get filterOrderCreateDate => _l10n.filterOrderCreateDate;
+  static String get filterOrderDefault => _l10n.filterOrderDefault;
+  static String get filterOrderMyRating => _l10n.filterOrderMyRating;
+  static String get filterOrderPrice => _l10n.filterOrderPrice;
+  static String get filterOrderRandom => _l10n.filterOrderRandom;
+  static String get filterOrderRating => _l10n.filterOrderRating;
+  static String get filterOrderRelease => _l10n.filterOrderRelease;
+  static String get filterOrderReview => _l10n.filterOrderReview;
+  static String get filterOrderRj => _l10n.filterOrderRj;
+  static String get filterOrderSales => _l10n.filterOrderSales;
+  static String get followSystem => _l10n.followSystem;
+  static String get goLogin => _l10n.goLogin;
+  static String get gridEmpty => _l10n.gridEmpty;
+  static String get hasSubtitle => _l10n.hasSubtitle;
+  static String get haveAccountCta => _l10n.haveAccountCta;
+  static String get home => _l10n.home;
+  static String get homeSearchHint => _l10n.homeSearchHint;
+  static String get homeTitlePopular => _l10n.homeTitlePopular;
+  static String get homeTitleRecommend => _l10n.homeTitleRecommend;
+  static String get imageCache => _l10n.imageCache;
+  static String get importFileTooLarge => _l10n.importFileTooLarge;
+  static String get importInvalidFormat => _l10n.importInvalidFormat;
+  static String get importIoError => _l10n.importIoError;
+  static String get importParseFailed => _l10n.importParseFailed;
+  static String get importSubtitle => _l10n.importSubtitle;
+  static String get importSuccess => _l10n.importSuccess;
+  static String get languageChinese => _l10n.languageChinese;
+  static String get languageEnglish => _l10n.languageEnglish;
+  static String get languageSystem => _l10n.languageSystem;
+  static String get languageThai => _l10n.languageThai;
+  static String get languageTitle => _l10n.languageTitle;
+  static String get lightMode => _l10n.lightMode;
+  static String get loadFailed => _l10n.loadFailed;
+  static String get loading => _l10n.loading;
+  static String get loggedInFallback => _l10n.loggedInFallback;
+  static String get loggedInSubtitle => _l10n.loggedInSubtitle;
+  static String get loginAction => _l10n.loginAction;
+  static String get loginCta => _l10n.loginCta;
+  static String get loginCtaSubtitle => _l10n.loginCtaSubtitle;
+  static String get loginRequired => _l10n.loginRequired;
+  static String get logout => _l10n.logout;
+  static String get lyricOverlayEditEntered => _l10n.lyricOverlayEditEntered;
+  static String get lyricOverlayEditExited => _l10n.lyricOverlayEditExited;
+  static String get lyricOverlayEnterFirstHint => _l10n.lyricOverlayEnterFirstHint;
+  static String get lyricOverlayPermContent => _l10n.lyricOverlayPermContent;
+  static String get lyricOverlayPermTitle => _l10n.lyricOverlayPermTitle;
+  static String get lyricOverlaySection => _l10n.lyricOverlaySection;
+  static String get lyricOverlayTooltipEnable => _l10n.lyricOverlayTooltipEnable;
+  static String get lyricOverlayTooltipExitEdit => _l10n.lyricOverlayTooltipExitEdit;
+  static String get lyricOverlayTooltipLongPressHint => _l10n.lyricOverlayTooltipLongPressHint;
+  static String get lyricOverlayUnlockDesc => _l10n.lyricOverlayUnlockDesc;
+  static String get lyricOverlayUnlockTitle => _l10n.lyricOverlayUnlockTitle;
+  static String get musicList => _l10n.musicList;
+  static String get nameTooShort => _l10n.nameTooShort;
+  static String get navPopular => _l10n.navPopular;
+  static String get navRecommend => _l10n.navRecommend;
+  static String get network => _l10n.network;
+  static String get networkVpnHint => _l10n.networkVpnHint;
+  static String get noLyrics => _l10n.noLyrics;
+  static String get noWorks => _l10n.noWorks;
+  static String get notPlaying => _l10n.notPlaying;
+  static String get nowPlaying => _l10n.nowPlaying;
+  static String get openSourceLicenses => _l10n.openSourceLicenses;
+  static String get originalRepo => _l10n.originalRepo;
+  static String get password => _l10n.password;
+  static String get passwordConfirm => _l10n.passwordConfirm;
+  static String get passwordMismatch => _l10n.passwordMismatch;
+  static String get passwordTooShort => _l10n.passwordTooShort;
+  static String get playback => _l10n.playback;
+  static String get playerNextTrack => _l10n.playerNextTrack;
+  static String get playerPlaceholder => _l10n.playerPlaceholder;
+  static String get playerPrevTrack => _l10n.playerPrevTrack;
+  static String get playerSeekBack10 => _l10n.playerSeekBack10;
+  static String get playerSeekForward10 => _l10n.playerSeekForward10;
+  static String get playlistEmpty => _l10n.playlistEmpty;
+  static String get playlistLiked => _l10n.playlistLiked;
+  static String get playlistMarked => _l10n.playlistMarked;
+  static String get ranking => _l10n.ranking;
+  static String get recentPlay => _l10n.recentPlay;
+  static String get register => _l10n.register;
+  static String get registerCta => _l10n.registerCta;
+  static String get registerOkButLoginFailed => _l10n.registerOkButLoginFailed;
+  static String get registerSuccess => _l10n.registerSuccess;
+  static String get registerTitle => _l10n.registerTitle;
+  static String get removeImportedSubtitle => _l10n.removeImportedSubtitle;
+  static String get reset => _l10n.reset;
+  static String get retry => _l10n.retry;
+  static String get save => _l10n.save;
+  static String get screenAwakeOff => _l10n.screenAwakeOff;
+  static String get screenAwakeOn => _l10n.screenAwakeOn;
+  static String get screenKeepAwake => _l10n.screenKeepAwake;
+  static String get screenKeepAwakeDesc => _l10n.screenKeepAwakeDesc;
+  static String get search => _l10n.search;
+  static String get searchEmptyPrompt => _l10n.searchEmptyPrompt;
+  static String get searchInputHint => _l10n.searchInputHint;
+  static String get searchNoResults => _l10n.searchNoResults;
+  static String get serverMain => _l10n.serverMain;
+  static String get serverNode1 => _l10n.serverNode1;
+  static String get serverNode2 => _l10n.serverNode2;
+  static String get serverNode3 => _l10n.serverNode3;
+  static String get settings => _l10n.settings;
+  static String get similarWorks => _l10n.similarWorks;
+  static String get sleepTimer => _l10n.sleepTimer;
+  static String get sleepTimerOff => _l10n.sleepTimerOff;
+  static String get smartPath => _l10n.smartPath;
+  static String get smartPathDesc => _l10n.smartPathDesc;
+  static String get sortAscending => _l10n.sortAscending;
+  static String get sortDescending => _l10n.sortDescending;
+  static String get sortLabel => _l10n.sortLabel;
+  static String get sortLatest => _l10n.sortLatest;
+  static String get sortOldest => _l10n.sortOldest;
+  static String get sortPriceAsc => _l10n.sortPriceAsc;
+  static String get sortPriceDesc => _l10n.sortPriceDesc;
+  static String get sortRandom => _l10n.sortRandom;
+  static String get sortRatingDesc => _l10n.sortRatingDesc;
+  static String get sortReleaseAsc => _l10n.sortReleaseAsc;
+  static String get sortReleaseDesc => _l10n.sortReleaseDesc;
+  static String get sortReviewDesc => _l10n.sortReviewDesc;
+  static String get sortRjAsc => _l10n.sortRjAsc;
+  static String get sortRjDesc => _l10n.sortRjDesc;
+  static String get sortSalesAsc => _l10n.sortSalesAsc;
+  static String get sortSalesDesc => _l10n.sortSalesDesc;
+  static String get sourceCode => _l10n.sourceCode;
+  static String get storage => _l10n.storage;
+  static String get subtitleCache => _l10n.subtitleCache;
+  static String get subtitleChip => _l10n.subtitleChip;
+  static String get subtitlePreviewEmpty => _l10n.subtitlePreviewEmpty;
+  static String get subtitlePreviewError => _l10n.subtitlePreviewError;
+  static String get subtitlePreviewLoading => _l10n.subtitlePreviewLoading;
+  static String get subtitlePreviewRawNotice => _l10n.subtitlePreviewRawNotice;
+  static String get subtitlePreviewTitle => _l10n.subtitlePreviewTitle;
+  static String get subtitleRemoved => _l10n.subtitleRemoved;
+  static String get tabFavorites => _l10n.tabFavorites;
+  static String get tags => _l10n.tags;
+  static String get telegramChannel => _l10n.telegramChannel;
+  static String get themeAutoDesc => _l10n.themeAutoDesc;
+  static String get themeModeDark => _l10n.themeModeDark;
+  static String get themeModeLight => _l10n.themeModeLight;
+  static String get themeModeSystem => _l10n.themeModeSystem;
+  static String get totalCacheSize => _l10n.totalCacheSize;
+  static String get unknownArtist => _l10n.unknownArtist;
+  static String get unknownWork => _l10n.unknownWork;
+  static String get unsupportedFileType => _l10n.unsupportedFileType;
+  static String get updateChecking => _l10n.updateChecking;
+  static String get updateCurrentVersionLabel => _l10n.updateCurrentVersionLabel;
+  static String get updateDownload => _l10n.updateDownload;
+  static String get updateErrorInvalidPayload => _l10n.updateErrorInvalidPayload;
+  static String get updateErrorNetwork => _l10n.updateErrorNetwork;
+  static String get updateErrorNoRelease => _l10n.updateErrorNoRelease;
+  static String get updateErrorNotFound => _l10n.updateErrorNotFound;
+  static String get updateErrorRateLimited => _l10n.updateErrorRateLimited;
+  static String get updateErrorUnknown => _l10n.updateErrorUnknown;
+  static String get updateLater => _l10n.updateLater;
+  static String get updateNewVersionTitle => _l10n.updateNewVersionTitle;
+  static String get updateOk => _l10n.updateOk;
+  static String get updateUpToDate => _l10n.updateUpToDate;
+  static String get username => _l10n.username;
+  static String get versionInfo => _l10n.versionInfo;
+  static String get versionLabel => _l10n.versionLabel;
+  static String get videoNeedsDownloadPrompt => _l10n.videoNeedsDownloadPrompt;
+  static String get videoNeedsDownloadTitle => _l10n.videoNeedsDownloadTitle;
+  static String get voiceActors => _l10n.voiceActors;
+  static String get markStatusTitle => _l10n.markStatusTitle;
+  static String get markWantToListen => _l10n.markWantToListen;
+  static String get markListening => _l10n.markListening;
+  static String get markListened => _l10n.markListened;
+  static String get markRelistening => _l10n.markRelistening;
+  static String get markOnHold => _l10n.markOnHold;
+  static String get cacheLoadFailed => _l10n.cacheLoadFailed;
+  static String get cacheCleanFailed => _l10n.cacheCleanFailed;
+  static String get networkErrorGeneric => _l10n.networkErrorGeneric;
+  static String get networkErrorCancelled => _l10n.networkErrorCancelled;
+  static String get networkErrorServer => _l10n.networkErrorServer;
+  static String get networkErrorClient => _l10n.networkErrorClient;
+  static String get loginFailedGeneric => _l10n.loginFailedGeneric;
+  static String get registerFailedGeneric => _l10n.registerFailedGeneric;
+  static String unsupportedVideoFile(String title) =>
+      _l10n.unsupportedVideoFile(title);
+  static String get fileUrlMissing => _l10n.fileUrlMissing;
+  static String get fileListNotLoaded => _l10n.fileListNotLoaded;
 
-  // Settings — color variant
-  static const String colorVariantTitle = '主色调';
-  static const String colorVariantDesc = '切换 App 主色，深色 / 浅色模式独立生效';
-  static const String colorVariantBlue = '蓝';
-  static const String colorVariantMono = '黑';
-  static const String colorVariantGreen = '绿';
+  static String playlistToggleResult(bool added, String name) =>
+      added ? _l10n.playlistToggleResultAdded(name) : _l10n.playlistToggleResultRemoved(name);
 
-  // Settings — floating lyric overlay
-  static const String lyricOverlaySection = '悬浮歌词';
-  static const String lyricOverlayUnlockTitle = '解锁悬浮歌词位置';
-  static const String lyricOverlayUnlockDesc =
-      '开启后可在悬浮歌词显示时上下拖动调整位置；关闭则锁定并点穿下层界面';
-
-  // Floating lyric overlay
-  static const String lyricOverlayTooltipEnable = '开启悬浮歌词';
-  static const String lyricOverlayTooltipLongPressHint = '长按调整悬浮歌词位置';
-  static const String lyricOverlayTooltipExitEdit = '退出调整模式';
-  static const String lyricOverlayEnterFirstHint = '请先开启悬浮歌词，再长按此按钮调整位置';
-  static const String lyricOverlayEditEntered = '已进入调整模式：上下拖动悬浮歌词；再次长按退出';
-  static const String lyricOverlayEditExited = '已退出调整模式，悬浮歌词恢复点穿';
-
-  // 本地下载 / 离线 / 视频
-  static const String videoNeedsDownloadTitle = '播放视频';
-  static const String videoNeedsDownloadPrompt = '打开该视频需要下载到本地磁盘，是否同意？';
-  static const String downloadConfirm = '下载';
-  static const String downloadCancel = '取消';
-  static const String downloading = '正在下载...';
-  static const String downloadSuccess = '下载完成';
-  static const String downloadOpenFailed = '无法打开文件，请确认已安装可播放的应用';
-  static const String downloadCancelled = '已取消下载';
-  static const String downloadNetworkError = '下载失败，请检查网络（asmr.one 需连接 VPN）';
-  static const String downloadIoError = '下载失败，文件写入错误';
-  static const String unsupportedFileType = '暂不支持的文件类型';
-  static const String audioDownloadTitle = '下载音频';
-  static const String audioDownloadPrompt = '将该音频下载到本地磁盘以便离线播放？';
+  static String batchDownloadConfirm(int count) => _l10n.batchDownloadConfirm(count);
+  static String batchDownloadProgress(int index, int total, String name) => _l10n.batchDownloadProgress(index, total, name);
+  static String batchDownloadSummary(int ok, int skipped, int failed) => _l10n.batchDownloadSummary(ok, skipped, failed);
+  static String markFailed(Object error) => _l10n.markFailed(error.toString());
+  static String markedAs(String label) => _l10n.markedAs(label);
+  static String operationFailed(Object error) => _l10n.operationFailed(error.toString());
+  static String playFailed(Object error) => _l10n.playFailed(error.toString());
+  static String sleepTimerMinutes(int minutes) => _l10n.sleepTimerMinutes(minutes);
+  static String worksCountLabel(int count) => _l10n.worksCountLabel(count);
+  static String workSalesCount(int count) => _l10n.workSalesCount(count);
+  static String playbackError(String operation) => _l10n.playbackError(operation);
 }

@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/data/models/files/child.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 import 'package:xuro/widgets/detail/work_file_item.dart';
 import 'package:xuro/core/audio/models/file_path.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
@@ -118,7 +119,10 @@ class WorkFolderItem extends StatelessWidget {
               [],
           onExpansionChanged: (expanded) {
             AppLogger.debug(
-              '${expanded ? "展开" : "折叠"}文件夹: ${folder.title}',
+              LogStrings.logFolderToggled(
+                expanded ? LogStrings.logExpand : LogStrings.logCollapse,
+                folder.title ?? '',
+              ),
             );
           },
         ),

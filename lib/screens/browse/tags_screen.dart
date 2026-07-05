@@ -4,6 +4,7 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/presentation/viewmodels/tags_viewmodel.dart';
 import 'package:xuro/screens/browse/widgets/browse_search_bar.dart';
 import 'package:xuro/screens/browse/widgets/browse_grid_item.dart';
+import 'package:xuro/utils/i18n_name_resolver.dart';
 
 class TagsScreen extends StatelessWidget {
   const TagsScreen({super.key});
@@ -13,7 +14,7 @@ class TagsScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => TagsViewModel(),
       child: Scaffold(
-        appBar: AppBar(title: const Text(Strings.browseAllTags)),
+        appBar: AppBar(title: Text(Strings.browseAllTags)),
         body: Consumer<TagsViewModel>(
           builder: (context, viewModel, _) {
             return Column(
@@ -47,14 +48,14 @@ class TagsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: viewModel.refresh,
-              child: const Text(Strings.retry),
+              child: Text(Strings.retry),
             ),
           ],
         ),
       );
     }
     if (viewModel.tags.isEmpty) {
-      return const Center(child: Text(Strings.browseEmptyTags));
+      return Center(child: Text(Strings.browseEmptyTags));
     }
     return RefreshIndicator(
       onRefresh: viewModel.refresh,
@@ -69,7 +70,11 @@ class TagsScreen extends StatelessWidget {
         itemCount: viewModel.tags.length,
         itemBuilder: (context, index) {
           final tag = viewModel.tags[index];
-          final displayName = tag.i18n?.zhCn?.name ?? tag.name ?? '';
+          final displayName = I18nNameResolver.resolve(
+            tag.i18n,
+            locale: Localizations.localeOf(context),
+            fallback: tag.name ?? '',
+          );
           final searchName = tag.name ?? '';
           return BrowseGridItem(
             name: displayName,

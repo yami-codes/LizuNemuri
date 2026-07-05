@@ -4,6 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class AudioPlayerHandler extends BaseAudioHandler {
   final AudioPlayer _player;
@@ -12,7 +13,7 @@ class AudioPlayerHandler extends BaseAudioHandler {
   StreamSubscription? _progressSubscription;
 
   AudioPlayerHandler(this._player, this._eventHub) {
-    AppLogger.debug('AudioPlayerHandler 初始化');
+    AppLogger.debug(LogStrings.logAudioplayerhandlerInit92c24);
 
     // 改为监听 EventHub
     _stateSubscription = _eventHub.playbackState.listen((event) {
@@ -67,25 +68,25 @@ class AudioPlayerHandler extends BaseAudioHandler {
 
   @override
   Future<void> play() async {
-    AppLogger.debug('AudioHandler: 播放命令');
+    AppLogger.debug(LogStrings.logAudiohandlerPlayCommanda6f42);
     await _player.play();
   }
 
   @override
   Future<void> pause() async {
-    AppLogger.debug('AudioHandler: 暂停命令');
+    AppLogger.debug(LogStrings.logAudiohandlerPauseCommanda0f46);
     await _player.pause();
   }
 
   @override
   Future<void> seek(Duration position) async {
-    AppLogger.debug('AudioHandler: 跳转命令 position=$position');
+    AppLogger.debug(LogStrings.logAudiohandlerSeekCommandPositc4726(position));
     await _player.seek(position);
   }
 
   @override
   Future<void> skipToNext() async {
-    AppLogger.debug('AudioHandler: 下一曲命令');
+    AppLogger.debug(LogStrings.logAudiohandlerNextCommand0e2e1);
     if (_player.hasNext) {
       await _player.seekToNext();
     }
@@ -93,7 +94,7 @@ class AudioPlayerHandler extends BaseAudioHandler {
 
   @override
   Future<void> skipToPrevious() async {
-    AppLogger.debug('AudioHandler: 上一曲命令');
+    AppLogger.debug(LogStrings.logAudiohandlerPreviousCommand7454a);
     if (_player.hasPrevious) {
       await _player.seekToPrevious();
     }
@@ -101,7 +102,7 @@ class AudioPlayerHandler extends BaseAudioHandler {
 
   @override
   Future<void> stop() async {
-    AppLogger.debug('AudioHandler: 停止命令');
+    AppLogger.debug(LogStrings.logAudiohandlerStopCommand7540c);
     await _player.stop();
   }
 }

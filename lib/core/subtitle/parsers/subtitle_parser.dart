@@ -1,4 +1,5 @@
 import 'package:xuro/core/audio/models/subtitle.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 /// 字幕解析器接口
 abstract class SubtitleParser {
@@ -14,7 +15,7 @@ abstract class BaseSubtitleParser implements SubtitleParser {
   @override
   SubtitleList parse(String content) {
     if (!canParse(content)) {
-      throw const FormatException('不支持的字幕格式');
+      throw FormatException(LogStrings.logUnsupportedSubtitleFormat);
     }
     return doParse(content);
   }

@@ -25,12 +25,12 @@ class _SidebarHeaderState extends State<SidebarHeader> {
   void _showLogoutDialog(AuthViewModel authVM) {
     _closeDrawerThenShowDialog(
       (dialogContext) => AlertDialog(
-        title: const Text(Strings.dialogHint),
-        content: const Text(Strings.confirmLogout),
+        title: Text(Strings.dialogHint),
+        content: Text(Strings.confirmLogout),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(Strings.cancel),
+            child: Text(Strings.cancel),
           ),
           TextButton(
             onPressed: () async {

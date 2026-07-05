@@ -24,6 +24,8 @@ mixin _$I18n {
   EnUs? get enUs => throw _privateConstructorUsedError;
   @JsonKey(name: 'ja-jp')
   JaJp? get jaJp => throw _privateConstructorUsedError;
+  @JsonKey(name: 'th-th')
+  ThTh? get thTh => throw _privateConstructorUsedError;
   @JsonKey(name: 'zh-cn')
   ZhCn? get zhCn => throw _privateConstructorUsedError;
 
@@ -40,10 +42,12 @@ abstract class $I18nCopyWith<$Res> {
   $Res call(
       {@JsonKey(name: 'en-us') EnUs? enUs,
       @JsonKey(name: 'ja-jp') JaJp? jaJp,
+      @JsonKey(name: 'th-th') ThTh? thTh,
       @JsonKey(name: 'zh-cn') ZhCn? zhCn});
 
   $EnUsCopyWith<$Res>? get enUs;
   $JaJpCopyWith<$Res>? get jaJp;
+  $ThThCopyWith<$Res>? get thTh;
   $ZhCnCopyWith<$Res>? get zhCn;
 }
 
@@ -62,6 +66,7 @@ class _$I18nCopyWithImpl<$Res, $Val extends I18n>
   $Res call({
     Object? enUs = freezed,
     Object? jaJp = freezed,
+    Object? thTh = freezed,
     Object? zhCn = freezed,
   }) {
     return _then(_value.copyWith(
@@ -73,6 +78,10 @@ class _$I18nCopyWithImpl<$Res, $Val extends I18n>
           ? _value.jaJp
           : jaJp // ignore: cast_nullable_to_non_nullable
               as JaJp?,
+      thTh: freezed == thTh
+          ? _value.thTh
+          : thTh // ignore: cast_nullable_to_non_nullable
+              as ThTh?,
       zhCn: freezed == zhCn
           ? _value.zhCn
           : zhCn // ignore: cast_nullable_to_non_nullable
@@ -106,6 +115,18 @@ class _$I18nCopyWithImpl<$Res, $Val extends I18n>
 
   @override
   @pragma('vm:prefer-inline')
+  $ThThCopyWith<$Res>? get thTh {
+    if (_value.thTh == null) {
+      return null;
+    }
+
+    return $ThThCopyWith<$Res>(_value.thTh!, (value) {
+      return _then(_value.copyWith(thTh: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
   $ZhCnCopyWith<$Res>? get zhCn {
     if (_value.zhCn == null) {
       return null;
@@ -127,12 +148,15 @@ abstract class _$$I18nImplCopyWith<$Res> implements $I18nCopyWith<$Res> {
   $Res call(
       {@JsonKey(name: 'en-us') EnUs? enUs,
       @JsonKey(name: 'ja-jp') JaJp? jaJp,
+      @JsonKey(name: 'th-th') ThTh? thTh,
       @JsonKey(name: 'zh-cn') ZhCn? zhCn});
 
   @override
   $EnUsCopyWith<$Res>? get enUs;
   @override
   $JaJpCopyWith<$Res>? get jaJp;
+  @override
+  $ThThCopyWith<$Res>? get thTh;
   @override
   $ZhCnCopyWith<$Res>? get zhCn;
 }
@@ -149,6 +173,7 @@ class __$$I18nImplCopyWithImpl<$Res>
   $Res call({
     Object? enUs = freezed,
     Object? jaJp = freezed,
+    Object? thTh = freezed,
     Object? zhCn = freezed,
   }) {
     return _then(_$I18nImpl(
@@ -160,6 +185,10 @@ class __$$I18nImplCopyWithImpl<$Res>
           ? _value.jaJp
           : jaJp // ignore: cast_nullable_to_non_nullable
               as JaJp?,
+      thTh: freezed == thTh
+          ? _value.thTh
+          : thTh // ignore: cast_nullable_to_non_nullable
+              as ThTh?,
       zhCn: freezed == zhCn
           ? _value.zhCn
           : zhCn // ignore: cast_nullable_to_non_nullable
@@ -174,6 +203,7 @@ class _$I18nImpl implements _I18n {
   _$I18nImpl(
       {@JsonKey(name: 'en-us') this.enUs,
       @JsonKey(name: 'ja-jp') this.jaJp,
+      @JsonKey(name: 'th-th') this.thTh,
       @JsonKey(name: 'zh-cn') this.zhCn});
 
   factory _$I18nImpl.fromJson(Map<String, dynamic> json) =>
@@ -186,12 +216,15 @@ class _$I18nImpl implements _I18n {
   @JsonKey(name: 'ja-jp')
   final JaJp? jaJp;
   @override
+  @JsonKey(name: 'th-th')
+  final ThTh? thTh;
+  @override
   @JsonKey(name: 'zh-cn')
   final ZhCn? zhCn;
 
   @override
   String toString() {
-    return 'I18n(enUs: $enUs, jaJp: $jaJp, zhCn: $zhCn)';
+    return 'I18n(enUs: $enUs, jaJp: $jaJp, thTh: $thTh, zhCn: $zhCn)';
   }
 
   @override
@@ -201,12 +234,13 @@ class _$I18nImpl implements _I18n {
             other is _$I18nImpl &&
             (identical(other.enUs, enUs) || other.enUs == enUs) &&
             (identical(other.jaJp, jaJp) || other.jaJp == jaJp) &&
+            (identical(other.thTh, thTh) || other.thTh == thTh) &&
             (identical(other.zhCn, zhCn) || other.zhCn == zhCn));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, enUs, jaJp, zhCn);
+  int get hashCode => Object.hash(runtimeType, enUs, jaJp, thTh, zhCn);
 
   @JsonKey(ignore: true)
   @override
@@ -226,6 +260,7 @@ abstract class _I18n implements I18n {
   factory _I18n(
       {@JsonKey(name: 'en-us') final EnUs? enUs,
       @JsonKey(name: 'ja-jp') final JaJp? jaJp,
+      @JsonKey(name: 'th-th') final ThTh? thTh,
       @JsonKey(name: 'zh-cn') final ZhCn? zhCn}) = _$I18nImpl;
 
   factory _I18n.fromJson(Map<String, dynamic> json) = _$I18nImpl.fromJson;
@@ -236,6 +271,9 @@ abstract class _I18n implements I18n {
   @override
   @JsonKey(name: 'ja-jp')
   JaJp? get jaJp;
+  @override
+  @JsonKey(name: 'th-th')
+  ThTh? get thTh;
   @override
   @JsonKey(name: 'zh-cn')
   ZhCn? get zhCn;

@@ -110,7 +110,7 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
         final subtitleList = _subtitleService.subtitleList;
 
         if (subtitleList == null || subtitleList.subtitles.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(Strings.noLyrics),
           );
         }

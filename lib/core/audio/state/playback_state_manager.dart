@@ -10,6 +10,7 @@ import '../events/playback_event.dart';
 import '../events/playback_event_hub.dart';
 import 'package:xuro/data/models/files/child.dart';
 import 'package:xuro/data/models/works/work.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 
 class PlaybackStateManager {
@@ -166,7 +167,7 @@ class PlaybackStateManager {
       } catch (e, stack) {
         AudioErrorHandler.handleError(
           AudioErrorType.state,
-          '保存播放状态',
+          LogStrings.logOpSavePlaybackState,
           e,
           stack,
         );
@@ -185,7 +186,7 @@ class PlaybackStateManager {
       } catch (e, stack) {
         AudioErrorHandler.handleError(
           AudioErrorType.state,
-          '清除播放状态',
+          LogStrings.logOpClearPlaybackState,
           e,
           stack,
         );
@@ -200,7 +201,7 @@ class PlaybackStateManager {
     } catch (e, stack) {
       AudioErrorHandler.handleError(
         AudioErrorType.state,
-        '加载播放状态',
+        LogStrings.logOpLoadPlaybackState,
         e,
         stack,
       );

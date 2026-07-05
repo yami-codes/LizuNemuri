@@ -64,7 +64,7 @@ class _SimilarWorksScreenState extends State<SimilarWorksScreen> {
       value: _viewModel,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(Strings.similarWorks),
+          title: Text(Strings.similarWorks),
           actions: [
             Consumer<SimilarWorksViewModel>(
               builder: (context, viewModel, _) => IconButton(

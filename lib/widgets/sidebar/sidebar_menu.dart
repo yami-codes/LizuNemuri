@@ -130,8 +130,8 @@ class SidebarMenu extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(
                             AppSpacing.space24,
                             AppSpacing.space20,
                             AppSpacing.space16,

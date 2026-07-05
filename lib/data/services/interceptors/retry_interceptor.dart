@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class RetryInterceptor extends Interceptor {
   final Dio dio;
@@ -54,7 +55,7 @@ class RetryInterceptor extends Interceptor {
       options.extra['retryCount'] = retryCount + 1;
       final delay = _computeDelay(retryCount);
       AppLogger.info(
-        '网络请求重试 (${retryCount + 1}/$maxRetries), 等待 ${delay.inMilliseconds}ms: ${options.path}',
+        LogStrings.logNetworkRetryRetrycount1Ma64331(retryCount + 1, delay.inMilliseconds, options.path, maxRetries),
       );
       await Future.delayed(delay);
       try {

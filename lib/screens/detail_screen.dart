@@ -14,6 +14,7 @@ import 'package:xuro/widgets/detail/media_download_dialog.dart';
 import 'package:xuro/widgets/detail/batch_download_dialog.dart';
 import 'package:xuro/core/download/download_service.dart';
 import 'package:xuro/common/constants/strings.dart';
+import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/screens/similar_works_screen.dart';
 import 'package:xuro/screens/subtitle_preview_screen.dart';
 import 'package:open_filex/open_filex.dart';
@@ -135,26 +136,26 @@ class DetailScreen extends StatelessWidget {
                           final open =
                               await OpenFilex.open(result.localPath!);
                           if (open.type != ResultType.done) {
-                            messenger.showSnackBar(const SnackBar(
+                            messenger.showSnackBar(SnackBar(
                               content: Text(Strings.downloadOpenFailed),
                             ));
                           }
                         } else {
-                          messenger.showSnackBar(const SnackBar(
+                          messenger.showSnackBar(SnackBar(
                             content: Text(Strings.downloadSuccess),
                           ));
                         }
                       } else if (result.status == DownloadStatus.cancelled) {
-                        messenger.showSnackBar(const SnackBar(
+                        messenger.showSnackBar(SnackBar(
                           content: Text(Strings.downloadCancelled),
                         ));
                       } else if (result.status ==
                           DownloadStatus.networkError) {
-                        messenger.showSnackBar(const SnackBar(
+                        messenger.showSnackBar(SnackBar(
                           content: Text(Strings.downloadNetworkError),
                         ));
                       } else {
-                        messenger.showSnackBar(const SnackBar(
+                        messenger.showSnackBar(SnackBar(
                           content: Text(Strings.downloadIoError),
                         ));
                       }
@@ -208,7 +209,7 @@ class DetailScreen extends StatelessWidget {
                           } catch (e) {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(Strings.playFailed(e))),
+                                SnackBar(content: Text(localizedPlayFailed(e))),
                               );
                             }
                           }
@@ -226,7 +227,7 @@ class DetailScreen extends StatelessWidget {
                           return;
                         }
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text(Strings.unsupportedFileType),
                           ),
                         );

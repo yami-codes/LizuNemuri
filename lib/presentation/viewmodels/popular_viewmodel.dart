@@ -2,6 +2,7 @@ import 'package:xuro/presentation/viewmodels/base/paginated_works_viewmodel.dart
 import 'package:xuro/data/services/api_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class PopularViewModel extends PaginatedWorksViewModel {
   final AppSettingsService _settings = GetIt.I<AppSettingsService>();
@@ -31,7 +32,7 @@ class PopularViewModel extends PaginatedWorksViewModel {
   }
 
   @override
-  String get pageName => '热门列表';
+  String get pageName => LogStrings.logPageNamePopular;
 
   @override
   Future<WorksResponse> fetchPage(int page) {

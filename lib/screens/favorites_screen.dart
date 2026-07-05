@@ -70,7 +70,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       value: _viewModel,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(Strings.favorites),
+          title: Text(Strings.favorites),
         ),
         drawer: const SidebarMenu(),
         body: Consumer<FavoritesViewModel>(

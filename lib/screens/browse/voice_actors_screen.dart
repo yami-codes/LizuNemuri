@@ -4,6 +4,7 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/presentation/viewmodels/voice_actors_viewmodel.dart';
 import 'package:xuro/screens/browse/widgets/browse_search_bar.dart';
 import 'package:xuro/screens/browse/widgets/browse_grid_item.dart';
+import 'package:xuro/utils/i18n_name_resolver.dart';
 
 class VoiceActorsScreen extends StatelessWidget {
   const VoiceActorsScreen({super.key});
@@ -13,7 +14,7 @@ class VoiceActorsScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => VoiceActorsViewModel(),
       child: Scaffold(
-        appBar: AppBar(title: const Text(Strings.browseAllVoiceActors)),
+        appBar: AppBar(title: Text(Strings.browseAllVoiceActors)),
         body: Consumer<VoiceActorsViewModel>(
           builder: (context, viewModel, _) {
             return Column(
@@ -47,14 +48,14 @@ class VoiceActorsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: viewModel.refresh,
-              child: const Text(Strings.retry),
+              child: Text(Strings.retry),
             ),
           ],
         ),
       );
     }
     if (viewModel.voiceActors.isEmpty) {
-      return const Center(child: Text(Strings.browseEmptyVoiceActors));
+      return Center(child: Text(Strings.browseEmptyVoiceActors));
     }
     return RefreshIndicator(
       onRefresh: viewModel.refresh,
@@ -69,7 +70,11 @@ class VoiceActorsScreen extends StatelessWidget {
         itemCount: viewModel.voiceActors.length,
         itemBuilder: (context, index) {
           final va = viewModel.voiceActors[index];
-          final name = va.name ?? '';
+          final name = I18nNameResolver.resolve(
+            va.i18n,
+            locale: Localizations.localeOf(context),
+            fallback: va.name ?? '',
+          );
           return BrowseGridItem(
             name: name,
             count: va.count ?? 0,

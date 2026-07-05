@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/core/audio/cache/audio_cache_manager.dart';
 import 'package:xuro/core/cache/cache_lifecycle_manager.dart';
@@ -43,8 +45,9 @@ void main() async {
     if (kDebugMode) {
       startupStopwatch!.stop();
       debugPrint(
-        '[startup] main() → first frame: '
-        '${startupStopwatch.elapsedMilliseconds} ms',
+        LogStrings.logStartupFirstFrame(
+          startupStopwatch.elapsedMilliseconds.toString(),
+        ),
       );
     }
     initDeferredStartupServices();
@@ -72,7 +75,11 @@ class MyApp extends StatelessWidget {
         builder: (context, themeController, settings, child) {
           final variant = settings.colorVariant;
           return MaterialApp(
+            key: ValueKey(settings.appLanguage),
             title: Strings.appName,
+            locale: settings.materialLocale,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             theme: AppTheme.light(variant),
             darkTheme: AppTheme.dark(variant),
             themeMode: themeController.themeMode,

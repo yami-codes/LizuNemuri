@@ -4,6 +4,7 @@ import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/data/models/auth/auth_resp/auth_resp.dart';
 import 'package:xuro/data/services/exceptions/network_exception.dart';
 import '../../utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 /// Thrown when `/auth/reg` succeeded (account exists on the server) but the
 /// follow-up auto-login call failed. The account is real; the user just needs
@@ -36,13 +37,13 @@ class AuthService {
   void _onSettingsChanged() {
     if (_dio.options.baseUrl != _settings.serverUrl) {
       _dio.options.baseUrl = _settings.serverUrl;
-      AppLogger.info('Auth API 服务器已切换: ${_settings.serverUrl}');
+      AppLogger.info(LogStrings.logAuthApiServerSwitchedSetting7985a(_settings.serverUrl));
     }
   }
 
   Future<AuthResp> login(String name, String password) async {
     try {
-      AppLogger.info('开始登录请求: name=$name, baseUrl=${_dio.options.baseUrl}');
+      AppLogger.info(LogStrings.logStartLoginRequestNameNameBasa9cd2(_dio.options.baseUrl, name));
       final response = await _dio.post(
         '/auth/me',
         data: {
@@ -51,24 +52,22 @@ class AuthService {
         },
       );
 
-      AppLogger.info('收到登录响应: statusCode=${response.statusCode}');
+      AppLogger.info(LogStrings.logLoginResponseReceivedStatuscc6594(response.statusCode));
 
       if (response.statusCode == 200) {
         final authResp = AuthResp.fromJson(response.data);
-        AppLogger.info(
-          '登录成功: username=${authResp.user?.name}, group=${authResp.user?.group}',
-        );
+        AppLogger.info(LogStrings.logLoginSucceeded(authResp.user?.name ?? '', authResp.user?.group ?? ''));
         return authResp;
       }
 
-      throw Exception('登录失败: ${response.statusCode}');
+      throw Exception(LogStrings.logLoginFailedCode(response.statusCode.toString()));
     } on DioException catch (e) {
-      AppLogger.error('登录请求失败', e);
-      AppLogger.error('错误详情: ${e.response?.data}');
+      AppLogger.error(LogStrings.logLoginRequestFailed, e);
+      AppLogger.error(LogStrings.logErrorDetails(e.response?.data.toString() ?? ''));
       throw NetworkException.fromDioException(e);
     } catch (e) {
-      AppLogger.error('登录失败', e);
-      throw Exception('登录失败: $e');
+      AppLogger.error(LogStrings.logLoginFailed, e);
+      throw Exception(LogStrings.logLoginFailedDetail(e.toString()));
     }
   }
 
@@ -91,21 +90,25 @@ class AuthService {
       }
 
       AppLogger.info(
-        '开始注册请求: name=$name, hasRecommender=${body.containsKey('recommenderUuid')}, baseUrl=${_dio.options.baseUrl}',
+        LogStrings.logStartRegisterRequest(
+          name,
+          body.containsKey('recommenderUuid').toString(),
+          _dio.options.baseUrl,
+        ),
       );
       final response = await _dio.post('/auth/reg', data: body);
-      AppLogger.info('收到注册响应: statusCode=${response.statusCode}');
+      AppLogger.info(LogStrings.logRegisterResponseReceivedStat806f3(response.statusCode));
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final raw = response.data;
         if (raw is Map<String, dynamic>) {
           final authResp = AuthResp.fromJson(raw);
           if (authResp.token != null && authResp.user != null) {
-            AppLogger.info('注册成功且已携带 token，跳过补充登录');
+            AppLogger.info(LogStrings.logRegisteredWithTokenSkipFollo54265);
             return authResp;
           }
         }
-        AppLogger.info('注册成功但响应未携带 token/user，回退到 login 兜底');
+        AppLogger.info(LogStrings.logRegisteredWithoutTokenFallba780d3);
         try {
           return await login(name, password);
         } catch (loginErr) {
@@ -113,21 +116,21 @@ class AuthService {
           // exception so callers can guide the user to log in manually instead
           // of asking them to "retry" the registration (which would now fail
           // with "name already exists").
-          AppLogger.error('注册成功但自动登录失败', loginErr);
+          AppLogger.error(LogStrings.logRegisterOkLoginFailed, loginErr);
           throw RegisteredButNotLoggedInException(loginErr);
         }
       }
 
-      throw Exception('注册失败: ${response.statusCode}');
+      throw Exception(LogStrings.logRegisterFailedCode(response.statusCode.toString()));
     } on RegisteredButNotLoggedInException {
       rethrow;
     } on DioException catch (e) {
-      AppLogger.error('注册请求失败', e);
-      AppLogger.error('错误详情: ${e.response?.data}');
+      AppLogger.error(LogStrings.logRegisterRequestFailed, e);
+      AppLogger.error(LogStrings.logErrorDetails(e.response?.data.toString() ?? ''));
       throw NetworkException.fromDioException(e);
     } catch (e) {
-      AppLogger.error('注册失败', e);
-      throw Exception('注册失败: $e');
+      AppLogger.error(LogStrings.logRegisterFailed, e);
+      throw Exception(LogStrings.logRegisterFailedDetail(e.toString()));
     }
   }
 }

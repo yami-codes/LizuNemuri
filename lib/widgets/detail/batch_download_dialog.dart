@@ -80,27 +80,27 @@ class _BatchDownloadDialogState extends State<BatchDownloadDialog> {
     if (!_downloading) {
       if (widget.audioCount == 0) {
         return AlertDialog(
-          title: const Text(Strings.batchDownloadTitle),
-          content: const Text(Strings.batchDownloadEmpty),
+          title: Text(Strings.batchDownloadTitle),
+          content: Text(Strings.batchDownloadEmpty),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text(Strings.confirm),
+              child: Text(Strings.confirm),
             ),
           ],
         );
       }
       return AlertDialog(
-        title: const Text(Strings.batchDownloadTitle),
+        title: Text(Strings.batchDownloadTitle),
         content: Text(Strings.batchDownloadConfirm(widget.audioCount)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text(Strings.downloadCancel),
+            child: Text(Strings.downloadCancel),
           ),
           TextButton(
             onPressed: _start,
-            child: const Text(Strings.downloadConfirm),
+            child: Text(Strings.downloadConfirm),
           ),
         ],
       );
@@ -110,7 +110,7 @@ class _BatchDownloadDialogState extends State<BatchDownloadDialog> {
     return PopScope(
       canPop: false,
       child: AlertDialog(
-        title: const Text(Strings.batchDownloadTitle),
+        title: Text(Strings.batchDownloadTitle),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,7 +132,7 @@ class _BatchDownloadDialogState extends State<BatchDownloadDialog> {
         actions: [
           TextButton(
             onPressed: () => _cancelToken?.cancel(),
-            child: const Text(Strings.downloadCancel),
+            child: Text(Strings.downloadCancel),
           ),
         ],
       ),

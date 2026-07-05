@@ -4,6 +4,7 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:xuro/presentation/widgets/auth/register_dialog.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class LoginDialog extends StatefulWidget {
   const LoginDialog({super.key});
@@ -26,17 +27,17 @@ class _LoginDialogState extends State<LoginDialog> {
 
   Future<void> _handleLogin() async {
     final name = _nameController.text.trim();
-    AppLogger.info('LoginDialog: 尝试登录: name=$name');
+    AppLogger.info(LogStrings.logLogindialogLoginAttemptNameN70c23(name));
 
     final authVM = context.read<AuthViewModel>();
     await authVM.login(name, _passwordController.text);
 
     if (mounted) {
       if (authVM.error == null) {
-        AppLogger.info('LoginDialog: 登录成功，关闭对话框');
+        AppLogger.info(LogStrings.logLogindialogLoginOkClosing833b9);
         Navigator.of(context).pop();
       } else {
-        AppLogger.error('LoginDialog: 登录失败: ${authVM.error}');
+        AppLogger.error(LogStrings.logLogindialogLoginFailedAuthvmaa6d5(authVM.error));
       }
     }
   }
@@ -55,15 +56,15 @@ class _LoginDialogState extends State<LoginDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text(Strings.loginAction),
+      title: Text(Strings.loginAction),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _nameController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: Strings.username,
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
             textInputAction: TextInputAction.next,
           ),
@@ -106,7 +107,7 @@ class _LoginDialogState extends State<LoginDialog> {
             alignment: Alignment.centerLeft,
             child: TextButton(
               onPressed: _switchToRegister,
-              child: const Text(Strings.registerCta),
+              child: Text(Strings.registerCta),
             ),
           ),
         ],
@@ -114,7 +115,7 @@ class _LoginDialogState extends State<LoginDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text(Strings.cancel),
+          child: Text(Strings.cancel),
         ),
         Consumer<AuthViewModel>(
           builder: (context, authVM, _) {
@@ -128,7 +129,7 @@ class _LoginDialogState extends State<LoginDialog> {
                         strokeWidth: 2,
                       ),
                     )
-                  : const Text(Strings.loginAction),
+                  : Text(Strings.loginAction),
             );
           },
         ),

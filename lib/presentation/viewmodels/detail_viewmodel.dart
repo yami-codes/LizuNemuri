@@ -9,6 +9,9 @@ import 'package:xuro/data/models/works/work.dart';
 import 'package:xuro/data/services/api_service.dart';
 import 'package:xuro/core/audio/i_audio_player_service.dart';
 import 'package:xuro/core/download/download_service.dart';
+import 'package:xuro/utils/mark_status_strings.dart';
+import 'package:xuro/common/constants/strings.dart';
+import 'package:xuro/utils/user_facing_error.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:xuro/core/audio/models/playback_context.dart';
 import 'package:xuro/widgets/detail/playlist_selection_dialog.dart';
@@ -19,6 +22,7 @@ import 'package:xuro/widgets/detail/work_folder_item.dart';
 import 'package:xuro/core/audio/models/file_path.dart';
 import 'package:xuro/core/subtitle/utils/subtitle_matcher.dart';
 import 'package:dio/dio.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 /// 一条批量下载项：音频 + 同目录匹配到的字幕（可空）。
 typedef DownloadPair = ({Child audio, Child? subtitle});
@@ -111,7 +115,7 @@ class DetailViewModel extends ChangeNotifier {
       );
       _hasRecommendations = (response.pagination.totalCount ?? 0) > 0;
     } catch (e) {
-      AppLogger.error('检查相关推荐失败', e);
+      AppLogger.error(LogStrings.logCheckSimilarFailed, e);
       _hasRecommendations = false;
     } finally {
       if (!_disposed) {
@@ -142,17 +146,17 @@ class DetailViewModel extends ChangeNotifier {
 
   Future<void> _loadFilesInternal() async {
     try {
-      AppLogger.info('开始加载作品文件: ${work.id}');
+      AppLogger.info(LogStrings.logStartLoadingWorkFilesWorkId5bb3d(work.id));
       _files = await _apiService.getWorkFiles(
         work.id.toString(),
         cancelToken: _cancelToken,
       );
       WorkFolderItem.resetExpandState(); // Reset on new data load, not on every build
-      AppLogger.info('文件加载成功: ${work.id}');
+      AppLogger.info(LogStrings.logFilesLoadedWorkId92bd2(work.id));
     } catch (e) {
       if (e is! DioException || e.type != DioExceptionType.cancel) {
-        AppLogger.info('加载文件失败');
-        _error = e.toString();
+        AppLogger.info(LogStrings.logLoadFilesFailed);
+        _error = userFacingError(e);
       }
     } finally {
       _isLoading = false;
@@ -163,10 +167,10 @@ class DetailViewModel extends ChangeNotifier {
     try {
       final workId = _extractNumericId(work.sourceId) ?? work.id.toString();
       _workInfo = await _apiService.getWorkInfo(workId, cancelToken: _cancelToken);
-      AppLogger.info('作品详情加载成功: ${work.id}');
+      AppLogger.info(LogStrings.logWorkDetailLoadedWorkId3f489(work.id));
     } catch (e) {
       if (e is! DioException || e.type != DioExceptionType.cancel) {
-        AppLogger.error('加载作品详情失败', e);
+        AppLogger.error(LogStrings.logLoadWorkDetailFailed, e);
       }
     } finally {
       _isLoadingInfo = false;
@@ -272,7 +276,7 @@ class DetailViewModel extends ChangeNotifier {
             cancelToken: cancelToken,
           );
         } catch (e) {
-          AppLogger.warning('配对字幕下载失败（不影响音频）: $e');
+          AppLogger.warning(LogStrings.logPairedSubtitleDownloadFailedd44d7(e));
         }
       }
     }
@@ -339,7 +343,7 @@ class DetailViewModel extends ChangeNotifier {
           }
           // 字幕网络/IO 失败属 best-effort，仅记日志、不计入 failed。
         } catch (e) {
-          AppLogger.warning('配对字幕下载失败（不影响音频）: $e');
+          AppLogger.warning(LogStrings.logPairedSubtitleDownloadFailedd44d7(e));
         }
       }
       // 末项之后无循环顶部检查，这里兜底捕获取消。
@@ -360,15 +364,17 @@ class DetailViewModel extends ChangeNotifier {
     // 用统一分类：错标 type=audio 的视频在这里被挡下，给清晰错误，
     // 而不是放进播放管线产生"播放列表为空"的误导性失败。
     if (!isAudioFile(file)) {
-      throw Exception('不支持的文件类型（疑似视频）: ${file.title}');
+      throw UserFacingException(
+        Strings.unsupportedVideoFile(file.title ?? ''),
+      );
     }
 
     if (file.mediaDownloadUrl == null) {
-      throw Exception('无法播放：文件URL不存在');
+      throw UserFacingException(Strings.fileUrlMissing);
     }
 
     if (_files == null) {
-      throw Exception('文件列表未加载');
+      throw UserFacingException(Strings.fileListNotLoaded);
     }
 
     try {
@@ -381,7 +387,7 @@ class DetailViewModel extends ChangeNotifier {
       await _audioService.playWithContext(playbackContext);
     } catch (e) {
       if (!_disposed) {
-        AppLogger.error('播放失败', e);
+        AppLogger.error(LogStrings.logPlaybackFailed, e);
       }
       rethrow;
     }
@@ -403,10 +409,10 @@ class DetailViewModel extends ChangeNotifier {
       
       _playlists = response.playlists;
       _playlistsPagination = response.pagination;
-      AppLogger.info('收藏夹列表加载成功: ${_playlists?.length ?? 0}个收藏夹');
+      AppLogger.info(LogStrings.logWorkPlaylistsLoaded((_playlists?.length ?? 0).toString()));
     } catch (e) {
-      AppLogger.error('加载收藏夹列表失败', e);
-      _playlistsError = e.toString();
+      AppLogger.error(LogStrings.logLoadWorkPlaylistsFailed, e);
+      _playlistsError = userFacingError(e);
     } finally {
       _loadingPlaylists = false;
       notifyListeners();
@@ -437,7 +443,7 @@ class DetailViewModel extends ChangeNotifier {
             } catch (e) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(Strings.operationFailed(e))),
+                  SnackBar(content: Text(localizedOperationFailed(e))),
                 );
               }
             }
@@ -473,10 +479,10 @@ class DetailViewModel extends ChangeNotifier {
         notifyListeners();
       }
       
-      final action = (playlist.exist ?? false) ? '移除' : '添加';
-      AppLogger.info('$action收藏成功: ${playlist.name}');
+      final action = (playlist.exist ?? false) ? LogStrings.logActionRemove : LogStrings.logActionAdd;
+      AppLogger.info(LogStrings.logFavoriteUpdated(action, playlist.name ?? ''));
     } catch (e) {
-      AppLogger.error('切换收藏状态失败', e);
+      AppLogger.error(LogStrings.logToggleFavoriteFailed, e);
       rethrow;
     }
   }
@@ -492,9 +498,9 @@ class DetailViewModel extends ChangeNotifier {
       );
       
       _currentMarkStatus = status;
-      AppLogger.info('更新标记状态成功: ${status.label}');
+      AppLogger.info(LogStrings.logMarkStatusUpdated(status.localizedLabel));
     } catch (e) {
-      AppLogger.error('更新标记状态失败', e);
+      AppLogger.error(LogStrings.logUpdateMarkFailed, e);
       rethrow;
     } finally {
       _loadingMark = false;
@@ -514,7 +520,7 @@ class DetailViewModel extends ChangeNotifier {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(Strings.markedAs(status.label)),
+                  content: Text(Strings.markedAs(status.localizedLabel)),
                   duration: const Duration(seconds: 2),
                   behavior: SnackBarBehavior.floating,
                 ),
@@ -523,7 +529,7 @@ class DetailViewModel extends ChangeNotifier {
           } catch (e) {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(Strings.markFailed(e))),
+                SnackBar(content: Text(localizedMarkFailed(e))),
               );
             }
           }

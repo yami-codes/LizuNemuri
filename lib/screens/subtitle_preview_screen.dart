@@ -6,6 +6,7 @@ import 'package:xuro/core/download/download_service.dart';
 import 'package:xuro/core/subtitle/subtitle_loader.dart';
 import 'package:xuro/data/models/files/child.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 /// 只读字幕预览：已下载则读本地文件（离线可用），否则拉
 /// `mediaDownloadUrl`（带缓存）。能按时间轴解析就逐行列出，
@@ -69,7 +70,7 @@ class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
         }
       });
     } catch (e) {
-      AppLogger.error('字幕预览加载失败', e);
+      AppLogger.error(LogStrings.logSubtitlePreviewLoadFailed, e);
       if (!mounted) return;
       setState(() {
         _loading = false;
@@ -90,7 +91,7 @@ class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(Strings.subtitlePreviewTitle),
+        title: Text(Strings.subtitlePreviewTitle),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(24),
           child: Padding(
@@ -113,12 +114,12 @@ class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
 
   Widget _buildBody(BuildContext context) {
     if (_loading) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 12),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 12),
             Text(Strings.subtitlePreviewLoading),
           ],
         ),
@@ -132,7 +133,7 @@ class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
           children: [
             Text(_error!),
             const SizedBox(height: 12),
-            TextButton(onPressed: _load, child: const Text(Strings.retry)),
+            TextButton(onPressed: _load, child: Text(Strings.retry)),
           ],
         ),
       );
@@ -141,7 +142,7 @@ class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
     final parsed = _parsed;
     if (parsed != null) {
       if (parsed.subtitles.isEmpty) {
-        return const Center(child: Text(Strings.subtitlePreviewEmpty));
+        return Center(child: Text(Strings.subtitlePreviewEmpty));
       }
       final colorScheme = Theme.of(context).colorScheme;
       return ListView.separated(

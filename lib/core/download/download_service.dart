@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:xuro/common/constants/log_strings.dart';
 
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
@@ -138,7 +139,7 @@ class DownloadService {
         final ext = await getExternalStorageDirectory();
         if (ext != null) return ext;
       } catch (e) {
-        AppLogger.warning('外部存储目录不可用，回退 App 内部目录: $e');
+        AppLogger.warning(LogStrings.logExternalStorageUnavailableFae9daa(e));
       }
     }
     return getApplicationDocumentsDirectory();
@@ -180,11 +181,11 @@ class DownloadService {
     final entry = await _repository.find(workId, key);
     if (entry == null) return null;
     if (await File(entry.filePath).exists()) return entry;
-    AppLogger.warning('下载记录指向缺失文件，清理失效行: ${entry.filePath}');
+    AppLogger.warning(LogStrings.logStaleDownloadRowCleanedEntry5340a(entry.filePath));
     try {
       await _repository.remove(workId, key);
     } catch (e) {
-      AppLogger.error('清理失效下载行失败', e);
+      AppLogger.error(LogStrings.logCleanStaleDownloadRowsFailede1ed8, e);
     }
     return null;
   }
@@ -207,7 +208,7 @@ class DownloadService {
     final url = file.mediaDownloadUrl;
     final fileName = file.title;
     if (url == null || url.isEmpty || fileName == null || fileName.isEmpty) {
-      AppLogger.warning('下载缺少 URL 或文件名: $fileName');
+      AppLogger.warning(LogStrings.logDownloadMissingUrlOrFilename1e7e8(fileName));
       return const DownloadResult(DownloadStatus.ioError);
     }
 
@@ -282,7 +283,7 @@ class DownloadService {
         exceptFileKey: key,
       ));
 
-      AppLogger.debug('下载完成: $workId/$fileName -> $destPath');
+      AppLogger.debug(LogStrings.logDownloadCompleteWorkidFilena3d481(workId, fileName, destPath));
       return DownloadResult(DownloadStatus.success, destPath);
     } catch (e) {
       // 清理临时文件并还原用户原文件，失败绝不破坏既有数据。
@@ -299,14 +300,14 @@ class DownloadService {
         } catch (_) {}
       }
       if (e is DioException && CancelToken.isCancel(e)) {
-        AppLogger.debug('下载已取消: $workId/$fileName');
+        AppLogger.debug(LogStrings.logDownloadCancelledWorkidFilene08ac(workId, fileName));
         return const DownloadResult(DownloadStatus.cancelled);
       }
       if (e is DioException) {
-        AppLogger.error('下载网络错误: $workId/$fileName', e);
+        AppLogger.error(LogStrings.logDownloadNetworkErrorWorkidFi3d322(workId, fileName), e);
         return const DownloadResult(DownloadStatus.networkError);
       }
-      AppLogger.error('下载失败: $workId/$fileName', e);
+      AppLogger.error(LogStrings.logDownloadFailedWorkidFilename338fd(workId, fileName), e);
       return const DownloadResult(DownloadStatus.ioError);
     }
   }
@@ -317,7 +318,7 @@ class DownloadService {
     try {
       path = (await _repository.find(workId, key))?.filePath;
     } catch (e) {
-      AppLogger.error('查询待移除下载失败', e);
+      AppLogger.error(LogStrings.logQueryDownloadToRemoveFailedb00ee, e);
     }
     // DB 行先删（一致性关键：失效行会让 app 误判已下载）；
     // 本地文件 best-effort，孤儿文件只是磁盘浪费、无害。
@@ -326,7 +327,7 @@ class DownloadService {
       await _repository.remove(workId, key);
       dbRemoved = true;
     } catch (e) {
-      AppLogger.error('移除下载 DB 行失败（保留文件以免失效行）', e);
+      AppLogger.error(LogStrings.logRemoveDownloadDbRowFailedKee7b72d, e);
     }
     if (dbRemoved && path != null) {
       try {
@@ -334,7 +335,7 @@ class DownloadService {
         if (await f.exists()) await f.delete();
         await _pruneEmptyDir(path);
       } catch (e) {
-        AppLogger.warning('移除下载文件失败（DB 行已删，孤儿无害）: $e');
+        AppLogger.warning(LogStrings.logRemoveDownloadFileFailedDbRo1c106(e));
       }
     }
   }
@@ -388,7 +389,7 @@ class DownloadService {
         }
       }
     } catch (e) {
-      AppLogger.error('下载容量回收失败', e);
+      AppLogger.error(LogStrings.logDownloadCapacityReclaimFaile4d679, e);
     }
   }
 }

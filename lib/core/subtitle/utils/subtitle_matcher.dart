@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:xuro/data/models/files/child.dart';
 import 'package:xuro/utils/logger.dart';
+import 'package:xuro/common/constants/log_strings.dart';
 
 class SubtitleMatcher {
   static const supportedFormats = ['.vtt', '.lrc'];
@@ -28,21 +29,21 @@ class SubtitleMatcher {
     // --- Tier 1: Exact match ---
     final exactMatch = _findExactMatch(audioFileName, subtitleFiles);
     if (exactMatch != null) {
-      AppLogger.debug('字幕匹配[精确]: ${exactMatch.title}');
+      AppLogger.debug(LogStrings.logSubtitlematchExactExactmatch334b5(exactMatch.title));
       return exactMatch;
     }
 
     // --- Tier 2: Prefix match ---
     final prefixMatch = _findPrefixMatch(audioBase, subtitleFiles);
     if (prefixMatch != null) {
-      AppLogger.debug('字幕匹配[前缀]: ${prefixMatch.title}');
+      AppLogger.debug(LogStrings.logSubtitlematchPrefixPrefixmat07a65(prefixMatch.title));
       return prefixMatch;
     }
 
     // --- Tier 3: Similarity match ---
     final similarMatch = _findSimilarMatch(audioBase, subtitleFiles);
     if (similarMatch != null) {
-      AppLogger.debug('字幕匹配[相似度]: ${similarMatch.title}');
+      AppLogger.debug(LogStrings.logSubtitlematchSimilaritySimil52acf(similarMatch.title));
       return similarMatch;
     }
 
@@ -103,7 +104,7 @@ class SubtitleMatcher {
     }
 
     if (bestMatch != null) {
-      AppLogger.debug('字幕相似度最高: ${bestMatch.title} (score: ${bestScore.toStringAsFixed(2)})');
+      AppLogger.debug(LogStrings.logSubtitlesimilarityBestmatchTc3940(bestMatch.title, bestScore.toStringAsFixed(2)));
     }
     return bestMatch;
   }
