@@ -117,6 +117,8 @@
   },
   "downloadsPlayA11y": "播放已下载音频",
   "downloadsTitle": "下载",
+  "librarySegmentBrowse": "浏览",
+  "playlistsTitle": "播放列表",
   "drawerSectionContent": "内容",
   "drawerSectionDiscover": "发现",
   "drawerSectionSystem": "系统",

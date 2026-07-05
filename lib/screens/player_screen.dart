@@ -314,15 +314,21 @@ class _PlayerScreenState extends State<PlayerScreen> {
           background: cs.surface,
           isDark: isDark,
           builder: (context, palette) {
-            final immersive = PlayerImmersiveColors.resolve(
-              context: context,
-              palette: palette,
-              coverBackgroundEnabled: true,
-            );
+            final settings = GetIt.I<AppSettingsService>();
+            return ListenableBuilder(
+              listenable: settings,
+              builder: (context, _) {
+                final clarity = settings.playerBackdropClarity;
+                final immersive = PlayerImmersiveColors.resolve(
+                  context: context,
+                  palette: palette,
+                  coverBackgroundEnabled: true,
+                  clarity: clarity,
+                );
 
-            return PlayerImmersiveScope(
-              colors: immersive,
-              child: Scaffold(
+                return PlayerImmersiveScope(
+                  colors: immersive,
+                  child: Scaffold(
                 extendBodyBehindAppBar: true,
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
@@ -508,7 +514,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     CoverArtworkBackground(
                       coverUrl: coverUrl,
                       enabled: true,
-                      clarity: kPlayerCoverBackdropClarity,
+                      clarity: clarity,
                       overlayBaseColor: cs.surface,
                       tintBaseColor: palette.backdropTint,
                       isDark: isDark,
@@ -548,7 +554,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     SleepModeDimOverlay(controller: sleepTimer),
                   ],
                 ),
-              ),
+                  ),
+                );
+              },
             );
           },
         );

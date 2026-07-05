@@ -16,6 +16,8 @@ import 'package:xuro/screens/browse/voice_actors_screen.dart';
 import 'package:xuro/screens/about_screen.dart';
 import 'package:xuro/screens/downloads_screen.dart';
 import 'package:xuro/screens/favorites_screen.dart';
+import 'package:xuro/screens/playlists_screen.dart';
+import 'package:xuro/screens/recommend_screen.dart';
 import 'package:xuro/screens/settings/settings_screen.dart';
 import 'package:xuro/widgets/common/brand_wordmark.dart';
 import 'package:xuro/widgets/sidebar/sidebar_decoration.dart';
@@ -57,6 +59,40 @@ class SidebarMenu extends StatelessWidget {
     }
     rootNavigator.push(
       CupertinoPageRoute(builder: (_) => const FavoritesScreen()),
+    );
+  }
+
+  void _navigateToRecommend(BuildContext context) {
+    final authVM = context.read<AuthViewModel>();
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    Navigator.pop(context);
+    if (!authVM.isLoggedIn) {
+      showDialog(
+        context: rootNavigator.context,
+        useRootNavigator: true,
+        builder: (_) => const LoginDialog(),
+      );
+      return;
+    }
+    rootNavigator.push(
+      CupertinoPageRoute(builder: (_) => const RecommendScreen()),
+    );
+  }
+
+  void _navigateToPlaylists(BuildContext context) {
+    final authVM = context.read<AuthViewModel>();
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    Navigator.pop(context);
+    if (!authVM.isLoggedIn) {
+      showDialog(
+        context: rootNavigator.context,
+        useRootNavigator: true,
+        builder: (_) => const LoginDialog(),
+      );
+      return;
+    }
+    rootNavigator.push(
+      CupertinoPageRoute(builder: (_) => const PlaylistsScreen()),
     );
   }
 
@@ -156,6 +192,16 @@ class SidebarMenu extends StatelessWidget {
                               icon: CupertinoIcons.heart,
                               title: Strings.favorites,
                               onTap: () => _navigateToFavorites(context),
+                            ),
+                            SidebarTile(
+                              icon: CupertinoIcons.star,
+                              title: Strings.homeTitleRecommend,
+                              onTap: () => _navigateToRecommend(context),
+                            ),
+                            SidebarTile(
+                              icon: CupertinoIcons.music_note_list,
+                              title: Strings.playlistsTitle,
+                              onTap: () => _navigateToPlaylists(context),
                             ),
                             SidebarTile(
                               icon: CupertinoIcons.arrow_down_circle,

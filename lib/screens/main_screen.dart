@@ -82,18 +82,14 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   PreferredSizeWidget? _buildAppBar(BuildContext context) {
-    // Search tab owns its own AppBar inside SearchScreenContent.
-    if (_currentIndex == 1) return null;
+    // Library and Search tabs own their AppBar.
+    if (_currentIndex == 0 || _currentIndex == 1) return null;
 
-    final totalCount = _currentIndex == 0
-        ? context.select<HomeViewModel, int?>(
+    final totalCount = _currentIndex == 2
+        ? context.select<PopularViewModel, int?>(
             (vm) => vm.pagination?.totalCount,
           )
-        : _currentIndex == 2
-            ? context.select<PopularViewModel, int?>(
-                (vm) => vm.pagination?.totalCount,
-              )
-            : null;
+        : null;
 
     final title = totalCount != null
         ? '${_pageTitle(_currentIndex)} ($totalCount)'
@@ -105,9 +101,7 @@ class _MainScreenState extends State<MainScreen> {
         IconButton(
           icon: const Icon(Icons.filter_list),
           onPressed: () {
-            if (_currentIndex == 0) {
-              context.read<HomeViewModel>().toggleFilterPanel();
-            } else if (_currentIndex == 2) {
+            if (_currentIndex == 2) {
               context.read<PopularViewModel>().toggleFilterPanel();
             }
           },

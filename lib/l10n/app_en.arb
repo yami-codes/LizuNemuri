@@ -117,6 +117,8 @@
   },
   "downloadsPlayA11y": "Play downloaded audio",
   "downloadsTitle": "Downloads",
+  "librarySegmentBrowse": "Browse",
+  "playlistsTitle": "Playlists",
   "drawerSectionContent": "Content",
   "drawerSectionDiscover": "Discover",
   "drawerSectionSystem": "System",
