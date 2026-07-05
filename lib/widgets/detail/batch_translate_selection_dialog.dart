@@ -3,15 +3,30 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/core/theme/app_spacing.dart';
 import 'package:xuro/presentation/viewmodels/detail_viewmodel.dart';
 
+/// Result from the bulk-translate checklist.
+class BatchTranslateSelectionResult {
+  final List<DownloadPair> pairs;
+  final bool translateTitle;
+
+  const BatchTranslateSelectionResult({
+    required this.pairs,
+    required this.translateTitle,
+  });
+}
+
 /// Checklist to pick which tracks to pre-translate; shows per-track cache badges.
 class BatchTranslateSelectionDialog extends StatefulWidget {
   final Future<List<TranslateSelectionItem>> Function() loadItems;
   final Future<int> Function() cachedCount;
+  final String? workTitle;
+  final Future<bool> Function()? isTitleCached;
 
   const BatchTranslateSelectionDialog({
     super.key,
     required this.loadItems,
     required this.cachedCount,
+    this.workTitle,
+    this.isTitleCached,
   });
 
   @override
@@ -24,6 +39,8 @@ class _BatchTranslateSelectionDialogState
   List<TranslateSelectionItem>? _items;
   final Set<int> _selected = {};
   int _savedCount = 0;
+  bool _translateTitle = true;
+  bool _titleCached = false;
   String? _error;
   bool _loading = true;
 
@@ -37,10 +54,15 @@ class _BatchTranslateSelectionDialogState
     try {
       final items = await widget.loadItems();
       final saved = await widget.cachedCount();
+      final titleCached = widget.isTitleCached != null
+          ? await widget.isTitleCached!()
+          : false;
       if (!mounted) return;
       setState(() {
         _items = items;
         _savedCount = saved;
+        _titleCached = titleCached;
+        _translateTitle = widget.workTitle?.trim().isNotEmpty == true;
         _selected.addAll(List.generate(items.length, (i) => i));
         _loading = false;
       });
@@ -66,6 +88,13 @@ class _BatchTranslateSelectionDialogState
   List<DownloadPair> _selectedPairs() {
     final items = _items!;
     return [for (final i in _selected) items[i].pair];
+  }
+
+  BatchTranslateSelectionResult _selectionResult() {
+    return BatchTranslateSelectionResult(
+      pairs: _selectedPairs(),
+      translateTitle: _translateTitle,
+    );
   }
 
   @override
@@ -145,17 +174,40 @@ class _BatchTranslateSelectionDialogState
             Flexible(
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: items.length,
+                itemCount: items.length +
+                    (widget.workTitle?.trim().isNotEmpty == true ? 1 : 0),
                 itemBuilder: (context, index) {
-                  final item = items[index];
+                  if (widget.workTitle?.trim().isNotEmpty == true &&
+                      index == 0) {
+                    return CheckboxListTile(
+                      value: _translateTitle,
+                      onChanged: (v) =>
+                          setState(() => _translateTitle = v ?? false),
+                      title: Text(Strings.batchTranslateIncludeTitle),
+                      subtitle: Text(
+                        _titleCached
+                            ? Strings.batchTranslateCachedBadge
+                            : widget.workTitle!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      controlAffinity: ListTileControlAffinity.leading,
+                      dense: true,
+                    );
+                  }
+                  final itemIndex =
+                      widget.workTitle?.trim().isNotEmpty == true
+                          ? index - 1
+                          : index;
+                  final item = items[itemIndex];
                   return CheckboxListTile(
-                    value: _selected.contains(index),
+                    value: _selected.contains(itemIndex),
                     onChanged: (v) {
                       setState(() {
                         if (v == true) {
-                          _selected.add(index);
+                          _selected.add(itemIndex);
                         } else {
-                          _selected.remove(index);
+                          _selected.remove(itemIndex);
                         }
                       });
                     },
@@ -187,10 +239,12 @@ class _BatchTranslateSelectionDialogState
           child: Text(Strings.downloadCancel),
         ),
         TextButton(
-          onPressed: _selected.isEmpty
+          onPressed: _selected.isEmpty && !_translateTitle
               ? null
-              : () => Navigator.of(context).pop(_selectedPairs()),
-          child: Text(Strings.batchTranslateStart(_selected.length)),
+              : () => Navigator.of(context).pop(_selectionResult()),
+          child: Text(Strings.batchTranslateStart(
+            _selected.length + (_translateTitle ? 1 : 0),
+          )),
         ),
       ],
     );

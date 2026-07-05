@@ -2308,5 +2308,12 @@
       "failed": { "type": "int" }
     }
   },
-  "batchTranslateCancelled": "ยกเลิกการแปลแบบกลุ่มแล้ว"
+  "batchTranslateCancelled": "ยกเลิกการแปลแบบกลุ่มแล้ว",
+  "llmTranslateTitle": "แปลชื่อผลงาน",
+  "llmShowOriginalTitle": "แสดงชื่อต้นฉบับ",
+  "llmShowTranslatedTitle": "แสดงชื่อที่แปลแล้ว",
+  "llmTitleTranslationDone": "แปลชื่อผลงานเสร็จแล้ว",
+  "llmTitleFromCache": "โหลดคำแปลชื่อจากแคชแล้ว",
+  "llmErrorNoTitle": "ผลงานนี้ไม่มีชื่อให้แปล",
+  "batchTranslateIncludeTitle": "แปลชื่อผลงาน"
 }

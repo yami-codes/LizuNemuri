@@ -7,6 +7,7 @@ import 'package:xuro/widgets/work_grid_view.dart';
 import 'package:xuro/presentation/layouts/work_layout_strategy.dart';
 import 'package:xuro/utils/logger.dart';
 import 'package:xuro/widgets/pagination_controls.dart';
+import 'package:xuro/widgets/common/back_leading.dart';
 import 'package:xuro/common/constants/log_strings.dart';
 
 class SearchScreen extends StatelessWidget {
@@ -111,132 +112,122 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PoppableAppBar(
+        title: Strings.search,
+      ),
       body: Column(
         children: [
-          Container(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + 8,
-              bottom: 8,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: Strings.searchInputHint,
+                filled: true,
+                fillColor: Theme.of(context)
+                    .colorScheme
+                    .surfaceContainerHighest
+                    .withValues(alpha: 0.5),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 20),
+                        onPressed: () {
+                          _searchController.clear();
+                          context.read<SearchViewModel>().clear();
+                        },
+                      )
+                    : null,
+                prefixIcon: const Icon(Icons.search, size: 20),
+                isDense: true,
+              ),
+              textInputAction: TextInputAction.search,
+              onSubmitted: (_) => _onSearch(),
+              onChanged: (value) => setState(() {}),
             ),
-            child: Column(
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: Strings.searchInputHint,
-                      filled: true,
-                      fillColor: Theme.of(context)
-                          .colorScheme
-                          .surfaceContainerHighest
-                          .withValues(alpha: 0.5),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      suffixIcon: _searchController.text.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear, size: 20),
-                              onPressed: () {
-                                _searchController.clear();
-                                context.read<SearchViewModel>().clear();
-                              },
-                            )
-                          : null,
-                      prefixIcon: const Icon(Icons.search, size: 20),
-                      isDense: true,
-                    ),
-                    textInputAction: TextInputAction.search,
-                    onSubmitted: (_) => _onSearch(),
-                    onChanged: (value) => setState(() {}),
+                Consumer<SearchViewModel>(
+                  builder: (context, viewModel, _) => FilterChip(
+                    label: Text(Strings.subtitleChip),
+                    selected: viewModel.hasSubtitle,
+                    onSelected: (_) => viewModel.toggleSubtitle(),
+                    showCheckmark: true,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      // 字幕选项
-                      Consumer<SearchViewModel>(
-                        builder: (context, viewModel, _) => FilterChip(
-                          label: Text(Strings.subtitleChip),
-                          selected: viewModel.hasSubtitle,
-                          onSelected: (_) => viewModel.toggleSubtitle(),
-                          showCheckmark: true,
-                        ),
+                const SizedBox(width: 8),
+                Consumer<SearchViewModel>(
+                  builder: (context, viewModel, _) =>
+                      PopupMenuButton<(String, String)>(
+                    child: Chip(
+                      label: Text(
+                          _getOrderText(viewModel.order, viewModel.sort)),
+                      deleteIcon: const Icon(Icons.arrow_drop_down, size: 18),
+                      onDeleted: null,
+                    ),
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: ('create_date', 'desc'),
+                        child: Text(Strings.sortLatest),
                       ),
-                      const SizedBox(width: 8),
-                      // 排序选项
-                      Consumer<SearchViewModel>(
-                        builder: (context, viewModel, _) =>
-                            PopupMenuButton<(String, String)>(
-                          child: Chip(
-                            label: Text(
-                                _getOrderText(viewModel.order, viewModel.sort)),
-                            deleteIcon:
-                                const Icon(Icons.arrow_drop_down, size: 18),
-                            onDeleted: null,
-                          ),
-                          itemBuilder: (context) => [
-                            PopupMenuItem(
-                              value: ('create_date', 'desc'),
-                              child: Text(Strings.sortLatest),
-                            ),
-                            PopupMenuItem(
-                              value: ('release', 'desc'),
-                              child: Text(Strings.sortReleaseDesc),
-                            ),
-                            PopupMenuItem(
-                              value: ('release', 'asc'),
-                              child: Text(Strings.sortReleaseAsc),
-                            ),
-                            PopupMenuItem(
-                              value: ('dl_count', 'desc'),
-                              child: Text(Strings.sortSalesDesc),
-                            ),
-                            PopupMenuItem(
-                              value: ('price', 'asc'),
-                              child: Text(Strings.sortPriceAsc),
-                            ),
-                            PopupMenuItem(
-                              value: ('price', 'desc'),
-                              child: Text(Strings.sortPriceDesc),
-                            ),
-                            PopupMenuItem(
-                              value: ('rate_average_2dp', 'desc'),
-                              child: Text(Strings.sortRatingDesc),
-                            ),
-                            PopupMenuItem(
-                              value: ('review_count', 'desc'),
-                              child: Text(Strings.sortReviewDesc),
-                            ),
-                            PopupMenuItem(
-                              value: ('id', 'desc'),
-                              child: Text(Strings.sortRjDesc),
-                            ),
-                            PopupMenuItem(
-                              value: ('id', 'asc'),
-                              child: Text(Strings.sortRjAsc),
-                            ),
-                            PopupMenuItem(
-                              value: ('random', 'desc'),
-                              child: Text(Strings.sortRandom),
-                            ),
-                          ],
-                          onSelected: (value) =>
-                              viewModel.setOrder(value.$1, value.$2),
-                        ),
+                      PopupMenuItem(
+                        value: ('release', 'desc'),
+                        child: Text(Strings.sortReleaseDesc),
+                      ),
+                      PopupMenuItem(
+                        value: ('release', 'asc'),
+                        child: Text(Strings.sortReleaseAsc),
+                      ),
+                      PopupMenuItem(
+                        value: ('dl_count', 'desc'),
+                        child: Text(Strings.sortSalesDesc),
+                      ),
+                      PopupMenuItem(
+                        value: ('price', 'asc'),
+                        child: Text(Strings.sortPriceAsc),
+                      ),
+                      PopupMenuItem(
+                        value: ('price', 'desc'),
+                        child: Text(Strings.sortPriceDesc),
+                      ),
+                      PopupMenuItem(
+                        value: ('rate_average_2dp', 'desc'),
+                        child: Text(Strings.sortRatingDesc),
+                      ),
+                      PopupMenuItem(
+                        value: ('review_count', 'desc'),
+                        child: Text(Strings.sortReviewDesc),
+                      ),
+                      PopupMenuItem(
+                        value: ('id', 'desc'),
+                        child: Text(Strings.sortRjDesc),
+                      ),
+                      PopupMenuItem(
+                        value: ('id', 'asc'),
+                        child: Text(Strings.sortRjAsc),
+                      ),
+                      PopupMenuItem(
+                        value: ('random', 'desc'),
+                        child: Text(Strings.sortRandom),
                       ),
                     ],
+                    onSelected: (value) =>
+                        viewModel.setOrder(value.$1, value.$2),
                   ),
                 ),
               ],
             ),
           ),
+          const SizedBox(height: 8),
           Expanded(
             child: Consumer<SearchViewModel>(
               builder: (context, viewModel, child) {

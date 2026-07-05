@@ -4,7 +4,7 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/presentation/viewmodels/tags_viewmodel.dart';
 import 'package:xuro/screens/browse/widgets/browse_search_bar.dart';
 import 'package:xuro/screens/browse/widgets/browse_grid_item.dart';
-import 'package:xuro/utils/i18n_name_resolver.dart';
+import 'package:xuro/widgets/common/back_leading.dart';
 
 class TagsScreen extends StatelessWidget {
   const TagsScreen({super.key});
@@ -14,7 +14,7 @@ class TagsScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => TagsViewModel(),
       child: Scaffold(
-        appBar: AppBar(title: Text(Strings.browseAllTags)),
+        appBar: PoppableAppBar(title: Strings.browseAllTags),
         body: Consumer<TagsViewModel>(
           builder: (context, viewModel, _) {
             return Column(

@@ -11,11 +11,27 @@ import 'package:xuro/common/constants/log_strings.dart';
 class WorkInfo extends StatelessWidget {
   final Work work;
   final model.WorkInfo? workInfo;
+  final String displayTitle;
+  final bool isTitleTranslated;
+  final bool isTitleTranslating;
+  final bool canRestoreOriginalTitle;
+  final bool canShowTranslatedTitle;
+  final VoidCallback? onTranslateTitle;
+  final VoidCallback? onShowOriginalTitle;
+  final VoidCallback? onShowTranslatedTitle;
 
   const WorkInfo({
     super.key,
     required this.work,
     this.workInfo,
+    required this.displayTitle,
+    this.isTitleTranslated = false,
+    this.isTitleTranslating = false,
+    this.canRestoreOriginalTitle = false,
+    this.canShowTranslatedTitle = false,
+    this.onTranslateTitle,
+    this.onShowOriginalTitle,
+    this.onShowTranslatedTitle,
   });
 
   String _getLocalizedTagName(BuildContext context, Tag tag) {
@@ -45,7 +61,18 @@ class WorkInfo extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          WorkInfoHeader(work: work, workInfo: workInfo),
+          WorkInfoHeader(
+            work: work,
+            workInfo: workInfo,
+            displayTitle: displayTitle,
+            isTitleTranslated: isTitleTranslated,
+            isTitleTranslating: isTitleTranslating,
+            canRestoreOriginalTitle: canRestoreOriginalTitle,
+            canShowTranslatedTitle: canShowTranslatedTitle,
+            onTranslateTitle: onTranslateTitle,
+            onShowOriginalTitle: onShowOriginalTitle,
+            onShowTranslatedTitle: onShowTranslatedTitle,
+          ),
           const SizedBox(height: 8),
           if (work.tags != null && work.tags!.isNotEmpty)
             Wrap(

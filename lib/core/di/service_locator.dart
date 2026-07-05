@@ -38,6 +38,7 @@ import 'package:xuro/core/download/storage/download_repository.dart';
 import 'package:xuro/data/repositories/llm_api_key_repository.dart';
 import 'package:xuro/data/services/llm_client.dart';
 import 'package:xuro/core/llm/subtitle_translation_service.dart';
+import 'package:xuro/core/llm/work_title_translation_service.dart';
 import 'package:xuro/core/download/download_service.dart';
 
 final getIt = GetIt.instance;
@@ -115,6 +116,14 @@ Future<void> setupServiceLocator() async {
 
   getIt.registerLazySingleton<SubtitleTranslationService>(
     () => SubtitleTranslationService(
+      settings: getIt<AppSettingsService>(),
+      client: getIt<LlmClient>(),
+      apiKeyRepo: getIt<LlmApiKeyRepository>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<WorkTitleTranslationService>(
+    () => WorkTitleTranslationService(
       settings: getIt<AppSettingsService>(),
       client: getIt<LlmClient>(),
       apiKeyRepo: getIt<LlmApiKeyRepository>(),

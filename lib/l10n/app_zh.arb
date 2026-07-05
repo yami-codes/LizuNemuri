@@ -2308,5 +2308,12 @@
       "failed": { "type": "int" }
     }
   },
-  "batchTranslateCancelled": "批量翻译已取消"
+  "batchTranslateCancelled": "批量翻译已取消",
+  "llmTranslateTitle": "翻译作品标题",
+  "llmShowOriginalTitle": "显示原标题",
+  "llmShowTranslatedTitle": "显示翻译标题",
+  "llmTitleTranslationDone": "作品标题翻译完成",
+  "llmTitleFromCache": "已从缓存加载标题翻译",
+  "llmErrorNoTitle": "该作品没有可翻译的标题",
+  "batchTranslateIncludeTitle": "翻译作品标题"
 }

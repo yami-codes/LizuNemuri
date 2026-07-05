@@ -4,7 +4,7 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/presentation/viewmodels/voice_actors_viewmodel.dart';
 import 'package:xuro/screens/browse/widgets/browse_search_bar.dart';
 import 'package:xuro/screens/browse/widgets/browse_grid_item.dart';
-import 'package:xuro/utils/i18n_name_resolver.dart';
+import 'package:xuro/widgets/common/back_leading.dart';
 
 class VoiceActorsScreen extends StatelessWidget {
   const VoiceActorsScreen({super.key});
@@ -14,7 +14,7 @@ class VoiceActorsScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => VoiceActorsViewModel(),
       child: Scaffold(
-        appBar: AppBar(title: Text(Strings.browseAllVoiceActors)),
+        appBar: PoppableAppBar(title: Strings.browseAllVoiceActors),
         body: Consumer<VoiceActorsViewModel>(
           builder: (context, viewModel, _) {
             return Column(
