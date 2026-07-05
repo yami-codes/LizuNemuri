@@ -21,6 +21,16 @@ class _FakeAudioService implements IAudioPlayerService {
     _volume = volume;
   }
 
+  double _speed = 1.0;
+
+  @override
+  double get playbackSpeed => _speed;
+
+  @override
+  Future<void> setPlaybackSpeed(double speed, {bool persist = true}) async {
+    _speed = speed;
+  }
+
   @override
   dynamic noSuchMethod(Invocation invocation) =>
       throw UnimplementedError('未预期调用: ${invocation.memberName}');

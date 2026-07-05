@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xuro/core/settings/app_language.dart';
 import 'package:xuro/core/settings/llm_subtitle_display_mode.dart';
+import 'package:xuro/core/settings/playback_speed_presets.dart';
 import 'package:xuro/core/settings/llm_subtitle_target_language.dart';
 
 /// Top-level accent color variants. Surfaces stay neutral (white/black) across
@@ -35,6 +36,7 @@ class AppSettingsService extends ChangeNotifier {
   static const String _llmJailbreakAutoKey = 'llm_jailbreak_auto';
   static const String _llmSubtitleDisplayModeKey = 'llm_subtitle_display_mode';
   static const String _playbackVolumeKey = 'playback_volume';
+  static const String _playbackSpeedKey = 'playback_speed';
   static const String _sleepTimerFadeOutKey = 'sleep_timer_fade_out';
   static const String _sleepTimerDimScreenKey = 'sleep_timer_dim_screen';
 
@@ -75,6 +77,7 @@ class AppSettingsService extends ChangeNotifier {
   late bool _llmJailbreakAuto;
   late LlmSubtitleDisplayMode _llmSubtitleDisplayMode;
   late double _playbackVolume;
+  late double _playbackSpeed;
   late bool _sleepTimerFadeOutEnabled;
   late bool _sleepTimerDimScreenEnabled;
 
@@ -115,6 +118,9 @@ class AppSettingsService extends ChangeNotifier {
       orElse: () => LlmSubtitleDisplayMode.dual,
     );
     _playbackVolume = _prefs.getDouble(_playbackVolumeKey) ?? 1.0;
+    _playbackSpeed = PlaybackSpeedPresets.clamp(
+      _prefs.getDouble(_playbackSpeedKey) ?? PlaybackSpeedPresets.defaultSpeed,
+    );
     _sleepTimerFadeOutEnabled =
         _prefs.getBool(_sleepTimerFadeOutKey) ?? true;
     _sleepTimerDimScreenEnabled =
@@ -324,6 +330,16 @@ class AppSettingsService extends ChangeNotifier {
     _playbackVolume = clamped;
     notifyListeners();
     await _prefs.setDouble(_playbackVolumeKey, clamped);
+  }
+
+  double get playbackSpeed => _playbackSpeed;
+
+  Future<void> setPlaybackSpeed(double speed) async {
+    final clamped = PlaybackSpeedPresets.clamp(speed);
+    if (_playbackSpeed == clamped) return;
+    _playbackSpeed = clamped;
+    notifyListeners();
+    await _prefs.setDouble(_playbackSpeedKey, clamped);
   }
 
   bool get sleepTimerFadeOutEnabled => _sleepTimerFadeOutEnabled;

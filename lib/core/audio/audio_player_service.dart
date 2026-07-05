@@ -15,6 +15,7 @@ import './controllers/playback_controller.dart';
 import './events/playback_event_hub.dart';
 import 'package:xuro/common/constants/log_strings.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:xuro/core/settings/playback_speed_presets.dart';
 
 class AudioPlayerService implements IAudioPlayerService {
   late final AudioPlayer _player;
@@ -75,8 +76,10 @@ class AudioPlayerService implements IAudioPlayerService {
 
       final session = await AudioSession.instance;
       await session.configure(const AudioSessionConfiguration.music());
-      final savedVolume = GetIt.I<AppSettingsService>().playbackVolume;
+      final settings = GetIt.I<AppSettingsService>();
+      final savedVolume = settings.playbackVolume;
       await _player.setVolume(savedVolume.clamp(0.0, 1.0));
+      await _player.setSpeed(PlaybackSpeedPresets.clamp(settings.playbackSpeed));
       await _notificationService.init();
 
       _stateManager.initStateListeners();
@@ -166,6 +169,19 @@ class AudioPlayerService implements IAudioPlayerService {
     await _player.setVolume(clamped);
     if (persist) {
       await GetIt.I<AppSettingsService>().setPlaybackVolume(clamped);
+    }
+  }
+
+  @override
+  double get playbackSpeed => _player.speed;
+
+  @override
+  Future<void> setPlaybackSpeed(double speed, {bool persist = true}) async {
+    await ready;
+    final clamped = PlaybackSpeedPresets.clamp(speed);
+    await _player.setSpeed(clamped);
+    if (persist) {
+      await GetIt.I<AppSettingsService>().setPlaybackSpeed(clamped);
     }
   }
 

@@ -2334,6 +2334,13 @@
   "llmErrorNoTitle": "This work has no title to translate",
   "batchTranslateIncludeTitle": "Translate project title",
   "playerVolume": "Volume",
+  "playerSpeed": "Playback speed",
+  "playerSpeedLabel": "{speed}x",
+  "@playerSpeedLabel": {
+    "placeholders": {
+      "speed": { "type": "String" }
+    }
+  },
   "playerViewCover": "Cover",
   "playerViewSubtitles": "Subtitles"
 }

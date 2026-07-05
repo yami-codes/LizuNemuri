@@ -2334,6 +2334,13 @@
   "llmErrorNoTitle": "该作品没有可翻译的标题",
   "batchTranslateIncludeTitle": "翻译作品标题",
   "playerVolume": "音量",
+  "playerSpeed": "播放速度",
+  "playerSpeedLabel": "{speed}倍",
+  "@playerSpeedLabel": {
+    "placeholders": {
+      "speed": { "type": "String" }
+    }
+  },
   "playerViewCover": "封面",
   "playerViewSubtitles": "字幕"
 }

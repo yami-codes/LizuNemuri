@@ -16,6 +16,7 @@ import 'package:xuro/core/llm/subtitle_translation_service.dart';
 import 'package:xuro/core/llm/subtitle_translation_progress.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/core/settings/llm_subtitle_display_mode.dart';
+import 'package:xuro/core/settings/playback_speed_presets.dart';
 import 'package:xuro/core/subtitle/subtitle_import_service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:xuro/utils/logger.dart';
@@ -46,6 +47,7 @@ class PlayerViewModel extends ChangeNotifier {
   Duration? _duration;
   Subtitle? _currentSubtitle;
   double _volume = 1.0;
+  double _playbackSpeed = PlaybackSpeedPresets.defaultSpeed;
 
   final List<StreamSubscription> _subscriptions = [];
 
@@ -75,6 +77,7 @@ class PlayerViewModel extends ChangeNotifier {
       _subtitleService.subtitleList!.subtitles.isNotEmpty;
 
   double get volume => _volume;
+  double get playbackSpeed => _playbackSpeed;
 
   /// One-shot snackbar message for auto-translate failures (consumed by UI).
   String? takeTranslationFeedback() {
@@ -308,12 +311,18 @@ class PlayerViewModel extends ChangeNotifier {
   // 请求初始状态
   void _requestInitialState() {
     _volume = _settings.playbackVolume;
+    _playbackSpeed = _settings.playbackSpeed;
     Future.microtask(() async {
       _eventHub.emit(RequestInitialStateEvent());
       try {
         final v = _audioService.volume;
         if (v != _volume) {
           _volume = v;
+          notifyListeners();
+        }
+        final speed = _audioService.playbackSpeed;
+        if (speed != _playbackSpeed) {
+          _playbackSpeed = speed;
           notifyListeners();
         }
       } catch (_) {}
@@ -323,6 +332,12 @@ class PlayerViewModel extends ChangeNotifier {
   Future<void> setVolume(double volume) async {
     await _audioService.setVolume(volume);
     _volume = volume.clamp(0.0, 1.0);
+    notifyListeners();
+  }
+
+  Future<void> setPlaybackSpeed(double speed) async {
+    await _audioService.setPlaybackSpeed(speed);
+    _playbackSpeed = PlaybackSpeedPresets.clamp(speed);
     notifyListeners();
   }
 

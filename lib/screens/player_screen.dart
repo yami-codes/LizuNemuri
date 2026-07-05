@@ -8,6 +8,7 @@ import 'package:xuro/widgets/player/player_controls.dart';
 import 'package:xuro/widgets/player/waveform_progress.dart';
 import 'package:xuro/widgets/player/player_art_panel.dart';
 import 'package:xuro/widgets/player/volume_control.dart';
+import 'package:xuro/widgets/player/player_speed_button.dart';
 import 'package:xuro/widgets/player/sleep_mode_dim_overlay.dart';
 import 'package:xuro/widgets/player/cover_artwork_background.dart';
 import 'package:xuro/widgets/player/player_cover_palette_loader.dart';
@@ -361,6 +362,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   ),
                   actions: [
                     PlayerVolumeButton(viewModel: _viewModel),
+                    PlayerSpeedButton(viewModel: _viewModel),
                     ListenableBuilder(
                       listenable: sleepTimer,
                       builder: (context, _) {

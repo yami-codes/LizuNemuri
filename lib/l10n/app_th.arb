@@ -2334,6 +2334,13 @@
   "llmErrorNoTitle": "ผลงานนี้ไม่มีชื่อให้แปล",
   "batchTranslateIncludeTitle": "แปลชื่อผลงาน",
   "playerVolume": "ระดับเสียง",
+  "playerSpeed": "ความเร็วเล่น",
+  "playerSpeedLabel": "{speed}x",
+  "@playerSpeedLabel": {
+    "placeholders": {
+      "speed": { "type": "String" }
+    }
+  },
   "playerViewCover": "ปก",
   "playerViewSubtitles": "ซับไตเติล"
 }

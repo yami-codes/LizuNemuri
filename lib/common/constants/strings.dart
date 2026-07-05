@@ -395,6 +395,16 @@ class Strings {
   static String get batchTranslateIncludeTitle =>
       _l10n.batchTranslateIncludeTitle;
   static String get playerVolume => _l10n.playerVolume;
+  static String get playerSpeed => _l10n.playerSpeed;
+  static String playerSpeedLabel(double speed) =>
+      _l10n.playerSpeedLabel(_formatSpeedLabel(speed));
+
+  static String _formatSpeedLabel(double speed) {
+    final t = speed.toStringAsFixed(2);
+    if (t.endsWith('00')) return speed.toStringAsFixed(1);
+    if (t.endsWith('0')) return t.substring(0, t.length - 1);
+    return t;
+  }
   static String get playerViewCover => _l10n.playerViewCover;
   static String get playerViewSubtitles => _l10n.playerViewSubtitles;
 
