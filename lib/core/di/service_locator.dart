@@ -40,6 +40,13 @@ import 'package:xuro/data/services/llm_client.dart';
 import 'package:xuro/core/llm/subtitle_translation_service.dart';
 import 'package:xuro/core/llm/work_title_translation_service.dart';
 import 'package:xuro/core/download/download_service.dart';
+import 'package:xuro/core/library/scan_roots_store.dart';
+import 'package:xuro/core/library/storage/local_library_repository.dart';
+import 'package:xuro/core/dlsite/auth/dlsite_auth_repository.dart';
+import 'package:xuro/core/dlsite/dlsite_play_library_service.dart';
+import 'package:xuro/core/dlsite/dlsite_play_work_service.dart';
+import 'package:xuro/core/theme/dynamic_hue_controller.dart';
+import 'package:xuro/core/audio/effects/audio_effects_controller.dart';
 
 final getIt = GetIt.instance;
 
@@ -99,6 +106,32 @@ Future<void> setupServiceLocator() async {
       eventHub: getIt(),
       subtitleService: getIt(),
     ),
+  );
+
+  getIt.registerLazySingleton<DynamicHueController>(
+    () => DynamicHueController(playerViewModel: getIt<PlayerViewModel>()),
+  );
+
+  getIt.registerLazySingleton<AudioEffectsController>(
+    () => AudioEffectsController(),
+  );
+
+  getIt.registerLazySingleton<ScanRootsStore>(
+    () => ScanRootsStore(prefs),
+  );
+
+  getIt.registerLazySingleton<LocalLibraryRepository>(
+    () => LocalLibraryRepository(getIt<DatabaseService>()),
+  );
+
+  getIt.registerLazySingleton<DlsiteAuthRepository>(
+    () => DlsiteAuthRepository(),
+  );
+  getIt.registerLazySingleton<DlsitePlayLibraryService>(
+    () => DlsitePlayLibraryService(getIt<DlsiteAuthRepository>()),
+  );
+  getIt.registerLazySingleton<DlsitePlayWorkService>(
+    () => DlsitePlayWorkService(getIt<DlsiteAuthRepository>()),
   );
 
   // 注册 AppSettingsService
@@ -178,7 +211,10 @@ Future<void> setupServiceLocator() async {
 
   // 注册 SleepTimerController（会话级；到点 pause()，不持久化）
   getIt.registerLazySingleton(
-    () => SleepTimerController(getIt<IAudioPlayerService>()),
+    () => SleepTimerController(
+      getIt<IAudioPlayerService>(),
+      getIt<AppSettingsService>(),
+    ),
   );
 
   // 注册 BackgroundPlayController（后台播放开关执行端，main 中 initialize）
@@ -206,6 +242,7 @@ void setupSubtitleServices() {
     controller: getIt(),
     subtitleService: getIt(),
     settings: getIt<AppSettingsService>(),
+    playerViewModel: getIt<PlayerViewModel>(),
   ));
 }
 

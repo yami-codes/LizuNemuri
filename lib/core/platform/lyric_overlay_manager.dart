@@ -1,16 +1,25 @@
 import 'dart:async';
 
 import 'package:xuro/common/constants/strings.dart';
+import 'package:xuro/core/audio/models/subtitle.dart';
 import 'package:xuro/core/platform/i_lyric_overlay_controller.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/core/subtitle/i_subtitle_service.dart';
+import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
 import 'package:flutter/material.dart';
 
 class LyricOverlayManager {
   final ILyricOverlayController _controller;
   final ISubtitleService _subtitleService;
   final AppSettingsService _settings;
+  final PlayerViewModel _playerViewModel;
   StreamSubscription? _subscription;
+
+  void _onOverlayLyricContextChanged() {
+    if (_isShowing) {
+      unawaited(_pushOverlayLyric(_subtitleService.currentSubtitle));
+    }
+  }
   bool _isShowing = false;
   bool _isEditable = false;
 
@@ -18,17 +27,21 @@ class LyricOverlayManager {
     required ILyricOverlayController controller,
     required ISubtitleService subtitleService,
     required AppSettingsService settings,
+    required PlayerViewModel playerViewModel,
   }) : _controller = controller,
        _subtitleService = subtitleService,
-       _settings = settings;
+       _settings = settings,
+       _playerViewModel = playerViewModel;
 
   Future<void> initialize() async {
     await _controller.initialize();
     _subscription = _subtitleService.currentSubtitleStream.listen((subtitle) {
       if (_isShowing) {
-        _controller.updateLyric(subtitle?.text ?? Strings.noLyrics);
+        unawaited(_pushOverlayLyric(subtitle));
       }
     });
+    _settings.addListener(_onOverlayLyricContextChanged);
+    _playerViewModel.addListener(_onOverlayLyricContextChanged);
     
     _isShowing = await _controller.isShowing();
     
@@ -38,8 +51,16 @@ class LyricOverlayManager {
   }
   
   Future<void> dispose() async {
+    _settings.removeListener(_onOverlayLyricContextChanged);
+    _playerViewModel.removeListener(_onOverlayLyricContextChanged);
     await _subscription?.cancel();
     await _controller.dispose();
+  }
+
+  Future<void> _pushOverlayLyric(Subtitle? subtitle) async {
+    await _controller.updateLyric(
+      _playerViewModel.overlayTextForSubtitle(subtitle),
+    );
   }
   
   Future<bool> checkPermission() async {
@@ -54,9 +75,7 @@ class LyricOverlayManager {
     await _controller.show();
     _isShowing = true;
     final currentSubtitle = _subtitleService.currentSubtitleWithState;
-    await _controller.updateLyric(
-      currentSubtitle?.subtitle.text ?? Strings.noLyrics,
-    );
+    await _pushOverlayLyric(currentSubtitle?.subtitle);
     // 显示后统一以持久化偏好为准（锁定 / 解锁拖动）。
     await setEditable(_settings.lyricOverlayUnlocked);
   }

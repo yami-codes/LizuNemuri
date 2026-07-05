@@ -3,6 +3,8 @@ import 'dart:ui' show Locale, PlatformDispatcher;
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xuro/core/settings/app_language.dart';
+import 'package:xuro/core/settings/llm_subtitle_display_mode.dart';
+import 'package:xuro/core/settings/playback_speed_presets.dart';
 import 'package:xuro/core/settings/llm_subtitle_target_language.dart';
 
 /// Top-level accent color variants. Surfaces stay neutral (white/black) across
@@ -32,7 +34,14 @@ class AppSettingsService extends ChangeNotifier {
   static const String _llmSystemPromptKey = 'llm_system_prompt';
   static const String _llmJailbreakPromptKey = 'llm_jailbreak_prompt';
   static const String _llmJailbreakAutoKey = 'llm_jailbreak_auto';
+  static const String _llmSubtitleDisplayModeKey = 'llm_subtitle_display_mode';
   static const String _playbackVolumeKey = 'playback_volume';
+  static const String _playbackSpeedKey = 'playback_speed';
+  static const String _sleepTimerFadeOutKey = 'sleep_timer_fade_out';
+  static const String _sleepTimerDimScreenKey = 'sleep_timer_dim_screen';
+  static const String _playbackFadeEnabledKey = 'playback_fade_enabled';
+  static const String _playbackFadeMsKey = 'playback_fade_ms';
+  static const String _playerBackdropClarityKey = 'player_backdrop_clarity';
 
   static const String defaultServerUrl = 'https://api.asmr.one/api';
   static const String defaultLlmApiEndpoint = 'https://api.openai.com/v1';
@@ -43,6 +52,11 @@ class AppSettingsService extends ChangeNotifier {
   static const List<String> defaultAudioFormatOrder = [
     'mp3', 'flac', 'wav', 'opus', 'm4a', 'aac'
   ];
+  static const double defaultPlayerBackdropClarity = 0.35;
+  static const bool defaultPlaybackFadeEnabled = true;
+  static const int defaultPlaybackFadeMs = 300;
+  static const int minPlaybackFadeMs = 100;
+  static const int maxPlaybackFadeMs = 1000;
 
   /// Available API nodes (labels via [Strings.serverMain] etc. at UI layer).
   static const List<String> serverUrls = [
@@ -69,7 +83,14 @@ class AppSettingsService extends ChangeNotifier {
   late String _llmSystemPromptOverride;
   late String _llmJailbreakPrompt;
   late bool _llmJailbreakAuto;
+  late LlmSubtitleDisplayMode _llmSubtitleDisplayMode;
   late double _playbackVolume;
+  late double _playbackSpeed;
+  late bool _sleepTimerFadeOutEnabled;
+  late bool _sleepTimerDimScreenEnabled;
+  late bool _playbackFadeEnabled;
+  late int _playbackFadeMs;
+  late double _playerBackdropClarity;
 
   AppSettingsService(this._prefs) {
     _serverUrl = _prefs.getString(_serverUrlKey) ?? defaultServerUrl;
@@ -102,7 +123,27 @@ class AppSettingsService extends ChangeNotifier {
     _llmSystemPromptOverride = _prefs.getString(_llmSystemPromptKey) ?? '';
     _llmJailbreakPrompt = _prefs.getString(_llmJailbreakPromptKey) ?? '';
     _llmJailbreakAuto = _prefs.getBool(_llmJailbreakAutoKey) ?? true;
+    final savedDisplayMode = _prefs.getString(_llmSubtitleDisplayModeKey);
+    _llmSubtitleDisplayMode = LlmSubtitleDisplayMode.values.firstWhere(
+      (v) => v.name == savedDisplayMode,
+      orElse: () => LlmSubtitleDisplayMode.dual,
+    );
     _playbackVolume = _prefs.getDouble(_playbackVolumeKey) ?? 1.0;
+    _playbackSpeed = PlaybackSpeedPresets.clamp(
+      _prefs.getDouble(_playbackSpeedKey) ?? PlaybackSpeedPresets.defaultSpeed,
+    );
+    _sleepTimerFadeOutEnabled =
+        _prefs.getBool(_sleepTimerFadeOutKey) ?? true;
+    _sleepTimerDimScreenEnabled =
+        _prefs.getBool(_sleepTimerDimScreenKey) ?? true;
+    _playbackFadeEnabled =
+        _prefs.getBool(_playbackFadeEnabledKey) ?? defaultPlaybackFadeEnabled;
+    _playbackFadeMs = (_prefs.getInt(_playbackFadeMsKey) ??
+            defaultPlaybackFadeMs)
+        .clamp(minPlaybackFadeMs, maxPlaybackFadeMs);
+    _playerBackdropClarity = (_prefs.getDouble(_playerBackdropClarityKey) ??
+            defaultPlayerBackdropClarity)
+        .clamp(0.0, 1.0);
   }
 
   // === UI Language ===
@@ -290,6 +331,15 @@ class AppSettingsService extends ChangeNotifier {
     await _prefs.setBool(_llmJailbreakAutoKey, enabled);
   }
 
+  LlmSubtitleDisplayMode get llmSubtitleDisplayMode => _llmSubtitleDisplayMode;
+
+  Future<void> setLlmSubtitleDisplayMode(LlmSubtitleDisplayMode mode) async {
+    if (_llmSubtitleDisplayMode == mode) return;
+    _llmSubtitleDisplayMode = mode;
+    notifyListeners();
+    await _prefs.setString(_llmSubtitleDisplayModeKey, mode.name);
+  }
+
   // === Playback volume (0.0–1.0) ===
   double get playbackVolume => _playbackVolume;
 
@@ -299,5 +349,63 @@ class AppSettingsService extends ChangeNotifier {
     _playbackVolume = clamped;
     notifyListeners();
     await _prefs.setDouble(_playbackVolumeKey, clamped);
+  }
+
+  double get playbackSpeed => _playbackSpeed;
+
+  Future<void> setPlaybackSpeed(double speed) async {
+    final clamped = PlaybackSpeedPresets.clamp(speed);
+    if (_playbackSpeed == clamped) return;
+    _playbackSpeed = clamped;
+    notifyListeners();
+    await _prefs.setDouble(_playbackSpeedKey, clamped);
+  }
+
+  bool get sleepTimerFadeOutEnabled => _sleepTimerFadeOutEnabled;
+
+  Future<void> setSleepTimerFadeOutEnabled(bool enabled) async {
+    if (_sleepTimerFadeOutEnabled == enabled) return;
+    _sleepTimerFadeOutEnabled = enabled;
+    notifyListeners();
+    await _prefs.setBool(_sleepTimerFadeOutKey, enabled);
+  }
+
+  bool get sleepTimerDimScreenEnabled => _sleepTimerDimScreenEnabled;
+
+  Future<void> setSleepTimerDimScreenEnabled(bool enabled) async {
+    if (_sleepTimerDimScreenEnabled == enabled) return;
+    _sleepTimerDimScreenEnabled = enabled;
+    notifyListeners();
+    await _prefs.setBool(_sleepTimerDimScreenKey, enabled);
+  }
+
+  bool get playbackFadeEnabled => _playbackFadeEnabled;
+
+  Future<void> setPlaybackFadeEnabled(bool enabled) async {
+    if (_playbackFadeEnabled == enabled) return;
+    _playbackFadeEnabled = enabled;
+    notifyListeners();
+    await _prefs.setBool(_playbackFadeEnabledKey, enabled);
+  }
+
+  int get playbackFadeMs => _playbackFadeMs;
+
+  Future<void> setPlaybackFadeMs(int ms) async {
+    final clamped = ms.clamp(minPlaybackFadeMs, maxPlaybackFadeMs);
+    if (_playbackFadeMs == clamped) return;
+    _playbackFadeMs = clamped;
+    notifyListeners();
+    await _prefs.setInt(_playbackFadeMsKey, clamped);
+  }
+
+  // === Player cover backdrop clarity (0.0–1.0) ===
+  double get playerBackdropClarity => _playerBackdropClarity;
+
+  Future<void> setPlayerBackdropClarity(double clarity) async {
+    final clamped = clarity.clamp(0.0, 1.0);
+    if (_playerBackdropClarity == clamped) return;
+    _playerBackdropClarity = clamped;
+    notifyListeners();
+    await _prefs.setDouble(_playerBackdropClarityKey, clamped);
   }
 }

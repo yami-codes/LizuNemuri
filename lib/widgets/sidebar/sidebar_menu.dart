@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:xuro/common/constants/strings.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/core/theme/app_radius.dart';
 import 'package:xuro/core/theme/app_spacing.dart';
 import 'package:xuro/core/theme/app_text_styles.dart';
@@ -14,7 +13,11 @@ import 'package:xuro/screens/browse/circles_screen.dart';
 import 'package:xuro/screens/browse/tags_screen.dart';
 import 'package:xuro/screens/browse/voice_actors_screen.dart';
 import 'package:xuro/screens/about_screen.dart';
+import 'package:xuro/screens/downloads_screen.dart';
 import 'package:xuro/screens/favorites_screen.dart';
+import 'package:xuro/screens/playlists_screen.dart';
+import 'package:xuro/screens/recommend_screen.dart';
+import 'package:xuro/screens/dlsite/dlsite_library_screen.dart';
 import 'package:xuro/screens/settings/settings_screen.dart';
 import 'package:xuro/widgets/common/brand_wordmark.dart';
 import 'package:xuro/widgets/sidebar/sidebar_decoration.dart';
@@ -59,6 +62,40 @@ class SidebarMenu extends StatelessWidget {
     );
   }
 
+  void _navigateToRecommend(BuildContext context) {
+    final authVM = context.read<AuthViewModel>();
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    Navigator.pop(context);
+    if (!authVM.isLoggedIn) {
+      showDialog(
+        context: rootNavigator.context,
+        useRootNavigator: true,
+        builder: (_) => const LoginDialog(),
+      );
+      return;
+    }
+    rootNavigator.push(
+      CupertinoPageRoute(builder: (_) => const RecommendScreen()),
+    );
+  }
+
+  void _navigateToPlaylists(BuildContext context) {
+    final authVM = context.read<AuthViewModel>();
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    Navigator.pop(context);
+    if (!authVM.isLoggedIn) {
+      showDialog(
+        context: rootNavigator.context,
+        useRootNavigator: true,
+        builder: (_) => const LoginDialog(),
+      );
+      return;
+    }
+    rootNavigator.push(
+      CupertinoPageRoute(builder: (_) => const PlaylistsScreen()),
+    );
+  }
+
   void _showComingSoon(BuildContext context, String feature) {
     final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
@@ -92,9 +129,6 @@ class SidebarMenu extends StatelessWidget {
             _drawerMobileMaxWidth,
           );
 
-    // SidebarDecoration 仍按 ColorVariant 选「叶/月山」母题；颜色走当前主题
-    // colorScheme（已随 variant 轮换），不再强制深色。
-    final variant = context.watch<AppSettingsService>().colorVariant;
     final cs = Theme.of(context).colorScheme;
 
     return Drawer(
@@ -120,7 +154,7 @@ class SidebarMenu extends StatelessWidget {
               left: 0,
               right: 0,
               bottom: 0,
-              child: SidebarDecoration(variant: variant),
+              child: SidebarDecoration(),
             ),
             SafeArea(
               child: CustomScrollView(
@@ -157,6 +191,22 @@ class SidebarMenu extends StatelessWidget {
                               onTap: () => _navigateToFavorites(context),
                             ),
                             SidebarTile(
+                              icon: CupertinoIcons.star,
+                              title: Strings.homeTitleRecommend,
+                              onTap: () => _navigateToRecommend(context),
+                            ),
+                            SidebarTile(
+                              icon: CupertinoIcons.music_note_list,
+                              title: Strings.playlistsTitle,
+                              onTap: () => _navigateToPlaylists(context),
+                            ),
+                            SidebarTile(
+                              icon: CupertinoIcons.arrow_down_circle,
+                              title: Strings.downloadsTitle,
+                              onTap: () =>
+                                  _navigate(context, const DownloadsScreen()),
+                            ),
+                            SidebarTile(
                               icon: CupertinoIcons.clock,
                               title: Strings.recentPlay,
                               onTap: () => _showComingSoon(
@@ -170,6 +220,12 @@ class SidebarMenu extends StatelessWidget {
                         SidebarGroup(
                           header: Strings.drawerSectionDiscover,
                           children: [
+                            SidebarTile(
+                              icon: Icons.storefront_outlined,
+                              title: Strings.dlsiteLibraryTitle,
+                              onTap: () =>
+                                  _navigate(context, const DlsiteLibraryScreen()),
+                            ),
                             SidebarTile(
                               icon: CupertinoIcons.tag,
                               title: Strings.tags,

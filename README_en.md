@@ -6,7 +6,7 @@ A beautiful and modern [ASMR.ONE](https://asmr.one) client application built wit
 
 ## Project Overview
 
-Xuro is designed to provide a smooth and enjoyable ASMR listening experience with beautiful animations and a modern user interface.
+Xuro is designed to provide a smooth and enjoyable ASMR listening experience with beautiful animations and a modern user interface. The immersive player, sleep-timer bedtime flow, and several interaction patterns are inspired by **[EaraAsmrPlayer](https://github.com/moyucc/EaraAsmrPlayer)** — see [Inspiration](#inspiration) below.
 
 ## Features
 
@@ -21,6 +21,33 @@ Xuro is designed to provide a smooth and enjoyable ASMR listening experience wit
 - Comprehensive settings system
 - Smart caching (images, subtitles, audio files)
 - Unified cache management
+- **Eara-inspired (ongoing port)**
+  - Monet cover backdrop + immersive player shell
+  - Sleep timer fade-out and sleep-mode dim
+  - Playback speed presets
+  - Dual subtitles (original + LLM translation)
+
+## Inspiration
+
+Xuro’s immersive player, sleep-timer flow, and headphone-oriented controls are primarily inspired by **[EaraAsmrPlayer](https://github.com/moyucc/EaraAsmrPlayer)** — a Jetpack Compose + Media3 Android client built specifically for ASMR. Eara shows how cover-driven “Monet” backdrops, readable lyrics on tinted glass, stereo balance, and **A–B slice looping** on the seek bar can make long-form binaural content feel intentional rather than bolted onto a generic music player.
+
+We have already ported and adapted several ideas for Flutter and cross-platform delivery:
+
+- Blurred cover artwork with palette-derived accent colors (player canvas only)
+- **Dual-line subtitles** with on-device LLM translation (Xuro-specific)
+- Sleep timer: volume fade in the last 30 seconds + dimmed player overlay
+- Preset playback speed (0.75×–1.5×)
+
+See [`docs/inspiration_eara.md`](docs/inspiration_eara.md) for the feature map; **locked product direction** (grill-me): [`docs/eara_ui_north_star.md`](docs/eara_ui_north_star.md).
+
+Eara remains the best reference for features not yet in Xuro, including:
+
+- **Segment looping (A–B slices)** on the progress bar
+- **Dual-channel spectrum** and stereo balance for binaural stereo
+- **Graphic EQ, scene reverb, and spatial effects** in a dedicated audio panel
+- **Rich discovery UX** (filter chips, hot keywords, unified downloads hub)
+
+Xuro’s strengths are a **first-party [asmr.one](https://asmr.one) API client**, **LLM subtitle translation**, **iOS support**, and **multilingual UI** (English, 中文, ไทย). If you enjoy Xuro’s player atmosphere, please explore the original project: [github.com/moyucc/EaraAsmrPlayer](https://github.com/moyucc/EaraAsmrPlayer). **Xuro is not affiliated with Eara’s authors, asmr.one, or DLsite.**
 
 ## Requirements
 

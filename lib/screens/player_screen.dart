@@ -1,5 +1,4 @@
 import 'package:xuro/core/platform/lyric_overlay_manager.dart';
-import 'package:xuro/core/theme/app_animations.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
@@ -8,6 +7,12 @@ import 'package:xuro/widgets/player/player_controls.dart';
 import 'package:xuro/widgets/player/waveform_progress.dart';
 import 'package:xuro/widgets/player/player_art_panel.dart';
 import 'package:xuro/widgets/player/volume_control.dart';
+import 'package:xuro/widgets/player/player_speed_button.dart';
+import 'package:xuro/widgets/player/sleep_mode_dim_overlay.dart';
+import 'package:xuro/widgets/player/cover_artwork_background.dart';
+import 'package:xuro/widgets/player/player_cover_palette_loader.dart';
+import 'package:xuro/widgets/player/player_immersive_scope.dart';
+import 'package:xuro/widgets/player/player_surface_transition.dart';
 import 'package:xuro/presentation/layouts/player_layout_config.dart';
 import 'package:xuro/screens/detail_screen.dart';
 import 'package:xuro/widgets/lyrics/components/player_lyric_view.dart';
@@ -19,6 +24,7 @@ import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
 import 'package:xuro/screens/settings/llm_translation_settings_screen.dart';
 import 'package:xuro/core/subtitle/subtitle_import_service.dart';
+import 'package:xuro/widgets/player/player_equalizer_sheet.dart';
 
 class PlayerScreen extends StatefulWidget {
   const PlayerScreen({super.key});
@@ -151,49 +157,19 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Widget _buildNarrowContent(double coverSize) {
-    return AnimatedSwitcher(
-      duration: AppAnimations.long,
-      switchInCurve: AppAnimations.smoothScroll,
-      switchOutCurve: AppAnimations.exit,
-      transitionBuilder: (Widget child, Animation<double> animation) {
-        final isLyrics = (child as dynamic).key == const ValueKey('lyrics');
-        return FadeTransition(
-          opacity: animation,
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: Offset(0, isLyrics ? 0.1 : -0.1),
-              end: Offset.zero,
-            ).animate(animation),
-            child: ScaleTransition(
-              scale: Tween<double>(begin: 0.95, end: 1.0).animate(animation),
-              child: child,
-            ),
-          ),
-        );
-      },
-      layoutBuilder: (currentChild, previousChildren) {
-        return Stack(
-          alignment: Alignment.center,
-          children: [
-            ...previousChildren,
-            if (currentChild != null) currentChild,
-          ],
-        );
-      },
-      child: _showLyrics
-          ? PlayerLyricView(
-              key: const ValueKey('lyrics'),
-              onScrollStateChanged: (canSwitch) {
-                setState(() => _canSwitchView = canSwitch);
-              },
-            )
-          : Center(
-              key: const ValueKey('cover'),
-              child: PlayerArtPanel(
-                viewModel: _viewModel,
-                coverSize: coverSize,
-              ),
-            ),
+    return PlayerSurfaceSwitcher(
+      showLyrics: _showLyrics,
+      coverChild: Center(
+        child: PlayerArtPanel(
+          viewModel: _viewModel,
+          coverSize: coverSize,
+        ),
+      ),
+      lyricsChild: PlayerLyricView(
+        onScrollStateChanged: (canSwitch) {
+          setState(() => _canSwitchView = canSwitch);
+        },
+      ),
     );
   }
 
@@ -213,7 +189,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
         ),
         VerticalDivider(
           width: 1,
-          color: cs.outlineVariant.withValues(alpha: 0.5),
+          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.25),
         ),
         Expanded(
           child: Column(
@@ -247,6 +223,60 @@ class _PlayerScreenState extends State<PlayerScreen> {
     );
   }
 
+  Widget _buildTranslationBanner() {
+    return ListenableBuilder(
+      listenable: _viewModel,
+      builder: (context, _) {
+        final status = _viewModel.translationStatus;
+        if (!_viewModel.isTranslating || status == null) {
+          return const SizedBox.shrink();
+        }
+        final cs = Theme.of(context).colorScheme;
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.space12,
+            0,
+            AppSpacing.space12,
+            AppSpacing.space8,
+          ),
+          child: Material(
+            color: cs.primaryContainer.withValues(alpha: 0.55),
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.space12,
+                vertical: AppSpacing.space8,
+              ),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: cs.primary,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.space8),
+                  Expanded(
+                    child: Text(
+                      status,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: cs.onSurface,
+                          ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildControlsBar() {
     return Container(
       padding: const EdgeInsets.fromLTRB(
@@ -270,244 +300,274 @@ class _PlayerScreenState extends State<PlayerScreen> {
     final lyricManager = GetIt.I<LyricOverlayManager>();
     final wakeLockController = GetIt.I<WakeLockController>();
     final sleepTimer = GetIt.I<SleepTimerController>();
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.expand_more),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(36),
-          child: ListenableBuilder(
-            listenable: _viewModel,
-            builder: (context, _) {
-              final status = _viewModel.translationStatus;
-              if (!_viewModel.isTranslating || status == null) {
-                return const SizedBox.shrink();
-              }
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 14,
-                      height: 14,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.space8),
-                    Expanded(
-                      child: Text(
-                        status,
-                        style: Theme.of(context).textTheme.bodySmall,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-        actions: [
-          PlayerVolumeButton(viewModel: _viewModel),
-          ListenableBuilder(
-            listenable: sleepTimer,
-            builder: (context, _) {
-              return IconButton(
-                icon: Icon(
-                  sleepTimer.isActive
-                      ? Icons.bedtime
-                      : Icons.bedtime_outlined,
-                  color: sleepTimer.isActive
-                      ? Theme.of(context).colorScheme.primary
-                      : null,
-                ),
-                tooltip: Strings.sleepTimer,
-                onPressed: () => showDialog(
+    return ListenableBuilder(
+      listenable: _viewModel,
+      builder: (context, _) {
+        final coverUrl = _viewModel.currentTrackInfo?.coverUrl;
+
+        return PlayerCoverPaletteLoader(
+          coverUrl: coverUrl,
+          fallbackPrimary: cs.primary,
+          background: cs.surface,
+          isDark: isDark,
+          builder: (context, palette) {
+            final settings = GetIt.I<AppSettingsService>();
+            return ListenableBuilder(
+              listenable: settings,
+              builder: (context, _) {
+                final clarity = settings.playerBackdropClarity;
+                final immersive = PlayerImmersiveColors.resolve(
                   context: context,
-                  builder: (_) => SleepTimerDialog(controller: sleepTimer),
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            onPressed: () {
-              final currentWork = _viewModel.currentContext?.work;
-              if (currentWork != null) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => DetailScreen(
-                      work: currentWork,
-                      fromPlayer: true,
-                    ),
-                  ),
+                  palette: palette,
+                  coverBackgroundEnabled: true,
+                  clarity: clarity,
                 );
-              }
-            },
-          ),
-          // Subtitle import menu
-          ListenableBuilder(
-            listenable: _viewModel,
-            builder: (context, _) {
-              return PopupMenuButton<String>(
-                icon: _viewModel.isTranslating
-                    ? SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      )
-                    : Icon(
-                        Icons.subtitles,
-                        color: _viewModel.isLlmTranslated ||
-                                _viewModel.isUserImportedSubtitle
-                            ? Theme.of(context).colorScheme.primary
-                            : null,
-                      ),
-                onSelected: (value) async {
-                  if (value == 'import') {
-                    final result = await _viewModel.importSubtitle();
-                    if (!context.mounted) return;
-                    final message = switch (result) {
-                      ImportResult.success => Strings.importSuccess,
-                      ImportResult.cancelled => null,
-                      ImportResult.invalidFormat => Strings.importInvalidFormat,
-                      ImportResult.fileTooLarge => Strings.importFileTooLarge,
-                      ImportResult.parseFailed => Strings.importParseFailed,
-                      ImportResult.ioError => Strings.importIoError,
-                    };
-                    if (message != null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(message)),
-                      );
-                    }
-                  } else if (value == 'remove') {
-                    await _viewModel.removeImportedSubtitle();
-                    if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(Strings.subtitleRemoved)),
-                    );
-                  } else if (value == 'llm_translate') {
-                    final err = await _viewModel.translateSubtitlesNow();
-                    if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          err ?? Strings.llmTranslationDone,
-                        ),
-                      ),
-                    );
-                  } else if (value == 'llm_original') {
-                    final err = await _viewModel.restoreOriginalSubtitles();
-                    if (!context.mounted) return;
-                    if (err != null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(err)),
-                      );
-                    }
-                  } else if (value == 'llm_settings') {
-                    if (!context.mounted) return;
-                    final settings = GetIt.I<AppSettingsService>();
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            LlmTranslationSettingsScreen(settings: settings),
-                      ),
-                    );
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'import',
-                    child: Text(Strings.importSubtitle),
+
+                return PlayerImmersiveScope(
+                  colors: immersive,
+                  child: Scaffold(
+                extendBodyBehindAppBar: true,
+                backgroundColor: Colors.transparent,
+                appBar: AppBar(
+                  leading: IconButton(
+                    icon: const Icon(Icons.expand_more),
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
-                  if (_viewModel.hasSubtitles)
-                    PopupMenuItem(
-                      value: 'llm_translate',
-                      enabled: !_viewModel.isTranslating,
-                      child: Text(Strings.llmTranslateNow),
+                  actions: [
+                    if (PlatformCapabilities.supportsAndroidEqualizer)
+                      IconButton(
+                        icon: const Icon(Icons.equalizer),
+                        tooltip: Strings.equalizerTitle,
+                        onPressed: () => PlayerEqualizerSheet.show(context),
+                      ),
+                    PlayerVolumeButton(viewModel: _viewModel),
+                    PlayerSpeedButton(viewModel: _viewModel),
+                    ListenableBuilder(
+                      listenable: sleepTimer,
+                      builder: (context, _) {
+                        return IconButton(
+                          icon: Icon(
+                            sleepTimer.isActive
+                                ? Icons.bedtime
+                                : Icons.bedtime_outlined,
+                            color:
+                                sleepTimer.isActive ? cs.primary : null,
+                          ),
+                          tooltip: Strings.sleepTimer,
+                          onPressed: () => showDialog(
+                            context: context,
+                            builder: (_) =>
+                                SleepTimerDialog(controller: sleepTimer),
+                          ),
+                        );
+                      },
                     ),
-                  if (_viewModel.isLlmTranslated)
-                    PopupMenuItem(
-                      value: 'llm_original',
-                      enabled: !_viewModel.isTranslating,
-                      child: Text(Strings.llmShowOriginal),
+                    IconButton(
+                      icon: const Icon(Icons.info_outline),
+                      onPressed: () {
+                        final currentWork = _viewModel.currentContext?.work;
+                        if (currentWork != null) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => DetailScreen(
+                                work: currentWork,
+                                fromPlayer: true,
+                              ),
+                            ),
+                          );
+                        }
+                      },
                     ),
-                  PopupMenuItem(
-                    value: 'llm_settings',
-                    child: Text(Strings.llmTranslationConfigure),
-                  ),
-                  if (_viewModel.isUserImportedSubtitle)
-                    PopupMenuItem(
-                      value: 'remove',
-                      child: Text(Strings.removeImportedSubtitle),
-                    ),
-                ],
-              );
-            },
-          ),
-          if (PlatformCapabilities.supportsFloatingLyrics)
-            _LyricOverlayAction(manager: lyricManager),
-          ListenableBuilder(
-            listenable: wakeLockController,
-            builder: (context, _) {
-              return IconButton(
-                icon: Icon(
-                  wakeLockController.enabled 
-                    ? Icons.lightbulb
-                    : Icons.lightbulb_outline,
-                ),
-                tooltip: wakeLockController.enabled
-                    ? Strings.screenAwakeOff
-                    : Strings.screenAwakeOn,
-                onPressed: () => wakeLockController.toggle(),
-              );
-            },
-          ),
-        ],
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final isWide =
-                PlayerLayoutConfig.isWideLayout(constraints.maxWidth);
-            final coverSize =
-                PlayerLayoutConfig.coverSizeForWidth(constraints.maxWidth);
-            return Column(
-              children: [
-                _buildViewModeToggle(isWide: isWide),
-                Expanded(
-                  child: isWide
-                      ? _buildWideContent(coverSize)
-                      : GestureDetector(
-                          onTap: () {
-                            if (_canSwitchView) {
-                              setState(() => _showLyrics = !_showLyrics);
+                    ListenableBuilder(
+                      listenable: _viewModel,
+                      builder: (context, _) {
+                        return PopupMenuButton<String>(
+                          icon: _viewModel.isTranslating
+                              ? SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: cs.primary,
+                                  ),
+                                )
+                              : Icon(
+                                  Icons.subtitles,
+                                  color: _viewModel.isLlmTranslated ||
+                                          _viewModel.isUserImportedSubtitle
+                                      ? cs.primary
+                                      : null,
+                                ),
+                          onSelected: (value) async {
+                            if (value == 'import') {
+                              final result =
+                                  await _viewModel.importSubtitle();
+                              if (!context.mounted) return;
+                              final message = switch (result) {
+                                ImportResult.success => Strings.importSuccess,
+                                ImportResult.cancelled => null,
+                                ImportResult.invalidFormat =>
+                                  Strings.importInvalidFormat,
+                                ImportResult.fileTooLarge =>
+                                  Strings.importFileTooLarge,
+                                ImportResult.parseFailed =>
+                                  Strings.importParseFailed,
+                                ImportResult.ioError => Strings.importIoError,
+                              };
+                              if (message != null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(message)),
+                                );
+                              }
+                            } else if (value == 'remove') {
+                              await _viewModel.removeImportedSubtitle();
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text(Strings.subtitleRemoved)),
+                              );
+                            } else if (value == 'llm_translate') {
+                              final err =
+                                  await _viewModel.translateSubtitlesNow();
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    err ?? Strings.llmTranslationDone,
+                                  ),
+                                ),
+                              );
+                            } else if (value == 'llm_original') {
+                              final err =
+                                  await _viewModel.restoreOriginalSubtitles();
+                              if (!context.mounted) return;
+                              if (err != null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(err)),
+                                );
+                              }
+                            } else if (value == 'llm_settings') {
+                              if (!context.mounted) return;
+                              final settings = GetIt.I<AppSettingsService>();
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => LlmTranslationSettingsScreen(
+                                      settings: settings),
+                                ),
+                              );
                             }
                           },
-                          behavior: HitTestBehavior.opaque,
-                          child: _buildNarrowContent(coverSize),
-                        ),
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: 'import',
+                              child: Text(Strings.importSubtitle),
+                            ),
+                            if (_viewModel.hasSubtitles)
+                              PopupMenuItem(
+                                value: 'llm_translate',
+                                enabled: !_viewModel.isTranslating,
+                                child: Text(Strings.llmTranslateNow),
+                              ),
+                            if (_viewModel.isLlmTranslated)
+                              PopupMenuItem(
+                                value: 'llm_original',
+                                enabled: !_viewModel.isTranslating,
+                                child: Text(Strings.llmShowOriginal),
+                              ),
+                            PopupMenuItem(
+                              value: 'llm_settings',
+                              child: Text(Strings.llmTranslationConfigure),
+                            ),
+                            if (_viewModel.isUserImportedSubtitle)
+                              PopupMenuItem(
+                                value: 'remove',
+                                child: Text(Strings.removeImportedSubtitle),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                    if (PlatformCapabilities.supportsFloatingLyrics)
+                      _LyricOverlayAction(manager: lyricManager),
+                    ListenableBuilder(
+                      listenable: wakeLockController,
+                      builder: (context, _) {
+                        return IconButton(
+                          icon: Icon(
+                            wakeLockController.enabled
+                                ? Icons.lightbulb
+                                : Icons.lightbulb_outline,
+                          ),
+                          tooltip: wakeLockController.enabled
+                              ? Strings.screenAwakeOff
+                              : Strings.screenAwakeOn,
+                          onPressed: () => wakeLockController.toggle(),
+                        );
+                      },
+                    ),
+                  ],
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
                 ),
-                _buildControlsBar(),
-              ],
+                body: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    CoverArtworkBackground(
+                      coverUrl: coverUrl,
+                      enabled: true,
+                      clarity: clarity,
+                      overlayBaseColor: cs.surface,
+                      tintBaseColor: palette.backdropTint,
+                      isDark: isDark,
+                    ),
+                    SafeArea(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final isWide = PlayerLayoutConfig.isWideLayout(
+                              constraints.maxWidth);
+                          final coverSize =
+                              PlayerLayoutConfig.coverSizeForWidth(
+                                  constraints.maxWidth);
+                          return Column(
+                            children: [
+                              _buildViewModeToggle(isWide: isWide),
+                              Expanded(
+                                child: isWide
+                                    ? _buildWideContent(coverSize)
+                                    : GestureDetector(
+                                        onTap: () {
+                                          if (_canSwitchView) {
+                                            setState(() =>
+                                                _showLyrics = !_showLyrics);
+                                          }
+                                        },
+                                        behavior: HitTestBehavior.opaque,
+                                        child: _buildNarrowContent(coverSize),
+                                      ),
+                              ),
+                              _buildTranslationBanner(),
+                              _buildControlsBar(),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                    SleepModeDimOverlay(controller: sleepTimer),
+                  ],
+                ),
+                  ),
+                );
+              },
             );
           },
-        ),
-      ),
+        );
+      },
     );
   }
 }

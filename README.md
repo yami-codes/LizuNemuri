@@ -6,7 +6,7 @@
 
 ## 项目概述
 
-Xuro 旨在通过精美的动画和现代化的用户界面，提供流畅愉悦的 ASMR 聆听体验。
+Xuro 旨在通过精美的动画和现代化的用户界面，提供流畅愉悦的 ASMR 聆听体验。播放器沉浸感、睡前定时与若干交互模式参考了 **[EaraAsmrPlayer](https://github.com/moyucc/EaraAsmrPlayer)**（见下方 [设计灵感](#设计灵感)）。
 
 ## 特性
 
@@ -32,6 +32,31 @@ Xuro 旨在通过精美的动画和现代化的用户界面，提供流畅愉悦
   - 智能的缓存策略确保资源高效利用
   - 懒加载机制避免无效请求
   - 合理的缓存清理机制平衡本地存储
+- 🎧 **Eara 启发（持续移植中）**
+  - 封面莫奈取色 + 沉浸式播放背景
+  - 睡眠定时淡出与睡眠模式暗屏
+  - 播放速度预设
+  - 双语字幕（原文 + LLM 译文）
+
+## 设计灵感
+
+Xuro 的沉浸式播放器、睡前定时与耳机向交互，主要参考 **[EaraAsmrPlayer](https://github.com/moyucc/EaraAsmrPlayer)** — 一款专为 ASMR 打造的 Android 客户端（Jetpack Compose + Media3）。Eara 展示了如何用**封面驱动取色**、**可读歌词**、**左右耳向音频调节**与**进度条切片循环**，让长时间双耳内容听起来「为此而生」，而不是套在通用音乐播放器上的皮肤。
+
+我们已在 Flutter 跨平台架构下移植并改造了其中一部分：
+
+- 模糊封面背景 + 从封面提取的动态强调色（播放器画布内）
+- LLM 双语字幕（原文叠译文 — Xuro 独有）
+- 睡眠定时：到期前音量淡出 + 播放器暗屏
+- 播放速度预设（0.75×–1.5×）
+
+完整对照与后续移植清单见 [`docs/inspiration_eara.md`](docs/inspiration_eara.md)；**产品方向（grill-me 锁定）** 见 [`docs/eara_ui_north_star.md`](docs/eara_ui_north_star.md)。
+
+- **A–B 片段循环**（进度条标记、拖拽微调）
+- **双声道频谱**与立体声平衡（双耳向内容）
+- **图形均衡器 / 场景混响**（独立音频面板）
+- **搜索筛选 Chips**、热门发现、统一下载管理页
+
+Xuro 的差异化在于：**原生 asmr.one API**、**LLM 字幕翻译**、**iOS / 多语言界面**与用户字幕导入。若你喜欢 Xuro 的播放器氛围，也请支持原项目：[github.com/moyucc/EaraAsmrPlayer](https://github.com/moyucc/EaraAsmrPlayer)。**Xuro 与 Eara 作者、asmr.one、DLsite 无隶属关系。**
 
 ## 环境要求
 

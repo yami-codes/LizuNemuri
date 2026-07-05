@@ -12,6 +12,8 @@ import 'core/di/service_locator.dart';
 import 'package:provider/provider.dart';
 import 'screens/main_screen.dart';
 import 'package:xuro/core/theme/app_theme.dart';
+import 'package:xuro/core/audio/effects/audio_effects_controller.dart';
+import 'package:xuro/core/theme/dynamic_hue_controller.dart';
 import 'package:xuro/core/theme/theme_controller.dart';
 import 'package:xuro/core/database/database_bootstrap.dart';
 import 'screens/search_screen.dart';
@@ -72,18 +74,23 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: getIt<AppSettingsService>(),
         ),
+        ChangeNotifierProvider.value(
+          value: getIt<DynamicHueController>(),
+        ),
+        ChangeNotifierProvider.value(
+          value: getIt<AudioEffectsController>(),
+        ),
       ],
-      child: Consumer2<ThemeController, AppSettingsService>(
-        builder: (context, themeController, settings, child) {
-          final variant = settings.colorVariant;
+      child: Consumer2<ThemeController, DynamicHueController>(
+        builder: (context, themeController, hueController, child) {
           return MaterialApp(
-            key: ValueKey(settings.appLanguage),
+            key: ValueKey(getIt<AppSettingsService>().appLanguage),
             title: Strings.appName,
-            locale: settings.materialLocale,
+            locale: getIt<AppSettingsService>().materialLocale,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            theme: AppTheme.light(variant),
-            darkTheme: AppTheme.dark(variant),
+            theme: AppTheme.fromColorScheme(hueController.lightScheme),
+            darkTheme: AppTheme.fromColorScheme(hueController.darkScheme),
             themeMode: themeController.themeMode,
             home: const MainScreen(),
             routes: {

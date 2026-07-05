@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:xuro/core/settings/app_settings_service.dart';
 
-/// 侧边栏底部装饰水印（对齐参考图）。规范 §2.2。
-///
-/// 变体感知：mono 配色画「弦月 + 远山」（呼应 [_DrawerBackground] 对 mono
-/// 的纯黑特例与参考图黑白侧边栏的月山母题），blue/green 画叶片。
-/// 全部用 accent 低透明度，是玻璃拟态背景上的安静水印——不抢内容、可点穿。
+/// Sidebar bottom watermark — accent follows Monet [colorScheme.primary].
 class SidebarDecoration extends StatelessWidget {
-  const SidebarDecoration({super.key, required this.variant, this.height = 150});
+  const SidebarDecoration({super.key, this.height = 150});
 
-  final ColorVariant variant;
   final double height;
 
   @override
   Widget build(BuildContext context) {
-    final accent = Theme.of(context).colorScheme.primary;
+    final theme = Theme.of(context);
+    final accent = theme.colorScheme.primary;
+    final useMoon = theme.brightness == Brightness.dark;
     return IgnorePointer(
       child: SizedBox(
         height: height,
         width: double.infinity,
         child: CustomPaint(
-          painter: _DecorationPainter(variant: variant, color: accent),
+          painter: _DecorationPainter(
+            useMoonMotif: useMoon,
+            color: accent,
+          ),
         ),
       ),
     );
@@ -28,14 +27,14 @@ class SidebarDecoration extends StatelessWidget {
 }
 
 class _DecorationPainter extends CustomPainter {
-  _DecorationPainter({required this.variant, required this.color});
+  _DecorationPainter({required this.useMoonMotif, required this.color});
 
-  final ColorVariant variant;
+  final bool useMoonMotif;
   final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (variant == ColorVariant.mono) {
+    if (useMoonMotif) {
       _paintMoonAndHills(canvas, size);
     } else {
       _paintLeaves(canvas, size);
@@ -43,7 +42,6 @@ class _DecorationPainter extends CustomPainter {
   }
 
   void _paintMoonAndHills(Canvas canvas, Size size) {
-    // 远山：两道低矮弧线，越远越淡。
     final hillFar = Paint()..color = color.withValues(alpha: 0.07);
     final hillNear = Paint()..color = color.withValues(alpha: 0.12);
 
@@ -67,7 +65,6 @@ class _DecorationPainter extends CustomPainter {
       ..close();
     canvas.drawPath(near, hillNear);
 
-    // 弦月：外圆减去偏移内圆。
     final c = Offset(size.width * 0.78, size.height * 0.26);
     const r = 22.0;
     final crescent = Path.combine(
@@ -81,7 +78,6 @@ class _DecorationPainter extends CustomPainter {
   }
 
   void _paintLeaves(Canvas canvas, Size size) {
-    // 三片叶子，自左下向上铺开，由深到浅。
     final specs = [
       (Offset(size.width * 0.16, size.height * 0.92), 78.0, -0.5, 0.16),
       (Offset(size.width * 0.34, size.height * 0.98), 96.0, -0.95, 0.12),
@@ -98,7 +94,6 @@ class _DecorationPainter extends CustomPainter {
         ..quadraticBezierTo(-w, -len * 0.35, 0, 0)
         ..close();
       canvas.drawPath(leaf, Paint()..color = color.withValues(alpha: alpha));
-      // 叶脉
       canvas.drawLine(
         const Offset(0, 0),
         Offset(0, -len),
@@ -112,5 +107,5 @@ class _DecorationPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_DecorationPainter old) =>
-      old.variant != variant || old.color != color;
+      old.useMoonMotif != useMoonMotif || old.color != color;
 }

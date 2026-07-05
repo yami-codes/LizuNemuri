@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
@@ -9,15 +10,16 @@ import 'package:xuro/core/platform/lyric_overlay_manager.dart';
 import 'package:xuro/screens/settings/sleep_timer_dialog.dart';
 import 'package:xuro/core/settings/app_language.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:xuro/core/library/scan_roots_store.dart';
 import 'package:xuro/screens/settings/cache_manager_screen.dart';
 import 'package:xuro/screens/settings/audio_format_order_dialog.dart';
-import 'package:xuro/core/theme/app_colors.dart';
 import 'package:xuro/core/theme/app_spacing.dart';
 import 'package:xuro/screens/settings/widgets/settings_group.dart';
 import 'package:xuro/screens/settings/widgets/settings_tile.dart';
 import 'package:xuro/screens/settings/widgets/settings_theme.dart';
 import 'package:xuro/screens/settings/llm_translation_settings_screen.dart';
 import 'package:xuro/utils/platform_capabilities.dart';
+import 'package:xuro/widgets/player/player_equalizer_sheet.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -43,11 +45,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: AppSpacing.space24),
             _languageSection(),
             const SizedBox(height: AppSpacing.space24),
-            _colorVariantSection(),
-            const SizedBox(height: AppSpacing.space24),
             _networkSection(),
             const SizedBox(height: AppSpacing.space24),
             _contentSection(context),
+            const SizedBox(height: AppSpacing.space24),
+            _localLibrarySection(),
             const SizedBox(height: AppSpacing.space24),
             _playbackSection(),
             const SizedBox(height: AppSpacing.space24),
@@ -91,15 +93,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
-  }
-
-  // 配色行的 leading 是「色彩选择器内容」——显示该配色在当前亮暗下的
-  // 真实 primary（语义必需例外，非组件 chrome；其余 leading 仍中性）。
-  Color _variantSwatch(BuildContext context, ColorVariant v) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    return dark
-        ? AppColors.darkSchemeFor(v).primary
-        : AppColors.lightSchemeFor(v).primary;
   }
 
   Widget _languageSection() {
@@ -155,42 +148,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Widget _colorVariantSection() {
-    return Builder(builder: (context) {
-      final settings = GetIt.I<AppSettingsService>();
-      return ListenableBuilder(
-        listenable: settings,
-        builder: (context, _) => SettingsGroup(
-          header: Strings.colorVariantTitle,
-          footer: Strings.colorVariantDesc,
-          children: [
-            SettingsTile.selection(
-              title: Strings.colorVariantBlue,
-              leading: Icons.circle,
-              leadingColor: _variantSwatch(context, ColorVariant.blue),
-              selected: settings.colorVariant == ColorVariant.blue,
-              onTap: () => settings.setColorVariant(ColorVariant.blue),
-            ),
-            SettingsTile.selection(
-              title: Strings.colorVariantMono,
-              leading: Icons.circle,
-              leadingColor: _variantSwatch(context, ColorVariant.mono),
-              selected: settings.colorVariant == ColorVariant.mono,
-              onTap: () => settings.setColorVariant(ColorVariant.mono),
-            ),
-            SettingsTile.selection(
-              title: Strings.colorVariantGreen,
-              leading: Icons.circle,
-              leadingColor: _variantSwatch(context, ColorVariant.green),
-              selected: settings.colorVariant == ColorVariant.green,
-              onTap: () => settings.setColorVariant(ColorVariant.green),
-            ),
-          ],
-        ),
-      );
-    });
-  }
-
   Widget _networkSection() {
     return Builder(builder: (context) {
       final settings = GetIt.I<AppSettingsService>();
@@ -242,6 +199,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  Widget _localLibrarySection() {
+    final store = GetIt.I<ScanRootsStore>();
+    final roots = store.roots;
+    return SettingsGroup(
+      header: Strings.localLibraryScanFolders,
+      children: [
+        SettingsTile.navigation(
+          title: Strings.localLibraryAddFolder,
+          leading: Icons.folder_outlined,
+          value: roots.isEmpty ? Strings.localLibraryEmpty : '${roots.length}',
+          onTap: () async {
+            final path = await FilePicker.platform.getDirectoryPath();
+            if (path == null || path.isEmpty) return;
+            await store.addRoot(path);
+            if (mounted) setState(() {});
+          },
+        ),
+        ...roots.map(
+          (path) => SettingsTile.navigation(
+            title: path,
+            leading: Icons.music_note_outlined,
+            value: '',
+            onTap: () async {
+              await store.removeRoot(path);
+              if (mounted) setState(() {});
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _playbackSection() {
     return Builder(builder: (context) {
       final wakeLock = GetIt.I<WakeLockController>();
@@ -255,14 +244,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SettingsTile.navigation(
               title: Strings.sleepTimer,
               leading: Icons.bedtime_outlined,
-              value: sleepTimer.minutes == null
-                  ? Strings.sleepTimerOff
-                  : Strings.sleepTimerMinutes(sleepTimer.minutes!),
+              value: sleepTimer.isActive
+                  ? Strings.sleepTimerActiveSummary(
+                      sleepTimer.minutes!,
+                      sleepTimer.remaining ?? Duration.zero,
+                    )
+                  : Strings.sleepTimerOff,
               onTap: () => showDialog(
                 context: context,
                 builder: (_) => SleepTimerDialog(controller: sleepTimer),
               ),
             ),
+            SettingsTile.toggle(
+              title: Strings.sleepTimerFadeOut,
+              subtitle: Strings.sleepTimerFadeOutDesc,
+              leading: Icons.volume_down_outlined,
+              value: settings.sleepTimerFadeOutEnabled,
+              onChanged: settings.setSleepTimerFadeOutEnabled,
+            ),
+            SettingsTile.toggle(
+              title: Strings.sleepTimerDimScreen,
+              subtitle: Strings.sleepTimerDimScreenDesc,
+              leading: Icons.brightness_4_outlined,
+              value: settings.sleepTimerDimScreenEnabled,
+              onChanged: settings.setSleepTimerDimScreenEnabled,
+            ),
+            SettingsTile.toggle(
+              title: Strings.playbackFade,
+              subtitle: Strings.playbackFadeDesc,
+              leading: Icons.graphic_eq_outlined,
+              value: settings.playbackFadeEnabled,
+              onChanged: settings.setPlaybackFadeEnabled,
+            ),
+            if (settings.playbackFadeEnabled)
+              _PlaybackFadeDurationSlider(settings: settings),
+            if (PlatformCapabilities.supportsAndroidEqualizer)
+              SettingsTile.navigation(
+                title: Strings.equalizerTitle,
+                subtitle: Strings.equalizerDesc,
+                leading: Icons.equalizer,
+                value: '',
+                onTap: () => PlayerEqualizerSheet.show(context),
+              ),
             SettingsTile.toggle(
               title: Strings.backgroundPlay,
               subtitle: Strings.backgroundPlayDesc,
@@ -270,6 +293,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               value: settings.backgroundPlayEnabled,
               onChanged: (v) => settings.setBackgroundPlayEnabled(v),
             ),
+            _PlayerBackdropClaritySlider(settings: settings),
             SettingsTile.toggle(
               title: Strings.screenKeepAwake,
               subtitle: Strings.screenKeepAwakeDesc,
@@ -349,6 +373,162 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _PlaybackFadeDurationSlider extends StatelessWidget {
+  const _PlaybackFadeDurationSlider({required this.settings});
+
+  final AppSettingsService settings;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final ms = settings.playbackFadeMs;
+    final min = AppSettingsService.minPlaybackFadeMs.toDouble();
+    final max = AppSettingsService.maxPlaybackFadeMs.toDouble();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.space16,
+        vertical: AppSpacing.space12,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              SizedBox(
+                width: AppSpacing.space40,
+                height: AppSpacing.space40,
+                child: Icon(
+                  Icons.timer_outlined,
+                  size: 20,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.space12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      Strings.playbackFadeDuration,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      Strings.playbackFadeDurationDesc,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.space8),
+              Text(
+                Strings.playbackFadeDurationMs(ms),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+              left: AppSpacing.space40 + AppSpacing.space12,
+            ),
+            child: Slider(
+              value: ms.toDouble(),
+              min: min,
+              max: max,
+              divisions: ((max - min) / 50).round(),
+              onChanged: (v) => settings.setPlaybackFadeMs(v.round()),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PlayerBackdropClaritySlider extends StatelessWidget {
+  const _PlayerBackdropClaritySlider({required this.settings});
+
+  final AppSettingsService settings;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final clarity = settings.playerBackdropClarity;
+    final percentLabel = '${(clarity * 100).round()}%';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.space16,
+        vertical: AppSpacing.space12,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              SizedBox(
+                width: AppSpacing.space40,
+                height: AppSpacing.space40,
+                child: Icon(
+                  Icons.blur_on_outlined,
+                  size: 20,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.space12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      Strings.playerBackdropClarity,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      Strings.playerBackdropClarityDesc,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.space8),
+              Text(
+                percentLabel,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+              left: AppSpacing.space40 + AppSpacing.space12,
+            ),
+            child: Slider(
+              value: clarity,
+              onChanged: settings.setPlayerBackdropClarity,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,18 +1,13 @@
 import 'package:xuro/core/theme/app_animations.dart';
-import 'package:xuro/screens/contents/favorites_content.dart';
 import 'package:flutter/material.dart';
 import 'package:xuro/widgets/mini_player/mini_player.dart';
 import 'package:xuro/widgets/sidebar/sidebar_menu.dart';
-import 'package:xuro/screens/contents/home_content.dart';
-import 'package:xuro/screens/contents/recommend_content.dart';
-import 'package:xuro/screens/contents/popular_content.dart';
-import 'package:xuro/screens/search_screen.dart';
+import 'package:xuro/screens/contents/library_tab_content.dart';
+import 'package:xuro/screens/contents/search_tab_content.dart';
+import 'package:xuro/screens/contents/hot_tab_content.dart';
 import 'package:provider/provider.dart';
 import 'package:xuro/presentation/viewmodels/home_viewmodel.dart';
 import 'package:xuro/presentation/viewmodels/popular_viewmodel.dart';
-import 'package:xuro/presentation/viewmodels/recommend_viewmodel.dart';
-import 'package:xuro/presentation/viewmodels/auth_viewmodel.dart';
-import 'package:xuro/presentation/viewmodels/favorites_viewmodel.dart';
 import 'package:xuro/common/constants/strings.dart';
 
 /// MainScreen 是应用的主界面，负责管理底部导航栏和对应的内容页面。
@@ -22,6 +17,8 @@ import 'package:xuro/common/constants/strings.dart';
 /// 1. ViewModel 初始化：所有页面的 ViewModel 都在 MainScreen 中初始化，确保单一实例
 /// 2. 状态提供：通过 MultiProvider 将 ViewModel 提供给整个子树
 /// 3. 生命周期管理：负责所有 ViewModel 的创建和销毁
+///
+/// Eara Milestone D: bottom bar = Library | Search | Hot (3 tabs).
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -30,54 +27,36 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final _pageController = PageController(initialPage: 1);
-  int _currentIndex = 1;
+  final _pageController = PageController(initialPage: 0);
+  int _currentIndex = 0;
 
-  // 集中管理所有页面的 ViewModel
-  // 这些 ViewModel 将通过 Provider 提供给子页面
   late final HomeViewModel _homeViewModel;
   late final PopularViewModel _popularViewModel;
-  late final RecommendViewModel _recommendViewModel;
-  late final FavoritesViewModel _favoritesViewModel;
+
+  static const _pages = [
+    LibraryTabContent(),
+    SearchTabContent(),
+    HotTabContent(),
+  ];
 
   String _pageTitle(int index) {
     switch (index) {
       case 0:
-        return Strings.tabFavorites;
+        return Strings.tabLibrary;
       case 1:
-        return Strings.home;
+        return Strings.tabSearch;
       case 2:
-        return Strings.homeTitleRecommend;
-      case 3:
-        return Strings.homeTitlePopular;
+        return Strings.tabHot;
       default:
-        return Strings.home;
+        return Strings.tabLibrary;
     }
   }
-
-  // 页面内容列表
-  // 注意：这些页面不应该创建自己的 ViewModel 实例
-  // 而是应该通过 Provider.of 或 context.read 获取 MainScreen 提供的实例
-  final _pages = const [
-    FavoritesContent(),
-    HomeContent(),
-    RecommendContent(),
-    PopularContent(),
-  ];
 
   @override
   void initState() {
     super.initState();
-    // 初始化所有 ViewModel
-    // 注意初始化顺序，如果有依赖关系需要先初始化依赖项
     _homeViewModel = HomeViewModel();
     _popularViewModel = PopularViewModel();
-    _recommendViewModel = RecommendViewModel(
-      Provider.of<AuthViewModel>(context, listen: false),
-    );
-    _favoritesViewModel = FavoritesViewModel(
-      Provider.of<AuthViewModel>(context, listen: false),
-    );
   }
 
   void _onPageChanged(int index) {
@@ -96,73 +75,42 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void dispose() {
-    // 确保所有 ViewModel 都被正确释放
     _pageController.dispose();
     _homeViewModel.dispose();
     _popularViewModel.dispose();
-    _recommendViewModel.dispose();
-    _favoritesViewModel.dispose();
     super.dispose();
+  }
+
+  PreferredSizeWidget? _buildAppBar(BuildContext context) {
+    // Library and Search tabs own their AppBar.
+    if (_currentIndex == 0 || _currentIndex == 1) return null;
+
+    final totalCount = _currentIndex == 2
+        ? context.select<PopularViewModel, int?>(
+            (vm) => vm.pagination?.totalCount,
+          )
+        : null;
+
+    final title = totalCount != null
+        ? '${_pageTitle(_currentIndex)} ($totalCount)'
+        : _pageTitle(_currentIndex);
+
+    return AppBar(
+      title: Text(title),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      // 通过 MultiProvider 将所有 ViewModel 提供给子树
-      // 这样子页面就可以通过 Provider.of 或 context.read 获取对应的 ViewModel
       providers: [
         ChangeNotifierProvider.value(value: _homeViewModel),
         ChangeNotifierProvider.value(value: _popularViewModel),
-        ChangeNotifierProvider.value(value: _recommendViewModel),
-        ChangeNotifierProvider.value(value: _favoritesViewModel),
       ],
       child: Builder(
         builder: (context) {
-          // 根据当前页面获取对应的总数
-          final totalCount = _currentIndex == 0
-              ? context.select<FavoritesViewModel, int?>((vm) => vm.totalCount)
-              : _currentIndex == 1
-                  ? context.select<HomeViewModel, int?>((vm) => vm.pagination?.totalCount)
-                  : _currentIndex == 2
-                      ? context.select<RecommendViewModel, int?>((vm) => vm.pagination?.totalCount)
-                      : _currentIndex == 3
-                          ? context.select<PopularViewModel, int?>((vm) => vm.pagination?.totalCount)
-                          : null;
-
-          // 构建标题文本
-          final title = totalCount != null
-              ? '${_pageTitle(_currentIndex)} ($totalCount)'
-              : _pageTitle(_currentIndex);
-
           return Scaffold(
-            appBar: AppBar(
-              title: Text(title),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.filter_list),
-                  onPressed: () {
-                    if (_currentIndex == 1) {
-                      context.read<HomeViewModel>().toggleFilterPanel();
-                    } else if (_currentIndex == 2) {
-                      context.read<RecommendViewModel>().toggleFilterPanel();
-                    } else if (_currentIndex == 3) {
-                      context.read<PopularViewModel>().toggleFilterPanel();
-                    }
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SearchScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
+            appBar: _buildAppBar(context),
             drawer: const SidebarMenu(),
             body: PageView(
               controller: _pageController,
@@ -183,24 +131,19 @@ class _MainScreenState extends State<MainScreen> {
                   onDestinationSelected: _onTabTapped,
                   destinations: [
                     NavigationDestination(
-                      icon: Icon(Icons.favorite_outline),
-                      selectedIcon: Icon(Icons.favorite),
-                      label: Strings.tabFavorites,
+                      icon: const Icon(Icons.library_music_outlined),
+                      selectedIcon: const Icon(Icons.library_music),
+                      label: Strings.tabLibrary,
                     ),
                     NavigationDestination(
-                      icon: Icon(Icons.home_outlined),
-                      selectedIcon: Icon(Icons.home),
-                      label: Strings.home,
+                      icon: const Icon(Icons.search_outlined),
+                      selectedIcon: const Icon(Icons.search),
+                      label: Strings.tabSearch,
                     ),
                     NavigationDestination(
-                      icon: Icon(Icons.recommend_outlined),
-                      selectedIcon: Icon(Icons.recommend),
-                      label: Strings.navRecommend,
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.trending_up_outlined),
-                      selectedIcon: Icon(Icons.trending_up),
-                      label: Strings.navPopular,
+                      icon: const Icon(Icons.local_fire_department_outlined),
+                      selectedIcon: const Icon(Icons.local_fire_department),
+                      label: Strings.tabHot,
                     ),
                   ],
                 ),
@@ -211,4 +154,4 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
-} 
+}

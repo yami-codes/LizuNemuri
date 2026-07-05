@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:xuro/common/constants/strings.dart';
 import 'package:xuro/core/settings/app_settings_service.dart';
+import 'package:xuro/core/settings/llm_subtitle_display_mode.dart';
 import 'package:xuro/core/settings/llm_subtitle_target_language.dart';
 import 'package:xuro/data/repositories/llm_api_key_repository.dart';
 import 'package:xuro/screens/settings/widgets/settings_group.dart';
@@ -159,6 +160,34 @@ class _LlmTranslationSettingsScreenState
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+            ListenableBuilder(
+              listenable: widget.settings,
+              builder: (context, _) => SettingsGroup(
+                header: Strings.llmSubtitleDisplayMode,
+                children: [
+                  SettingsTile.selection(
+                    title: Strings.llmSubtitleDisplayDual,
+                    subtitle: Strings.llmSubtitleDisplayDualDesc,
+                    leading: Icons.layers_outlined,
+                    selected: widget.settings.llmSubtitleDisplayMode ==
+                        LlmSubtitleDisplayMode.dual,
+                    onTap: () => widget.settings
+                        .setLlmSubtitleDisplayMode(LlmSubtitleDisplayMode.dual),
+                  ),
+                  SettingsTile.selection(
+                    title: Strings.llmSubtitleDisplayTranslationOnly,
+                    subtitle: Strings.llmSubtitleDisplayTranslationOnlyDesc,
+                    leading: Icons.subtitles_outlined,
+                    selected: widget.settings.llmSubtitleDisplayMode ==
+                        LlmSubtitleDisplayMode.translationOnly,
+                    onTap: () => widget.settings.setLlmSubtitleDisplayMode(
+                      LlmSubtitleDisplayMode.translationOnly,
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 16),
             ListenableBuilder(
