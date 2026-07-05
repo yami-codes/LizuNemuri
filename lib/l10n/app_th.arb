@@ -2315,5 +2315,8 @@
   "llmTitleTranslationDone": "แปลชื่อผลงานเสร็จแล้ว",
   "llmTitleFromCache": "โหลดคำแปลชื่อจากแคชแล้ว",
   "llmErrorNoTitle": "ผลงานนี้ไม่มีชื่อให้แปล",
-  "batchTranslateIncludeTitle": "แปลชื่อผลงาน"
+  "batchTranslateIncludeTitle": "แปลชื่อผลงาน",
+  "playerVolume": "ระดับเสียง",
+  "playerViewCover": "ปก",
+  "playerViewSubtitles": "ซับไตเติล"
 }

@@ -2315,5 +2315,8 @@
   "llmTitleTranslationDone": "Project title translated",
   "llmTitleFromCache": "Loaded saved title translation from cache",
   "llmErrorNoTitle": "This work has no title to translate",
-  "batchTranslateIncludeTitle": "Translate project title"
+  "batchTranslateIncludeTitle": "Translate project title",
+  "playerVolume": "Volume",
+  "playerViewCover": "Cover",
+  "playerViewSubtitles": "Subtitles"
 }

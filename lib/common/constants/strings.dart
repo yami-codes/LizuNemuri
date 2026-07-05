@@ -376,6 +376,9 @@ class Strings {
   static String get llmErrorNoTitle => _l10n.llmErrorNoTitle;
   static String get batchTranslateIncludeTitle =>
       _l10n.batchTranslateIncludeTitle;
+  static String get playerVolume => _l10n.playerVolume;
+  static String get playerViewCover => _l10n.playerViewCover;
+  static String get playerViewSubtitles => _l10n.playerViewSubtitles;
 
   static String playlistToggleResult(bool added, String name) =>
       added ? _l10n.playlistToggleResultAdded(name) : _l10n.playlistToggleResultRemoved(name);

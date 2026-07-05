@@ -21,4 +21,8 @@ abstract class IAudioPlayerService {
   // 状态持久化
   Future<void> savePlaybackState();
   Future<void> restorePlaybackState();
+
+  /// Output volume 0.0–1.0 (just_audio).
+  double get volume;
+  Future<void> setVolume(double volume);
 }

@@ -13,11 +13,15 @@ import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
 class PlayerLyricView extends StatefulWidget {
   final bool immediateScroll;
   final Function(bool canSwitch) onScrollStateChanged;
+  final bool lockParentViewSwitch;
+  final bool compact;
 
   const PlayerLyricView({
     super.key,
     this.immediateScroll = false,
     required this.onScrollStateChanged,
+    this.lockParentViewSwitch = true,
+    this.compact = false,
   });
 
   @override
@@ -120,9 +124,10 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
         return NotificationListener<ScrollNotification>(
           onNotification: (notification) {
             if (notification is ScrollStartNotification && 
-                notification.dragDetails != null) {  // 用户开始手动滚动
-              // 立即禁用视图切换功能
-              widget.onScrollStateChanged(false);
+                notification.dragDetails != null) {
+              if (widget.lockParentViewSwitch) {
+                widget.onScrollStateChanged(false);
+              }
               
               // 禁用自动滚动功能
               _allowAutoScroll = false;
@@ -130,14 +135,15 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
               // 取消所有待执行的计时器
               _scrollDebounceTimer?.cancel();
               _autoScrollDebounceTimer?.cancel();
-            } else if (notification is ScrollEndNotification) {  // 用户结束滚动
-              // 延长视图切换的禁用时间到1秒
-              _scrollDebounceTimer?.cancel();
-              _scrollDebounceTimer = Timer(const Duration(milliseconds: 1000), () {
-                if (mounted) {
-                  widget.onScrollStateChanged(true);
-                }
-              });
+            } else if (notification is ScrollEndNotification) {
+              if (widget.lockParentViewSwitch) {
+                _scrollDebounceTimer?.cancel();
+                _scrollDebounceTimer = Timer(const Duration(milliseconds: 1000), () {
+                  if (mounted) {
+                    widget.onScrollStateChanged(true);
+                  }
+                });
+              }
               
               // 自动滚动计时器保持3秒
               _autoScrollDebounceTimer?.cancel();
@@ -157,7 +163,9 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
             itemScrollController: _itemScrollController,
             itemPositionsListener: _itemPositionsListener,
             padding: EdgeInsets.symmetric(
-              vertical: screenHeight * 0.3,
+              vertical: widget.compact
+                  ? screenHeight * 0.08
+                  : screenHeight * 0.3,
               horizontal: baseUnit * 0.8,
             ),
             itemBuilder: (context, index) {
@@ -173,15 +181,19 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
                   isActive: isActive,
                   opacity: isActive ? 1.0 : 0.5,
                   onTap: () async {
-                    widget.onScrollStateChanged(false);
+                    if (widget.lockParentViewSwitch) {
+                      widget.onScrollStateChanged(false);
+                    }
                     
                     await _viewModel.seek(subtitle.start);
                     
-                    Future.delayed(const Duration(milliseconds: 500), () {
-                      if (mounted) {
-                        widget.onScrollStateChanged(true);
-                      }
-                    });
+                    if (widget.lockParentViewSwitch) {
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        if (mounted) {
+                          widget.onScrollStateChanged(true);
+                        }
+                      });
+                    }
                   },
                 ),
               );

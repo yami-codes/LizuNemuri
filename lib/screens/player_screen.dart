@@ -6,11 +6,12 @@ import 'package:xuro/presentation/viewmodels/player_viewmodel.dart';
 import 'package:xuro/core/theme/app_spacing.dart';
 import 'package:xuro/widgets/player/player_controls.dart';
 import 'package:xuro/widgets/player/waveform_progress.dart';
-import 'package:xuro/utils/platform_capabilities.dart';
-import 'package:xuro/widgets/player/circular_cover.dart';
+import 'package:xuro/widgets/player/player_art_panel.dart';
+import 'package:xuro/widgets/player/volume_control.dart';
+import 'package:xuro/presentation/layouts/player_layout_config.dart';
 import 'package:xuro/screens/detail_screen.dart';
 import 'package:xuro/widgets/lyrics/components/player_lyric_view.dart';
-import 'package:xuro/widgets/player/player_work_info.dart';
+import 'package:xuro/utils/platform_capabilities.dart';
 import 'package:xuro/core/platform/wakelock_controller.dart';
 import 'package:xuro/core/platform/sleep_timer_controller.dart';
 import 'package:xuro/screens/settings/sleep_timer_dialog.dart';
@@ -119,14 +120,43 @@ class _PlayerScreenState extends State<PlayerScreen> {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildViewModeToggle({required bool isWide}) {
+    if (isWide) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.space16,
+        AppSpacing.space8,
+        AppSpacing.space16,
+        0,
+      ),
+      child: SegmentedButton<bool>(
+        segments: [
+          ButtonSegment<bool>(
+            value: false,
+            label: Text(Strings.playerViewCover),
+            icon: const Icon(Icons.album_outlined, size: 18),
+          ),
+          ButtonSegment<bool>(
+            value: true,
+            label: Text(Strings.playerViewSubtitles),
+            icon: const Icon(Icons.subtitles_outlined, size: 18),
+          ),
+        ],
+        selected: {_showLyrics},
+        onSelectionChanged: (selection) {
+          setState(() => _showLyrics = selection.first);
+        },
+      ),
+    );
+  }
+
+  Widget _buildNarrowContent(double coverSize) {
     return AnimatedSwitcher(
       duration: AppAnimations.long,
       switchInCurve: AppAnimations.smoothScroll,
       switchOutCurve: AppAnimations.exit,
       transitionBuilder: (Widget child, Animation<double> animation) {
         final isLyrics = (child as dynamic).key == const ValueKey('lyrics');
-        
         return FadeTransition(
           opacity: animation,
           child: SlideTransition(
@@ -135,10 +165,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
               end: Offset.zero,
             ).animate(animation),
             child: ScaleTransition(
-              scale: Tween<double>(
-                begin: 0.95,
-                end: 1.0,
-              ).animate(animation),
+              scale: Tween<double>(begin: 0.95, end: 1.0).animate(animation),
               child: child,
             ),
           ),
@@ -147,83 +174,94 @@ class _PlayerScreenState extends State<PlayerScreen> {
       layoutBuilder: (currentChild, previousChildren) {
         return Stack(
           alignment: Alignment.center,
-          children: <Widget>[
+          children: [
             ...previousChildren,
             if (currentChild != null) currentChild,
           ],
         );
       },
       child: _showLyrics
-          ? LayoutBuilder(
+          ? PlayerLyricView(
               key: const ValueKey('lyrics'),
-              builder: (context, constraints) {
-                return PlayerLyricView(
-                  onScrollStateChanged: (canSwitch) {
-                    setState(() {
-                      _canSwitchView = canSwitch;
-                    });
-                  },
-                );
+              onScrollStateChanged: (canSwitch) {
+                setState(() => _canSwitchView = canSwitch);
               },
             )
-          : ListenableBuilder(
-              listenable: _viewModel,
-              builder: (context, _) {
-                return Column(
-                  key: const ValueKey('cover'),
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: AppSpacing.space32),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.space32),
-                      child: Hero(
-                        tag: 'mini-player-cover',
-                        child: CircularCover(
-                          coverUrl: _viewModel.currentTrackInfo?.coverUrl,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.space32),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.space32),
-                      child: Column(
-                        children: [
-                          Hero(
-                            tag: 'player-title',
-                            child: Material(
-                              color: Colors.transparent,
-                              child: Text(
-                                _viewModel.currentTrackInfo?.title ??
-                                    Strings.notPlaying,
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: AppSpacing.space8),
-                          if (_viewModel.currentTrackInfo?.artist != null)
-                            Text(
-                              _viewModel.currentTrackInfo!.artist,
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                  ),
-                              textAlign: TextAlign.center,
-                            ),
-                        ],
-                      ),
-                    ),
-                    const Spacer(),
-                    PlayerWorkInfo(context: _viewModel.currentContext),
-                  ],
-                );
-              },
+          : Center(
+              key: const ValueKey('cover'),
+              child: PlayerArtPanel(
+                viewModel: _viewModel,
+                coverSize: coverSize,
+              ),
             ),
+    );
+  }
+
+  Widget _buildWideContent(double coverSize) {
+    final cs = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Expanded(
+          child: Center(
+            child: SingleChildScrollView(
+              child: PlayerArtPanel(
+                viewModel: _viewModel,
+                coverSize: coverSize,
+              ),
+            ),
+          ),
+        ),
+        VerticalDivider(
+          width: 1,
+          color: cs.outlineVariant.withValues(alpha: 0.5),
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.space16,
+                  AppSpacing.space12,
+                  AppSpacing.space16,
+                  AppSpacing.space8,
+                ),
+                child: Text(
+                  Strings.playerViewSubtitles,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
+                ),
+              ),
+              Expanded(
+                child: PlayerLyricView(
+                  lockParentViewSwitch: false,
+                  compact: true,
+                  onScrollStateChanged: (_) {},
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildControlsBar() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.space12,
+        0,
+        AppSpacing.space12,
+        AppSpacing.space32,
+      ),
+      child: const Column(
+        children: [
+          WaveformProgress(),
+          SizedBox(height: AppSpacing.space8),
+          PlayerControls(),
+        ],
+      ),
     );
   }
 
@@ -278,6 +316,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
           ),
         ),
         actions: [
+          PlayerVolumeButton(viewModel: _viewModel),
           ListenableBuilder(
             listenable: sleepTimer,
             builder: (context, _) {
@@ -441,33 +480,32 @@ class _PlayerScreenState extends State<PlayerScreen> {
         elevation: 0,
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  if (_canSwitchView) {
-                    setState(() {
-                      _showLyrics = !_showLyrics;
-                    });
-                  }
-                },
-                behavior: HitTestBehavior.opaque,
-                child: _buildContent(),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.space12, 0, AppSpacing.space12, AppSpacing.space32),
-              child: const Column(
-                children: [
-                  WaveformProgress(),
-                  SizedBox(height: AppSpacing.space8),
-                  PlayerControls(),
-                ],
-              ),
-            ),
-          ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide =
+                PlayerLayoutConfig.isWideLayout(constraints.maxWidth);
+            final coverSize =
+                PlayerLayoutConfig.coverSizeForWidth(constraints.maxWidth);
+            return Column(
+              children: [
+                _buildViewModeToggle(isWide: isWide),
+                Expanded(
+                  child: isWide
+                      ? _buildWideContent(coverSize)
+                      : GestureDetector(
+                          onTap: () {
+                            if (_canSwitchView) {
+                              setState(() => _showLyrics = !_showLyrics);
+                            }
+                          },
+                          behavior: HitTestBehavior.opaque,
+                          child: _buildNarrowContent(coverSize),
+                        ),
+                ),
+                _buildControlsBar(),
+              ],
+            );
+          },
         ),
       ),
     );
