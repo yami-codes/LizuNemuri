@@ -14,6 +14,7 @@ import 'package:xuro/screens/browse/circles_screen.dart';
 import 'package:xuro/screens/browse/tags_screen.dart';
 import 'package:xuro/screens/browse/voice_actors_screen.dart';
 import 'package:xuro/screens/about_screen.dart';
+import 'package:xuro/screens/downloads_screen.dart';
 import 'package:xuro/screens/favorites_screen.dart';
 import 'package:xuro/screens/settings/settings_screen.dart';
 import 'package:xuro/widgets/common/brand_wordmark.dart';
@@ -155,6 +156,12 @@ class SidebarMenu extends StatelessWidget {
                               icon: CupertinoIcons.heart,
                               title: Strings.favorites,
                               onTap: () => _navigateToFavorites(context),
+                            ),
+                            SidebarTile(
+                              icon: CupertinoIcons.arrow_down_circle,
+                              title: Strings.downloadsTitle,
+                              onTap: () =>
+                                  _navigate(context, const DownloadsScreen()),
                             ),
                             SidebarTile(
                               icon: CupertinoIcons.clock,

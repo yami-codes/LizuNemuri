@@ -103,6 +103,20 @@
   "downloadSuccess": "Download complete",
   "downloadToLocalTooltip": "Download for offline playback",
   "downloading": "Downloading...",
+  "downloadsEmpty": "No downloads yet. Download audio from a work's file list for offline playback.",
+  "downloadsFileCountSummary": "{count} files · {size}",
+  "@downloadsFileCountSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadsPlayA11y": "Play downloaded audio",
+  "downloadsTitle": "Downloads",
   "drawerSectionContent": "Content",
   "drawerSectionDiscover": "Discover",
   "drawerSectionSystem": "System",
@@ -275,6 +289,16 @@
   "sleepTimerFadeOutDesc": "Linearly lower volume over the last 30 seconds, then pause.",
   "sleepTimerDimScreen": "Sleep mode dim",
   "sleepTimerDimScreenDesc": "Dim the player screen while the sleep timer is active.",
+  "playbackFade": "Play/pause fade",
+  "playbackFadeDesc": "Smoothly fade volume when pausing or resuming playback.",
+  "playbackFadeDuration": "Fade duration",
+  "playbackFadeDurationDesc": "How long the volume fade takes (milliseconds).",
+  "playbackFadeDurationMs": "{ms} ms",
+  "@playbackFadeDurationMs": {
+    "placeholders": {
+      "ms": { "type": "int" }
+    }
+  },
   "sleepTimerActiveSummary": "{preset} min · {minutes}:{seconds} left",
   "@sleepTimerActiveSummary": {
     "placeholders": {
@@ -312,6 +336,9 @@
   "subtitlePreviewTitle": "Subtitle preview",
   "subtitleRemoved": "Imported subtitle removed",
   "tabFavorites": "Favorites",
+  "tabHot": "Hot",
+  "tabLibrary": "Library",
+  "tabSearch": "Search",
   "tags": "Tags",
   "telegramChannel": "Telegram channel",
   "themeAutoDesc": "Automatically switch light/dark mode",
@@ -413,6 +440,7 @@
   "logLoadRecommendFailed": "Failed to load recommendations",
   "logLoadSimilarFailed": "Failed to load similar works",
   "logLoadFavoritesFailed": "Failed to load favorites",
+  "logLoadDownloadsFailed": "Failed to load downloads",
   "logLoadPlaylistsFailed": "Failed to load playlists",
   "logLoadPlaylistWorksFailed": "Failed to load playlist works",
   "logLoadWorkPlaylistsFailed": "Failed to load work playlists",

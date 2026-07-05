@@ -103,6 +103,20 @@
   "downloadSuccess": "下载完成",
   "downloadToLocalTooltip": "下载到本地（离线播放）",
   "downloading": "正在下载...",
+  "downloadsEmpty": "暂无下载。可在作品文件列表中下载音频以便离线播放。",
+  "downloadsFileCountSummary": "{count} 个文件 · {size}",
+  "@downloadsFileCountSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadsPlayA11y": "播放已下载音频",
+  "downloadsTitle": "下载",
   "drawerSectionContent": "内容",
   "drawerSectionDiscover": "发现",
   "drawerSectionSystem": "系统",
@@ -275,6 +289,16 @@
   "sleepTimerFadeOutDesc": "在最后 30 秒线性降低音量，然后暂停播放。",
   "sleepTimerDimScreen": "睡眠模式暗屏",
   "sleepTimerDimScreenDesc": "睡眠定时器启用时调暗播放器画面。",
+  "playbackFade": "播放/暂停淡入淡出",
+  "playbackFadeDesc": "暂停或恢复播放时平滑调节音量。",
+  "playbackFadeDuration": "淡入淡出时长",
+  "playbackFadeDurationDesc": "音量渐变所用时间（毫秒）。",
+  "playbackFadeDurationMs": "{ms} 毫秒",
+  "@playbackFadeDurationMs": {
+    "placeholders": {
+      "ms": { "type": "int" }
+    }
+  },
   "sleepTimerActiveSummary": "{preset} 分钟 · 剩余 {minutes}:{seconds}",
   "@sleepTimerActiveSummary": {
     "placeholders": {
@@ -312,6 +336,9 @@
   "subtitlePreviewTitle": "字幕预览",
   "subtitleRemoved": "已移除导入字幕",
   "tabFavorites": "收藏",
+  "tabHot": "热门",
+  "tabLibrary": "资料库",
+  "tabSearch": "搜索",
   "tags": "标签",
   "telegramChannel": "Telegram 频道",
   "themeAutoDesc": "自动切换深浅色模式",
@@ -413,6 +440,7 @@
   "logLoadRecommendFailed": "加载推荐列表失败",
   "logLoadSimilarFailed": "加载相关推荐失败",
   "logLoadFavoritesFailed": "加载收藏列表失败",
+  "logLoadDownloadsFailed": "加载下载列表失败",
   "logLoadPlaylistsFailed": "加载播放列表失败",
   "logLoadPlaylistWorksFailed": "加载播放列表作品失败",
   "logLoadWorkPlaylistsFailed": "加载收藏夹列表失败",
