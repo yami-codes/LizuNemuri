@@ -49,7 +49,7 @@ Xuro 的沉浸式播放器、睡前定时与耳机向交互，主要参考 **[Ea
 - 睡眠定时：到期前音量淡出 + 播放器暗屏
 - 播放速度预设（0.75×–1.5×）
 
-完整对照与后续移植清单见 [`docs/inspiration_eara.md`](docs/inspiration_eara.md)。Eara 仍是极佳参考，尤其在以下尚未完全落地的方向：
+完整对照与后续移植清单见 [`docs/inspiration_eara.md`](docs/inspiration_eara.md)；**产品方向（grill-me 锁定）** 见 [`docs/eara_ui_north_star.md`](docs/eara_ui_north_star.md)。
 
 - **A–B 片段循环**（进度条标记、拖拽微调）
 - **双声道频谱**与立体声平衡（双耳向内容）

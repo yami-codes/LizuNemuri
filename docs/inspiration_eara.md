@@ -3,6 +3,8 @@
 > Reference for porting ASMR-first UX patterns into Xuro.  
 > Upstream: **[EaraAsmrPlayer](https://github.com/moyucc/EaraAsmrPlayer)** (Android, Jetpack Compose + Media3).
 
+**Locked product direction:** [`eara_ui_north_star.md`](eara_ui_north_star.md) (grill-me 2026-07-05).
+
 Eara is the primary **product north star** for Xuro’s player atmosphere, bedtime flow, and headphone-oriented interactions. Xuro is **not affiliated** with Eara’s authors, asmr.one, or DLsite.
 
 ---
@@ -32,35 +34,24 @@ Eara treats ASMR as **album-centric, ear-first listening** — not a generic mus
 
 ---
 
-## Planned / high-value ports (asmr.one–native)
+## Roadmap (from north star — ordered)
 
-Prioritized for Flutter + direct API (skip DLsite scraper / full local scan unless scope changes):
-
-1. Backdrop **clarity slider** (Eara: cover clarity 0–100%)
-2. **Play/pause volume fade** (separate from sleep-timer fade)
-3. **A–B segment loop** + slice markers on progress bar
-4. **Central downloads manager** screen (`DownloadRepository` already exists)
-5. **Kinetic centered lyrics** (Apple-style scroll follow)
-6. **Search filter chips** mapped to asmr.one query params
-7. **Hot discovery** pattern (recommender + tag surfacing)
-8. **Stereo balance / spectrum** — only when a cross-platform or Android-first path is acceptable; otherwise skip
-9. **User work collections** (lightweight “album groups” over favorites)
-10. **Listening statistics** (optional, local-only)
-
----
-
-## Explicitly out of scope (different product shape)
-
-- DLsite HTML scraper + Play cloud sync
-- Full folder-scan local library as primary home
-- Listen-together social backend
-- Full 10-band EQ + scene reverb without native audio graph on both platforms
+| Milestone | Scope |
+|-----------|--------|
+| **A** (next) | Player motion, shared backdrop, lyrics surface toggle |
+| **B** | Kinetic centered lyrics |
+| **C** | Global Monet-from-cover (drop static color variants) |
+| **D** | Bottom nav: Library / Search / Hot + drawer |
+| **E** | Full-app Eara-density reskin |
+| **F** | Local folder scan library |
+| **G** | DLsite integration (legal review) |
+| **H** | Audio plugin spike for EQ/spectrum |
 
 ---
 
 ## Xuro advantages (keep investing here)
 
-- First-party **asmr.one API** + mirror nodes (no scraper fragility)
+- First-party **asmr.one API** + mirror nodes
 - **LLM subtitle translation** + dual-line display
 - **Cross-platform** (iOS + Android; desktop in progress)
 - **i18n** (en / zh / th)
@@ -72,11 +63,13 @@ Prioritized for Flutter + direct API (skip DLsite scraper / full local scan unle
 
 | Area | Kotlin entry points |
 |------|---------------------|
-| Player shell | `ui/player/NowPlayingScreen.kt`, `CoverArtworkBackground.kt`, `PlayerDynamicHue.kt` |
+| Player shell | `ui/player/NowPlayingScreen.kt`, `CoverArtworkBackground.kt`, `PlayerDynamicHue.kt`, `NowPlayingMotion.kt` |
 | Lyrics | `AppleLyricsView.kt`, `LyricsPage.kt`, `FloatingLyricsOverlay.kt` |
 | Audio FX | `EqualizerPanel.kt`, `GraphicEqualizerAudioProcessor.kt`, `BalanceAudioProcessor.kt`, `ChannelSpectrumView.kt` |
 | Slices | `SliceLoopEngine.kt`, `NowPlayingProgress.kt` |
 | Sleep | `SleepTimerSheet.kt`, `VolumeFader.kt`, `FadingPlayer.kt` |
 | Search | `SearchScreen.kt`, `SearchViewModel.kt`, `SearchFilterOption.kt` |
+| Library | `LibraryScreen.kt`, `libraryviewmodel.kt`, `ScanRootsStore.kt` |
+| DLsite | `DlsiteLoginScreen.kt`, `DLSiteScraper.kt`, `DlsitePlayLibraryClient.kt` |
 | Downloads | `DownloadManager.kt`, `DownloadsScreen.kt` |
 | Settings | `SettingsScreen.kt` |

@@ -38,7 +38,9 @@ We have already ported and adapted several ideas for Flutter and cross-platform 
 - Sleep timer: volume fade in the last 30 seconds + dimmed player overlay
 - Preset playback speed (0.75×–1.5×)
 
-See [`docs/inspiration_eara.md`](docs/inspiration_eara.md) for a full feature map and porting backlog. Eara remains the best reference for ASMR-specific features not yet in Xuro, including:
+See [`docs/inspiration_eara.md`](docs/inspiration_eara.md) for the feature map; **locked product direction** (grill-me): [`docs/eara_ui_north_star.md`](docs/eara_ui_north_star.md).
+
+Eara remains the best reference for features not yet in Xuro, including:
 
 - **Segment looping (A–B slices)** on the progress bar
 - **Dual-channel spectrum** and stereo balance for binaural stereo
