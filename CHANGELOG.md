@@ -8,7 +8,22 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
-## v2.0.0-rc.6 — 2026-07-05
+## v2.0.0-rc.7 — 2026-07-06
+
+### Added
+- **Advanced list filters** (Eara-style): horizontal sort chips on Home, Hot, and Search — Latest, New releases, Best sellers, Top price, Top rated, Random, plus a "More filters" sheet.
+- **Tag picker**: multi-select tags from `/tags/` API; composes asmr.one `$tag:name$` search syntax on Home, Hot, and Search.
+- **Age rating filter**: Any / All ages (`$age:general$`) / R18 (`$age:adult$`) chips; switches to `/search` when tag or age filters are active.
+
+### Changed
+- **Docs**: project markdown translated to English; localized logs (`LogStrings`) and `README_zh` / `README_th` / `guidelines_zh` unchanged.
+- **Code comments**: `lib/` comments translated from Chinese to English.
+
+### Fixed
+- **Player**: Android silent playback regression; Apple Music–style player UI refresh.
+- **CI**: reject truncated `KEYSTORE_BASE64` early before decode.
+
+---
 
 ### Fixed
 - **Android CI signing**: PKCS12 keystores fail GNU `base64 -d` — CI now decodes via `openssl base64 -d -A` and sets `storeType=pkcs12` for Gradle.
