@@ -1,11 +1,9 @@
-import 'package:lizunemu/core/theme/app_animations.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/data/models/works/work.dart';
-import 'package:lizunemu/presentation/models/filter_state.dart';
 import 'package:lizunemu/screens/search_screen.dart';
 import 'package:lizunemu/widgets/common/app_search_field.dart';
-import 'package:lizunemu/widgets/filter/filter_panel.dart';
+import 'package:lizunemu/widgets/filter/advanced_filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lizunemu/presentation/viewmodels/home_viewmodel.dart';
@@ -28,24 +26,9 @@ class _HomeContentState extends State<HomeContent>
   bool get wantKeepAlive => true;
 
   @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
   void dispose() {
-    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
-  }
-
-  void _onScroll() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.minScrollExtent) {
-      return;
-    }
-    context.read<HomeViewModel>().closeFilterPanel();
   }
 
   @override
@@ -53,7 +36,6 @@ class _HomeContentState extends State<HomeContent>
     super.build(context);
     return Column(
       children: [
-        // Top search field (reference design): read-only tap navigates to search; grid/pagination unchanged.
         Padding(
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.space16,
@@ -70,93 +52,48 @@ class _HomeContentState extends State<HomeContent>
             ),
           ),
         ),
+        Consumer<HomeViewModel>(
+          builder: (context, vm, _) => AdvancedFilterBar(
+            hasSubtitle: vm.hasSubtitle,
+            filterState: vm.filterState,
+            onSubtitleChanged: vm.updateSubtitle,
+            onPresetSelected: vm.updatePreset,
+            onSortDirectionChanged: vm.updateSortDirection,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.space4),
         Expanded(
-          child: Stack(
-            children: [
-              // Grid: only rebuilds when list data changes
-              Selector<
-                  HomeViewModel,
-                  ({
-                    List<Work> works,
-                    bool isLoading,
-                    String? error,
-                    int currentPage,
-                    int? totalPages
-                  })>(
-                selector: (_, vm) => (
-                  works: vm.works,
-                  isLoading: vm.isLoading,
-                  error: vm.error,
-                  currentPage: vm.currentPage,
-                  totalPages: vm.totalPages,
-                ),
-                builder: (context, data, child) {
-                  return EnhancedWorkGridView(
-                    works: data.works,
-                    isLoading: data.isLoading,
-                    error: data.error,
-                    currentPage: data.currentPage,
-                    totalPages: data.totalPages,
-                    onPageChanged: (page) =>
-                        context.read<HomeViewModel>().loadPage(page),
-                    onRefresh: () => context.read<HomeViewModel>().refresh(),
-                    onRetry: () => context.read<HomeViewModel>().refresh(),
-                    layoutStrategy: _layoutStrategy,
-                    scrollController: _scrollController,
-                  );
-                },
-              ),
-              // Filter panel: only rebuilds when filter state changes
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: Selector<
-                    HomeViewModel,
-                    ({
-                      bool expanded,
-                      bool hasSubtitle,
-                      FilterState filterState
-                    })>(
-                  selector: (_, vm) => (
-                    expanded: vm.filterPanelExpanded,
-                    hasSubtitle: vm.hasSubtitle,
-                    filterState: vm.filterState,
-                  ),
-                  builder: (context, data, child) {
-                    return AnimatedSlide(
-                      duration: AppAnimations.short,
-                      curve: AppAnimations.standard,
-                      offset: Offset(0, data.expanded ? 0 : -1),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x0D000000),
-                              blurRadius: 8,
-                              spreadRadius: 1,
-                              offset: Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        child: FilterPanel(
-                          hasSubtitle: data.hasSubtitle,
-                          onSubtitleChanged:
-                              context.read<HomeViewModel>().updateSubtitle,
-                          orderField: data.filterState.orderField,
-                          isDescending: data.filterState.isDescending,
-                          onOrderFieldChanged:
-                              context.read<HomeViewModel>().updateOrderField,
-                          onSortDirectionChanged:
-                              context.read<HomeViewModel>().updateSortDirection,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
+          child: Selector<
+              HomeViewModel,
+              ({
+                List<Work> works,
+                bool isLoading,
+                String? error,
+                int currentPage,
+                int? totalPages
+              })>(
+            selector: (_, vm) => (
+              works: vm.works,
+              isLoading: vm.isLoading,
+              error: vm.error,
+              currentPage: vm.currentPage,
+              totalPages: vm.totalPages,
+            ),
+            builder: (context, data, child) {
+              return EnhancedWorkGridView(
+                works: data.works,
+                isLoading: data.isLoading,
+                error: data.error,
+                currentPage: data.currentPage,
+                totalPages: data.totalPages,
+                onPageChanged: (page) =>
+                    context.read<HomeViewModel>().loadPage(page),
+                onRefresh: () => context.read<HomeViewModel>().refresh(),
+                onRetry: () => context.read<HomeViewModel>().refresh(),
+                layoutStrategy: _layoutStrategy,
+                scrollController: _scrollController,
+              );
+            },
           ),
         ),
       ],

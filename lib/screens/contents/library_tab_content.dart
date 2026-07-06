@@ -84,15 +84,6 @@ class _LibraryTabContentState extends State<LibraryTabContent>
           return Scaffold(
             appBar: AppBar(
               title: Text(_title(scopedContext)),
-              actions: [
-                if (_segment == _LibrarySegment.browse)
-                  IconButton(
-                    icon: const Icon(Icons.filter_list),
-                    onPressed: () => scopedContext
-                        .read<HomeViewModel>()
-                        .toggleFilterPanel(),
-                  ),
-              ],
             ),
             body: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,

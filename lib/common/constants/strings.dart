@@ -132,6 +132,12 @@ class Strings {
   static String get filterOrderReview => _l10n.filterOrderReview;
   static String get filterOrderRj => _l10n.filterOrderRj;
   static String get filterOrderSales => _l10n.filterOrderSales;
+  static String get filterMoreOptions => _l10n.filterMoreOptions;
+  static String get filterPresetLatest => _l10n.filterPresetLatest;
+  static String get filterPresetPrice => _l10n.filterPresetPrice;
+  static String get filterPresetRating => _l10n.filterPresetRating;
+  static String get filterPresetRelease => _l10n.filterPresetRelease;
+  static String get filterPresetSales => _l10n.filterPresetSales;
   static String get followSystem => _l10n.followSystem;
   static String get goLogin => _l10n.goLogin;
   static String get gridEmpty => _l10n.gridEmpty;

@@ -1,3 +1,5 @@
+import 'package:lizunemu/presentation/models/work_list_filter_preset.dart';
+
 class FilterState {
   final String orderField;
   final bool isDescending;
@@ -11,6 +13,12 @@ class FilterState {
 
   String get sortValue => orderField == 'random' ? 'desc' : (isDescending ? 'desc' : 'asc');
 
+  WorkListFilterPreset get activePreset =>
+      WorkListFilterPresetX.fromOrder(
+        orderField: orderField,
+        isDescending: isDescending,
+      );
+
   FilterState copyWith({
     String? orderField,
     bool? isDescending,
@@ -18,6 +26,13 @@ class FilterState {
     return FilterState(
       orderField: orderField ?? this.orderField,
       isDescending: isDescending ?? this.isDescending,
+    );
+  }
+
+  FilterState copyWithPreset(WorkListFilterPreset preset) {
+    return FilterState(
+      orderField: preset.orderField,
+      isDescending: preset.isDescending,
     );
   }
 

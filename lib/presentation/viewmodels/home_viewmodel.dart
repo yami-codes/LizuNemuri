@@ -4,6 +4,7 @@ import 'package:lizunemu/data/services/api_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/presentation/models/filter_state.dart';
+import 'package:lizunemu/presentation/models/work_list_filter_preset.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
@@ -60,16 +61,20 @@ class HomeViewModel extends PaginatedWorksViewModel {
     refresh();
   }
 
-  void updateOrderField(String value) {
-    // Random sort forces descending order
-    final newState = _filterState.copyWith(
-      orderField: value,
-      isDescending: value == 'random' ? true : _filterState.isDescending,
-    );
-    _filterState = newState;
+  void updatePreset(WorkListFilterPreset preset) {
+    _filterState = _filterState.copyWithPreset(preset);
     _saveFilterState();
     notifyListeners();
     refresh();
+  }
+
+  void updateOrderField(String value) {
+    updatePreset(
+      WorkListFilterPresetX.fromOrder(
+        orderField: value,
+        isDescending: value == 'random' ? true : _filterState.isDescending,
+      ),
+    );
   }
 
   void updateSortDirection(bool isDescending) {
