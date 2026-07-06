@@ -2327,6 +2327,23 @@
   "llmJailbreakAutoDesc": "为成人向/极端内容翻译提供更稳定的默认越狱提示；可在此覆盖自定义文本。",
   "llmPresetOpenAi": "OpenAI",
   "llmPresetOpenRouter": "OpenRouter",
+  "llmPresetGemini": "Google Gemini（AI Studio）",
+  "llmPresetCustom": "自定义 OpenAI 兼容",
+  "llmPresetCustomHint": "任意提供 /v1/chat/completions 的基址",
+  "llmCustomEndpointHint": "https://your-host/v1",
+  "llmProviderDetected": "当前提供方：{provider}",
+  "@llmProviderDetected": {
+    "placeholders": {
+      "provider": { "type": "String" }
+    }
+  },
+  "llmModelAutocompleteHint": "输入以搜索提供方的实时模型列表。",
+  "llmCustomModelHint": "若无法自动补全，请手动输入模型 ID。",
+  "llmGeminiUsageHint": "在 aistudio.google.com 获取 API 密钥。配额与账单请在 Google AI Studio → 仪表盘 → 使用量 查看（无公开配额 API）。",
+  "llmOpenRouterUsageHint": "保存 API 密钥后可在下方查看额度。账单管理：openrouter.ai/settings/credits",
+  "llmOpenAiUsageHint": "用量与账单请在 platform.openai.com 查看。本应用仅记录本地 token 历史。",
+  "llmCustomUsageHint": "指向任意 OpenAI 兼容服务。自动补全会尝试 GET /models。",
+  "llmOpenRouterBalanceUnavailable": "无法加载 OpenRouter 余额 — 请先保存 API 密钥。",
   "llmTargetLangSystem": "跟随应用语言",
   "llmTargetLangEn": "英语",
   "llmTargetLangZh": "中文",
@@ -2425,6 +2442,7 @@
   },
   "llmUsageOperationSubtitle": "字幕翻译",
   "llmUsageOperationTitle": "标题翻译",
+  "llmUsageOperationMetadata": "元数据翻译",
   "llmSubtitleDisplayMode": "字幕显示",
   "llmSubtitleDisplayDual": "原文 + 译文",
   "llmSubtitleDisplayDualDesc": "启用 LLM 翻译后，每行上方显示原文、下方显示译文。",

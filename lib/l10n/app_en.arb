@@ -2327,6 +2327,23 @@
   "llmJailbreakAutoDesc": "Uses a built-in stability prompt for adult/extreme content; override with custom text below.",
   "llmPresetOpenAi": "OpenAI",
   "llmPresetOpenRouter": "OpenRouter",
+  "llmPresetGemini": "Google Gemini (AI Studio)",
+  "llmPresetCustom": "Custom OpenAI-compatible",
+  "llmPresetCustomHint": "Any base URL exposing /v1/chat/completions",
+  "llmCustomEndpointHint": "https://your-host/v1",
+  "llmProviderDetected": "Detected provider: {provider}",
+  "@llmProviderDetected": {
+    "placeholders": {
+      "provider": { "type": "String" }
+    }
+  },
+  "llmModelAutocompleteHint": "Start typing to search live model names from the provider.",
+  "llmCustomModelHint": "Enter the model ID manually if autocomplete is unavailable.",
+  "llmGeminiUsageHint": "Get a free API key at aistudio.google.com. Quota and billing are managed in Google AI Studio → Dashboard → Usage (no programmatic quota API).",
+  "llmOpenRouterUsageHint": "Credits and rate limits appear below when your API key is saved. Manage billing at openrouter.ai/settings/credits.",
+  "llmOpenAiUsageHint": "Usage and billing are on platform.openai.com. This app logs local token history only.",
+  "llmCustomUsageHint": "Point at any OpenAI-compatible server. Model autocomplete tries GET /models on your base URL.",
+  "llmOpenRouterBalanceUnavailable": "Could not load OpenRouter balance — save your API key first.",
   "llmTargetLangSystem": "Follow app language",
   "llmTargetLangEn": "English",
   "llmTargetLangZh": "Chinese",
@@ -2425,6 +2442,7 @@
   },
   "llmUsageOperationSubtitle": "Subtitle translation",
   "llmUsageOperationTitle": "Title translation",
+  "llmUsageOperationMetadata": "Metadata translation",
   "llmSubtitleDisplayMode": "Subtitle display",
   "llmSubtitleDisplayDual": "Original + translation",
   "llmSubtitleDisplayDualDesc": "Stack the source line above the translation when LLM translation is active.",

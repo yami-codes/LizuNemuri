@@ -59,9 +59,22 @@ class AppSettingsService extends ChangeNotifier {
 
   static const String defaultServerUrl = 'https://api.asmr.one/api';
   static const String defaultLlmApiEndpoint = 'https://api.openai.com/v1';
-  static const String defaultLlmModel = 'gpt-4o-mini';
-  static const String defaultLlmLiteModel = 'gpt-4o-mini';
   static const String defaultOpenRouterEndpoint = 'https://openrouter.ai/api/v1';
+  static const String defaultGeminiEndpoint =
+      'https://generativelanguage.googleapis.com/v1beta/openai';
+
+  static const String defaultOpenAiMainModel = 'gpt-4o-mini';
+  static const String defaultOpenAiLiteModel = 'gpt-4o-mini';
+  static const String defaultOpenRouterMainModel = 'google/gemma-4-31b-it:free';
+  static const String defaultOpenRouterLiteModel =
+      'google/gemma-4-26b-a4b-it:free';
+  static const String defaultGeminiMainModel = 'gemini-2.5-flash';
+  static const String defaultGeminiLiteModel = 'gemini-2.5-flash-lite';
+
+  /// Default LLM endpoint + models for new installs (OpenRouter free Gemma).
+  static const String defaultLlmEndpoint = defaultOpenRouterEndpoint;
+  static const String defaultLlmModel = defaultOpenRouterMainModel;
+  static const String defaultLlmLiteModel = defaultOpenRouterLiteModel;
   static const ColorVariant defaultColorVariant = ColorVariant.blue;
   static const AppLanguage defaultAppLanguage = AppLanguage.system;
   static const List<String> defaultAudioFormatOrder = [
@@ -135,7 +148,7 @@ class AppSettingsService extends ChangeNotifier {
     _llmTranslationEnabled =
         _prefs.getBool(_llmTranslationEnabledKey) ?? false;
     _llmApiEndpoint =
-        _prefs.getString(_llmApiEndpointKey) ?? defaultLlmApiEndpoint;
+        _prefs.getString(_llmApiEndpointKey) ?? defaultLlmEndpoint;
     _llmModel = _prefs.getString(_llmModelKey) ?? defaultLlmModel;
     _llmLiteModel =
         _prefs.getString(_llmLiteModelKey) ?? defaultLlmLiteModel;

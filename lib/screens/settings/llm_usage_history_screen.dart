@@ -3,6 +3,9 @@ import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/data/models/llm/llm_usage_record.dart';
+import 'package:lizunemu/core/llm/llm_endpoint_utils.dart';
+import 'package:lizunemu/core/settings/llm_provider_kind.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/data/repositories/llm_usage_repository.dart';
 import 'package:lizunemu/data/services/llm_client.dart';
 import 'package:lizunemu/screens/settings/widgets/settings_group.dart';
@@ -19,6 +22,7 @@ class LlmUsageHistoryScreen extends StatefulWidget {
 class _LlmUsageHistoryScreenState extends State<LlmUsageHistoryScreen> {
   final _usageRepo = GetIt.I<LlmUsageRepository>();
   final _client = GetIt.I<LlmClient>();
+  final _settings = GetIt.I<AppSettingsService>();
 
   List<LlmUsageRecord> _history = [];
   LlmAccountBalance? _balance;
@@ -35,7 +39,7 @@ class _LlmUsageHistoryScreenState extends State<LlmUsageHistoryScreen> {
     setState(() => _loading = true);
     final history = await _usageRepo.listHistory(limit: 200);
     final totals = await _usageRepo.totals();
-    final balance = await _client.fetchOpenRouterBalance();
+    final balance = await _client.fetchAccountBalance();
     if (!mounted) return;
     setState(() {
       _history = history;
@@ -61,8 +65,23 @@ class _LlmUsageHistoryScreenState extends State<LlmUsageHistoryScreen> {
         return Strings.llmUsageOperationSubtitle;
       case 'title_translate':
         return Strings.llmUsageOperationTitle;
+      case 'metadata_translate':
+        return Strings.llmUsageOperationMetadata;
       default:
         return operation;
+    }
+  }
+
+  String? _providerUsageHint() {
+    switch (LlmEndpointUtils.detect(_settings.llmApiEndpoint)) {
+      case LlmProviderKind.gemini:
+        return Strings.llmGeminiUsageHint;
+      case LlmProviderKind.openAi:
+        return Strings.llmOpenAiUsageHint;
+      case LlmProviderKind.custom:
+        return Strings.llmCustomUsageHint;
+      case LlmProviderKind.openRouter:
+        return Strings.llmOpenRouterUsageHint;
     }
   }
 
@@ -130,6 +149,13 @@ class _LlmUsageHistoryScreenState extends State<LlmUsageHistoryScreen> {
                             ),
                           ),
                       ],
+                    ),
+                    const SizedBox(height: 16),
+                  ] else ...[
+                    SettingsGroup(
+                      header: Strings.llmUsageHistory,
+                      footer: _providerUsageHint(),
+                      children: const [SizedBox.shrink()],
                     ),
                     const SizedBox(height: 16),
                   ],

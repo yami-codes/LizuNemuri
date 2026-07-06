@@ -38,6 +38,7 @@ import 'package:lizunemu/core/download/storage/download_repository.dart';
 import 'package:lizunemu/data/repositories/llm_api_key_repository.dart';
 import 'package:lizunemu/data/repositories/llm_usage_repository.dart';
 import 'package:lizunemu/data/services/llm_client.dart';
+import 'package:lizunemu/data/services/llm_model_catalog_service.dart';
 import 'package:lizunemu/core/llm/subtitle_translation_service.dart';
 import 'package:lizunemu/core/llm/work_title_translation_service.dart';
 import 'package:lizunemu/core/translation/metadata_translation_service.dart';
@@ -148,6 +149,10 @@ Future<void> setupServiceLocator() async {
 
   getIt.registerLazySingleton<LlmUsageRepository>(
     () => LlmUsageRepository(prefs),
+  );
+
+  getIt.registerLazySingleton<LlmModelCatalogService>(
+    () => LlmModelCatalogService(),
   );
 
   getIt.registerLazySingleton<LlmClient>(

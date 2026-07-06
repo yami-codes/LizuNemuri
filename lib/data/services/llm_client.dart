@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:lizunemu/core/llm/llm_usage.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/settings/llm_provider_kind.dart';
+import 'package:lizunemu/core/llm/llm_endpoint_utils.dart';
 import 'package:lizunemu/core/settings/llm_model_slot.dart';
 import 'package:lizunemu/data/models/llm/llm_usage_record.dart';
 import 'package:lizunemu/data/repositories/llm_api_key_repository.dart';
@@ -46,8 +48,10 @@ class LlmClient {
     return url;
   }
 
-  bool get _isOpenRouter =>
-      _normalizeEndpoint(_settings.llmApiEndpoint).contains('openrouter.ai');
+  LlmProviderKind get providerKind =>
+      LlmEndpointUtils.detect(_settings.llmApiEndpoint);
+
+  bool get _isOpenRouter => providerKind == LlmProviderKind.openRouter;
 
   Future<Map<String, String>> _authHeaders({LlmModelSlot? modelSlot}) async {
     final endpoint = _normalizeEndpoint(_settings.llmApiEndpoint);
@@ -305,9 +309,9 @@ class LlmClient {
     }
   }
 
-  /// Context window for the configured model (OpenRouter `/models` lookup).
+  /// Context window for the configured main model (OpenRouter `/models` lookup).
   Future<int?> fetchModelContextLength() async {
-    final model = _settings.llmModel.trim();
+    final model = _settings.llmMainModel.trim();
     if (model.isEmpty) return null;
 
     final cached = _modelContextCache[model];
@@ -344,6 +348,10 @@ class LlmClient {
     }
     return null;
   }
+
+  /// Provider account summary when supported (OpenRouter credits today).
+  Future<LlmAccountBalance?> fetchAccountBalance() =>
+      fetchOpenRouterBalance();
 
   /// OpenRouter account usage / credit summary (`GET /auth/key`).
   Future<LlmAccountBalance?> fetchOpenRouterBalance() async {
