@@ -1,48 +1,48 @@
-# ASMR One App 音频播放架构设计
+# ASMR One App Audio Playback Architecture
 
-## 1. 架构概述
+## 1. Architecture Overview
 
-本文档描述了 ASMR One App 音频播放功能的架构设计。遵循 Clean Architecture 原则，采用事件驱动架构，将音频播放功能分为核心层、数据层和表现层。
+This document describes the audio playback architecture for the ASMR One App. Following Clean Architecture, it uses an event-driven design split into core, data, and presentation layers.
 
-## 2. 目录结构
+## 2. Directory Structure
 
 <pre>
 lib/
 ├── core/
-│   └── audio/                      # 音频核心功能
-│       ├── audio_player_service.dart    # 音频服务实现
-│       ├── i_audio_player_service.dart  # 音频服务接口
-│       ├── controllers/                 # 控制器
-│       │   └── playback_controller.dart # 播放控制器
-│       ├── events/                      # 事件系统
-│       │   ├── playback_event.dart     # 事件定义
-│       │   └── playback_event_hub.dart # 事件中心
-│       ├── models/                      # 数据模型
-│       │   ├── audio_track_info.dart   # 音轨信息
-│       │   └── playback_context.dart   # 播放上下文
-│       ├── notification/                # 通知栏
+│   └── audio/                      # Audio core
+│       ├── audio_player_service.dart    # Audio service implementation
+│       ├── i_audio_player_service.dart  # Audio service interface
+│       ├── controllers/                 # Controllers
+│       │   └── playback_controller.dart # Playback controller
+│       ├── events/                      # Event system
+│       │   ├── playback_event.dart     # Event definitions
+│       │   └── playback_event_hub.dart # Event hub
+│       ├── models/                      # Data models
+│       │   ├── audio_track_info.dart   # Track info
+│       │   └── playback_context.dart   # Playback context
+│       ├── notification/                # Notifications
 │       │   └── audio_notification_service.dart
-│       ├── state/                       # 状态管理
+│       ├── state/                       # State management
 │       │   └── playback_state_manager.dart
-│       ├── storage/                     # 状态持久化
+│       ├── storage/                     # State persistence
 │       │   ├── i_playback_state_repository.dart
 │       │   └── playback_state_repository.dart
-│       └── utils/                       # 工具类
+│       └── utils/                       # Utilities
 │           ├── audio_error_handler.dart
 │           ├── playlist_builder.dart
 │           └── track_info_creator.dart
 └── presentation/
     └── viewmodels/
-        └── player_viewmodel.dart   # 播放器视图模型
+        └── player_viewmodel.dart   # Player view model
 </pre>
 
-## 3. 核心组件设计
+## 3. Core Component Design
 
-### 3.1 音频服务接口 (IAudioPlayerService)
+### 3.1 Audio Service Interface (IAudioPlayerService)
 
 <pre>
 abstract class IAudioPlayerService {
-  // 基础播放控制
+  // Basic playback control
   Future<void> pause();
   Future<void> resume();
   Future<void> stop();
@@ -50,27 +50,27 @@ abstract class IAudioPlayerService {
   Future<void> previous();
   Future<void> next();
   
-  // 上下文管理
+  // Context management
   Future<void> playWithContext(PlaybackContext context);
   
-  // 状态访问
+  // State access
   AudioTrackInfo? get currentTrack;
   PlaybackContext? get currentContext;
   
-  // 状态持久化
+  // State persistence
   Future<void> savePlaybackState();
   Future<void> restorePlaybackState();
 }
 </pre>
 
-### 3.2 事件系统 (PlaybackEventHub)
+### 3.2 Event System (PlaybackEventHub)
 
 <pre>
 class PlaybackEventHub {
-  // 主事件流
+  // Main event stream
   final _eventSubject = PublishSubject<PlaybackEvent>();
   
-  // 分类事件流
+  // Typed event streams
   late final Stream<PlaybackStateEvent> playbackState;
   late final Stream<TrackChangeEvent> trackChange;
   late final Stream<PlaybackContextEvent> contextChange;
@@ -81,9 +81,9 @@ class PlaybackEventHub {
 }
 </pre>
 
-## 4. 事件模型
+## 4. Event Model
 
-### 4.1 播放事件 (PlaybackEvent)
+### 4.1 Playback Events (PlaybackEvent)
 
 <pre>
 abstract class PlaybackEvent {}
@@ -100,12 +100,12 @@ class TrackChangeEvent extends PlaybackEvent {
   final Work work;
 }
 
-// ... 其他事件定义
+// ... other event types
 </pre>
 
-## 5. 状态管理
+## 5. State Management
 
-### 5.1 播放状态管理器 (PlaybackStateManager)
+### 5.1 Playback State Manager (PlaybackStateManager)
 
 <pre>
 class PlaybackStateManager {
@@ -121,9 +121,9 @@ class PlaybackStateManager {
 }
 </pre>
 
-## 6. 通知栏集成
+## 6. Notification Integration
 
-### 6.1 通知栏服务 (AudioNotificationService)
+### 6.1 Notification Service (AudioNotificationService)
 
 <pre>
 class AudioNotificationService {
@@ -136,41 +136,40 @@ class AudioNotificationService {
 }
 </pre>
 
-## 7. 技术实现细节
+## 7. Implementation Details
 
-### 7.1 依赖注入
+### 7.1 Dependency Injection
 
-使用 GetIt 进行依赖管理：
-- PlaybackEventHub 注册为单例
-- AudioPlayerService 注册为懒加载单例
-- 所有依赖通过构造函数注入
+GetIt manages dependencies:
+- PlaybackEventHub registered as singleton
+- AudioPlayerService registered as lazy singleton
+- All dependencies injected via constructors
 
-### 7.2 事件驱动
+### 7.2 Event-Driven Design
 
-- 使用 RxDart 实现事件流
-- 统一的事件中心管理所有播放相关事件
-- 各组件通过事件通信，降低耦合
+- RxDart for event streams
+- Central event hub for all playback-related events
+- Components communicate via events to reduce coupling
 
-### 7.3 错误处理
+### 7.3 Error Handling
 
-- 统一的错误处理机制
-- 错误事件通过 EventHub 传递
-- 支持错误追踪和日志记录
+- Unified error handling
+- Errors propagated through EventHub
+- Supports error tracking and logging
 
-## 8. 开发计划
+## 8. Development Plan
 
-1. 优化播放体验
-   - 优化事件处理性能
-   - 完善错误处理机制
-   - 改进状态同步逻辑
+1. Improve playback experience
+   - Optimize event handling performance
+   - Complete error handling
+   - Improve state synchronization
 
-2. 增强功能
-   - 添加播放列表功能
-   - 支持更多播放模式
-   - 优化缓存策略
+2. Enhance features
+   - Playlist support
+   - More play modes
+   - Cache strategy improvements
 
-3. 改进架构
-   - 进一步解耦组件
-   - 优化依赖注入
-   - 完善单元测试
-</pre>
+3. Architecture improvements
+   - Further decouple components
+   - Optimize dependency injection
+   - Expand unit test coverage

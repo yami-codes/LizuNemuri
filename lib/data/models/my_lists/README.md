@@ -1,1 +1,3 @@
-虽然已有相似结构，但为了方便管理，还是单独创建一个文件夹，专门用来处理“播放清单”这个页面的东西。
+# My Lists Models
+
+A dedicated folder for the "My Lists" / playlist page, even though similar structures exist elsewhere — keeps playlist-specific models easy to find and maintain.

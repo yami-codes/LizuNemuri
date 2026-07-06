@@ -1,310 +1,310 @@
-# Xuro UI 设计规范 v4.0（参考图基准 · 代码事实对齐）
+# Xuro UI Design Spec v4.0 (Reference Mockups · Code-Aligned)
 
-> 本规范的视觉基准是用户提供的参考图（蓝白 / 黑白 / 绿白 三配色 × 侧边栏 / 首页 / 播放器 / 设置 / 关于我们 五屏）。
-> **三者必须一致：参考图 = 本规范 = 代码**。与代码冲突时以代码为事实源并回修本规范，不得让规范继续失真。
-> 设计核心：作为 ASMR 音频应用，围绕 **宁静、沉浸、平顺**；遵循 Material 3，但**颜色采用自研双轴体系（非 `ColorScheme.fromSeed`）**。
+> Visual baseline: user-provided reference mockups (blue-white / black-white / green-white × sidebar / home / player / settings / about — five screens).
+> **Reference mockups = this spec = code** must stay aligned. When they conflict, **code wins** — update this spec; do not let the spec drift from reality.
+> Design core: as an ASMR audio app, optimize for **calm, immersion, and smoothness**; follow Material 3, but **colors use a custom two-axis system (not `ColorScheme.fromSeed`)**.
 >
-> v4.0 变更摘要：①颜色章节由「紫色 fromSeed」改写为真实的 `ColorVariant × Brightness` 双轴体系；②组件章节按参考图重构为「原子组件库 + 5 屏复用矩阵 + 三配色不变量」；③§7 性能审计表更新为真实状态（多数 P0/P1 已闭环）；④动画/无障碍/响应式/工作流等仍属实部分保留。
+> v4.0 summary: ① color chapter rewritten from purple `fromSeed` to real `ColorVariant × Brightness` two-axis system; ② components refactored to atom library + 5-screen reuse matrix + three-variant invariant; ③ §7 performance audit table updated to real status (most P0/P1 closed); ④ animation/a11y/responsive/workflow sections kept where still accurate.
 
 ---
 
-## 目录
+## Table of Contents
 
-1. [设计令牌 (Design Tokens)](#1-设计令牌-design-tokens)
-2. [组件设计标准（参考图基准）](#2-组件设计标准参考图基准)
-3. [动画与微交互](#3-动画与微交互)
-4. [无障碍标准](#4-无障碍标准)
-5. [响应式布局规则](#5-响应式布局规则)
-6. [组件开发规范](#6-组件开发规范)
-7. [性能优化准则](#7-性能优化准则)
-8. [开发工作流规范](#8-开发工作流规范)
+1. [Design Tokens](#1-design-tokens)
+2. [Component Standards (Reference Mockups)](#2-component-standards-reference-mockups)
+3. [Animation & Micro-interactions](#3-animation--micro-interactions)
+4. [Accessibility](#4-accessibility)
+5. [Responsive Layout](#5-responsive-layout)
+6. [Component Development Rules](#6-component-development-rules)
+7. [Performance Guidelines](#7-performance-guidelines)
+8. [Development Workflow](#8-development-workflow)
 
 ---
 
-## 1. 设计令牌 (Design Tokens)
+## 1. Design Tokens
 
-### 1.1 颜色系统：双轴体系（事实源 `lib/core/theme/app_colors.dart`）
+### 1.1 Color System: Two-Axis (source of truth `lib/core/theme/app_colors.dart`)
 
-颜色由**两个正交轴**决定，组合出 6 个手搓 `ColorScheme`：
+Color is determined by **two orthogonal axes**, producing 6 hand-rolled `ColorScheme`s:
 
 ```
 ThemeMode (light / dark / system)   ×   ColorVariant (blue / mono / green)
         ↑ ThemeController                       ↑ AppSettingsService
 ```
 
-> ⚠️ **禁止使用 `ColorScheme.fromSeed`**：它会按色相派生 secondary/tertiary，破坏「双色简化」意图。`AppColors.lightSchemeFor(variant)` / `darkSchemeFor(variant)` 手工构造。
+> ⚠️ **Do not use `ColorScheme.fromSeed`**: it derives secondary/tertiary by hue and breaks the "two-color simplification" intent. Use `AppColors.lightSchemeFor(variant)` / `darkSchemeFor(variant)` instead.
 
-#### 三配色不变量（参考图「三种配色」的落地规则）
+#### Three-variant invariant (reference mockup "three palettes")
 
-> **同一套组件，三配色之间只有 accent 像素不同**。表面恒为白（亮）/ 近黑（暗），图标底/卡片底为中性灰。
-> 只有以下三个 token 随 `ColorVariant` 轮换，其余全部中性：`primary`、`onPrimary`、`primaryContainer`。
-> 组件**禁止写死颜色**——一律取 `Theme.of(context).colorScheme.*` 或 §1.2–1.6 令牌。
+> **Same components; only accent pixels differ across the three variants.** Surfaces stay white (light) / near-black (dark); icon/card backgrounds stay neutral gray.
+> Only these three tokens rotate with `ColorVariant`; everything else is neutral: `primary`, `onPrimary`, `primaryContainer`.
+> Components **must not hardcode colors** — always use `Theme.of(context).colorScheme.*` or §1.2–1.6 tokens.
 
-| 配色 | 标签(Strings) | 参考图副标 | Light `primary` | Dark `primary` |
+| Variant | Label (Strings) | Reference subtitle | Light `primary` | Dark `primary` |
 | :--- | :--- | :--- | :--- | :--- |
-| `blue` | 蓝 | 清新·舒缓·放松 | `#0066FF` | `#4D9AFF` |
-| `mono` | 黑 | 简约·专注·沉浸 | `#000000` | `#FFFFFF` |
-| `green` | 绿 | 自然·治愈·清新 | `#00A86B` | `#4DD7A1` |
+| `blue` | Blue | Fresh · soothing · relaxed | `#0066FF` | `#4D9AFF` |
+| `mono` | Mono | Minimal · focused · immersive | `#000000` | `#FFFFFF` |
+| `green` | Green | Natural · healing · fresh | `#00A86B` | `#4DD7A1` |
 
-`onPrimary`：三配色均 light=白 / dark=黑。
-`primaryContainer`（chip/选中底）：blue `#E3EEFF`/`#1A2A4A`，mono `#EEEEEE`/`#2A2A2A`，green `#D8F4E7`/`#1A3A2A`。
-默认配色 `ColorVariant.blue`；深浅模式独立持久化。
+`onPrimary`: all variants — light=white / dark=black.
+`primaryContainer` (chip/selected background): blue `#E3EEFF`/`#1A2A4A`, mono `#EEEEEE`/`#2A2A2A`, green `#D8F4E7`/`#1A3A2A`.
+Default variant `ColorVariant.blue`; light/dark mode persisted independently.
 
-#### 中性表面与语义色（不随配色变化）
+#### Neutral surfaces & semantic colors (variant-independent)
 
-| 语义 | Light | Dark | 用途 |
+| Role | Light | Dark | Usage |
 | :--- | :--- | :--- | :--- |
-| `surface` | `#FFFFFF` | `#1C1B1F` | 基础底色 |
-| `onSurface` | `black87` | `#FFFFFF` | 主文本 |
-| `surfaceContainerHighest` | `#E6E6E6` | `#2B2B2B` | 最高对比层 / 暗色卡片底 |
-| Surface L1（自研令牌） | `#F7F7F7` | `#1F1F1F` | 容器层、迷你播放器底 |
-| Surface L2（自研令牌） | `#F2F2F2` | `#252525` | 侧边栏、搜索框、对话框底 |
-| `onSurfaceVariant` | `#49454F` | `#CAC4D0` | 次要文本/图标 |
-| `outlineVariant` | `#CAC4D0` | `#49454F` | 分割线/描边 |
-| `error` | `#B3261E` | `#F2B8B5` | 错误态 |
+| `surface` | `#FFFFFF` | `#1C1B1F` | Base background |
+| `onSurface` | `black87` | `#FFFFFF` | Primary text |
+| `surfaceContainerHighest` | `#E6E6E6` | `#2B2B2B` | Highest contrast layer / dark card bg |
+| Surface L1 (custom token) | `#F7F7F7` | `#1F1F1F` | Containers, mini-player background |
+| Surface L2 (custom token) | `#F2F2F2` | `#252525` | Sidebar, search field, dialog background |
+| `onSurfaceVariant` | `#49454F` | `#CAC4D0` | Secondary text/icons |
+| `outlineVariant` | `#CAC4D0` | `#49454F` | Dividers/strokes |
+| `error` | `#B3261E` | `#F2B8B5` | Error state |
 
-> Surface L1/L2 经「调色板简化」任务**已实现并中性化**（去除原紫色调），通过 `AppColors.surfaceL1/L2(brightness)` 取用。旧规范「尚未实现」的备注作废。
+> Surface L1/L2 were **implemented and neutralized** in the palette-simplification task (removed old purple tint). Use `AppColors.surfaceL1/L2(brightness)`. Old "not yet implemented" notes are obsolete.
 
-#### 交互状态叠加
+#### Interaction state overlays
 
-| 状态 | 叠加层 |
+| State | Overlay |
 | :--- | :--- |
 | Hover | Primary 8% |
 | Pressed | Primary 12% |
-| Focused | Primary 12% + 2px Outline |
-| Disabled | 38% 不透明度（统一，不定义自定义禁用色） |
+| Focused | Primary 12% + 2px outline |
+| Disabled | 38% opacity (uniform; no custom disabled color) |
 
-> 颜色透明度统一用 `.withValues(alpha:)`（**禁止新增 `.withOpacity()`**，历史 25 处由 Phase E 清理）。
+> Use `.withValues(alpha:)` for opacity (**do not add new `.withOpacity()`**; legacy 25 call sites cleaned in Phase E).
 
-### 1.2 排版 (Typography)
+### 1.2 Typography
 
-> 状态：`AppTextStyles` 为 Phase B 待建令牌类；落地前组件取 `Theme.of(context).textTheme.*`，**禁止用 `fontSize:` 硬覆盖**（现 `work_info_section.dart` 等违规点 Phase C 清理）。
+> Status: `AppTextStyles` is a Phase B token class; until then use `Theme.of(context).textTheme.*` — **no hardcoded `fontSize:` overrides** (violations in `work_info_section.dart` etc. cleaned in Phase C).
 
-| 类型 | 粗细 | sp | 行高 | 用途 |
+| Style | Weight | sp | Line height | Usage |
 | :--- | :--- | :--- | :--- | :--- |
-| Headline Medium | Medium | 28 | 1.2 | 大标题 |
-| Title Large | Medium | 22 | 1.3 | AppBar 标题、播放器曲名 |
-| Title Medium | Medium | 16 | 1.5 | 列表标题、卡片标题、分区头 |
-| Body Large | Regular | 16 | 1.5 | 主要正文 |
-| Body Medium | Regular | 14 | 1.5 | 次要描述、副标题 |
-| Label Medium | Medium | 12 | 1.3 | 标签、按钮、小注 |
-| Caption | Regular | 10 | 1.2 | 时间戳（如 `30:45`）、版权 |
+| Headline Medium | Medium | 28 | 1.2 | Large titles |
+| Title Large | Medium | 22 | 1.3 | AppBar title, player track name |
+| Title Medium | Medium | 16 | 1.5 | List titles, card titles, section headers |
+| Body Large | Regular | 16 | 1.5 | Primary body |
+| Body Medium | Regular | 14 | 1.5 | Secondary description, subtitles |
+| Label Medium | Medium | 12 | 1.3 | Labels, buttons, captions |
+| Caption | Regular | 10 | 1.2 | Timestamps (e.g. `30:45`), copyright |
 
-### 1.3 间距 (Spacing)
+### 1.3 Spacing
 
-> 状态：`AppSpacing` 为 Phase B 待建令牌类。4px 基准网格。
+> Status: `AppSpacing` is a Phase B token class. 4px base grid.
 
-- Tokens：4 / 8 / 12 / 16 / 20 / 24 / 32 / 40 / 48 / 64
-- 布局边距：移动端 16，平板/桌面 24
+- Tokens: 4 / 8 / 12 / 16 / 20 / 24 / 32 / 40 / 48 / 64
+- Page margins: mobile 16, tablet/desktop 24
 
-### 1.4 圆角 (Border Radius)
+### 1.4 Border Radius
 
-> 状态：`AppRadius` 为 Phase B 待建令牌类。当前 `app_theme.dart` 卡片硬编码 12（Phase B 接入令牌）。
+> Status: `AppRadius` is a Phase B token class. Current `app_theme.dart` card radius hardcoded to 12 (Phase B wires tokens).
 
-| Token | 值 | 用途 |
+| Token | Value | Usage |
 | :--- | :--- | :--- |
-| Small | 8 | Chip、Tooltip |
-| Medium | 12 | 作品卡片、列表项 |
-| Large | 16 | 播放器抽屉、底部面板、对话框 |
-| Full | 999 | 胶囊按钮、搜索框、头像、`AccentPill` |
-| Circle | — | 播放器圆形封面 `CircularCover`（参考图） |
+| Small | 8 | Chips, tooltips |
+| Medium | 12 | Work cards, list items |
+| Large | 16 | Player sheet, bottom panels, dialogs |
+| Full | 999 | Pill buttons, search field, avatar, `AccentPill` |
+| Circle | — | Player round cover `CircularCover` (reference mockup) |
 
-### 1.5 图标系统
+### 1.5 Icon System
 
-| Token | dp | 用途 |
+| Token | dp | Usage |
 | :--- | :--- | :--- |
-| Inline | 16 | 正文内嵌 |
-| List Leading | 20–24 | 列表前置图标（线性 outlined） |
-| Standard | 24 | 标准操作 |
-| Emphasis | 32 | 播放/暂停 |
-| Feature | 48 | 空状态/特性 |
+| Inline | 16 | In-body icons |
+| List Leading | 20–24 | List leading icons (outlined) |
+| Standard | 24 | Standard actions |
+| Emphasis | 32 | Play/pause |
+| Feature | 48 | Empty states / feature highlights |
 
-- 不透明度：激活 87% / 非激活 60% / 禁用 38%。图标默认中性，**仅激活态用 accent**。
-- 点击区域：24px 图标 → 48×48；20px → 40×40（移动端强制 ≥48×48）。
+- Opacity: active 87% / inactive 60% / disabled 38%. Icons default neutral; **accent only when active**.
+- Hit targets: 24px icon → 48×48; 20px → 40×40 (mobile minimum 48×48).
 
-### 1.6 海拔 (Elevation)
+### 1.6 Elevation
 
-- 当前 `cardTheme.elevation = 0`；亮色卡片可叠 1dp 区分，**暗色不使用阴影**，靠 Surface 层级（L1/L2/Highest）区分深度。
-- AppBar：`elevation:0` + `scrolledUnderElevation:0` + `centerTitle:true`（`app_theme.dart`）。
+- Current `cardTheme.elevation = 0`; light cards may use 1dp separation; **no shadows in dark mode** — depth via surface levels (L1/L2/Highest).
+- AppBar: `elevation:0` + `scrolledUnderElevation:0` + `centerTitle:true` (`app_theme.dart`).
 
 ---
 
-## 2. 组件设计标准（参考图基准）
+## 2. Component Standards (Reference Mockups)
 
-### 2.0 三层组件架构
+### 2.0 Three-Layer Architecture
 
 ```
-Layer 0  设计令牌   AppColors(双轴) + AppSpacing/AppRadius/AppTextStyles/AppAnimations
-Layer 1  原子组件   跨 5 屏 × 3 配色复用；不写死颜色；全取 Theme/令牌
-Layer 2  屏幕组合   Sidebar/Home/Player/Settings/About 仅做布局组合
+Layer 0  Design tokens   AppColors(two-axis) + AppSpacing/AppRadius/AppTextStyles/AppAnimations
+Layer 1  Atoms            Reused across 5 screens × 3 variants; no hardcoded colors; Theme/tokens only
+Layer 2  Screen compose   Sidebar/Home/Player/Settings/About layout only
 ```
 
-### 2.1 原子组件 × 屏幕 复用矩阵
+### 2.1 Atom × Screen Reuse Matrix
 
-| 原子组件 | 侧边栏 | 首页 | 播放器 | 设置 | 关于 | 代码归宿 |
+| Atom | Sidebar | Home | Player | Settings | About | Location |
 | :--- | :-: | :-: | :-: | :-: | :-: | :--- |
-| `BrandWordmark`（≈ASMR 标志） | ● | | | | ● | `lib/widgets/common/` 新建 |
-| `AccentPill`（选中胶囊/关注/主按钮） | ● | | ● | | | `lib/widgets/common/` 新建 |
-| `SectionHeader`（标题 + 更多>） | | ● | | ● | ● | `lib/widgets/common/` 新建 |
-| `AppSearchField`（圆角搜索框） | | ● | | | | 由 `browse_search_bar.dart` 抽公共 |
-| `AppListTile`（图标+标题+尾控件） | ● | | | ● | ● | 泛化 `settings/widgets/settings_tile.dart` |
-| `AppListGroup`（分组+头+脚） | | | | ● | ● | 上提 `settings/widgets/settings_group.dart` |
-| `CategoryChip`（图标+标签 chip） | | ● | | | | 演进 `widgets/common/tag_chip.dart` |
-| `WorkCoverCard`（封面+时长角标+标题） | | ● | | | | `widgets/work_card/*` + 时长角标 |
-| `CircularCover`（圆形封面+环） | | | ● | | | 改 `widgets/player/player_cover.dart` |
-| `WaveformProgress`（波形进度） | | | ● | | | 替换 `widgets/player/player_progress.dart` 视觉层 |
-| `NowPlayingRow`（最新上传行+迷你控件） | | ● | | | | 复用 `widgets/mini_player/*` 控件 |
-| `SidebarDecoration`（底部装饰插画） | ● | | | | | `lib/widgets/sidebar/` 新建 |
-| `SocialIconRow`（圆形社交图标排） | | | | | ● | `lib/widgets/common/` 新建 |
-| `AppFooter`（© 版权脚） | | | | | ● | `lib/widgets/common/` 新建 |
+| `BrandWordmark` | ● | | | | ● | `lib/widgets/common/` |
+| `AccentPill` | ● | | ● | | | `lib/widgets/common/` |
+| `SectionHeader` | | ● | | ● | ● | `lib/widgets/common/` |
+| `AppSearchField` | | ● | | | | Extract from `browse_search_bar.dart` |
+| `AppListTile` | ● | | | ● | ● | Generalize `settings/widgets/settings_tile.dart` |
+| `AppListGroup` | | | | ● | ● | Promote `settings/widgets/settings_group.dart` |
+| `CategoryChip` | | ● | | | | Evolve `widgets/common/tag_chip.dart` |
+| `WorkCoverCard` | | ● | | | | `widgets/work_card/*` + duration badge |
+| `CircularCover` | | | ● | | | `widgets/player/player_cover.dart` |
+| `WaveformProgress` | | | ● | | | Replace visual layer of `player_progress.dart` |
+| `NowPlayingRow` | | ● | | | | Reuse `widgets/mini_player/*` controls |
+| `SidebarDecoration` | ● | | | | | `lib/widgets/sidebar/` |
+| `SocialIconRow` | | | | | ● | `lib/widgets/common/` |
+| `AppFooter` | | | | | ● | `lib/widgets/common/` |
 
-复用率：设置/关于 ≈80% 复用现有 `SettingsGroup`/`SettingsTile`（已含 `.navigation/.toggle/.selection` 工厂变体）；首页为最大净增组合但全由原子拼成；播放器改动集中在 `CircularCover` + `WaveformProgress`。
+Reuse rate: Settings/About ≈80% from existing `SettingsGroup`/`SettingsTile` (`.navigation/.toggle/.selection` factories); Home is the largest new composition but built from atoms; Player changes focus on `CircularCover` + `WaveformProgress`.
 
-### 2.2 五屏布局规格（对参考图）
+### 2.2 Five-Screen Layout (reference mockups)
 
-**侧边栏**：顶 `BrandWordmark`；导航列表，选中项 = `AccentPill`（实心 accent 底 + `onPrimary` 文字 + Full 圆角），未选中为纯文本+线性图标；底部 `SidebarDecoration`（蓝/绿叶、黑配色月+山）。移动端宽 `min(屏宽×72%, 360px)`，右侧上下圆角 28px，沿用现有玻璃拟态深色策略（见 `lib/widgets/sidebar/`，不回退）。
+**Sidebar**: top `BrandWordmark`; nav list — selected = `AccentPill` (solid accent + `onPrimary` text + full radius), unselected = text + outlined icon; bottom `SidebarDecoration` (blue/green leaves, mono moon+hills). Mobile width `min(screen×72%, 360px)`, right edge radius 28px; follows existing glassmorphism dark strategy (`lib/widgets/sidebar/`, do not regress).
 
-**首页**：AppBar 标题 + 通知铃；`AppSearchField`（Full 圆角，Surface L2 底，尾部放大镜）；`SectionHeader("推荐音频", 更多>)` + `WorkCoverCard` 横滑（Medium 圆角封面 + 左下时长 Caption 角标 + 标题）；`SectionHeader("热门分类")` + `CategoryChip` 两列网格（图标+标签，`primaryContainer` 软底）；`SectionHeader("最新上传", 更多>)` + `NowPlayingRow`（方形小封面 + 标题 + "正在播放" + 迷你播放控件）。
+**Home**: AppBar title + notification bell; `AppSearchField` (full radius, Surface L2); `SectionHeader("Recommended", more>)` + horizontal `WorkCoverCard` strip (medium radius cover + bottom-left duration caption + title); `SectionHeader("Popular categories")` + two-column `CategoryChip` grid (`primaryContainer` soft bg); `SectionHeader("Latest uploads", more>)` + `NowPlayingRow` (small square cover + title + "Now playing" + mini controls).
 
-**播放器**：AppBar 下箭头收起 + "播放器" + 收藏心 + 更多⋮；曲名 Title Large + 副标 Body Medium("ASMR · 自然") + `AccentPill("关注")`；`CircularCover`（大圆形封面 + 细环，保留 `Hero(tag:'mini-player-cover')`）；`WaveformProgress`（波形 + 时间 Caption `12:34 / 30:45`，拖拽 seek 逻辑复用现 `PlayerProgress`）；主控行 `[循环][上一首][实心 accent 大播放][下一首][列表]`；底部动作行 定时关闭/倍速播放/音效设置/加入收藏（图标+Label）。
-> 控制区遵守**播放器极简原则**：扩展现有单控制行，禁止堆叠重复/歧义图标；底部动作行中无后端支撑的项（倍速/音效/均衡器/定时）只做占位或暂不纳入，不为对齐 UI 反向造功能。
+**Player**: AppBar back + "Player" + favorite + more; track Title Large + subtitle Body Medium + `AccentPill("Follow")`; `CircularCover` (large round cover + thin ring, keep `Hero(tag:'mini-player-cover')`); `WaveformProgress` (waveform + time caption `12:34 / 30:45`, seek logic from `PlayerProgress`); main row `[repeat][prev][large accent play][next][list]`; bottom actions: sleep timer / speed / sound / favorite (icon + label).
+> Controls follow **player minimalism**: extend the single control row; no duplicate/ambiguous icons; bottom actions without backend (speed/EQ/timer) are placeholders only — do not invent features to match UI.
 
-**设置**：AppBar "设置"；`AppListGroup` 分区（accent `SectionHeader`）：播放设置 / 声音设置 / 通用设置；每行 `AppListTile` = 线性 leading 图标 + 标题 + 尾控件（值+`>` / 开关 / 滑块）。沿用现有 `SettingsTheme.pageBackground` + `noSplashTheme`。
+**Settings**: AppBar "Settings"; `AppListGroup` sections (accent `SectionHeader`): playback / sound / general; each `AppListTile` = outlined leading + title + trailing (value+`>` / switch / slider). Keep `SettingsTheme.pageBackground` + `noSplashTheme`.
 
-**关于我们**：AppBar 返回 + "关于我们"；居中 `BrandWordmark` + "版本 Vx.y.z"（来自 `package_info_plus`，非硬编码）；产品简介段；`AppListGroup`（用户协议/隐私政策/意见反馈 等 `>` 项，复用现有 7 个 `SettingsTile.navigation`）；联系我们 + 邮箱；`SocialIconRow`；`AppFooter` 版权。
+**About**: AppBar back + "About"; centered `BrandWordmark` + "Version Vx.y.z" (`package_info_plus`, not hardcoded); product blurb; `AppListGroup` (terms/privacy/feedback `>` items, reuse 7 `SettingsTile.navigation`); contact + email; `SocialIconRow`; `AppFooter` copyright.
 
-### 2.3 通用组件标准
+### 2.3 Shared Component Rules
 
-- **作品卡片**：1:1 封面；按下缩放 0.95（取 `MicroInteractions.buttonScaleDown`，现 `WorkCard` 未实现 → Phase E）；hover 8% Primary 遮罩。
-- **按钮**：Filled 高 40 / 横向 24 / Full 圆角 / Primary 底；Outlined 1px 边透明底；Text 无底 Primary 文字；IconButton 48×48 触达。
-- **迷你播放器**：内容区 48 + 安全区；顶部 2px `LinearProgressIndicator`(Primary)；Surface L1 底；点击/上滑 Hero 展开。
-- **列表项**：单行 56 / 双行 72 / 三行 88；前置 40（图标）或 56（缩略图）；分割线 1px `outlineVariant` 起始偏移 16；分区头 Label Medium + accent 色。
-- **对话框**：宽 280–560，全周 24，Surface L2 底，Large 圆角；标题 `headlineSmall`，操作右对齐 8 间距。
-- **Chip**：高 32 横向 12；只读 Surface L2；交互选中用 Primary + 前置 Checkmark；Wrap 间距水平/垂直各 8。
-- **状态反馈**：空状态居中(宽280) 图标64(Tertiary)→标题→描述→操作；错误态分内联/全屏/Snackbar(4s+重试)/网络断顶部 Banner。错误文案须走 `NetworkException.userMessage`（连接失败=VPN 提示，401/403=去登录），不暴露 `e.toString()`。
+- **Work card**: 1:1 cover; press scale 0.95 (`MicroInteractions.buttonScaleDown`, `WorkCard` TBD Phase E); hover 8% primary overlay.
+- **Buttons**: Filled h40 / horizontal 24 / full radius / primary bg; Outlined 1px border transparent bg; Text no bg primary text; IconButton 48×48 target.
+- **Mini player**: content 48 + safe area; top 2px `LinearProgressIndicator`(primary); Surface L1 bg; tap/swipe-up Hero expand.
+- **List item**: single 56 / double 72 / triple 88; leading 40 (icon) or 56 (thumb); divider 1px `outlineVariant` inset 16; section header Label Medium + accent.
+- **Dialog**: width 280–560, padding 24, Surface L2, large radius; title `headlineSmall`, actions right-aligned 8 gap.
+- **Chip**: h32 h-pad 12; read-only Surface L2; selected interactive Primary + checkmark; Wrap gap 8.
+- **Feedback**: empty centered (280w) icon 64 → title → description → action; errors inline/full-screen/Snackbar(4s+retry)/offline banner. Copy via `NetworkException.userMessage` (connection=VPN hint, 401/403=login), never `e.toString()`.
 
 ---
 
-## 3. 动画与微交互
+## 3. Animation & Micro-interactions
 
-> 状态：`AppAnimations` / `MicroInteractions` 已实现于 `lib/core/theme/app_animations.dart`，与本节**一致**。业务代码禁止硬编码 Duration/Curve。
+> Status: `AppAnimations` / `MicroInteractions` live in `lib/core/theme/app_animations.dart` and **match this section**. No hardcoded Duration/Curve in business code.
 
-### 3.1 时间曲线与时长（`AppAnimations`）
+### 3.1 Curves & Durations (`AppAnimations`)
 
-| 常量 | 值 | 用途 |
+| Constant | Value | Usage |
 | :--- | :--- | :--- |
-| `enter` | `easeOutCubic` | 进入：减速停止 |
-| `exit` | `easeInCubic` | 退出：加速离开 |
-| `standard` | `easeInOutCubic` | 状态切换 |
-| `emphasis` | `elasticOut` | 强调回弹 |
-| `smoothScroll` | `easeOutQuart` | 歌词滚动/长列表 |
-| `micro` | 100ms | 涟漪、颜色、透明度 |
-| `short` | 200ms | 标签/菜单/Chip |
-| `medium` | 300ms | 列表进入、卡片展开、歌词同步 |
-| `long` | 450ms | 播放器全屏、页面路由 |
+| `enter` | `easeOutCubic` | Enter: decelerate to stop |
+| `exit` | `easeInCubic` | Exit: accelerate away |
+| `standard` | `easeInOutCubic` | State changes |
+| `emphasis` | `elasticOut` | Emphasis bounce |
+| `smoothScroll` | `easeOutQuart` | Lyric scroll / long lists |
+| `micro` | 100ms | Ripple, color, opacity |
+| `short` | 200ms | Tabs, menus, chips |
+| `medium` | 300ms | List enter, card expand, lyric sync |
+| `long` | 450ms | Player fullscreen, page routes |
 
-单个动画绝对禁止 >500ms。
+No single animation may exceed 500ms.
 
-### 3.2 微交互（`MicroInteractions`）
+### 3.2 Micro-interactions (`MicroInteractions`)
 
-按钮按下 scale 0.95 / opacity 0.8 / 100ms；卡片 elevation +2(仅亮色)/150ms；收藏 scale→1.3/300ms/elasticOut；播放图标 morph 200ms；下拉刷新指示器 40 / 触发距离 100；进度滑块 thumb 拖拽 8 / 空闲 0 / 150ms。
+Button press scale 0.95 / opacity 0.8 / 100ms; card elevation +2 (light only) / 150ms; favorite scale→1.3 / 300ms / elasticOut; play icon morph 200ms; pull-to-refresh indicator 40 / trigger 100; slider thumb drag 8 / idle 0 / 150ms.
 
-### 3.3 页面级动画（不得自创过渡）
+### 3.3 Page-Level Animation (no custom transitions)
 
-| 场景 | 方案 | 时长 | 曲线 |
+| Scene | Approach | Duration | Curve |
 | :--- | :--- | :--- | :--- |
-| 主网格进入 | Staggered fade-in，仅首屏前 6 项，最大延迟 250ms | 300ms | easeOutCubic |
-| 播放器全屏展开 | Hero(封面) + Slide(控制区) | 450ms | easeOutCubic |
-| 标签切换 | Crossfade（禁止水平滑动） | 200ms | easeInOut |
-| 歌词高亮 | Scale 1.0→1.05 + Opacity 0.5→1.0 | 300ms | easeOutCubic |
-| 筛选面板 | AnimatedSlide + AnimatedOpacity | 200ms | easeInOut |
-| 骨架屏 | 纯色脉冲 Opacity 0.3↔0.7（`SkeletonPulse`，禁用 Shimmer 包） | 1500ms loop | easeInOut |
+| Main grid enter | Staggered fade-in, first 6 items only, max delay 250ms | 300ms | easeOutCubic |
+| Player fullscreen | Hero(cover) + Slide(controls) | 450ms | easeOutCubic |
+| Tab switch | Crossfade (no horizontal slide) | 200ms | easeInOut |
+| Lyric highlight | Scale 1.0→1.05 + Opacity 0.5→1.0 | 300ms | easeOutCubic |
+| Filter panel | AnimatedSlide + AnimatedOpacity | 200ms | easeInOut |
+| Skeleton | Opacity pulse 0.3↔0.7 (`SkeletonPulse`, no Shimmer) | 1500ms loop | easeInOut |
 
-### 3.4 动画性能规则
+### 3.4 Animation Performance
 
-优先隐式动画；高频重绘包 `RepaintBoundary`（见 §7.4）；禁止对 width/height/margin 加动画（改 `Transform`）；尊重 `MediaQuery.disableAnimations`（为真则 Duration 归零）；同屏非循环动画 ≤3；`Tween/Duration/Offset` 用 `const`；多动画屏用 `TickerProviderStateMixin`。
-
----
-
-## 4. 无障碍标准
-
-- 对比度：正文 ≥4.5:1，大文本(18pt+) ≥3:1。
-- 点击目标：移动端强制 ≥48×48。
-- 减弱动效：`MediaQuery.disableAnimations` 为真 → 全部 Duration 归零。
-- 屏幕阅读器：所有 `IconButton` / 图像须 `semanticLabel`。
-- 聚焦指示：2px Primary 外框，2px 偏移。
+Prefer implicit animations; wrap hot repaints in `RepaintBoundary` (§7.4); never animate width/height/margin (use `Transform`); respect `MediaQuery.disableAnimations` (zero Duration when true); ≤3 non-looping animations per screen; `const` Tween/Duration/Offset; `TickerProviderStateMixin` on multi-animation screens.
 
 ---
 
-## 5. 响应式布局规则
+## 4. Accessibility
 
-| 断点 | 布局 | 卡片列数 | 间距 |
+- Contrast: body text ≥4.5:1, large text (18pt+) ≥3:1.
+- Touch targets: mobile minimum 48×48.
+- Reduced motion: `MediaQuery.disableAnimations` → all Duration zero.
+- Screen readers: all `IconButton` / images need `semanticLabel`.
+- Focus: 2px primary outline, 2px offset.
+
+---
+
+## 5. Responsive Layout
+
+| Breakpoint | Layout | Grid columns | Gap |
 | :--- | :--- | :--- | :--- |
-| < 800 (Mobile) | 底部导航 | 2 | 8 |
-| 800–1200 (Tablet) | 底部导航/侧边栏 | 3 | 12 |
-| ≥ 1200 (Desktop) | 固定侧边导航 | 4 | 16 |
+| < 800 (Mobile) | Bottom nav | 2 | 8 |
+| 800–1200 (Tablet) | Bottom nav / sidebar | 3 | 12 |
+| ≥ 1200 (Desktop) | Fixed side nav | 4 | 16 |
 
 ---
 
-## 6. 组件开发规范
+## 6. Component Development Rules
 
-### 6.1 拆分
+### 6.1 Splitting
 
-- `build()` >80 行必须拆子 Widget；优先 `StatelessWidget`；单文件公开 Widget ≤3。
+- `build()` >80 lines → extract child widgets; prefer `StatelessWidget`; ≤3 public widgets per file.
 
-### 6.2 命名
+### 6.2 Naming
 
-Screen→`XxxScreen`；ViewModel→`XxxViewModel`；可复用→`XxxWidget`/`XxxView`；接口→`IXxxService`；实现→`XxxService`；Freezed→`Xxx`/`XxxModel`。
+Screen→`XxxScreen`; ViewModel→`XxxViewModel`; reusable→`XxxWidget`/`XxxView`; interface→`IXxxService`; impl→`XxxService`; Freezed→`Xxx`/`XxxModel`.
 
 ### 6.3 Provider
 
-精确监听 `context.select<T,R>()`；只取方法用 `context.read`；**禁止 `context.watch` 包裹大 Widget 树**。
+Precise listen via `context.select<T,R>()`; methods via `context.read`; **never wrap large trees in `context.watch`**.
 
-### 6.4 字符串
+### 6.4 Strings
 
-所有 UI 可见文案集中 `lib/common/constants/strings.dart`，**禁止硬编码中文**（日志/调试串可豁免）。现存 ~60–90 处 UI 违规由 Phase E 收口。
+All user-visible copy in `lib/common/constants/strings.dart` — **no hardcoded UI Chinese** (logs/debug exempt). ~60–90 legacy UI violations closed in Phase E.
 
 ---
 
-## 7. 性能优化准则
+## 7. Performance Guidelines
 
-### 7.1 §7 审计真实状态（2026-05-16 实测，旧表已大面积过期）
+### 7.1 Audit Status (measured 2026-05-16; old table largely stale)
 
-| 项 | 文件 | 真实状态 |
+| Item | File | Status |
 | :--- | :--- | :--- |
-| PlayerViewModel 进度流 60Hz rebuild（原 P0） | `player_viewmodel.dart` | ✅ **已闭环**：UI 路径 `.throttleTime(200ms)` + 字幕路径全精度不 notify（:78-98） |
-| `work_row.dart` IntrinsicHeight（原 P1） | `work_row.dart` | ✅ **已闭环**：全库 `IntrinsicHeight` 0 处，已是 `Row+Expanded` |
-| Shimmer 持续帧开销（原 P1） | 多处 | ⚠️ **主体已闭环**（`SkeletonPulse` opacity 脉冲+`RepaintBoundary`）；残留 `pubspec` `shimmer` 依赖 + `work_files_skeleton.dart` 引用待 Phase E 清 |
-| `groupWorksIntoRows` 每 build 重算（原 P1） | `work_layout_strategy.dart:35` | ❌ **仍未闭环**：未缓存，`work_grid.dart:21` build 路径调用 → Phase E memo |
-| `PlaybackEventHub` 节流（原 P0） | `playback_event_hub.dart` | ◐ `playbackProgress` 用自定义 `.distinct(position)` 比较器（有效）；`playbackState.distinct()` 依赖 `PlaybackStateEvent` 的 `==/hashCode`，执行阶段核验 |
+| PlayerViewModel 60Hz progress rebuild (was P0) | `player_viewmodel.dart` | ✅ **Closed**: UI `.throttleTime(200ms)` + subtitle full precision without notify (:78-98) |
+| `work_row.dart` IntrinsicHeight (was P1) | `work_row.dart` | ✅ **Closed**: zero `IntrinsicHeight` in repo; `Row+Expanded` |
+| Shimmer frame cost (was P1) | multiple | ⚠️ **Mostly closed** (`SkeletonPulse` + `RepaintBoundary`); residual `shimmer` dep + `work_files_skeleton.dart` → Phase E |
+| `groupWorksIntoRows` per-build (was P1) | `work_layout_strategy.dart:35` | ❌ **Open**: no memo, called from `work_grid.dart:21` build → Phase E |
+| `PlaybackEventHub` throttle (was P0) | `playback_event_hub.dart` | ◐ `playbackProgress` custom `.distinct(position)`; `playbackState.distinct()` relies on `PlaybackStateEvent` `==/hashCode` — verify at runtime |
 
-### 7.2 状态管理性能
+### 7.2 State Management Performance
 
-notifyListeners：UI ≤30 次/秒；进度 throttle 200ms；字幕仅行变化才通知。Provider 拆粒度，`context.select` 精确监听。禁止 `build()` 内 `addPostFrameCallback`/`Timer`/重计算。
+notifyListeners: UI ≤30/s; progress throttle 200ms; subtitles notify only on line change. Fine-grained Provider + `context.select`. No `addPostFrameCallback`/`Timer`/heavy work inside `build()`.
 
-### 7.3 列表与滚动
+### 7.3 Lists & Scrolling
 
-强制 `*.builder`，禁止 Column/Row spread 长列表；避免 `IntrinsicHeight`（用固定高/AspectRatio/LayoutBuilder）；网格分组计算须缓存；图片用 `CachedNetworkImage` 并指定 w/h 防 CLS。
+Mandatory `*.builder`; no Column/Row spread for long lists; avoid `IntrinsicHeight` (fixed height/AspectRatio/LayoutBuilder); memoize grid grouping; images via `CachedNetworkImage` with explicit w/h to prevent CLS.
 
 ### 7.4 RepaintBoundary
 
-必须包：MiniPlayer、PlayerProgress、歌词活跃行、用 `AnimationController` 的自定义组件。禁止包静态组件/整页。仅用 Repaint Rainbow 确认热点后添加。
+Wrap: MiniPlayer, PlayerProgress, active lyric line, custom `AnimationController` widgets. Do not wrap static widgets or whole pages. Add only after Repaint Rainbow confirms hotspots.
 
-### 7.5 内存
+### 7.5 Memory
 
-Stream 在 initState 订阅 / dispose 取消，统一 `List<StreamSubscription>` 管理且 try-catch；Timer 全部 dispose 取消，优先 RxDart `throttle/debounce`；Controller 生命周期对齐 initState/dispose + `@mustCallSuper`。
+Subscribe streams in initState / cancel in dispose; central `List<StreamSubscription>` + try-catch; cancel all Timers in dispose; prefer RxDart throttle/debounce; Controller lifecycle aligned with initState/dispose + `@mustCallSuper`.
 
-### 7.6 发版前性能检查（Profile 模式，非 debug）
+### 7.6 Pre-Release Performance Check (Profile mode, not debug)
 
-主列表滚动 ≥55fps；播放器动画 ≥55fps；冷启动首帧 <2s(release)；标签切换 <300ms；冷启动内存 <150MB；30min 播放无泄漏。
+Main list scroll ≥55fps; player animation ≥55fps; cold start first frame <2s (release); tab switch <300ms; cold start memory <150MB; 30min playback no leaks.
 
 ---
 
-## 8. 开发工作流规范
+## 8. Development Workflow
 
-> 权威文档为 [`dev_workflow.md`](dev_workflow.md)（强制流程：TODO → 开发 → `/init`）。本节仅列要点，冲突以 `dev_workflow.md` 为准。
+> Authoritative doc: [`dev_workflow.md`](dev_workflow.md) (mandatory: TODO → develop → `/init`). This section is a summary; on conflict, `dev_workflow.md` wins.
 
-- 改 `lib/data/models/` 下 Freezed 后必须 `dart run build_runner build --delete-conflicting-outputs`，生成物一并提交，禁止手改。
-- 提交前：`flutter analyze`（无新增 warning）→ `flutter test`（全过）→ `dart format lib/`。
-- 性能分析用 Profile/Release，**勿用 debug 测帧率**。
-- 文档优先级：`dev_workflow > 子系统文档 > 本规范 > guidelines`。本规范的视觉判断以参考图为准。
+- After Freezed changes under `lib/data/models/`: run `dart run build_runner build --delete-conflicting-outputs`, commit generated files, never hand-edit.
+- Before commit: `flutter analyze` (no new warnings) → `flutter test` (all pass) → `dart format lib/`.
+- Profile performance in Profile/Release — **not debug FPS**.
+- Doc priority: `dev_workflow > subsystem docs > this spec > guidelines`. Visual judgment defers to reference mockups.

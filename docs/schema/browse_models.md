@@ -1,34 +1,34 @@
-# 浏览列表模型 Schema (已锁定)
+# Browse List Model Schema (Locked)
 
-## TagItem — 标签列表项
-- 接口: `GET /api/tags/`
-- 响应: `List<TagItem>`
+## TagItem — Tag list entry
+- Endpoint: `GET /api/tags/`
+- Response: `List<TagItem>`
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |------|------|------|
-| id | int | 标签ID |
-| name | String | 标签名 |
-| count | int | 关联作品数量 |
-| i18n | I18n? | 多语言翻译，复用现有 I18n |
+| id | int | Tag ID |
+| name | String | Tag name |
+| count | int | Related work count |
+| i18n | I18n? | i18n translations; reuses existing I18n |
 
-## CircleItem — 社团列表项
-- 接口: `GET /api/circles/`
-- 响应: `List<CircleItem>`
+## CircleItem — Circle list entry
+- Endpoint: `GET /api/circles/`
+- Response: `List<CircleItem>`
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |------|------|------|
-| id | int | 社团ID |
-| name | String | 社团名 |
-| count | int | 作品数量 |
-| i18n | I18n? | 多语言（当前API返回空{}，映射为null） |
+| id | int | Circle ID |
+| name | String | Circle name |
+| count | int | Work count |
+| i18n | I18n? | i18n (API currently returns `{}`, mapped to null) |
 
-## VoiceActor — 声优列表项
-- 接口: `GET /api/vas/`
-- 响应: `List<VoiceActor>`
+## VoiceActor — Voice actor list entry
+- Endpoint: `GET /api/vas/`
+- Response: `List<VoiceActor>`
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |------|------|------|
-| id | String | UUID格式 |
-| name | String | 声优名 |
-| count | int | 出演作品数量 |
-| i18n | I18n? | 多语言（当前API返回空{}，映射为null） |
+| id | String | UUID format |
+| name | String | Voice actor name |
+| count | int | Work count |
+| i18n | I18n? | i18n (API currently returns `{}`, mapped to null) |

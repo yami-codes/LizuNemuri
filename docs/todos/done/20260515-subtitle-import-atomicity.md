@@ -1,61 +1,61 @@
-# 字幕导入原子化——消除"先删旧→copy→upsert"的数据丢失与孤儿
+# Subtitle Import Atomicity — Eliminate "Delete Old → Copy → Upsert" Data Loss and Orphans
 
-- **创建时间**：2026-05-15
-- **负责人**：WuMe-sicx
-- **状态**：active <!-- active | done | cancelled -->
-- **关联 Issue / PR**：本地持久化优化清单第 4 项（Codex SESSION 019e2c0c…2962 分析 C3）
-
----
-
-## 1. 目标（Goal）
-
-`SubtitleImportService.importSubtitle` 按「删旧文件 → `file.copy(destPath)` → DB `upsert`」顺序执行，任一步失败会留下孤儿文件或失效 DB 行；尤其**先删旧文件后 copy 失败 = 用户旧字幕丢失且无新字幕**；`file.copy` 非原子，同名重导入中途失败会得到截断文件。`removeImportedSubtitle` 先删文件后删 DB 行且整体吞异常，文件删成功但 DB 删失败会留下指向不存在文件的失效行。本任务把导入改为 **temp 文件 + 原子 rename + 成功后才删旧 + 失败只清 temp（绝不动旧文件）**，并把删除改为 **DB 优先、文件删除 best-effort 独立**。
-
-## 2. 范围（Scope）
-
-**包含：**
-- `importSubtitle` 步骤 5–7 重排为原子序：copy 到同目录临时文件 → `File.rename(tmp → destPath)`（同文件系统原子替换）→ DB `upsert` → 成功后才删除「不同路径的旧文件」（仅扩展名变化时存在）；任一步失败 `finally`/catch 清理临时文件，**不触碰旧文件**（保住用户既有字幕），仍返回 `ImportResult.ioError`。
-- `removeImportedSubtitle` 重排：先 `_repository.remove`（一致性关键，失败单独记录）→ 再 best-effort 删本地文件（失败仅 log，不回滚 DB、不影响调用方）。
-
-**不包含：**
-- 不改 `importSubtitle` / `removeImportedSubtitle` 的方法签名与返回契约（`ImportResponse` 保留；`removeImportedSubtitle` 仍 `Future<void>`——两处调用方均不消费返回值，向用户上报"移除失败"属 UI 层 scope，本次不做，记为后续可选）。
-- 不引入 DB 事务跨「文件系统 + SQLite」（SQLite 无法纳管文件系统操作；原子 rename + 操作定序已消除数据丢失与失效行）。
-- 不做启动期 `.import_tmp` 残留扫描清扫（进程中途被杀残留的小临时文件无害；下次同名导入 `copy` 覆盖之）。记为后续可选。
-- 不动 `loadLocalSubtitle` / `findImported` / `_getDestPath` / 校验解析逻辑（步骤 1–4）。
-
-## 3. 验收标准（Acceptance）
-
-- [x] 旧文件仅在 rename + upsert 全部成功后才删除；同路径重导入额外加 `.import_bak` 备份，copy/rename/upsert 任一失败时旧字幕内容与旧 DB 行均恢复/保持不变（无数据丢失）。
-- [x] `destPath` 永不处于半写状态：写入经 `tmp` 再 `rename` 原子替换；同名重导入中途失败经 bak 恢复，不产生截断文件。
-- [x] 失败路径清理临时文件 + 恢复备份，孤儿仅限无害 `.import_tmp`/`.import_bak`；返回 `ImportResult.ioError` 不变。
-- [x] `removeImportedSubtitle`：DB 行先删，`dbRemoved` 标志保护——**仅 DB 删成功才删文件**（杜绝失效行），DB 删失败保留文件且单独 error log，签名不变。
-- [x] `player_viewmodel.dart:275/326` 两处调用行为不回退（Codex 确认）。
-- [x] `flutter analyze lib/core/subtitle/` 仅既有 `path` info（本次 diff 未碰 import），无新增 warning。
-- [x] 相关单元 / Widget 测试通过（31 通过；`test/widget_test.dart` 既有 stale 无关）。
-- [x] Codex review ✅ PASS（SESSION 019e2c0c…2962，首轮 ❌ 2 个 high → 修复 → 二轮 PASS）。
-
-## 4. 拆解步骤（Steps）
-
-- [x] **Step 1**：`importSubtitle` 原子序（copy→tmp / 旧 dest→bak / tmp→dest / upsert；成功删 bak+旧异路径文件；失败清 tmp+恢复 bak）
-- [x] **Step 2**：`removeImportedSubtitle` DB 优先 + `dbRemoved` 保护（仅 DB 删成功才删文件）+ 失败分别记录
-- [x] **Step 3**：`flutter analyze`（仅既有 path info）+ `flutter test`（31 通过，1 既有 stale）全量回归
-- [x] **Step 4**：Codex review —— 首轮 ❌ 2 high（同路径 upsert 失败覆盖旧字幕 / remove DB 删失败仍删文件）→ 修复（bak 备份恢复 / dbRemoved 门控）→ 二轮 ✅ PASS
-
-## 5. 风险与回滚（Risks）
-
-- **风险**：`File.rename` 在同目录（同文件系统）原子替换，Android/iOS 走 POSIX `rename(2)`，可靠；若极端环境 rename 失败则按失败路径清 tmp、旧文件不变（退化为"导入失败"，无数据损坏）。DB 先删后文件删失败 → 孤儿文件（仅占盘，app 不会误判存在字幕，无一致性问题）。
-- **回滚方案**：revert 本次 commit（纯逻辑改动，无 model/生成产物）。
-
-## 6. 备注 / 决策记录
-
-- 定序原则：用户既有数据（旧字幕文件 + 旧 DB 行）在新导入**确认成功前绝不破坏**；一致性关键操作（DB upsert / DB remove）相对文件操作的先后，按"失效 DB 行比孤儿文件更有害"选择——导入时 DB 指向的 destPath 必须在 upsert 前已是完整内容（故 rename 在 upsert 前）；删除时 DB 行先移除（孤儿文件无害，失效行会误导加载）。
-- Codex 首轮 2 个 high 修正：(1) 同路径重导入 rename 已替换旧文件、upsert 再失败则旧字幕不可恢复——补 `.import_bak`：copy→tmp 后先把旧 destPath rename 到 bak（`backedUp`），upsert 失败时 `bakFile.rename(destPath)` 覆盖恢复；成功才删 bak。(2) remove 时 DB 删失败仍删文件仍会留失效行——加 `dbRemoved` 门控，仅 DB 删成功才删本地文件，否则保留文件让既有有效行可继续/重试。
+- **Created**: 2026-05-15
+- **Owner**: WuMe-sicx
+- **Status**: done
+- **Related Issue / PR**: Local persistence optimization checklist item 4 (Codex SESSION 019e2c0c…2962 analysis C3)
 
 ---
 
-## ✅ 完成标记
+## 1. Goal
 
-- 完成时间：2026-05-15 18:55
-- 执行命令：`/init`
-- CLAUDE.md 更新摘要：补充字幕导入/移除原子性不变量——导入经 tmp+原子 rename，同路径重导入用 `.import_bak` 备份并在失败时恢复（任一步失败旧字幕与旧 DB 行不变），仅全成功后删旧文件；移除以 `dbRemoved` 门控，DB 行先删且仅其成功后才删本地文件（杜绝失效行）。
-- 关联 commit：未提交（用户未要求提交，待统一提交时机）
+`SubtitleImportService.importSubtitle` runs「delete old file → `file.copy(destPath)` → DB `upsert`」— any step failure leaves orphan files or stale DB rows; especially **delete old then copy fails = user loses old subtitle with no new subtitle**; `file.copy` is non-atomic, same-name re-import mid-failure yields truncated file. `removeImportedSubtitle` deletes file then DB row and swallows exceptions overall — file deleted but DB delete fails leaves stale row pointing at missing file. This task changes import to **temp file + atomic rename + delete old only after success + on failure only clean temp (never touch old file)**, and deletion to **DB first, file delete best-effort independent**.
+
+## 2. Scope
+
+**In scope:**
+- `importSubtitle` steps 5–7 reordered atomically: copy to same-dir temp → `File.rename(tmp → destPath)` (same-filesystem atomic replace) → DB `upsert` → delete "old file at different path" only after success (exists only on extension change); any failure in `finally`/catch cleans temp, **does not touch old file** (preserves existing user subtitle), still returns `ImportResult.ioError`.
+- `removeImportedSubtitle` reordered: `_repository.remove` first (consistency-critical, log failure separately) → best-effort delete local file (failure only logs, no DB rollback, does not affect caller).
+
+**Out of scope:**
+- Do not change `importSubtitle` / `removeImportedSubtitle` method signatures or return contracts (`ImportResponse` kept; `removeImportedSubtitle` still `Future<void>` — callers don't consume return; surfacing "remove failed" to user is UI scope, deferred).
+- No DB transaction spanning filesystem + SQLite (SQLite cannot manage FS; atomic rename + ordering eliminates data loss and stale rows).
+- No startup `.import_tmp` residue scan (process-killed small temps harmless; next same-name import `copy` overwrites). Deferred optional.
+- Do not touch `loadLocalSubtitle` / `findImported` / `_getDestPath` / validation-parse logic (steps 1–4).
+
+## 3. Acceptance
+
+- [x] Old file deleted only after rename + upsert both succeed; same-path re-import adds `.import_bak` backup — any copy/rename/upsert failure restores old subtitle content and old DB row (no data loss).
+- [x] `destPath` never half-written: write via `tmp` then atomic `rename`; same-path re-import mid-failure restored via bak, no truncated file.
+- [x] Failure path cleans temp + restores backup; orphans limited to harmless `.import_tmp`/`.import_bak`; returns `ImportResult.ioError` unchanged.
+- [x] `removeImportedSubtitle`: DB row deleted first, `dbRemoved` flag protects — **delete file only if DB delete succeeded** (no stale rows), DB failure keeps file with separate error log, signature unchanged.
+- [x] `player_viewmodel.dart:275/326` two call sites behavior unchanged (Codex confirmed).
+- [x] `flutter analyze lib/core/subtitle/` — only pre-existing `path` info (import untouched in diff), no new warnings.
+- [x] Related unit / widget tests pass (31 pass; `test/widget_test.dart` pre-existing stale unrelated).
+- [x] Codex review ✅ PASS (SESSION 019e2c0c…2962, round 1 ❌ 2 high → fixed → round 2 PASS).
+
+## 4. Steps
+
+- [x] **Step 1**: `importSubtitle` atomic sequence (copy→tmp / old dest→bak / tmp→dest / upsert; on success delete bak + old different-path file; on failure clean tmp + restore bak)
+- [x] **Step 2**: `removeImportedSubtitle` DB-first + `dbRemoved` guard (delete file only if DB succeeded) + separate failure logging
+- [x] **Step 3**: `flutter analyze` (only pre-existing path info) + `flutter test` (31 pass, 1 pre-existing stale) full regression
+- [x] **Step 4**: Codex review — round 1 ❌ 2 high (same-path upsert failure overwrites old subtitle / remove deletes file when DB delete fails) → fixed (bak backup restore / dbRemoved gate) → round 2 ✅ PASS
+
+## 5. Risks
+
+- **Risk**: `File.rename` atomic on same directory (same filesystem), Android/iOS use POSIX `rename(2)`, reliable; if rename fails in extreme environment, failure path cleans tmp, old file unchanged (degrades to "import failed", no corruption). DB deleted then file delete fails → orphan file (disk only, app won't think subtitle exists, no consistency issue).
+- **Rollback**: revert this commit (pure logic, no model/generated artifacts).
+
+## 6. Notes / Decision Log
+
+- Ordering principle: user's existing data (old subtitle file + old DB row) **never destroyed before new import confirmed**; consistency-critical ops (DB upsert / DB remove) ordered relative to file ops per "stale DB row worse than orphan file" — on import, DB destPath must be complete before upsert (rename before upsert); on remove, DB row removed first (orphan file harmless, stale row misleads loading).
+- Codex round 1 two high fixes: (1) same-path re-import rename already replaced old file, upsert failure then old subtitle unrecoverable — add `.import_bak`: after copy→tmp, rename old destPath to bak (`backedUp`), on upsert failure `bakFile.rename(destPath)` restores; delete bak only on success. (2) remove deleted file when DB delete failed still left stale row — add `dbRemoved` gate, delete local file only if DB delete succeeded.
+
+---
+
+## ✅ Done
+
+- Completed at: 2026-05-15 18:55
+- Command run: `/init`
+- CLAUDE.md update summary: added subtitle import/remove atomicity invariants — import via tmp + atomic rename, same-path re-import uses `.import_bak` backup and restores on failure (any step failure old subtitle + old DB row unchanged), delete old file only after full success; remove gated by `dbRemoved`, DB row deleted first and local file deleted only on DB success (no stale rows).
+- Related commit: not committed (user did not request commit; pending unified commit timing)

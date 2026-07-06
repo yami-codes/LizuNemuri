@@ -1,35 +1,36 @@
-# 音频核心功能
+# Audio Core
 
-## 当前架构
+## Current Architecture
 
-### 1. 事件驱动系统
-- 基于 RxDart 的事件中心
-- 统一的事件定义和处理
-- 支持事件过滤和转换
+### 1. Event-Driven System
+- RxDart-based event hub
+- Unified event definitions and handling
+- Supports event filtering and transformation
 
-### 2. 核心服务 (AudioPlayerService)
-- 实现 IAudioPlayerService 接口
-- 通过依赖注入管理依赖
-- 负责协调各个组件
+### 2. Core Service (AudioPlayerService)
+- Implements `IAudioPlayerService`
+- Dependencies managed via dependency injection
+- Coordinates all audio components
 
-### 3. 状态管理
-- PlaybackStateManager 负责状态维护
-- 通过 EventHub 发送状态更新
-- 支持状态持久化
+### 3. State Management
+- `PlaybackStateManager` maintains playback state
+- State updates broadcast through `EventHub`
+- Supports state persistence
 
-### 4. 通知栏集成
-- 基于 audio_service 包
-- 响应系统媒体控制
-- 支持后台播放
+### 4. Notification Integration
+- Built on the `audio_service` package
+- Responds to system media controls
+- Supports background playback
 
-### 5. 依赖注入
-通过 GetIt 管理所有依赖：
-<pre>
+### 5. Dependency Injection
+All dependencies are registered through GetIt:
+
+```dart
 void setupServiceLocator() {
-  // 注册 EventHub
+  // Register EventHub
   getIt.registerLazySingleton(() => PlaybackEventHub());
-  
-  // 注册音频服务
+
+  // Register audio service
   getIt.registerLazySingleton<IAudioPlayerService>(
     () => AudioPlayerService(
       eventHub: getIt(),
@@ -37,12 +38,11 @@ void setupServiceLocator() {
     ),
   );
 }
-</pre>
+```
 
-## 注意事项
+## Notes
 
-- 所有状态更新通过 EventHub 传递
-- 避免组件间直接调用
-- 优先使用依赖注入
-- 保持组件职责单一
- 
+- All state updates go through `EventHub`
+- Avoid direct calls between components
+- Prefer dependency injection
+- Keep each component single-purpose

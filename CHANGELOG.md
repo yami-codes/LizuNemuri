@@ -1,16 +1,16 @@
-# 更新记录 / Changelog
+# Changelog
 
-记录 Xuro 自 v1.1.11 之后的所有用户可见与开发者可见改动。版本号遵循 [SemVer](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 风格。
+All user-visible and developer-visible changes in Xuro since v1.1.11. Version numbers follow [SemVer](https://semver.org/) and [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) style.
 
 ---
 
-## 未发布 / Unreleased
+## Unreleased
 
 ---
 
 ## v2.0.0-rc.6 — 2026-07-05
 
-### 修复 / Fixed
+### Fixed
 - **Android CI signing**: PKCS12 keystores fail GNU `base64 -d` — CI now decodes via `openssl base64 -d -A` and sets `storeType=pkcs12` for Gradle.
 - **Signing passwords with special chars**: `key.properties` is written via env vars (safe for `!@` etc.).
 
@@ -18,28 +18,28 @@
 
 ## v2.0.0-rc.5 — 2026-07-05
 
-### 工程 / Internal
+### Internal
 - Re-trigger release CI after `KEYSTORE_BASE64` and signing secrets were updated in GitHub Actions.
 
 ---
 
 ## v2.0.0-rc.4 — 2026-07-05
 
-### 修复 / Fixed
+### Fixed
 - **CI keystore decode**: strip whitespace from `KEYSTORE_BASE64`, validate JKS magic bytes, and emit actionable errors when the secret is empty or malformed.
 
-### 工程 / Internal
+### Internal
 - CI: `concurrency.cancel-in-progress: false` so Web/iOS/Windows jobs finish even if Android signing fails.
 - CI: `workflow_dispatch` platform toggles for manual verification without a tag.
 
 ---
 
-### 修复 / Fixed
+### Fixed
 - **Web CI compile**: rc.2 `database_bootstrap` imported `dart:ffi` / `dart:io` unconditionally — split into `database_bootstrap_stub.dart` (web) vs `database_bootstrap_io.dart` (mobile/desktop).
 - **Web `dart:io`**: migrated file/cache/download/subtitle imports to `universal_io` so `flutter build web` can compile the app graph.
 - **Android release**: ProGuard keep rules for `moe.lizu.nemu.**` lyric overlay after package rename.
 
-### 工程 / Internal
+### Internal
 - CI: explicit `flutter gen-l10n` before all platform builds.
 - Task doc: [`active/20260705-fix-android-web-ci.md`](docs/todos/active/20260705-fix-android-web-ci.md).
 
@@ -47,49 +47,49 @@
 
 ## v2.0.0-rc.2 — 2026-07-05
 
-### 修复 / Fixed
-- **Library 标签页灰屏崩溃**：`LibraryTabContent` 在 `MultiProvider` 之外读取 `LocalLibraryViewModel`，导致 `ProviderNotFoundException`；AppBar 标题改为从 `Builder` 子上下文读取 Provider。
-- **Linux 桌面 SQLite 无法打开**：Ubuntu 等发行版仅提供 `libsqlite3.so.0`（无 `libsqlite3.so` 符号链接）；`database_bootstrap` 通过 `createDatabaseFactoryFfi` + `open.overrideFor` 增加 soname 回退，修复本地下载库 / 本地曲库初始化失败。
-- **Linux 窗口标题仍为 Xuro**：`linux/my_application.cc` 更新为 **Lizunemu**。
+### Fixed
+- **Library tab gray-screen crash**: `LibraryTabContent` read `LocalLibraryViewModel` outside `MultiProvider`, causing `ProviderNotFoundException`; AppBar title now reads the Provider from a `Builder` child context.
+- **Linux desktop SQLite won't open**: distros like Ubuntu ship only `libsqlite3.so.0` (no `libsqlite3.so` symlink); `database_bootstrap` adds soname fallback via `createDatabaseFactoryFfi` + `open.overrideFor`, fixing local downloads / local library init.
+- **Linux window title still Xuro**: `linux/my_application.cc` updated to **Lizunemu**.
 
-### 工程 / Internal
-- 新增 `test/screens/contents/library_tab_content_test.dart` 回归测试（185 tests total）。
-- 任务文档：[`done/20260705-fix-broken-app-tabs.md`](docs/todos/done/20260705-fix-broken-app-tabs.md)。
+### Internal
+- Added `test/screens/contents/library_tab_content_test.dart` regression test (185 tests total).
+- Task doc: [`done/20260705-fix-broken-app-tabs.md`](docs/todos/done/20260705-fix-broken-app-tabs.md).
 
 ---
 
 ## v2.0.0-rc.1 — 2026-07-05
 
-Lizunemu 2.0 首次 RC：Xuro → Lizunemu 重命名（`moe.lizu.nemu`）、Eara 里程碑 A–H、应用图标与 CI 产物更名。详见 [`done/20260705-lizunemu-2.0-rebrand.md`](docs/todos/done/20260705-lizunemu-2.0-rebrand.md)。
+First Lizunemu 2.0 RC: Xuro → Lizunemu rename (`moe.lizu.nemu`), Eara milestones A–H, app icon and CI artifact rename. See [`done/20260705-lizunemu-2.0-rebrand.md`](docs/todos/done/20260705-lizunemu-2.0-rebrand.md).
 
-### 新增 / Added
-- **用户注册流程**（`POST /api/auth/reg`）：抽屉登录对话框新增「没有账号？去注册」入口；新对话框含用户名 / 密码 / 确认密码三字段，提交按钮按客户端校验状态自动启用。注册成功自动登录；服务端未返回 token 时回退到 `login` 兜底，账号创建成功但自动登录失败的边界场景通过 `RegisteredButNotLoggedInException` 单独提示。任务文档：[`done/20260515-user-registration.md`](docs/todos/done/20260515-user-registration.md)。
-- **3 种主色调可切换**（蓝 / 黑 / 绿，默认蓝）：设置页「外观」之后新增「主色调」分组，三选一持久化到 `AppSettingsService.colorVariant`。`AppColors` 重构为 `lightSchemeFor(variant)` / `darkSchemeFor(variant)` 工厂，6 套手写 ColorScheme 不依赖 `fromSeed`。任务文档：[`done/20260515-color-palette-simplification.md`](docs/todos/done/20260515-color-palette-simplification.md)。
-- **侧边抽屉视觉**（深色玻璃拟态）：深色蓝紫渐变 + 软光晕 + 半透明分组卡片 + 圆形资料卡。新增「最近播放」「排行榜」「深色模式」「关于我们」入口。宽度遵循 `ui-design-spec §5` 的 mobile/tablet 断点。任务文档：[`done/20260515-sidebar-glassmorphism-redesign.md`](docs/todos/done/20260515-sidebar-glassmorphism-redesign.md)。
+### Added
+- **User registration** (`POST /api/auth/reg`): drawer login dialog adds "No account? Register"; new dialog with username / password / confirm password; submit enabled by client-side validation. Auto-login on success; if the server returns no token, falls back to `login`; `RegisteredButNotLoggedInException` for account-created-but-login-failed. Task doc: [`done/20260515-user-registration.md`](docs/todos/done/20260515-user-registration.md).
+- **3 accent color variants** (blue / mono / green, default blue): Settings "Appearance" followed by "Accent color" group, persisted to `AppSettingsService.colorVariant`. `AppColors` refactored to `lightSchemeFor(variant)` / `darkSchemeFor(variant)` factories, 6 hand-rolled ColorSchemes without `fromSeed`. Task doc: [`done/20260515-color-palette-simplification.md`](docs/todos/done/20260515-color-palette-simplification.md).
+- **Side drawer visual** (dark glassmorphism): dark blue-purple gradient + soft glow + semi-transparent grouped cards + circular profile card. Added "Recently played", "Rankings", "Dark mode", "About" entries. Width follows `ui-design-spec §5` mobile/tablet breakpoints. Task doc: [`done/20260515-sidebar-glassmorphism-redesign.md`](docs/todos/done/20260515-sidebar-glassmorphism-redesign.md).
 
-### 变更 / Changed
-- **`AuthService` 节点感知**：原硬编码 `https://api.asmr.one/api`，现注入 `AppSettingsService`、监听并同步 Dio baseUrl，登录与注册都会跟随用户在设置中选择的节点（主站 / 100 / 200 / 300）。
-- **Surface 设计令牌中性化**：`AppColors.lightSurfaceL1/L2` 与 `darkSurfaceL1/L2` 之前略带紫调（`#F7F2FA` 等），现统一为无色相中性灰，避免与 mono/green 主色调撞色。
-- **侧边抽屉「双色」简化**：抽屉内 9 处不同彩色的菜单图标背景统一为单一中性灰 `_kIconBgGray = #8E8E93`；唯一彩色 affordance 是 avatar / 圆形箭头 / footer 光点 / 渐变光晕 / 卡片阴影，全部从 `Theme.of(context).colorScheme.primary` 派生，随用户选的主色调动态切换。
+### Changed
+- **`AuthService` node-aware**: was hardcoded `https://api.asmr.one/api`; now injects `AppSettingsService`, listens and syncs Dio baseUrl — login and register follow the user's selected node (main / 100 / 200 / 300).
+- **Neutral surface tokens**: `AppColors.lightSurfaceL1/L2` and `darkSurfaceL1/L2` were slightly purple (`#F7F2FA` etc.); now hue-neutral grays to avoid clashing with mono/green accents.
+- **Side drawer "two-color" simplification**: 9 menu icon backgrounds unified to neutral gray `_kIconBgGray = #8E8E93`; only accent affordances (avatar / circular arrow / footer dots / gradient glow / card shadow) use `Theme.of(context).colorScheme.primary`, switching with the user's accent.
 
-### 修复 / Fixed
-- **侧边抽屉首次打开 256ms 卡顿**：PerfDog 真机数据证实由 `Stack` 顶层的 `BackdropFilter(blur 18)` 引起。该模糊在不透明渐变之上是视觉 no-op，但首次绘制触发 Impeller offscreen layer + shader 编译。已删除 `BackdropFilter`，原 18% 黑色 overlay 通过 `0.82` 折算严格等价地烘焙进渐变 RGB 与软光晕 RGB（保持 alpha 不变，源叠加数学等价）。任务文档：[`done/20260515-sidebar-first-open-jank.md`](docs/todos/done/20260515-sidebar-first-open-jank.md)。
-- **小米 HyperOS 3 + Adreno + Vulkan 长会话型崩溃**（`ErrorDeviceLost` → `SIGSEGV in libvulkan.so::CmdEndRenderPass+4`）：Android 上禁用 Impeller 回退到 Skia 渲染器（`AndroidManifest.xml` 加 `io.flutter.embedding.android.EnableImpeller=false`）。iOS 继续使用 Impeller。任务文档：[`done/20260515-disable-impeller-android.md`](docs/todos/done/20260515-disable-impeller-android.md)；后续 SDK 升级跟踪：[`active/20260515-upgrade-flutter-sdk.md`](docs/todos/active/20260515-upgrade-flutter-sdk.md)。
-- **登录/注册 dialog 切换泄漏旧错误**：`AuthViewModel.clearError()` 新增；`LoginDialog` ⇄ `RegisterDialog` 切换时调用。
-- **退出登录概率不弹对话框 / 偶发闪退**：`SidebarHeader` 改为 `StatefulWidget` + `_dialogScheduled` 守卫；`Navigator.maybePop(drawer)` + `addPostFrameCallback` 把对话框开启推到下一帧，避免同帧 pop+push 在同一 navigator 上的 race。退出按钮恢复 `dialogContext.mounted` 守卫，避免 dialog 已被外部关闭时误 pop 底层页。任务文档：[`done/20260515-auth-flow-bugfix.md`](docs/todos/done/20260515-auth-flow-bugfix.md)。
-- **抽屉内对话框继承暗色 Theme**：登录/退出对话框改用 `rootNavigator` 打开，与抽屉内本地 dark Theme 解耦。
+### Fixed
+- **Side drawer first-open 256ms jank**: PerfDog on-device data showed `BackdropFilter(blur 18)` on top of `Stack` — visually a no-op over opaque gradient but first paint triggers Impeller offscreen layer + shader compile. Removed `BackdropFilter`; original 18% black overlay baked into gradient RGB and glow RGB via `0.82` factor (alpha unchanged, mathematically equivalent compositing). Task doc: [`done/20260515-sidebar-first-open-jank.md`](docs/todos/done/20260515-sidebar-first-open-jank.md).
+- **Xiaomi HyperOS 3 + Adreno + Vulkan long-session crash** (`ErrorDeviceLost` → `SIGSEGV in libvulkan.so::CmdEndRenderPass+4`): Impeller disabled on Android, Skia renderer (`AndroidManifest.xml` `io.flutter.embedding.android.EnableImpeller=false`). iOS keeps Impeller. Task doc: [`done/20260515-disable-impeller-android.md`](docs/todos/done/20260515-disable-impeller-android.md); SDK upgrade tracking: [`active/20260515-upgrade-flutter-sdk.md`](docs/todos/active/20260515-upgrade-flutter-sdk.md).
+- **Login/register dialog stale errors**: added `AuthViewModel.clearError()`; called when switching `LoginDialog` ⇄ `RegisterDialog`.
+- **Logout dialog sometimes missing / intermittent crash**: `SidebarHeader` → `StatefulWidget` + `_dialogScheduled` guard; `Navigator.maybePop(drawer)` + `addPostFrameCallback` defers dialog open to next frame, avoiding same-frame pop+push race. Logout button restores `dialogContext.mounted` guard. Task doc: [`done/20260515-auth-flow-bugfix.md`](docs/todos/done/20260515-auth-flow-bugfix.md).
+- **Drawer dialogs inherited dark Theme**: login/logout dialogs use `rootNavigator`, decoupled from drawer's local dark Theme.
 
-### 移除 / Removed
-- **注册表单的「推荐人 UUID」字段**：UI 输入框移除，服务层可选参数保留（未来若有深链解析需求可继续传值）。
+### Removed
+- **Register form "referrer UUID" field**: UI input removed; optional service parameter kept for future deep-link parsing.
 
-### 工程 / Internal
-- **任务文档归档**：今日新增 5 个 `done/` 文档（注册流程 / 鉴权 bug 修复 / 抽屉首开卡顿 / Impeller 禁用 / 配色简化）+ 1 个 `cancelled/` 文档（[`flutter-performance-optimization.md`](docs/todos/cancelled/20260515-flutter-performance-optimization.md)，因审计基线过期 7/9 P0 已修，且剩余项需 profile 数据驱动）+ 1 个 `active/` 占位（Flutter SDK 升级，等 Skia 跑稳一周后启动）。
-- **Codex 复审**：本会话所有 6 个独立 TODO 统一在 SESSION_ID `019e2873-2990-72e2-bc68-ba47328971b7` 下复审，全部走 ⚠️/❌ → ✅ PASS 闭环。
-- **CLAUDE.md 反踩坑补丁**：标注侧边栏「Theme override 必须用 `darkSchemeFor(variant)` 而非只切 brightness」、「不要再加全屏 BackdropFilter」、「Android 已禁 Impeller」、「主题双轴 ThemeMode × ColorVariant」。
-- **静态分析**：所有改动文件 `fvm flutter analyze` 零新增 warning（项目历史 33 条预存 `withOpacity` deprecation 维持不变）。
+### Internal
+- **Task doc archive**: 5 new `done/` docs today (registration / auth bugfix / drawer first-open jank / Impeller disable / palette simplification) + 1 `cancelled/` ([`flutter-performance-optimization.md`](docs/todos/cancelled/20260515-flutter-performance-optimization.md) — audit baseline stale, 7/9 P0 fixed, remainder needs profile data) + 1 `active/` placeholder (Flutter SDK upgrade, start after Skia stable for a week).
+- **Codex review**: all 6 independent TODOs this session reviewed under SESSION_ID `019e2873-2990-72e2-bc68-ba47328971b7`, all ⚠️/❌ → ✅ PASS.
+- **CLAUDE.md anti-pitfall patches**: sidebar Theme override must use `darkSchemeFor(variant)` not brightness-only; no fullscreen `BackdropFilter`; Android Impeller disabled; dual-axis theme ThemeMode × ColorVariant.
+- **Static analysis**: `fvm flutter analyze` zero new warnings on changed files (33 pre-existing `withOpacity` deprecations unchanged).
 
 ---
 
-## v1.1.11 之前
+## Before v1.1.11
 
-历史版本变更记录见 git log 与 GitHub Releases（[releases](https://github.com/WuMe-sicx/Xuro/releases)）。
+See git log and GitHub Releases ([releases](https://github.com/WuMe-sicx/Xuro/releases)).

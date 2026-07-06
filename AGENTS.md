@@ -9,8 +9,8 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 1. Read [`docs/dev_workflow.md`](docs/dev_workflow.md).
 2. Create the task's TODO doc under [`docs/todos/active/`](docs/todos/active/) using [`docs/todos/_template.md`](docs/todos/_template.md). Fix goal, scope, acceptance criteria, and step-by-step plan **before** any code change.
 3. During development, tick steps in the TODO doc as they land and reference produced files / commit hashes.
-4. **On feature completion**: append the `✅ 完成标记` block (with `/init` line + timestamp), then **actually run `/init`** to refresh this `AGENTS.md`. Move the TODO file from `active/` to `done/`.
-5. Cancelled tasks go to `docs/todos/cancelled/` with a `⛔ 取消标记` block — they do **not** run `/init`.
+4. **On feature completion**: append the `## ✅ Done` block (with `/init` line + timestamp), then **actually run `/init`** to refresh this `AGENTS.md`. Move the TODO file from `active/` to `done/`.
+5. Cancelled tasks go to `docs/todos/cancelled/` with a `## ⛔ Cancelled` block — they do **not** run `/init`.
 
 Companion specs: [`docs/guidelines_zh.md`](docs/guidelines_zh.md) (architecture / code style), [`docs/ui-design-spec.md`](docs/ui-design-spec.md) (visual / animation), [`docs/audio_architecture.md`](docs/audio_architecture.md) (audio subsystem). On conflict: `dev_workflow > subsystem doc > general guidelines`.
 
@@ -112,7 +112,7 @@ Two Dio clients, both pointed at the user-selected node:
 - `AuthService` — `/auth/me` (login) and `/auth/reg` (register). Owns its own Dio instance, no auth interceptor.
 
 Both services subscribe to `AppSettingsService` and rotate `dio.options.baseUrl` when the user switches nodes. Available nodes (defined in `AppSettingsService.serverOptions`):
-- `https://api.asmr.one/api` (主站, default)
+- `https://api.asmr.one/api` (main site, default)
 - `https://api.asmr-100.com/api` / `-200` / `-300` (mirror nodes)
 
 When adding a new HTTP-touching service, follow the `_onSettingsChanged` pattern in `ApiService`/`AuthService` — don't hardcode the host.

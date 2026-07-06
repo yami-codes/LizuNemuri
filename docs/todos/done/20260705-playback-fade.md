@@ -1,32 +1,43 @@
 # Play/pause volume fade (Eara VolumeFader pattern)
 
-- **创建时间**：2026-07-05
-- **负责人**：cursor-agent
-- **状态**：done
+- **Created**: 2026-07-05
+- **Owner**: cursor-agent
+- **Status**: done
+- **Related Issue / PR**:
 
 ---
 
-## 1. 目标（Goal）
+## 1. Goal
 
-Pause/resume 时线性淡入淡出音量（默认 ~300ms），贴近 Eara `VolumeFader` / `FadingPlayer` 的 ASMR 听感；可在设置中关闭或调节时长。
+Linear volume fade on pause/resume (default ~300ms), matching Eara `VolumeFader` / `FadingPlayer` ASMR feel; configurable duration or disable in Settings.
 
-## 3. 验收标准（Acceptance）
+## 2. Scope
 
-- [x] 暂停：音量在 `playbackFadeMs` 内降至 0，再 `pause()`，播放器内部音量恢复为 `playbackVolume`
-- [x] 恢复：从 0 开始 `play()`，再淡入至 `playbackVolume`
-- [x] 设置关闭渐变时行为与改动前一致
-- [x] 渐变过程不写 `playback_volume` SharedPreferences
-- [x] `flutter analyze` 无新增 warning；单元测试通过
+**In scope:**
+- Play/pause fade via `AudioPlayerService` + `VolumeFader`
+- Settings: enable/disable fade, duration ms
+- `setVolume(persist: false)` during fade; restore saved volume after
 
-## 4. 拆解步骤（Steps）
+**Out of scope:**
+- (none listed)
 
-- [x] **Step 1–6**：见关联 commit
+## 3. Acceptance
+
+- [x] Pause: volume ramps to 0 over `playbackFadeMs`, then `pause()`; player internal volume restored to `playbackVolume`
+- [x] Resume: `play()` from 0, then fade in to `playbackVolume`
+- [x] When fade disabled in settings, behavior matches pre-change
+- [x] Fade does not write `playback_volume` SharedPreferences
+- [x] `flutter analyze` no new warnings; unit tests pass
+
+## 4. Steps
+
+- [x] **Steps 1–6**: see related commit
 
 ---
 
-## ✅ 完成标记
+## ✅ Done
 
-- 完成时间：2026-07-05 09:40
-- 执行命令：`/init`（手动更新 CLAUDE.md）
-- CLAUDE.md 更新摘要：补充 play/pause fade 设置与 `VolumeFader`/`AudioPlayerService` 不变量
-- 关联 commit：`ef75351`
+- Completed at: 2026-07-05 09:40
+- Command run: `/init` (manual CLAUDE.md update)
+- CLAUDE.md update summary: Added play/pause fade settings and `VolumeFader`/`AudioPlayerService` invariants
+- Related commit: `ef75351`

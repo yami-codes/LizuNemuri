@@ -1,85 +1,85 @@
-# 侧边栏抽屉视觉重构（暗色玻璃拟态）
+# Sidebar Drawer Visual Redesign (Dark Glassmorphism)
 
-- **创建时间**：2026-05-15
-- **负责人**：claude
-- **状态**：active
-- **关联 Issue / PR**：N/A
-
----
-
-## 1. 目标（Goal）
-
-将左侧抽屉从默认 Material Drawer 重构为深色玻璃拟态风格：深色蓝紫渐变背景 + 磨砂玻璃质感 + 半透明分组卡片 + 彩色圆角图标，提升视觉层级与品质感，并补齐用户期望的「最近播放 / 排行榜 / 深色模式 / 关于我们」入口。
-
-## 2. 范围（Scope）
-
-**包含：**
-- 重构 `lib/widgets/sidebar/sidebar_menu.dart`：抽屉宽度约 72% 屏宽，仅右侧上下圆角，深色蓝紫渐变 + 频率较低的磨砂玻璃叠层。
-- 重构 `lib/widgets/sidebar/sidebar_header.dart`：大尺寸资料卡（圆形渐变头像 + 主副文案 + 右侧圆形箭头按钮）。
-- 重构 `lib/widgets/sidebar/sidebar_group.dart`：分组标题 + 半透明卡片 + 微弱发光边框。
-- 重构 `lib/widgets/sidebar/sidebar_tile.dart`：彩色方形图标、白色中文文案、轻量 chevron。
-- 三组分区（内容 / 发现 / 系统），新增条目：最近播放、排行榜、深色模式、关于我们。
-- 「深色模式」直接调用 `ThemeController.toggleThemeMode()`，并通过 trailing 状态徽标显示当前模式。
-- 「关于我们」跳转到 `SettingsScreen`（关于版块已存在）。
-- 「最近播放 / 排行榜」暂无后端数据，点击弹「敬请期待」SnackBar 占位。
-- 抽屉底部版本号沿用 `pubspec.yaml` 实际版本（`PackageInfo`）。
-
-**不包含：**
-- 不新增 RankingScreen / RecentPlayScreen / 独立 AboutScreen。
-- 不修改任何 ViewModel / Service / 数据模型。
-- 不修改 `MainScreen` 中关于 Drawer 的接入方式（仍为 `Scaffold.drawer`）。
-- 不调整其他抽屉外的 UI（顶栏、底栏、内容区）。
-
-## 3. 验收标准（Acceptance）
-
-- [ ] 抽屉打开时占用约 72% 屏宽，右侧上下圆角明显（≥24px），左侧贴边。
-- [ ] 背景呈现深蓝→深紫垂直渐变，叠加磨砂玻璃细微纹理；右侧 scrim 蒙层使主内容区可见但变暗。
-- [ ] 资料卡显示圆形渐变头像 + 「立即登录 / 同步收藏与记录」（未登录态）或用户名（登录态），右侧有圆形 arrow 按钮。
-- [ ] 三个分组标题（内容 / 发现 / 系统）使用浅灰描边；分组卡片半透明并有 1px 发光描边。
-- [ ] 每个菜单项左侧为彩色圆角方形图标，文字白色，右侧 chevron；按下有微弱反馈。
-- [ ] 「深色模式」点击即切换 ThemeMode，trailing 显示当前模式文字（系统/浅/深）。
-- [ ] 「最近播放 / 排行榜」点击弹出「敬请期待」SnackBar，不报错。
-- [ ] 「关于我们」跳转到 SettingsScreen。
-- [ ] 「我的收藏 / 标签 / 社团 / 声优 / 设置」沿用现有跳转逻辑。
-- [ ] 浅色模式下打开抽屉同样保持深色玻璃风格（强制 dark scheme over drawer，避免被全局主题反色破坏）。
-- [ ] `flutter analyze` 通过，无新增 warning。
-
-## 4. 拆解步骤（Steps）
-
-- [x] **Step 1**：重构 `sidebar_tile.dart`，支持 trailing 自定义（用于深色模式状态文字）+ 透明背景、白色文字、彩色图标。
-  - 产物：`lib/widgets/sidebar/sidebar_tile.dart`
-- [x] **Step 2**：重构 `sidebar_group.dart` 为半透明圆角卡片 + 发光描边。
-  - 产物：`lib/widgets/sidebar/sidebar_group.dart`
-- [x] **Step 3**：重构 `sidebar_header.dart` 为大资料卡，未登录显示「立即登录 / 同步收藏与记录」+ 圆形箭头按钮。
-  - 产物：`lib/widgets/sidebar/sidebar_header.dart`
-- [x] **Step 4**：重构 `sidebar_menu.dart`：72% 宽度、右侧大圆角、深色蓝紫渐变 + BackdropFilter 玻璃叠层、三组菜单、底部版本号。
-  - 产物：`lib/widgets/sidebar/sidebar_menu.dart`
-- [x] **Step 5**：`flutter analyze` 通过。
-  - 验证：`fvm flutter analyze lib/widgets/sidebar/` 输出 `No issues found!`。全项目分析仅有 33 条预先存在的 `withOpacity` 弃用提示，均不在本次改动文件中。
-
-## 5. 风险与回滚（Risks）
-
-- **风险**：BackdropFilter 在低端设备上可能影响打开抽屉的帧率。
-  - 缓解：blur sigma 控制在 18 以内，仅在 drawer 内部一次叠加。
-- **风险**：强制 dark scheme over drawer 可能与现有亮色主题产生轻微对比突兀感。
-  - 缓解：drawer 是抽屉式独立层级，全屏内已被 scrim 遮罩，视觉过渡自然。
-- **回滚方案**：四个文件均为单文件重构，`git revert` 即可恢复。
-
-## 6. 备注 / 决策记录
-
-- 「最近播放 / 排行榜」未来如新增独立屏幕，只需替换对应 onTap 即可。
-- 版本号通过 `package_info_plus` 已是项目内依赖（settings_screen 已使用），无需新增。
+- **Created**: 2026-05-15
+- **Owner**: claude
+- **Status**: done
+- **Related Issue / PR**: N/A
 
 ---
 
-## ✅ 完成标记
+## 1. Goal
 
-- 完成时间：2026-05-15
-- 执行命令：`/init`
-- CLAUDE.md 更新摘要：补齐 FVM 命令、`lib/core/{database,image,settings}`、`lib/presentation/{layouts,models,widgets}`、`lib/utils/` 目录描述与测试现状说明；`lib/widgets/sidebar/` 段落新增暗色 Theme 局部覆盖注记。
-- 关联 commit：`feat(sidebar): glassmorphism dark drawer redesign`（hash 见 git log）
-- Codex 复审：SESSION_ID `019e2873-2990-72e2-bc68-ba47328971b7`，三轮 ⚠️→⚠️→✅ PASS（详见 CHANGELOG.md 未发布段）。
+Refactor the left drawer from default Material Drawer to dark glassmorphism style: dark blue-purple gradient background + frosted glass + semi-transparent grouped cards + colored rounded icons, improving visual hierarchy and quality; add expected entries "Recent plays / Rankings / Dark mode / About us".
 
-## 7. 验收说明（运行时）
+## 2. Scope
 
-下列项需用户在 `fvm flutter run` 后人工核对：抽屉宽度比例、玻璃模糊感、登录卡阴影发光、深色模式徽标切换、未实现入口的 SnackBar 提示。代码层面均已落地。
+**In scope:**
+- Refactor `lib/widgets/sidebar/sidebar_menu.dart`: drawer width ~72% screen, right-side top/bottom corners only, dark blue-purple gradient + lower-frequency frosted glass overlay.
+- Refactor `lib/widgets/sidebar/sidebar_header.dart`: large profile card (circular gradient avatar + primary/secondary copy + right circular arrow button).
+- Refactor `lib/widgets/sidebar/sidebar_group.dart`: group title + semi-transparent card + subtle glow border.
+- Refactor `lib/widgets/sidebar/sidebar_tile.dart`: colored square icons, white Chinese labels, light chevron.
+- Three sections (Content / Discover / System), new entries: Recent plays, Rankings, Dark mode, About us.
+- "Dark mode" calls `ThemeController.toggleThemeMode()` directly, trailing badge shows current mode.
+- "About us" navigates to `SettingsScreen` (about section already exists).
+- "Recent plays / Rankings" no backend yet — tap shows "Coming soon" SnackBar placeholder.
+- Drawer bottom version from `pubspec.yaml` actual version (`PackageInfo`).
+
+**Out of scope:**
+- No new RankingScreen / RecentPlayScreen / standalone AboutScreen.
+- No ViewModel / Service / data model changes.
+- No change to `MainScreen` Drawer integration (still `Scaffold.drawer`).
+- No changes outside drawer (top bar, bottom bar, content area).
+
+## 3. Acceptance
+
+- [ ] Drawer open ~72% width, obvious right top/bottom corners (≥24px), left edge flush.
+- [ ] Background dark blue→dark purple vertical gradient + frosted glass texture; right scrim dims main content.
+- [ ] Profile card: circular gradient avatar + "Log in now / Sync favorites and history" (logged out) or username (logged in), circular arrow button on right.
+- [ ] Three group titles (Content / Discover / System) light gray outline; group cards semi-transparent with 1px glow border.
+- [ ] Each menu item: colored rounded square icon left, white text, chevron right; subtle press feedback.
+- [ ] "Dark mode" tap toggles ThemeMode, trailing shows current mode text (System/Light/Dark).
+- [ ] "Recent plays / Rankings" tap shows "Coming soon" SnackBar, no crash.
+- [ ] "About us" navigates to SettingsScreen.
+- [ ] "Favorites / Tags / Circles / Voice actors / Settings" keep existing navigation.
+- [ ] Light mode drawer still dark glass style (forced dark scheme over drawer, avoid global theme inversion).
+- [ ] `flutter analyze` passes with no new warnings.
+
+## 4. Steps
+
+- [x] **Step 1**: Refactor `sidebar_tile.dart`, support custom trailing (dark mode status text) + transparent background, white text, colored icons.
+  - Output: `lib/widgets/sidebar/sidebar_tile.dart`
+- [x] **Step 2**: Refactor `sidebar_group.dart` to semi-transparent rounded card + glow border.
+  - Output: `lib/widgets/sidebar/sidebar_group.dart`
+- [x] **Step 3**: Refactor `sidebar_header.dart` to large profile card, logged out shows "Log in now / Sync favorites and history" + circular arrow button.
+  - Output: `lib/widgets/sidebar/sidebar_header.dart`
+- [x] **Step 4**: Refactor `sidebar_menu.dart`: 72% width, large right corners, dark blue-purple gradient + BackdropFilter glass overlay, three menu groups, bottom version.
+  - Output: `lib/widgets/sidebar/sidebar_menu.dart`
+- [x] **Step 5**: `flutter analyze` passes.
+  - Verify: `fvm flutter analyze lib/widgets/sidebar/` → `No issues found!`. Full project only 33 pre-existing `withOpacity` deprecations, none in changed files.
+
+## 5. Risks
+
+- **Risk**: BackdropFilter may hurt drawer open frame rate on low-end devices.
+  - **Mitigation**: blur sigma ≤18, single overlay inside drawer only.
+- **Risk**: forced dark scheme over drawer may contrast oddly with light global theme.
+  - **Mitigation**: drawer is separate layer, scrim masks transition naturally.
+- **Rollback**: four single-file refactors, `git revert` restores.
+
+## 6. Notes / Decision Log
+
+- "Recent plays / Rankings" — replace onTap when dedicated screens added later.
+- Version via `package_info_plus` already a project dependency (`settings_screen` uses it), no new dep.
+
+---
+
+## ✅ Done
+
+- Completed at: 2026-05-15
+- Command run: `/init`
+- CLAUDE.md update summary: added FVM commands, `lib/core/{database,image,settings}`, `lib/presentation/{layouts,models,widgets}`, `lib/utils/` directory descriptions and test status; `lib/widgets/sidebar/` paragraph notes dark Theme local override.
+- Related commit: `feat(sidebar): glassmorphism dark drawer redesign` (hash see git log)
+- Codex review: SESSION_ID `019e2873-2990-72e2-bc68-ba47328971b7`, three rounds ⚠️→⚠️→✅ PASS (see unreleased CHANGELOG.md section).
+
+## 7. Runtime Verification Notes
+
+Items requiring user manual check after `fvm flutter run`: drawer width ratio, glass blur feel, login card shadow/glow, dark mode badge toggle, unimplemented entry SnackBar. All implemented at code level.

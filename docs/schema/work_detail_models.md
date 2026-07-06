@@ -1,73 +1,73 @@
-# 作品详情模型 Schema (已锁定)
+# Work Detail Model Schema (Locked)
 
-## WorkInfo — 作品完整详情（详情页专用）
-- 接口: `GET /api/workInfo/{id}`
-- 响应: 单个 `WorkInfo` 对象
-- 设计: 独立于 Work 模型，避免列表页null污染
+## WorkInfo — Full work detail (detail screen only)
+- Endpoint: `GET /api/workInfo/{id}`
+- Response: single `WorkInfo` object
+- Design: separate from `Work` model to avoid list-page null pollution
 
-| 字段 | 类型 | JSON Key | 说明 |
+| Field | Type | JSON Key | Description |
 |------|------|----------|------|
-| id | int | id | 作品ID |
-| title | String | title | 标题 |
-| circleId | int | circle_id | 社团ID |
-| name | String | name | 社团名 |
-| nsfw | bool | nsfw | 是否NSFW |
-| release | String | release | 发售日期 |
-| dlCount | int | dl_count | 销量 |
-| price | int | price | 价格(JPY) |
-| reviewCount | int | review_count | 评论数 |
-| rateCount | int | rate_count | 评分人数 |
-| rateAverage2dp | double | rate_average_2dp | 平均评分 |
-| hasSubtitle | bool | has_subtitle | 有无字幕 |
-| createDate | String | create_date | 收录日期 |
-| duration | int | duration | 总时长(秒) |
-| ageCategoryString | String | age_category_string | 年龄分类 |
-| sourceType | String | source_type | 来源类型 |
-| sourceId | String | source_id | 来源ID |
-| sourceUrl | String | source_url | DLsite链接 |
-| samCoverUrl | String? | samCoverUrl | 小封面URL |
-| thumbnailCoverUrl | String? | thumbnailCoverUrl | 缩略图URL |
-| mainCoverUrl | String? | mainCoverUrl | 主封面URL |
-| rateCountDetail | List&lt;RateDetail&gt; | rate_count_detail | 评分分布 |
-| rank | List&lt;RankInfo&gt; | rank | 排名信息 |
-| vas | List&lt;WorkVA&gt; | vas | 声优列表 |
-| tags | List&lt;WorkTag&gt; | tags | 标签(含投票) |
-| circle | Circle | circle | 社团详情(复用) |
-| languageEditions | List&lt;LanguageEdition&gt;? | language_editions | 语言版本 |
-| translationInfo | TranslationInfo? | translation_info | 翻译信息 |
-| originalWorkno | String? | original_workno | 原始作品号 |
-| otherLanguageEditionsInDb | List&lt;OtherLanguageEditionsInDb&gt;? | other_language_editions_in_db | DB中其他语言版 |
-| workAttributes | String? | work_attributes | 作品属性 |
-| userRating | dynamic | userRating | 用户评分 |
+| id | int | id | Work ID |
+| title | String | title | Title |
+| circleId | int | circle_id | Circle ID |
+| name | String | name | Circle name |
+| nsfw | bool | nsfw | NSFW flag |
+| release | String | release | Release date |
+| dlCount | int | dl_count | Download/sales count |
+| price | int | price | Price (JPY) |
+| reviewCount | int | review_count | Review count |
+| rateCount | int | rate_count | Rating count |
+| rateAverage2dp | double | rate_average_2dp | Average rating |
+| hasSubtitle | bool | has_subtitle | Has subtitle |
+| createDate | String | create_date | Catalog date |
+| duration | int | duration | Total duration (seconds) |
+| ageCategoryString | String | age_category_string | Age category |
+| sourceType | String | source_type | Source type |
+| sourceId | String | source_id | Source ID |
+| sourceUrl | String | source_url | DLsite URL |
+| samCoverUrl | String? | samCoverUrl | Small cover URL |
+| thumbnailCoverUrl | String? | thumbnailCoverUrl | Thumbnail URL |
+| mainCoverUrl | String? | mainCoverUrl | Main cover URL |
+| rateCountDetail | List&lt;RateDetail&gt; | rate_count_detail | Rating distribution |
+| rank | List&lt;RankInfo&gt; | rank | Rank info |
+| vas | List&lt;WorkVA&gt; | vas | Voice actors |
+| tags | List&lt;WorkTag&gt; | tags | Tags (with votes) |
+| circle | Circle | circle | Circle detail (reused) |
+| languageEditions | List&lt;LanguageEdition&gt;? | language_editions | Language editions |
+| translationInfo | TranslationInfo? | translation_info | Translation info |
+| originalWorkno | String? | original_workno | Original work number |
+| otherLanguageEditionsInDb | List&lt;OtherLanguageEditionsInDb&gt;? | other_language_editions_in_db | Other language editions in DB |
+| workAttributes | String? | work_attributes | Work attributes |
+| userRating | dynamic | userRating | User rating |
 
-## RateDetail — 评分分布
-| 字段 | 类型 | JSON Key | 说明 |
+## RateDetail — Rating distribution
+| Field | Type | JSON Key | Description |
 |------|------|----------|------|
-| reviewPoint | int | review_point | 星数1-5 |
-| count | int | count | 数量 |
-| ratio | double | ratio | 占比(0-100) |
+| reviewPoint | int | review_point | Stars 1–5 |
+| count | int | count | Count |
+| ratio | double | ratio | Ratio (0–100) |
 
-## RankInfo — 排名信息
-| 字段 | 类型 | JSON Key | 说明 |
+## RankInfo — Rank info
+| Field | Type | JSON Key | Description |
 |------|------|----------|------|
 | term | String | term | "day"/"week"/"month" |
 | category | String | category | "all"/"voice" |
-| rank | int | rank | 排名 |
-| rankDate | String | rank_date | 排名日期 |
+| rank | int | rank | Rank |
+| rankDate | String | rank_date | Rank date |
 
-## WorkVA — 作品声优
-| 字段 | 类型 | 说明 |
+## WorkVA — Work voice actor
+| Field | Type | Description |
 |------|------|------|
 | id | String | UUID |
-| name | String | 声优名 |
+| name | String | Voice actor name |
 
-## WorkTag — 标签(含投票，独立模型)
-| 字段 | 类型 | 说明 |
+## WorkTag — Tag with votes (standalone model)
+| Field | Type | Description |
 |------|------|------|
-| id | int | 标签ID |
-| name | String | 标签名 |
-| i18n | I18n? | 多语言 |
-| upvote | int | 赞同票 |
-| downvote | int | 反对票 |
-| voteRank | int | 投票排名 |
-| voteStatus | int? | 用户投票状态(nullable for guest) |
+| id | int | Tag ID |
+| name | String | Tag name |
+| i18n | I18n? | i18n |
+| upvote | int | Upvotes |
+| downvote | int | Downvotes |
+| voteRank | int | Vote rank |
+| voteStatus | int? | User vote state (nullable for guests) |

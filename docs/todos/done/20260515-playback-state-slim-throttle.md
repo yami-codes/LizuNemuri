@@ -1,67 +1,67 @@
-# 播放状态瘦身 + 节流落盘——降低主隔离区 JSON 编码开销
+# Playback State Slim-Down + Throttled Persistence — Reduce Main-Isolate JSON Encode Overhead
 
-- **创建时间**：2026-05-15
-- **负责人**：WuMe-sicx
-- **状态**：active <!-- active | done | cancelled -->
-- **关联 Issue / PR**：本地持久化优化清单第 1 项（Codex SESSION 019e2c0c…2962 分析 B1/C6）
-
----
-
-## 1. 目标（Goal）
-
-`last_playback_state` 当前在主隔离区把完整 `Work + Files + currentFile + playlist + currentIndex` JSON 编码后写 SharedPreferences，且每个 `playerStateStream` 事件都重置 5s debounce。大文件树作品会卡顿。本任务在**不改变恢复语义**的前提下，移除恢复根本用不到的冗余字段、拉长节流间隔、补齐生命周期 flush 与 stop 清理，直接降低播放/切歌时的掉帧风险。
-
-## 2. 范围（Scope）
-
-**包含：**
-- `PlaybackState` 模型移除 `playlist`、`currentIndex`（恢复路径不消费，仅冗余复制 `files` 中的节点）。
-- 保存 debounce 间隔 5s → 20s。
-- `pause()` 立即 flush 一次；播放完成已有的立即保存保留。
-- `PlaybackStateManager.dispose()` 取消 timer 前尽力 flush。
-- `stop()` 清除持久化的 `last_playback_state`（新增 `clearState()`）。
-- 修正 `restorePlaybackState()` 中对 `state.playlist`/`state.currentIndex` 的引用（改为基于重建后的 `context.playlist` 做空判断与日志）。
-
-**不包含：**
-- 不把 `work`/`files` 替换为 `workId` + 启动时 API 重新拉取（这是网络依赖的架构级改动，恢复语义会变，离线恢复受影响）——记为后续独立任务，本次保持离线可恢复。
-- 不引入新的 `WidgetsBindingObserver`：后台/detached 的 flush 由 `pause()` flush + 完成时保存 + 20s 周期 + dispose 尽力 flush 覆盖现实路径。
-- 不动 `audio_player_handler.dart` 里 `audio_service` 包自带的同名 `PlaybackState`（不同类型，无关）。
-
-## 3. 验收标准（Acceptance）
-
-- [x] `PlaybackState` 仅保留 `work/files/currentFile/playMode/position/timestamp`，旧版含 `playlist`/`currentIndex` 的 JSON 仍能被 `fromJson` 正常加载（Codex 核对 `.g.dart` 无未知键校验，多余键被忽略）。
-- [x] 切歌/播放/暂停时不再每 5s 触发整树 JSON 编码；间隔为 20s，`pause()` 立即落盘。
-- [x] `stop()` 后 `last_playback_state` 被清空，下次启动不误恢复已停止的内容（含写入竞态修复）。
-- [x] 恢复行为不变：仍能从 `work/files/currentFile/playMode/position` 还原播放上下文（playlist/index 由 `PlaybackContext` 工厂从 `files` 派生）。
-- [x] `flutter analyze` 通过，无新增 warning（仅 2 个既有 warning：`playback_controller.dart:9`、`playback_context.dart:196`）。
-- [x] 已运行 `dart run build_runner build --delete-conflicting-outputs`，`playback_state.freezed.dart`/`.g.dart` 已重新生成。
-- [x] 相关单元 / Widget 测试通过（31 通过；`test/widget_test.dart` 默认计数器模板测试在干净树上同样失败，属既有 stale，与本次无关）。
-- [x] Codex review 出具 ✅ PASS（SESSION 019e2c0c…2962，竞态修复后第二轮 PASS）。
-
-## 4. 拆解步骤（Steps）
-
-- [x] **Step 1**：`PlaybackState` 移除 `playlist`/`currentIndex` 字段（`playback_state.dart`，build_runner 已重生成）
-- [x] **Step 2**：`PlaybackStateManager` —— `saveState()` 去两字段、`_saveInterval` 20s、`dispose()` best-effort flush（`playback_state_manager.dart`）
-- [x] **Step 3**：接口与仓库新增 `clearState()` + manager `clearSavedState()` passthrough（`i_playback_state_repository.dart` / `playback_state_repository.dart`）
-- [x] **Step 4**：`audio_player_service.dart` —— `pause()` flush、`stop()` 调 `clearSavedState()`、`restorePlaybackState()` 改用 `context.playlist`
-- [x] **Step 5**：`flutter analyze`（无新增 warning）+ `flutter test`（31 通过，1 既有 stale 无关）全量回归
-- [x] **Step 6**：Codex review —— 首轮 ❌ 发现 save/clear 写入竞态 → 修复（持久化串行化 `_persistChain` + `_persistSuppressed` tombstone）→ 第二轮 ✅ PASS
-
-## 5. 风险与回滚（Risks）
-
-- **风险**：硬杀进程（未经 pause）最多丢失约 20s 进度；可接受（完成/暂停/dispose 均有 flush）。恢复字段裁剪若有遗漏消费方会导致恢复失败——已 grep 确认仅 restore 日志与 manager 构造引用。
-- **回滚方案**：revert 本次 commit；模型字段回退后需重跑 build_runner。
-
-## 6. 备注 / 决策记录
-
-- 关键依据：`PlaybackContext` 工厂 `playback_context.dart:51-68` 自行从 `files`+`currentFile` 派生 playlist/currentIndex；`restorePlaybackState` `audio_player_service.dart:174-179` 走该工厂，故持久化的 playlist/currentIndex 对恢复是死数据。
-- 向后兼容无需迁移：json_serializable 默认 `includeIfNull`/未知键忽略，旧 JSON 多余键被丢弃即可。
-- **Codex 首轮发现的竞态（已修）**：原 `saveState()` fire-and-forget，若在途 save 的 `setString` 在 `stop()` 的 `remove` 之后完成，会把已停止内容写回。修复：所有 save/clear 串行化进单条 `_persistChain`（remove 必排在在途 save 之后），并加 `_persistSuppressed` tombstone（`clearSavedState()` 同步置位，stop 后、新非空 `updateContext` 前的 save 全部 no-op；调用时刻快照 `context`/`positionMs` 防止链体执行时 `_currentContext` 已被置空）。第二轮 Codex ✅ PASS。
+- **Created**: 2026-05-15
+- **Owner**: WuMe-sicx
+- **Status**: done
+- **Related Issue / PR**: Local persistence optimization checklist item 1 (Codex SESSION 019e2c0c…2962 analysis B1/C6)
 
 ---
 
-## ✅ 完成标记
+## 1. Goal
 
-- 完成时间：2026-05-15 16:20
-- 执行命令：`/init`
-- CLAUDE.md 更新摘要：刷新音频子系统持久化描述——`PlaybackState` 瘦身（移除 playlist/currentIndex）、20s 节流 + pause/完成/dispose flush、`stop()` 清持久化、save/clear 经 `_persistChain` 串行化 + `_persistSuppressed` tombstone 消除写回竞态。
-- 关联 commit：未提交（用户未要求提交，待统一提交时机）
+`last_playback_state` currently JSON-encodes full `Work + Files + currentFile + playlist + currentIndex` on main isolate to SharedPreferences, and every `playerStateStream` event resets 5s debounce. Large file trees cause jank. This task removes redundant fields restore never uses, lengthens throttle interval, adds lifecycle flush and stop cleanup, directly reducing frame drops during play/track change **without changing restore semantics**.
+
+## 2. Scope
+
+**In scope:**
+- `PlaybackState` model remove `playlist`, `currentIndex` (restore path does not consume them, only redundant copies of `files` nodes).
+- Save debounce interval 5s → 20s.
+- `pause()` immediate flush once; keep existing immediate save on playback completion.
+- `PlaybackStateManager.dispose()` best-effort flush before canceling timer.
+- `stop()` clear persisted `last_playback_state` (new `clearState()`).
+- Fix `restorePlaybackState()` references to `state.playlist`/`state.currentIndex` (use rebuilt `context.playlist` for null check and logging).
+
+**Out of scope:**
+- Do not replace `work`/`files` with `workId` + API refetch on launch (network-dependent architectural change, restore semantics change, offline restore affected) — deferred independent task; keep offline-restorable this round.
+- No new `WidgetsBindingObserver`: background/detached flush covered by `pause()` flush + completion save + 20s interval + dispose best-effort flush on realistic paths.
+- Do not touch `audio_player_handler.dart` same-named `PlaybackState` from `audio_service` package (different type, unrelated).
+
+## 3. Acceptance
+
+- [x] `PlaybackState` keeps only `work/files/currentFile/playMode/position/timestamp`; old JSON with `playlist`/`currentIndex` still loads via `fromJson` (Codex verified `.g.dart` ignores unknown keys).
+- [x] Track change/play/pause no longer triggers full-tree JSON encode every 5s; interval 20s, `pause()` immediate persist.
+- [x] After `stop()`, `last_playback_state` cleared, next launch does not restore stopped session (including write race fix).
+- [x] Restore behavior unchanged: still rebuilds playback context from `work/files/currentFile/playMode/position` (playlist/index derived by `PlaybackContext` factory from `files`).
+- [x] `flutter analyze` passes, no new warnings (only 2 pre-existing: `playback_controller.dart:9`, `playback_context.dart:196`).
+- [x] Ran `dart run build_runner build --delete-conflicting-outputs`, `playback_state.freezed.dart`/`.g.dart` regenerated.
+- [x] Related unit / widget tests pass (31 pass; `test/widget_test.dart` counter template fails on clean tree too, pre-existing stale, unrelated).
+- [x] Codex review ✅ PASS (SESSION 019e2c0c…2962, race fix then round 2 PASS).
+
+## 4. Steps
+
+- [x] **Step 1**: `PlaybackState` remove `playlist`/`currentIndex` fields (`playback_state.dart`, build_runner regenerated)
+- [x] **Step 2**: `PlaybackStateManager` — `saveState()` drop two fields, `_saveInterval` 20s, `dispose()` best-effort flush (`playback_state_manager.dart`)
+- [x] **Step 3**: Interface and repository add `clearState()` + manager `clearSavedState()` passthrough (`i_playback_state_repository.dart` / `playback_state_repository.dart`)
+- [x] **Step 4**: `audio_player_service.dart` — `pause()` flush, `stop()` calls `clearSavedState()`, `restorePlaybackState()` uses `context.playlist`
+- [x] **Step 5**: `flutter analyze` (no new warnings) + `flutter test` (31 pass, 1 pre-existing stale unrelated) full regression
+- [x] **Step 6**: Codex review — round 1 ❌ save/clear write race → fixed (persistence serialization `_persistChain` + `_persistSuppressed` tombstone) → round 2 ✅ PASS
+
+## 5. Risks
+
+- **Risk**: hard kill (no pause) may lose up to ~20s progress; acceptable (completion/pause/dispose have flush). If trimmed fields had hidden consumers restore would fail — grep confirmed only restore logging and manager construction reference them.
+- **Rollback**: revert commit; model field rollback requires re-run build_runner.
+
+## 6. Notes / Decision Log
+
+- Key basis: `PlaybackContext` factory `playback_context.dart:51-68` derives playlist/currentIndex from `files`+`currentFile`; `restorePlaybackState` `audio_player_service.dart:174-179` uses that factory, so persisted playlist/currentIndex are dead data for restore.
+- Backward compatible, no migration: json_serializable default ignores unknown keys, old JSON extra keys discarded.
+- **Codex round 1 race (fixed)**: original `saveState()` fire-and-forget; in-flight save `setString` completing after `stop()` `remove` could write stopped session back. Fix: all save/clear serialized in single `_persistChain` (remove must follow in-flight save), plus `_persistSuppressed` tombstone (`clearSavedState()` sets synchronously, saves after stop and before new non-null `updateContext` no-op; snapshot `context`/`positionMs` at call time prevents chain executing after `_currentContext` cleared). Round 2 Codex ✅ PASS.
+
+---
+
+## ✅ Done
+
+- Completed at: 2026-05-15 16:20
+- Command run: `/init`
+- CLAUDE.md update summary: refreshed audio subsystem persistence — `PlaybackState` slimmed (removed playlist/currentIndex), 20s throttle + pause/completion/dispose flush, `stop()` clears persistence, save/clear via `_persistChain` serialization + `_persistSuppressed` tombstone eliminates write-back race.
+- Related commit: not committed (user did not request commit; pending unified commit timing)

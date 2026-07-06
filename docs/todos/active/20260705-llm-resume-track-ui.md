@@ -1,26 +1,29 @@
 # LLM resume, track-change fix, player view toggle polish
 
-- **创建时间**：2026-07-05
-- **负责人**：cursor-agent
-- **状态**：active
+- **Created**: 2026-07-05
+- **Owner**: cursor-agent
+- **Status**: active
+- **Related Issue / PR**:
 
-## 1. 目标
+---
+
+## 1. Goal
 
 Harden streaming translation edge cases with resume-from-partial, fix stale subtitles on track change, polish mobile cover/subtitle toggle.
 
-## 2. 范围
+## 2. Scope
 
-**包含：**
+**In scope:**
 - Completeness gate + partial cache + resume untranslated lines only
 - Keep partial UI on failure; SSE error/content_filter handling
 - PlayerViewModel epoch cancel + immediate clear on track change
 - Player view toggle redesign
 
-**不包含：**
+**Out of scope:**
 - In-player cancel button
 - Subtitle preview screen
 
-## 3. 验收标准
+## 3. Acceptance
 
 - [x] Partial progress saved; resume skips already-translated lines
 - [x] Incomplete stream never marked complete in cache

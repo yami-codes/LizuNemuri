@@ -1,26 +1,29 @@
 # Bulk LLM translate + cache status + progress feedback
 
-- **创建时间**：2026-07-05
-- **负责人**：cursor-agent
-- **状态**：active
+- **Created**: 2026-07-05
+- **Owner**: cursor-agent
+- **Status**: active
+- **Related Issue / PR**:
 
-## 1. 目标
+---
+
+## 1. Goal
 
 Per-work bulk/pre-translate with checkboxes, visible per-track cache status (skip re-translate), and live progress feedback during single and batch LLM translation.
 
-## 2. 范围
+## 2. Scope
 
-**包含：**
+**In scope:**
 - `SubtitleTranslationService.isCached` + batch progress callbacks
 - Detail screen: selection dialog (check-all) + progress dialog
 - Player: translation status line while in progress / cache hit
 - zh/en/th strings
 
-**不包含：**
+**Out of scope:**
 - Subtitle preview screen bulk translate
 - Re-translate on target-language change without user action
 
-## 3. 验收标准
+## 3. Acceptance
 
 - [x] Detail → file list → bulk translate opens checklist with cached badges
 - [x] Select all / deselect all; only checked items run
@@ -28,7 +31,7 @@ Per-work bulk/pre-translate with checkboxes, visible per-track cache status (ski
 - [x] Player manual/auto translate shows status text (batch N/M, cached)
 - [x] `flutter test` + analyze on touched files pass
 
-## 4. 步骤
+## 4. Steps
 
 - [x] Core: cache probe + progress types + service callbacks
 - [x] DetailViewModel bulk translate + selection prep
