@@ -8,6 +8,19 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.8 — 2026-07-06
+
+### Added
+- **Apple Music twist backdrop**: four-layer GLSL shader on the player background (twist UV rotation, saturation/brightness), animates while playing with reduced-motion fallback.
+- **Player gestures**: vertical swipe up/down toggles cover ↔ lyrics on narrow layout.
+
+### Changed
+- **Player surface transition**: 12% slide, 0.94→1.0 scale, 450ms crossfade between cover and lyrics.
+- **Album art**: crossfade on track change; subtle play/pause breathe scale.
+- **Kinetic lyrics**: fixed 22px typography — emphasis via opacity/blur/scale only (no font-size wobble); active line follows scroll center.
+
+---
+
 ## v2.0.0-rc.7 — 2026-07-06
 
 ### Added
