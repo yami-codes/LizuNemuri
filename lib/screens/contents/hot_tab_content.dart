@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 import 'package:lizunemu/presentation/viewmodels/popular_viewmodel.dart';
 import 'package:lizunemu/screens/contents/popular_content.dart';
+import 'package:lizunemu/widgets/filter/advanced_filter_bar.dart';
 
 /// Eara-style "Hot" tab — popular grid + quick filter chips (Milestone E).
 class HotTabContent extends StatelessWidget {
@@ -14,33 +14,18 @@ class HotTabContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.pageMobile,
-            AppSpacing.space8,
-            AppSpacing.pageMobile,
-            AppSpacing.space4,
-          ),
-          child: Consumer<PopularViewModel>(
-            builder: (context, vm, _) => Wrap(
-              spacing: AppSpacing.space8,
-              runSpacing: AppSpacing.space4,
-              children: [
-                FilterChip(
-                  label: Text(Strings.subtitleChip),
-                  selected: vm.hasSubtitle,
-                  onSelected: (_) => vm.toggleSubtitleFilter(),
-                  showCheckmark: true,
-                ),
-                ActionChip(
-                  avatar: const Icon(Icons.filter_list, size: 18),
-                  label: Text(Strings.filterOrderDefault),
-                  onPressed: () => vm.toggleFilterPanel(),
-                ),
-              ],
-            ),
+        Consumer<PopularViewModel>(
+          builder: (context, vm, _) => AdvancedFilterBar(
+            hasSubtitle: vm.hasSubtitle,
+            filterState: vm.filterState,
+            onSubtitleChanged: (_) => vm.toggleSubtitleFilter(),
+            onPresetSelected: vm.updatePreset,
+            onSortDirectionChanged: vm.updateSortDirection,
+            onIncludeTagsChanged: vm.updateIncludeTags,
+            onAgeRatingChanged: vm.updateAgeRating,
           ),
         ),
+        const SizedBox(height: AppSpacing.space4),
         const Expanded(child: PopularContent()),
       ],
     );

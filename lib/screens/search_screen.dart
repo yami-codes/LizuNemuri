@@ -10,6 +10,7 @@ import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/widgets/pagination_controls.dart';
 import 'package:lizunemu/widgets/common/app_search_field.dart';
 import 'package:lizunemu/widgets/common/back_leading.dart';
+import 'package:lizunemu/widgets/filter/advanced_filter_bar.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
 class SearchScreen extends StatelessWidget {
@@ -50,8 +51,7 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
   void initState() {
     super.initState();
     _searchController = TextEditingController(text: widget.initialKeyword);
-    
-    // Auto-search when initial keyword is provided
+
     if (widget.initialKeyword?.isNotEmpty == true) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _onSearch();
@@ -68,13 +68,14 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
 
   void _onSearch() {
     final keyword = _searchController.text.trim();
-    if (keyword.isEmpty) return;
+    final vm = context.read<SearchViewModel>();
+    if (keyword.isEmpty && !vm.filterState.hasTagOrAgeFilter) return;
 
     AppLogger.debug(LogStrings.logRunSearchKeyword2ee4b(keyword));
-    context.read<SearchViewModel>().search(keyword);
+    vm.search(keyword);
   }
 
-  void _onPageChanged(int page) async {
+  Future<void> _onPageChanged(int page) async {
     final viewModel = context.read<SearchViewModel>();
     await viewModel.loadPage(page);
     if (_scrollController.hasClients) {
@@ -83,31 +84,6 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
         duration: AppAnimations.medium,
         curve: AppAnimations.enter,
       );
-    }
-  }
-
-  String _getOrderText(String order, String sort) {
-    switch (order) {
-      case 'create_date':
-        return sort == 'desc' ? Strings.sortLatest : Strings.sortOldest;
-      case 'release':
-        return sort == 'desc'
-            ? Strings.sortReleaseDesc
-            : Strings.sortReleaseAsc;
-      case 'dl_count':
-        return sort == 'desc' ? Strings.sortSalesDesc : Strings.sortSalesAsc;
-      case 'price':
-        return sort == 'desc' ? Strings.sortPriceDesc : Strings.sortPriceAsc;
-      case 'rate_average_2dp':
-        return Strings.sortRatingDesc;
-      case 'review_count':
-        return Strings.sortReviewDesc;
-      case 'id':
-        return sort == 'desc' ? Strings.sortRjDesc : Strings.sortRjAsc;
-      case 'random':
-        return Strings.sortRandom;
-      default:
-        return Strings.sortLabel;
     }
   }
 
@@ -143,93 +119,29 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                   : null,
             ),
           ),
-          const SizedBox(height: AppSpacing.space8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.pageMobile),
-            child: Wrap(
-              spacing: AppSpacing.space8,
-              runSpacing: AppSpacing.space4,
-              children: [
-                Consumer<SearchViewModel>(
-                  builder: (context, viewModel, _) => FilterChip(
-                    label: Text(Strings.subtitleChip),
-                    selected: viewModel.hasSubtitle,
-                    onSelected: (_) => viewModel.toggleSubtitle(),
-                    showCheckmark: true,
-                  ),
-                ),
-                Consumer<SearchViewModel>(
-                  builder: (context, viewModel, _) =>
-                      PopupMenuButton<(String, String)>(
-                    child: Chip(
-                      label: Text(
-                        _getOrderText(viewModel.order, viewModel.sort),
-                      ),
-                      avatar: const Icon(Icons.arrow_drop_down, size: 18),
-                    ),
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: ('create_date', 'desc'),
-                        child: Text(Strings.sortLatest),
-                      ),
-                      PopupMenuItem(
-                        value: ('release', 'desc'),
-                        child: Text(Strings.sortReleaseDesc),
-                      ),
-                      PopupMenuItem(
-                        value: ('release', 'asc'),
-                        child: Text(Strings.sortReleaseAsc),
-                      ),
-                      PopupMenuItem(
-                        value: ('dl_count', 'desc'),
-                        child: Text(Strings.sortSalesDesc),
-                      ),
-                      PopupMenuItem(
-                        value: ('price', 'asc'),
-                        child: Text(Strings.sortPriceAsc),
-                      ),
-                      PopupMenuItem(
-                        value: ('price', 'desc'),
-                        child: Text(Strings.sortPriceDesc),
-                      ),
-                      PopupMenuItem(
-                        value: ('rate_average_2dp', 'desc'),
-                        child: Text(Strings.sortRatingDesc),
-                      ),
-                      PopupMenuItem(
-                        value: ('review_count', 'desc'),
-                        child: Text(Strings.sortReviewDesc),
-                      ),
-                      PopupMenuItem(
-                        value: ('id', 'desc'),
-                        child: Text(Strings.sortRjDesc),
-                      ),
-                      PopupMenuItem(
-                        value: ('id', 'asc'),
-                        child: Text(Strings.sortRjAsc),
-                      ),
-                      PopupMenuItem(
-                        value: ('random', 'desc'),
-                        child: Text(Strings.sortRandom),
-                      ),
-                    ],
-                    onSelected: (value) =>
-                        viewModel.setOrder(value.$1, value.$2),
-                  ),
-                ),
-              ],
+          Consumer<SearchViewModel>(
+            builder: (context, vm, _) => AdvancedFilterBar(
+              hasSubtitle: vm.hasSubtitle,
+              filterState: vm.filterState,
+              onSubtitleChanged: (_) => vm.toggleSubtitle(),
+              onPresetSelected: vm.updatePreset,
+              onSortDirectionChanged: vm.updateSortDirection,
+              onIncludeTagsChanged: vm.updateIncludeTags,
+              onAgeRatingChanged: vm.updateAgeRating,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.space8),
           Expanded(
             child: Consumer<SearchViewModel>(
               builder: (context, viewModel, child) {
                 Widget? emptyWidget;
-                if (viewModel.works.isEmpty && viewModel.keyword.isEmpty) {
+                if (viewModel.works.isEmpty &&
+                    viewModel.keyword.isEmpty &&
+                    !viewModel.filterState.hasTagOrAgeFilter) {
                   emptyWidget = Center(
                     child: Text(Strings.searchEmptyPrompt),
                   );
-                } else if (viewModel.works.isEmpty) {
+                } else if (viewModel.works.isEmpty && !viewModel.isLoading) {
                   emptyWidget = Center(
                     child: Text(Strings.searchNoResults),
                   );

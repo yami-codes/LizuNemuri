@@ -162,6 +162,34 @@
   "filterOrderReview": "จำนวนรีวิว",
   "filterOrderRj": "RJ",
   "filterOrderSales": "ยอดขาย",
+  "filterMoreOptions": "ตัวกรองเพิ่มเติม",
+  "filterTags": "แท็ก",
+  "filterTagsSelected": "{count} แท็ก",
+  "@filterTagsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterPickTags": "เลือกแท็ก",
+  "filterClearTags": "ล้างทั้งหมด",
+  "filterApplyTags": "ใช้ ({count})",
+  "@filterApplyTags": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterAgeAny": "ทั้งหมด",
+  "filterAgeGeneral": "ทุกวัย",
+  "filterAgeAdult": "R18",
+  "filterPresetLatest": "ล่าสุด",
+  "filterPresetPrice": "ราคาสูงสุด",
+  "filterPresetRating": "คะแนนสูงสุด",
+  "filterPresetRelease": "วางจำหน่ายใหม่",
+  "filterPresetSales": "ขายดี",
   "followSystem": "ตามระบบ",
   "goLogin": "เข้าสู่ระบบ",
   "gridEmpty": "ไม่มีเนื้อหา",

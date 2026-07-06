@@ -1,14 +1,25 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lizunemu/data/models/works/work.dart';
 import 'package:lizunemu/data/models/works/pagination.dart';
 import 'package:lizunemu/data/services/api_service.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/presentation/models/filter_state.dart';
+import 'package:lizunemu/presentation/models/age_rating_filter.dart';
+import 'package:lizunemu/presentation/models/work_list_filter_preset.dart';
+import 'package:lizunemu/presentation/models/work_list_query_builder.dart';
 import 'package:lizunemu/utils/user_facing_error.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchViewModel extends ChangeNotifier {
+  static const String _filterStateKey = 'search_filter_state';
+
   final _apiService = GetIt.I<ApiService>();
+  final _settings = GetIt.I<AppSettingsService>();
 
   List<Work> _works = [];
   List<Work> get works => _works;
@@ -30,55 +41,118 @@ class SearchViewModel extends ChangeNotifier {
   int _currentPage = 1;
   int get currentPage => _currentPage;
 
-  bool _hasSubtitle = false;
-  bool get hasSubtitle => _hasSubtitle;
+  bool get hasSubtitle => _settings.hasSubtitleFilter;
 
-  String _order = 'create_date'; // Default: create date
-  String get order => _order;
+  FilterState _filterState = const FilterState();
+  FilterState get filterState => _filterState;
 
-  String _sort = 'desc'; // Default: descending
-  String get sort => _sort;
+  SearchViewModel() {
+    _loadFilterState();
+  }
+
+  Future<void> _loadFilterState() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonStr = prefs.getString(_filterStateKey);
+      if (jsonStr != null) {
+        _filterState = FilterState.fromJson(jsonDecode(jsonStr));
+        notifyListeners();
+      }
+    } catch (e) {
+      AppLogger.error(LogStrings.logLoadFilterStateFailed, e);
+    }
+  }
+
+  Future<void> _saveFilterState() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(
+        _filterStateKey,
+        jsonEncode(_filterState.toJson()),
+      );
+    } catch (e) {
+      AppLogger.error(LogStrings.logSaveFilterStateFailed, e);
+    }
+  }
+
+  String _composedKeyword(String textKeyword) =>
+      WorkListQueryBuilder.buildSearchKeyword(
+        textKeyword: textKeyword,
+        includeTags: _filterState.includeTags,
+        ageRating: _filterState.ageRating,
+      );
+
+  bool get _canSearch =>
+      _keyword.isNotEmpty || _filterState.hasTagOrAgeFilter;
 
   void toggleSubtitle() {
-    _hasSubtitle = !_hasSubtitle;
+    _settings.setHasSubtitleFilter(!_settings.hasSubtitleFilter);
     notifyListeners();
-    if (_keyword.isNotEmpty) {
+    if (_canSearch) {
       search(_keyword);
     }
   }
 
-  void setOrder(String order, String sort) {
-    _order = order;
-    _sort = sort;
+  void updatePreset(WorkListFilterPreset preset) {
+    _filterState = _filterState.copyWithPreset(preset);
+    _saveFilterState();
     notifyListeners();
-    if (_keyword.isNotEmpty) {
+    if (_canSearch) {
       search(_keyword);
     }
   }
 
-  /// Run search.
+  void updateSortDirection(bool isDescending) {
+    if (_filterState.orderField == 'random') return;
+    _filterState = _filterState.copyWith(isDescending: isDescending);
+    _saveFilterState();
+    notifyListeners();
+    if (_canSearch) {
+      search(_keyword);
+    }
+  }
+
+  void updateIncludeTags(List<String> tags) {
+    _filterState = _filterState.copyWith(includeTags: tags);
+    _saveFilterState();
+    notifyListeners();
+    search(_keyword);
+  }
+
+  void updateAgeRating(AgeRatingFilter rating) {
+    _filterState = _filterState.copyWith(ageRating: rating);
+    _saveFilterState();
+    notifyListeners();
+    search(_keyword);
+  }
+
+  /// Run search. [keyword] is free text; tag/age filters are composed separately.
   Future<void> search(String keyword, {int page = 1}) async {
-    if (keyword.isEmpty) return;
-
-    _keyword = keyword;
+    _keyword = keyword.trim();
+    final composed = _composedKeyword(_keyword);
+    if (composed.isEmpty) return;
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      AppLogger.info(LogStrings.logSearchKeywordKeywordPage420d8(keyword, page));
+      AppLogger.info(
+        LogStrings.logSearchKeywordKeywordPage420d8(composed, page),
+      );
       final response = await _apiService.searchWorks(
-        keyword: keyword,
+        keyword: composed,
         page: page,
-        order: _order,
-        sort: _sort,
-        hasSubtitle: _hasSubtitle, // Subtitle filter
+        order: _filterState.orderField,
+        sort: _filterState.sortValue,
+        hasSubtitle: hasSubtitle,
       );
 
       _works = response.works;
       _pagination = response.pagination;
       _currentPage = page;
-      AppLogger.info(LogStrings.logSearchSucceededResponseWorks55719(response.works.length));
+      AppLogger.info(
+        LogStrings.logSearchSucceededResponseWorks55719(response.works.length),
+      );
     } catch (e) {
       AppLogger.error(LogStrings.logSearchFailed, e);
       _error = userFacingError(e);
@@ -90,7 +164,7 @@ class SearchViewModel extends ChangeNotifier {
 
   /// Load a page.
   Future<void> loadPage(int page) async {
-    if (_keyword.isEmpty) return;
+    if (!_canSearch) return;
     await search(_keyword, page: page);
   }
 

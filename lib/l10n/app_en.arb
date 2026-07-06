@@ -162,6 +162,34 @@
   "filterOrderReview": "Review count",
   "filterOrderRj": "RJ number",
   "filterOrderSales": "Sales",
+  "filterMoreOptions": "More filters",
+  "filterTags": "Tags",
+  "filterTagsSelected": "{count} tags",
+  "@filterTagsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterPickTags": "Pick tags",
+  "filterClearTags": "Clear all",
+  "filterApplyTags": "Apply ({count})",
+  "@filterApplyTags": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterAgeAny": "Any",
+  "filterAgeGeneral": "All ages",
+  "filterAgeAdult": "R18",
+  "filterPresetLatest": "Latest",
+  "filterPresetPrice": "Top price",
+  "filterPresetRating": "Top rated",
+  "filterPresetRelease": "New releases",
+  "filterPresetSales": "Best sellers",
   "followSystem": "Follow system",
   "goLogin": "Log in",
   "gridEmpty": "Nothing here",
