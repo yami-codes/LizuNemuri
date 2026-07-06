@@ -8,6 +8,7 @@ import 'package:lizunemu/presentation/models/filter_state.dart';
 import 'package:lizunemu/presentation/models/age_rating_filter.dart';
 import 'package:lizunemu/presentation/models/work_list_filter_preset.dart';
 import 'package:lizunemu/presentation/models/work_list_query_builder.dart';
+import 'package:lizunemu/presentation/models/tag_filter_helper.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
@@ -101,6 +102,27 @@ class PopularViewModel extends PaginatedWorksViewModel {
     refresh();
   }
 
+  void updateExcludeTags(List<String> tags) {
+    _filterState = _filterState.copyWith(excludeTags: tags);
+    _saveFilterState();
+    notifyListeners();
+    refresh();
+  }
+
+  void addIncludeTag(String apiName) {
+    _filterState = TagFilterHelper.addInclude(_filterState, apiName);
+    _saveFilterState();
+    notifyListeners();
+    refresh();
+  }
+
+  void addExcludeTag(String apiName) {
+    _filterState = TagFilterHelper.addExclude(_filterState, apiName);
+    _saveFilterState();
+    notifyListeners();
+    refresh();
+  }
+
   void updateAgeRating(AgeRatingFilter rating) {
     _filterState = _filterState.copyWith(ageRating: rating);
     _saveFilterState();
@@ -123,6 +145,7 @@ class PopularViewModel extends PaginatedWorksViewModel {
       return apiService.searchWorks(
         keyword: WorkListQueryBuilder.buildSearchKeyword(
           includeTags: _filterState.includeTags,
+          excludeTags: _filterState.excludeTags,
           ageRating: _filterState.ageRating,
         ),
         page: page,

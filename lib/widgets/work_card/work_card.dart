@@ -7,12 +7,16 @@ class WorkCard extends StatelessWidget {
   final Work work;
   final VoidCallback? onTap;
   final Map<String, String>? translatedTitles;
+  final void Function(String apiTagName)? onTagInclude;
+  final void Function(String apiTagName)? onTagExclude;
 
   const WorkCard({
     super.key,
     required this.work,
     this.onTap,
     this.translatedTitles,
+    this.onTagInclude,
+    this.onTagExclude,
   });
 
   @override
@@ -40,6 +44,8 @@ class WorkCard extends StatelessWidget {
             WorkInfoSection(
               work: work,
               titleOverride: _titleOverride(),
+              onTagInclude: onTagInclude,
+              onTagExclude: onTagExclude,
             ),
           ],
         ),

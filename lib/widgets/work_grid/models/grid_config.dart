@@ -8,6 +8,8 @@ class GridConfig {
   final Duration scrollDuration;
   final Curve scrollCurve;
   final EdgeInsets? padding;
+  final void Function(String apiTagName)? onTagInclude;
+  final void Function(String apiTagName)? onTagExclude;
 
   const GridConfig({
     this.physics,
@@ -16,6 +18,8 @@ class GridConfig {
     this.scrollDuration = AppAnimations.medium,
     this.scrollCurve = AppAnimations.enter,
     this.padding,
+    this.onTagInclude,
+    this.onTagExclude,
   });
 
   static const GridConfig defaultConfig = GridConfig();

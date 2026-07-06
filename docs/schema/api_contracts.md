@@ -19,5 +19,8 @@
 
 ## Search Syntax Extensions
 - `$tag:tag-name$` — filter by tag
+- `$-tag:tag-name$` — exclude tag
 - `$circle:circle-name$` — filter by circle
 - `$va:voice-actor-name$` — filter by voice actor
+- `$age:general$` / `$age:r15$` / `$age:adult$` — age rating
+- `$duration:20m$` / `$price:100$` — numeric filters (see `docs/search_command_syntax.md`)

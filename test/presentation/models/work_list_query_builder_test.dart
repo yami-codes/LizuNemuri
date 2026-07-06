@@ -53,9 +53,24 @@ void main() {
       );
       expect(
         WorkListQueryBuilder.requiresSearchEndpoint(
+          const FilterState(excludeTags: ['AI']),
+        ),
+        isTrue,
+      );
+      expect(
+        WorkListQueryBuilder.requiresSearchEndpoint(
           const FilterState(ageRating: AgeRatingFilter.adult),
         ),
         isTrue,
+      );
+    });
+
+    test('builds exclude tag tokens', () {
+      expect(
+        WorkListQueryBuilder.buildSearchKeyword(
+          excludeTags: ['AI'],
+        ),
+        r'$-tag:AI$',
       );
     });
 
