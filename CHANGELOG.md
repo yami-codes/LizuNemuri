@@ -8,6 +8,20 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.10 — 2026-07-06
+
+### Added
+- **Metadata translation**: Google Translate (free, no key) or LLM Lite bulk for work list titles, search results, and track names; auto or manual per page.
+- **Main vs Lite LLM models**: Main for subtitles, Lite for titles/tracks/tags.
+- **LLM provider presets**: OpenRouter, Gemini (AI Studio), OpenAI, and custom OpenAI-compatible endpoints.
+- **Model autocomplete** from provider `/models` APIs (OpenRouter, Gemini, OpenAI, custom).
+- **OpenRouter balance** tile in LLM settings via `/auth/key`.
+
+### Changed
+- **Default OpenRouter models**: Main `google/gemma-4-31b-it:free`, Lite `google/gemma-4-26b-a4b-it:free`.
+
+---
+
 ## v2.0.0-rc.9 — 2026-07-06
 
 ### Fixed
