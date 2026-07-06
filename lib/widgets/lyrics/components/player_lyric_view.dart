@@ -32,13 +32,17 @@ double lyricEmphasisForIndex({
   required bool isActive,
   required Iterable<ItemPosition> positions,
 }) {
-  if (isActive) return 1.0;
   for (final position in positions) {
     if (position.index == index) {
-      return lyricKineticEmphasis(position);
+      final proximity = lyricKineticEmphasis(position);
+      if (isActive) {
+        // Active line follows scroll center — no hard jump to 1.0 (Apple Music style).
+        return proximity.clamp(0.75, 1.0);
+      }
+      return proximity;
     }
   }
-  return 0.22;
+  return isActive ? 0.85 : 0.22;
 }
 
 class PlayerLyricView extends StatefulWidget {

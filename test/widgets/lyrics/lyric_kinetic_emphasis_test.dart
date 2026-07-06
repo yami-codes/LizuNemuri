@@ -30,14 +30,32 @@ void main() {
   });
 
   group('lyricEmphasisForIndex', () {
-    test('active line always returns 1.0', () {
+    test('active line follows viewport proximity (clamped 0.75–1.0)', () {
+      const positions = [
+        ItemPosition(
+          index: 2,
+          itemLeadingEdge: 0.45,
+          itemTrailingEdge: 0.55,
+        ),
+      ];
+      expect(
+        lyricEmphasisForIndex(
+          index: 2,
+          isActive: true,
+          positions: positions,
+        ),
+        closeTo(1.0, 0.01),
+      );
+    });
+
+    test('active line off-screen uses baseline emphasis', () {
       expect(
         lyricEmphasisForIndex(
           index: 2,
           isActive: true,
           positions: const [],
         ),
-        1.0,
+        0.85,
       );
     });
 

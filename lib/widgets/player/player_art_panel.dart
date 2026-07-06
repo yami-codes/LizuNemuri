@@ -42,6 +42,7 @@ class PlayerArtPanel extends StatelessWidget {
                   maxSize: coverSize,
                   ringColor: ringColor,
                   albumArtStyle: true,
+                  isPlaying: viewModel.isPlaying,
                 ),
               ),
             ),

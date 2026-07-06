@@ -44,4 +44,18 @@ void main() {
     );
     expect(find.byIcon(Icons.music_note), findsOneWidget);
   });
+
+  testWidgets('pause state targets reduced play scale', (tester) async {
+    await tester.pumpWidget(
+      _host(
+        AppColors.lightSchemeFor(ColorVariant.blue),
+        const CircularCover(albumArtStyle: true, isPlaying: false),
+      ),
+    );
+
+    final builder = tester.widget<TweenAnimationBuilder<double>>(
+      find.byType(TweenAnimationBuilder<double>),
+    );
+    expect((builder.tween as Tween<double>).end, 0.92);
+  });
 }

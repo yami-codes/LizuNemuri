@@ -45,7 +45,7 @@ class PlayerSurfaceSwitcher extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: AppAnimations.medium,
+      duration: AppAnimations.long,
       switchInCurve: AppAnimations.smoothScroll,
       switchOutCurve: AppAnimations.exit,
       transitionBuilder: playerSurfaceTransitionBuilder,
@@ -74,7 +74,7 @@ Widget playerSurfaceTransitionBuilder(
     opacity: animation,
     child: SlideTransition(
       position: Tween<Offset>(
-        begin: Offset(0, isLyrics ? 0.08 : -0.08),
+        begin: Offset(0, isLyrics ? 0.12 : -0.12),
         end: Offset.zero,
       ).animate(CurvedAnimation(
         parent: animation,
@@ -82,7 +82,7 @@ Widget playerSurfaceTransitionBuilder(
         reverseCurve: AppAnimations.exit,
       )),
       child: ScaleTransition(
-        scale: Tween<double>(begin: 0.96, end: 1.0).animate(CurvedAnimation(
+        scale: Tween<double>(begin: 0.94, end: 1.0).animate(CurvedAnimation(
           parent: animation,
           curve: AppAnimations.smoothScroll,
           reverseCurve: AppAnimations.exit,
