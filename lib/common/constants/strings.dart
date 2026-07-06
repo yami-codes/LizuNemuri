@@ -342,6 +342,33 @@ class Strings {
   static String get llmApiEndpoint => _l10n.llmApiEndpoint;
   static String get llmApiKey => _l10n.llmApiKey;
   static String get llmModel => _l10n.llmModel;
+  static String get llmMainModel => _l10n.llmMainModel;
+  static String get llmLiteModel => _l10n.llmLiteModel;
+  static String get metadataTranslationTitle => _l10n.metadataTranslationTitle;
+  static String get metadataTranslationDesc => _l10n.metadataTranslationDesc;
+  static String get metadataTranslationEnabled =>
+      _l10n.metadataTranslationEnabled;
+  static String get metadataTranslationProvider =>
+      _l10n.metadataTranslationProvider;
+  static String get metadataTranslationProviderGoogle =>
+      _l10n.metadataTranslationProviderGoogle;
+  static String get metadataTranslationProviderLlm =>
+      _l10n.metadataTranslationProviderLlm;
+  static String get metadataTranslationMode => _l10n.metadataTranslationMode;
+  static String get metadataTranslationModeAuto =>
+      _l10n.metadataTranslationModeAuto;
+  static String get metadataTranslationModeAutoDesc =>
+      _l10n.metadataTranslationModeAutoDesc;
+  static String get metadataTranslationModeManual =>
+      _l10n.metadataTranslationModeManual;
+  static String get metadataTranslationModeManualDesc =>
+      _l10n.metadataTranslationModeManualDesc;
+  static String get metadataTranslatePage => _l10n.metadataTranslatePage;
+  static String get metadataTranslateTracks => _l10n.metadataTranslateTracks;
+  static String get metadataTrackTranslationDone =>
+      _l10n.metadataTrackTranslationDone;
+  static String get metadataTrackTranslationFailed =>
+      _l10n.metadataTrackTranslationFailed;
   static String get llmTargetLanguage => _l10n.llmTargetLanguage;
   static String get llmSystemPrompt => _l10n.llmSystemPrompt;
   static String get llmSystemPromptHint => _l10n.llmSystemPromptHint;
@@ -351,6 +378,20 @@ class Strings {
   static String get llmJailbreakAutoDesc => _l10n.llmJailbreakAutoDesc;
   static String get llmPresetOpenAi => _l10n.llmPresetOpenAi;
   static String get llmPresetOpenRouter => _l10n.llmPresetOpenRouter;
+  static String get llmPresetGemini => _l10n.llmPresetGemini;
+  static String get llmPresetCustom => _l10n.llmPresetCustom;
+  static String get llmPresetCustomHint => _l10n.llmPresetCustomHint;
+  static String get llmCustomEndpointHint => _l10n.llmCustomEndpointHint;
+  static String llmProviderDetected(String provider) =>
+      _l10n.llmProviderDetected(provider);
+  static String get llmModelAutocompleteHint => _l10n.llmModelAutocompleteHint;
+  static String get llmCustomModelHint => _l10n.llmCustomModelHint;
+  static String get llmGeminiUsageHint => _l10n.llmGeminiUsageHint;
+  static String get llmOpenRouterUsageHint => _l10n.llmOpenRouterUsageHint;
+  static String get llmOpenAiUsageHint => _l10n.llmOpenAiUsageHint;
+  static String get llmCustomUsageHint => _l10n.llmCustomUsageHint;
+  static String get llmOpenRouterBalanceUnavailable =>
+      _l10n.llmOpenRouterBalanceUnavailable;
   static String get llmTargetLangSystem => _l10n.llmTargetLangSystem;
   static String get llmTargetLangEn => _l10n.llmTargetLangEn;
   static String get llmTargetLangZh => _l10n.llmTargetLangZh;
@@ -416,6 +457,7 @@ class Strings {
   static String get llmUsageOperationSubtitle =>
       _l10n.llmUsageOperationSubtitle;
   static String get llmUsageOperationTitle => _l10n.llmUsageOperationTitle;
+  static String get llmUsageOperationMetadata => _l10n.llmUsageOperationMetadata;
   static String get llmSubtitleDisplayMode => _l10n.llmSubtitleDisplayMode;
   static String get llmSubtitleDisplayDual => _l10n.llmSubtitleDisplayDual;
   static String get llmSubtitleDisplayDualDesc =>

@@ -6,6 +6,7 @@ class WorkRow extends StatelessWidget {
   final List<Work> works;
   final int columnCount;
   final void Function(Work work)? onWorkTap;
+  final Map<String, String>? translatedTitles;
   final double spacing;
 
   const WorkRow({
@@ -13,6 +14,7 @@ class WorkRow extends StatelessWidget {
     required this.works,
     required this.columnCount,
     this.onWorkTap,
+    this.translatedTitles,
     this.spacing = 8.0,
   });
 
@@ -30,6 +32,7 @@ class WorkRow extends StatelessWidget {
                     work: works[i],
                     onTap:
                         onWorkTap != null ? () => onWorkTap!(works[i]) : null,
+                    translatedTitles: translatedTitles,
                   )
                 : const SizedBox.shrink(),
           ),

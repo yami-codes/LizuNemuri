@@ -17,6 +17,7 @@ class WorkGridView extends StatelessWidget {
   final WorkLayoutStrategy layoutStrategy;
   final ScrollController? scrollController;
   final Widget? bottomWidget;
+  final Map<String, String>? translatedTitles;
 
   const WorkGridView({
     super.key,
@@ -31,6 +32,7 @@ class WorkGridView extends StatelessWidget {
     this.layoutStrategy = const WorkLayoutStrategy(),
     this.scrollController,
     this.bottomWidget,
+    this.translatedTitles,
   });
 
   @override
@@ -89,6 +91,7 @@ class WorkGridView extends StatelessWidget {
           sliver: WorkGrid(
             works: works,
             layoutStrategy: layoutStrategy,
+            translatedTitles: translatedTitles,
             onWorkTap: (work) {
               Navigator.push(
                 context,

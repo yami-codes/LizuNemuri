@@ -1,11 +1,5 @@
-import 'package:lizunemu/core/llm/work_title_translation_cache.dart';
-import 'package:lizunemu/data/repositories/llm_usage_repository.dart';
-import 'package:lizunemu/core/settings/app_settings_service.dart';
-import 'package:lizunemu/core/settings/llm_subtitle_target_language.dart';
-import 'package:lizunemu/data/repositories/llm_api_key_repository.dart';
+import 'package:lizunemu/core/translation/metadata_translation_service.dart';
 import 'package:lizunemu/data/services/exceptions/llm_translation_exception.dart';
-import 'package:lizunemu/data/services/llm_client.dart';
-import 'package:lizunemu/utils/logger.dart';
 
 /// Result of translating a work title.
 class WorkTitleTranslationResult {
@@ -31,43 +25,19 @@ class WorkTitleTranslationResult {
   bool get isFailure => error != null;
 }
 
-/// LLM translation for a single work/project title (cached per work + lang).
+/// Work title translation — delegates to [MetadataTranslationService].
 class WorkTitleTranslationService {
-  static const _systemPrompt = '''
-You are a professional translator for ASMR audio work titles.
-Translate the given title naturally into the target language.
-Preserve catalog numbers (RJ codes), episode numbers, and proper nouns when appropriate.
-Return ONLY the translated title text — no quotes, labels, or explanation.''';
+  final MetadataTranslationService _metadata;
 
-  final AppSettingsService _settings;
-  final LlmClient _client;
-  final LlmApiKeyRepository _apiKeyRepo;
-  final WorkTitleTranslationCache _cache;
-  final LlmUsageRepository? _usageRepo;
-
-  WorkTitleTranslationService({
-    required AppSettingsService settings,
-    required LlmClient client,
-    required LlmApiKeyRepository apiKeyRepo,
-    WorkTitleTranslationCache? cache,
-    LlmUsageRepository? usageRepo,
-  })  : _settings = settings,
-        _client = client,
-        _apiKeyRepo = apiKeyRepo,
-        _cache = cache ?? WorkTitleTranslationCache(),
-        _usageRepo = usageRepo;
-
-  String get _targetLang =>
-      _settings.llmTargetLanguage.resolveCode(_settings.stringsLocale);
+  WorkTitleTranslationService({required MetadataTranslationService metadata})
+      : _metadata = metadata;
 
   Future<bool> isCached({
     required String workId,
     required String sourceTitle,
   }) async {
-    if (sourceTitle.trim().isEmpty) return false;
-    final cached = await _cache.load(
+    final cached = await _metadata.cachedWorkTitle(
       workId: workId,
-      targetLang: _targetLang,
       sourceTitle: sourceTitle,
     );
     return cached != null;
@@ -77,9 +47,8 @@ Return ONLY the translated title text — no quotes, labels, or explanation.''';
     required String workId,
     required String sourceTitle,
   }) =>
-      _cache.load(
+      _metadata.cachedWorkTitle(
         workId: workId,
-        targetLang: _targetLang,
         sourceTitle: sourceTitle,
       );
 
@@ -99,9 +68,8 @@ Return ONLY the translated title text — no quotes, labels, or explanation.''';
     }
 
     if (!forceRefresh) {
-      final cached = await _cache.load(
+      final cached = await _metadata.cachedWorkTitle(
         workId: workId,
-        targetLang: _targetLang,
         sourceTitle: source,
       );
       if (cached != null) {
@@ -109,28 +77,13 @@ Return ONLY the translated title text — no quotes, labels, or explanation.''';
       }
     }
 
-    final key = await _apiKeyRepo.getApiKey();
-    if (key == null || key.trim().isEmpty) {
-      return WorkTitleTranslationResult.failure(
-        const LlmTranslationException(
-          LlmTranslationErrorType.missingApiKey,
-          'missing api key',
-        ),
-      );
-    }
-
     try {
-      final result = await _client.chatCompletionWithUsage(
-        messages: [
-          {'role': 'system', 'content': _systemPrompt},
-          {
-            'role': 'user',
-            'content': 'Translate this ASMR work title to $_targetLang:\n$source',
-          },
-        ],
+      final translated = await _metadata.translateWorkTitle(
+        workId: workId,
+        sourceTitle: source,
+        forceRefresh: forceRefresh,
       );
-      final translated = result.content.trim();
-      if (translated.isEmpty) {
+      if (translated == null || translated.isEmpty) {
         return WorkTitleTranslationResult.failure(
           const LlmTranslationException(
             LlmTranslationErrorType.invalidResponse,
@@ -138,26 +91,10 @@ Return ONLY the translated title text — no quotes, labels, or explanation.''';
           ),
         );
       }
-      await _cache.save(
-        workId: workId,
-        targetLang: _targetLang,
-        sourceTitle: source,
-        translatedTitle: translated,
-      );
-      if (result.usage != null && _usageRepo != null) {
-        await _usageRepo.record(
-          model: _settings.llmModel,
-          operation: 'title_translate',
-          usage: result.usage!,
-          workId: workId,
-        );
-      }
       return WorkTitleTranslationResult.success(translated);
     } on LlmTranslationException catch (e) {
-      AppLogger.warning('Work title translation failed: ${e.message}');
       return WorkTitleTranslationResult.failure(e);
-    } catch (e, st) {
-      AppLogger.error('Work title translation failed', e, st);
+    } catch (e) {
       return WorkTitleTranslationResult.failure(
         LlmTranslationException(LlmTranslationErrorType.unknown, e.toString()),
       );

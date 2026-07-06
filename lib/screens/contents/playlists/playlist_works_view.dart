@@ -4,6 +4,7 @@ import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/data/models/my_lists/my_playlists/playlist.dart';
 import 'package:lizunemu/presentation/viewmodels/playlist_works_viewmodel.dart';
 import 'package:lizunemu/presentation/viewmodels/playlists_viewmodel.dart';
+import 'package:lizunemu/widgets/translation/metadata_translate_page_bar.dart';
 import 'package:lizunemu/widgets/work_grid/enhanced_work_grid_view.dart';
 import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
 
@@ -49,6 +50,11 @@ class PlaylistWorksView extends StatelessWidget {
                   ),
                 ),
               ),
+              MetadataTranslatePageBar(
+                isTranslating: viewModel.isTranslatingWorkTitles,
+                onTranslate: () =>
+                    viewModel.translateWorksManual(viewModel.works),
+              ),
               Expanded(
                 child: EnhancedWorkGridView(
                   works: viewModel.works,
@@ -61,6 +67,7 @@ class PlaylistWorksView extends StatelessWidget {
                   onPageChanged: (page) => viewModel.loadWorks(page: page),
                   layoutStrategy: _layoutStrategy,
                   emptyMessage: Strings.noWorks,
+                  translatedTitles: viewModel.translatedWorkTitles,
                 ),
               ),
             ],

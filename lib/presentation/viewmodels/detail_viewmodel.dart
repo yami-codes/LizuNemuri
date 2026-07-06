@@ -23,6 +23,9 @@ import 'package:lizunemu/core/subtitle/utils/subtitle_matcher.dart';
 import 'package:lizunemu/core/llm/subtitle_translation_service.dart';
 import 'package:lizunemu/core/llm/subtitle_translation_progress.dart';
 import 'package:lizunemu/core/llm/work_title_translation_service.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/settings/metadata_translation_mode.dart';
+import 'package:lizunemu/core/translation/metadata_translation_service.dart';
 import 'package:lizunemu/core/subtitle/subtitle_loader.dart';
 import 'package:lizunemu/core/subtitle/subtitle_import_service.dart';
 import 'package:lizunemu/core/audio/models/subtitle.dart';
@@ -80,6 +83,8 @@ class DetailViewModel extends ChangeNotifier {
   late final DownloadService _downloadService;
   late final SubtitleTranslationService _translationService;
   late final WorkTitleTranslationService _titleTranslationService;
+  late final MetadataTranslationService _metadataTranslationService;
+  late final AppSettingsService _appSettings;
   late final SubtitleLoader _subtitleLoader;
   late final SubtitleImportService _importService;
   final Work work;
@@ -113,6 +118,10 @@ class DetailViewModel extends ChangeNotifier {
   bool _isTitleTranslating = false;
   bool _showOriginalTitle = false;
 
+  final Map<String, String> _translatedTrackNames = {};
+  bool _isTranslatingTracks = false;
+  bool _showOriginalTrackNames = false;
+
   String get displayTitle =>
       (!_showOriginalTitle && _translatedTitle != null)
           ? _translatedTitle!
@@ -129,6 +138,28 @@ class DetailViewModel extends ChangeNotifier {
   bool get canShowTranslatedTitle =>
       _translatedTitle != null && _showOriginalTitle;
 
+  bool get isTranslatingTracks => _isTranslatingTracks;
+
+  bool get hasTranslatedTrackNames =>
+      _translatedTrackNames.isNotEmpty && !_showOriginalTrackNames;
+
+  String displayTrackTitle(Child file) {
+    if (_showOriginalTrackNames) return file.title ?? '';
+    final key = _trackKey(file);
+    return _translatedTrackNames[key] ?? file.title ?? '';
+  }
+
+  void showOriginalTrackNames() {
+    _showOriginalTrackNames = true;
+    notifyListeners();
+  }
+
+  void showTranslatedTrackNames() {
+    if (_translatedTrackNames.isEmpty) return;
+    _showOriginalTrackNames = false;
+    notifyListeners();
+  }
+
   bool _loadingMark = false;
   bool get loadingMark => _loadingMark;
 
@@ -143,6 +174,8 @@ class DetailViewModel extends ChangeNotifier {
     _downloadService = GetIt.I<DownloadService>();
     _translationService = GetIt.I<SubtitleTranslationService>();
     _titleTranslationService = GetIt.I<WorkTitleTranslationService>();
+    _metadataTranslationService = GetIt.I<MetadataTranslationService>();
+    _appSettings = GetIt.I<AppSettingsService>();
     _subtitleLoader = GetIt.I<SubtitleLoader>();
     _importService = GetIt.I<SubtitleImportService>();
     _checkRecommendations();
@@ -204,6 +237,8 @@ class DetailViewModel extends ChangeNotifier {
     if (!_disposed) {
       notifyListeners(); // Single notify for "loading complete"
     }
+    await _maybeAutoTranslateWorkTitle();
+    await _maybeAutoTranslateTrackNames();
   }
 
   Future<void> _loadFilesInternal() async {
@@ -472,6 +507,76 @@ class DetailViewModel extends ChangeNotifier {
       workId: workId,
       sourceTitle: source,
     );
+  }
+
+  Future<void> _maybeAutoTranslateWorkTitle() async {
+    if (!_appSettings.metadataTranslationEnabled) return;
+    if (_appSettings.metadataTranslationMode != MetadataTranslationMode.auto) {
+      return;
+    }
+    await translateWorkTitle();
+  }
+
+  Future<String?> translateTrackNames({bool force = false}) async {
+    final workId = work.id?.toString();
+    if (workId == null || _files == null) {
+      return Strings.metadataTrackTranslationFailed;
+    }
+
+    final titles = _collectTrackTitles(_files!.children);
+    if (titles.isEmpty) return Strings.metadataTrackTranslationFailed;
+
+    _isTranslatingTracks = true;
+    _showOriginalTrackNames = false;
+    notifyListeners();
+
+    try {
+      final map = await _metadataTranslationService.translateTrackNames(
+        workId: workId,
+        fileKeyToTitle: titles,
+        force: force,
+      );
+      _translatedTrackNames
+        ..clear()
+        ..addAll(map);
+      return map.isEmpty ? Strings.metadataTrackTranslationFailed : null;
+    } catch (_) {
+      return Strings.metadataTrackTranslationFailed;
+    } finally {
+      _isTranslatingTracks = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _maybeAutoTranslateTrackNames() async {
+    if (!_appSettings.metadataTranslationEnabled) return;
+    if (_appSettings.metadataTranslationMode != MetadataTranslationMode.auto) {
+      return;
+    }
+    await translateTrackNames();
+  }
+
+  static String _trackKey(Child file) => file.hash ?? file.title ?? '';
+
+  Map<String, String> _collectTrackTitles(List<Child>? nodes) {
+    final map = <String, String>{};
+    void walk(List<Child>? children) {
+      if (children == null) return;
+      for (final node in children) {
+        if (node.type == 'folder') {
+          walk(node.children);
+        } else if (isAudioFile(node)) {
+          final key = _trackKey(node);
+          final title = node.title?.trim();
+          if (key.isNotEmpty && title != null && title.isNotEmpty) {
+            map[key] = title;
+          }
+        }
+      }
+    }
+
+    walk(nodes);
+    return map;
   }
 
   /// Audio + matched subtitle pairs under [folder] (null = whole work).

@@ -23,6 +23,7 @@ class EnhancedWorkGridView extends StatelessWidget {
   final WorkLayoutStrategy layoutStrategy;
   final ScrollController? scrollController;
   final GridConfig? config;
+  final Map<String, String>? translatedTitles;
 
   const EnhancedWorkGridView({
     super.key,
@@ -41,6 +42,7 @@ class EnhancedWorkGridView extends StatelessWidget {
     this.layoutStrategy = const WorkLayoutStrategy(),
     this.scrollController,
     this.config,
+    this.translatedTitles,
   });
 
   @override
@@ -74,6 +76,7 @@ class EnhancedWorkGridView extends StatelessWidget {
       onPageChanged: onPageChanged,
       scrollController: scrollController,
       config: config,
+      translatedTitles: translatedTitles,
     );
 
     if (onRefresh != null) {

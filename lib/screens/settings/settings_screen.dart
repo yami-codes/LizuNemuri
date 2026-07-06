@@ -10,6 +10,8 @@ import 'package:lizunemu/core/platform/lyric_overlay_manager.dart';
 import 'package:lizunemu/screens/settings/sleep_timer_dialog.dart';
 import 'package:lizunemu/core/settings/app_language.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/settings/metadata_translation_mode.dart';
+import 'package:lizunemu/core/settings/metadata_translation_provider.dart';
 import 'package:lizunemu/core/library/scan_roots_store.dart';
 import 'package:lizunemu/screens/settings/cache_manager_screen.dart';
 import 'package:lizunemu/screens/settings/audio_format_order_dialog.dart';
@@ -54,6 +56,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _playbackSection(),
             const SizedBox(height: AppSpacing.space24),
             _llmTranslationSection(context),
+            _metadataTranslationSection(context),
             const SizedBox(height: AppSpacing.space24),
             if (PlatformCapabilities.supportsFloatingLyrics) ...[
               _lyricOverlaySection(),
@@ -324,13 +327,70 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SettingsTile.navigation(
             title: Strings.llmTranslationConfigure,
             leading: Icons.tune_outlined,
-            value: settings.llmModel,
+            value: settings.llmMainModel,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (_) =>
                     LlmTranslationSettingsScreen(settings: settings),
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _metadataTranslationSection(BuildContext context) {
+    final settings = GetIt.I<AppSettingsService>();
+    return ListenableBuilder(
+      listenable: settings,
+      builder: (context, _) => SettingsGroup(
+        header: Strings.metadataTranslationTitle,
+        footer: Strings.metadataTranslationDesc,
+        children: [
+          SettingsTile.toggle(
+            title: Strings.metadataTranslationEnabled,
+            leading: Icons.title_outlined,
+            value: settings.metadataTranslationEnabled,
+            onChanged: settings.setMetadataTranslationEnabled,
+          ),
+          SettingsTile.selection(
+            title: Strings.metadataTranslationProviderGoogle,
+            leading: Icons.g_translate,
+            selected: settings.metadataTranslationProvider ==
+                MetadataTranslationProvider.google,
+            onTap: () => settings.setMetadataTranslationProvider(
+              MetadataTranslationProvider.google,
+            ),
+          ),
+          SettingsTile.selection(
+            title: Strings.metadataTranslationProviderLlm,
+            leading: Icons.smart_toy_outlined,
+            selected: settings.metadataTranslationProvider ==
+                MetadataTranslationProvider.llm,
+            onTap: () => settings.setMetadataTranslationProvider(
+              MetadataTranslationProvider.llm,
+            ),
+          ),
+          SettingsTile.selection(
+            title: Strings.metadataTranslationModeAuto,
+            subtitle: Strings.metadataTranslationModeAutoDesc,
+            leading: Icons.auto_fix_high_outlined,
+            selected: settings.metadataTranslationMode ==
+                MetadataTranslationMode.auto,
+            onTap: () => settings.setMetadataTranslationMode(
+              MetadataTranslationMode.auto,
+            ),
+          ),
+          SettingsTile.selection(
+            title: Strings.metadataTranslationModeManual,
+            subtitle: Strings.metadataTranslationModeManualDesc,
+            leading: Icons.touch_app_outlined,
+            selected: settings.metadataTranslationMode ==
+                MetadataTranslationMode.manual,
+            onTap: () => settings.setMetadataTranslationMode(
+              MetadataTranslationMode.manual,
             ),
           ),
         ],

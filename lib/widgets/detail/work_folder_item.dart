@@ -16,6 +16,7 @@ class WorkFolderItem extends StatelessWidget {
   final Function(Child file)? onFileDownload;
   final void Function(Child? folderNode)? onFolderDownload;
   final void Function(Child? folderNode)? onFolderTranslate;
+  final String Function(Child file)? trackTitleFor;
 
   // Supported audio formats by priority
   static List<String> get _audioFormats {
@@ -42,6 +43,7 @@ class WorkFolderItem extends StatelessWidget {
     this.onFileDownload,
     this.onFolderDownload,
     this.onFolderTranslate,
+    this.trackTitleFor,
   });
 
   bool _shouldExpandFolder(Child folder) {
@@ -119,12 +121,14 @@ class WorkFolderItem extends StatelessWidget {
                           onFileDownload: onFileDownload,
                           onFolderDownload: onFolderDownload,
                           onFolderTranslate: onFolderTranslate,
+                          trackTitleFor: trackTitleFor,
                         )
                       : WorkFileItem(
                           file: child,
                           indentation: indentation + 16.0,
                           onFileTap: onFileTap,
                           onFileDownload: onFileDownload,
+                          displayTitle: trackTitleFor?.call(child),
                         ))
                   .toList() ??
               [],

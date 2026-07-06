@@ -4,6 +4,7 @@ import 'package:lizunemu/common/constants/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lizunemu/presentation/viewmodels/search_viewmodel.dart';
+import 'package:lizunemu/widgets/translation/metadata_translate_page_bar.dart';
 import 'package:lizunemu/widgets/work_grid_view.dart';
 import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
 import 'package:lizunemu/utils/logger.dart';
@@ -147,22 +148,34 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                   );
                 }
 
-                return WorkGridView(
-                  works: viewModel.works,
-                  isLoading: viewModel.isLoading,
-                  error: viewModel.error,
-                  onRetry: _onSearch,
-                  customEmptyWidget: emptyWidget,
-                  layoutStrategy: _layoutStrategy,
-                  scrollController: _scrollController,
-                  bottomWidget: viewModel.works.isNotEmpty
-                      ? PaginationControls(
-                          currentPage: viewModel.currentPage,
-                          totalPages: viewModel.totalPages,
-                          isLoading: viewModel.isLoading,
-                          onPageChanged: _onPageChanged,
-                        )
-                      : null,
+                return Column(
+                  children: [
+                    MetadataTranslatePageBar(
+                      isTranslating: viewModel.isTranslatingWorkTitles,
+                      onTranslate: () =>
+                          viewModel.translateWorksManual(viewModel.works),
+                    ),
+                    Expanded(
+                      child: WorkGridView(
+                        works: viewModel.works,
+                        isLoading: viewModel.isLoading,
+                        error: viewModel.error,
+                        onRetry: _onSearch,
+                        customEmptyWidget: emptyWidget,
+                        layoutStrategy: _layoutStrategy,
+                        scrollController: _scrollController,
+                        translatedTitles: viewModel.translatedWorkTitles,
+                        bottomWidget: viewModel.works.isNotEmpty
+                            ? PaginationControls(
+                                currentPage: viewModel.currentPage,
+                                totalPages: viewModel.totalPages,
+                                isLoading: viewModel.isLoading,
+                                onPageChanged: _onPageChanged,
+                              )
+                            : null,
+                      ),
+                    ),
+                  ],
                 );
               },
             ),

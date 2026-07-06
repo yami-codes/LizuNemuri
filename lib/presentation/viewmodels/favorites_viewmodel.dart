@@ -10,7 +10,9 @@ import 'package:lizunemu/utils/logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
-class FavoritesViewModel extends ChangeNotifier {
+import 'package:lizunemu/presentation/viewmodels/base/work_list_translation_mixin.dart';
+
+class FavoritesViewModel extends ChangeNotifier with WorkListTranslationMixin {
   final ApiService _apiService;
   final AuthViewModel _authViewModel;
   List<Work> _works = [];
@@ -61,6 +63,7 @@ class FavoritesViewModel extends ChangeNotifier {
       _pagination = response.pagination;
       _currentPage = page;
       AppLogger.info(LogStrings.logPageListLoaded(page.toString(), LogStrings.logPageNameFavorites, response.works.length.toString()));
+      await maybeAutoTranslateWorks(_works);
     } catch (e) {
       AppLogger.error(LogStrings.logLoadFavoritesFailed, e);
       if (e is NetworkException) {
@@ -78,6 +81,7 @@ class FavoritesViewModel extends ChangeNotifier {
 
   /// Load favorites (initial load and refresh).
   Future<void> loadFavorites({bool refresh = false}) async {
+    if (refresh) clearTranslatedWorkTitles();
     await loadPage(1);
   }
 } 

@@ -7,10 +7,12 @@ import 'work_footer.dart';
 
 class WorkInfoSection extends StatelessWidget {
   final Work work;
+  final String? titleOverride;
 
   const WorkInfoSection({
     super.key,
     required this.work,
+    this.titleOverride,
   });
 
   @override
@@ -21,7 +23,7 @@ class WorkInfoSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          WorkTitle(work: work),
+          WorkTitle(work: work, titleOverride: titleOverride),
           const SizedBox(height: AppSpacing.space8),
           WorkTagsPanel(work: work),
           const SizedBox(height: AppSpacing.space12),

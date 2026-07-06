@@ -465,7 +465,7 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     final repo = _usageRepo;
     if (repo == null) return;
     await repo.record(
-      model: _settings.llmModel,
+      model: _settings.llmMainModel,
       operation: 'subtitle_translate',
       usage: usage,
       workId: workId,

@@ -8,6 +8,8 @@ import 'package:lizunemu/core/llm/llm_batch_planner.dart';
 import 'package:lizunemu/core/settings/llm_subtitle_display_mode.dart';
 import 'package:lizunemu/core/settings/playback_speed_presets.dart';
 import 'package:lizunemu/core/settings/llm_subtitle_target_language.dart';
+import 'package:lizunemu/core/settings/metadata_translation_mode.dart';
+import 'package:lizunemu/core/settings/metadata_translation_provider.dart';
 
 /// Top-level accent color variants. Surfaces stay neutral (white/black) across
 /// all variants — only the `primary` token rotates. Persisted by
@@ -32,6 +34,13 @@ class AppSettingsService extends ChangeNotifier {
   static const String _llmTranslationEnabledKey = 'llm_translation_enabled';
   static const String _llmApiEndpointKey = 'llm_api_endpoint';
   static const String _llmModelKey = 'llm_model';
+  static const String _llmLiteModelKey = 'llm_lite_model';
+  static const String _metadataTranslationEnabledKey =
+      'metadata_translation_enabled';
+  static const String _metadataTranslationProviderKey =
+      'metadata_translation_provider';
+  static const String _metadataTranslationModeKey =
+      'metadata_translation_mode';
   static const String _llmTargetLanguageKey = 'llm_target_language';
   static const String _llmSystemPromptKey = 'llm_system_prompt';
   static const String _llmJailbreakPromptKey = 'llm_jailbreak_prompt';
@@ -50,8 +59,22 @@ class AppSettingsService extends ChangeNotifier {
 
   static const String defaultServerUrl = 'https://api.asmr.one/api';
   static const String defaultLlmApiEndpoint = 'https://api.openai.com/v1';
-  static const String defaultLlmModel = 'gpt-4o-mini';
   static const String defaultOpenRouterEndpoint = 'https://openrouter.ai/api/v1';
+  static const String defaultGeminiEndpoint =
+      'https://generativelanguage.googleapis.com/v1beta/openai';
+
+  static const String defaultOpenAiMainModel = 'gpt-4o-mini';
+  static const String defaultOpenAiLiteModel = 'gpt-4o-mini';
+  static const String defaultOpenRouterMainModel = 'google/gemma-4-31b-it:free';
+  static const String defaultOpenRouterLiteModel =
+      'google/gemma-4-26b-a4b-it:free';
+  static const String defaultGeminiMainModel = 'gemini-2.5-flash';
+  static const String defaultGeminiLiteModel = 'gemini-2.5-flash-lite';
+
+  /// Default LLM endpoint + models for new installs (OpenRouter free Gemma).
+  static const String defaultLlmEndpoint = defaultOpenRouterEndpoint;
+  static const String defaultLlmModel = defaultOpenRouterMainModel;
+  static const String defaultLlmLiteModel = defaultOpenRouterLiteModel;
   static const ColorVariant defaultColorVariant = ColorVariant.blue;
   static const AppLanguage defaultAppLanguage = AppLanguage.system;
   static const List<String> defaultAudioFormatOrder = [
@@ -84,6 +107,10 @@ class AppSettingsService extends ChangeNotifier {
   late bool _llmTranslationEnabled;
   late String _llmApiEndpoint;
   late String _llmModel;
+  late String _llmLiteModel;
+  late bool _metadataTranslationEnabled;
+  late MetadataTranslationProvider _metadataTranslationProvider;
+  late MetadataTranslationMode _metadataTranslationMode;
   late LlmSubtitleTargetLanguage _llmTargetLanguage;
   late String _llmSystemPromptOverride;
   late String _llmJailbreakPrompt;
@@ -121,8 +148,23 @@ class AppSettingsService extends ChangeNotifier {
     _llmTranslationEnabled =
         _prefs.getBool(_llmTranslationEnabledKey) ?? false;
     _llmApiEndpoint =
-        _prefs.getString(_llmApiEndpointKey) ?? defaultLlmApiEndpoint;
+        _prefs.getString(_llmApiEndpointKey) ?? defaultLlmEndpoint;
     _llmModel = _prefs.getString(_llmModelKey) ?? defaultLlmModel;
+    _llmLiteModel =
+        _prefs.getString(_llmLiteModelKey) ?? defaultLlmLiteModel;
+    _metadataTranslationEnabled =
+        _prefs.getBool(_metadataTranslationEnabledKey) ?? false;
+    final savedProvider = _prefs.getString(_metadataTranslationProviderKey);
+    _metadataTranslationProvider =
+        MetadataTranslationProvider.values.firstWhere(
+      (v) => v.name == savedProvider,
+      orElse: () => MetadataTranslationProvider.google,
+    );
+    final savedMetadataMode = _prefs.getString(_metadataTranslationModeKey);
+    _metadataTranslationMode = MetadataTranslationMode.values.firstWhere(
+      (v) => v.name == savedMetadataMode,
+      orElse: () => MetadataTranslationMode.auto,
+    );
     final savedTarget = _prefs.getString(_llmTargetLanguageKey);
     _llmTargetLanguage = LlmSubtitleTargetLanguage.values.firstWhere(
       (v) => v.name == savedTarget,
@@ -304,12 +346,58 @@ class AppSettingsService extends ChangeNotifier {
 
   String get llmModel => _llmModel;
 
+  /// Main model — subtitles and other high-quality translation.
+  String get llmMainModel => _llmModel;
+
   Future<void> setLlmModel(String model) async {
     final trimmed = model.trim();
     if (_llmModel == trimmed) return;
     _llmModel = trimmed;
     notifyListeners();
     await _prefs.setString(_llmModelKey, trimmed);
+  }
+
+  Future<void> setLlmMainModel(String model) => setLlmModel(model);
+
+  String get llmLiteModel => _llmLiteModel;
+
+  Future<void> setLlmLiteModel(String model) async {
+    final trimmed = model.trim();
+    if (_llmLiteModel == trimmed) return;
+    _llmLiteModel = trimmed;
+    notifyListeners();
+    await _prefs.setString(_llmLiteModelKey, trimmed);
+  }
+
+  bool get metadataTranslationEnabled => _metadataTranslationEnabled;
+
+  Future<void> setMetadataTranslationEnabled(bool enabled) async {
+    if (_metadataTranslationEnabled == enabled) return;
+    _metadataTranslationEnabled = enabled;
+    notifyListeners();
+    await _prefs.setBool(_metadataTranslationEnabledKey, enabled);
+  }
+
+  MetadataTranslationProvider get metadataTranslationProvider =>
+      _metadataTranslationProvider;
+
+  Future<void> setMetadataTranslationProvider(
+    MetadataTranslationProvider provider,
+  ) async {
+    if (_metadataTranslationProvider == provider) return;
+    _metadataTranslationProvider = provider;
+    notifyListeners();
+    await _prefs.setString(_metadataTranslationProviderKey, provider.name);
+  }
+
+  MetadataTranslationMode get metadataTranslationMode =>
+      _metadataTranslationMode;
+
+  Future<void> setMetadataTranslationMode(MetadataTranslationMode mode) async {
+    if (_metadataTranslationMode == mode) return;
+    _metadataTranslationMode = mode;
+    notifyListeners();
+    await _prefs.setString(_metadataTranslationModeKey, mode.name);
   }
 
   LlmSubtitleTargetLanguage get llmTargetLanguage => _llmTargetLanguage;

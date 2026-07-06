@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/llm/llm_endpoint_utils.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/core/settings/llm_batch_split_mode.dart';
+import 'package:lizunemu/core/settings/llm_provider_kind.dart';
 import 'package:lizunemu/core/settings/llm_subtitle_display_mode.dart';
 import 'package:lizunemu/core/settings/llm_subtitle_target_language.dart';
 import 'package:lizunemu/data/repositories/llm_api_key_repository.dart';
+import 'package:lizunemu/data/services/llm_client.dart';
+import 'package:lizunemu/data/services/llm_model_catalog_service.dart';
 import 'package:lizunemu/screens/settings/llm_usage_history_screen.dart';
 import 'package:lizunemu/screens/settings/widgets/settings_group.dart';
 import 'package:lizunemu/screens/settings/widgets/settings_tile.dart';
 import 'package:lizunemu/screens/settings/widgets/settings_theme.dart';
+import 'package:lizunemu/widgets/settings/llm_model_autocomplete_field.dart';
 
 /// LLM subtitle translation API + prompt configuration.
 class LlmTranslationSettingsScreen extends StatefulWidget {
@@ -26,18 +31,23 @@ class _LlmTranslationSettingsScreenState
     extends State<LlmTranslationSettingsScreen> {
   late final TextEditingController _endpointCtrl;
   late final TextEditingController _modelCtrl;
+  late final TextEditingController _liteModelCtrl;
   late final TextEditingController _apiKeyCtrl;
   late final TextEditingController _systemPromptCtrl;
   late final TextEditingController _jailbreakPromptCtrl;
   late final TextEditingController _manualBatchSizeCtrl;
+  final _catalog = GetIt.I<LlmModelCatalogService>();
   bool _obscureKey = true;
   bool _saving = false;
+  LlmProviderKind _provider = LlmProviderKind.openRouter;
 
   @override
   void initState() {
     super.initState();
     _endpointCtrl = TextEditingController(text: widget.settings.llmApiEndpoint);
-    _modelCtrl = TextEditingController(text: widget.settings.llmModel);
+    _modelCtrl = TextEditingController(text: widget.settings.llmMainModel);
+    _liteModelCtrl =
+        TextEditingController(text: widget.settings.llmLiteModel);
     _apiKeyCtrl = TextEditingController();
     _systemPromptCtrl =
         TextEditingController(text: widget.settings.llmSystemPromptOverride);
@@ -46,19 +56,32 @@ class _LlmTranslationSettingsScreenState
     _manualBatchSizeCtrl = TextEditingController(
       text: widget.settings.llmManualBatchSize.toString(),
     );
+    _provider = LlmEndpointUtils.detect(_endpointCtrl.text);
+    _endpointCtrl.addListener(_onEndpointChanged);
     _loadApiKey();
+  }
+
+  void _onEndpointChanged() {
+    final next = LlmEndpointUtils.detect(_endpointCtrl.text);
+    if (next != _provider) {
+      setState(() => _provider = next);
+      _catalog.invalidateCache();
+    }
   }
 
   Future<void> _loadApiKey() async {
     final key = await GetIt.I<LlmApiKeyRepository>().getApiKey();
     if (!mounted) return;
     _apiKeyCtrl.text = key ?? '';
+    setState(() {});
   }
 
   @override
   void dispose() {
+    _endpointCtrl.removeListener(_onEndpointChanged);
     _endpointCtrl.dispose();
     _modelCtrl.dispose();
+    _liteModelCtrl.dispose();
     _apiKeyCtrl.dispose();
     _systemPromptCtrl.dispose();
     _jailbreakPromptCtrl.dispose();
@@ -66,12 +89,26 @@ class _LlmTranslationSettingsScreenState
     super.dispose();
   }
 
+  void _applyPreset(LlmProviderKind kind) {
+    final preset = LlmEndpointUtils.presetFor(kind);
+    setState(() {
+      _provider = kind;
+      _endpointCtrl.text = preset.endpoint;
+      if (kind != LlmProviderKind.custom) {
+        _modelCtrl.text = preset.mainModel;
+        _liteModelCtrl.text = preset.liteModel;
+      }
+    });
+    _catalog.invalidateCache();
+  }
+
   Future<void> _save() async {
     if (_saving) return;
     setState(() => _saving = true);
     try {
       await widget.settings.setLlmApiEndpoint(_endpointCtrl.text);
-      await widget.settings.setLlmModel(_modelCtrl.text);
+      await widget.settings.setLlmMainModel(_modelCtrl.text);
+      await widget.settings.setLlmLiteModel(_liteModelCtrl.text);
       await widget.settings.setLlmSystemPromptOverride(_systemPromptCtrl.text);
       await widget.settings.setLlmJailbreakPrompt(_jailbreakPromptCtrl.text);
       final batchSize = int.tryParse(_manualBatchSizeCtrl.text.trim());
@@ -85,6 +122,7 @@ class _LlmTranslationSettingsScreenState
       } else {
         await repo.saveApiKey(key);
       }
+      _catalog.invalidateCache();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(Strings.llmSettingsSaved)),
@@ -96,9 +134,23 @@ class _LlmTranslationSettingsScreenState
     }
   }
 
+  String get _providerLabel {
+    switch (_provider) {
+      case LlmProviderKind.openRouter:
+        return Strings.llmPresetOpenRouter;
+      case LlmProviderKind.gemini:
+        return Strings.llmPresetGemini;
+      case LlmProviderKind.openAi:
+        return Strings.llmPresetOpenAi;
+      case LlmProviderKind.custom:
+        return Strings.llmPresetCustom;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bg = SettingsTheme.pageBackground(context);
+    final catalogKey = '${_endpointCtrl.text}:${_apiKeyCtrl.text.hashCode}';
 
     return Scaffold(
       appBar: AppBar(title: Text(Strings.llmTranslationConfigure)),
@@ -110,14 +162,27 @@ class _LlmTranslationSettingsScreenState
           children: [
             SettingsGroup(
               header: Strings.llmApiEndpoint,
+              footer: Strings.llmProviderDetected(_providerLabel),
               children: [
-                _presetRow(
-                  Strings.llmPresetOpenAi,
-                  AppSettingsService.defaultLlmApiEndpoint,
-                ),
                 _presetRow(
                   Strings.llmPresetOpenRouter,
                   AppSettingsService.defaultOpenRouterEndpoint,
+                  LlmProviderKind.openRouter,
+                ),
+                _presetRow(
+                  Strings.llmPresetGemini,
+                  AppSettingsService.defaultGeminiEndpoint,
+                  LlmProviderKind.gemini,
+                ),
+                _presetRow(
+                  Strings.llmPresetOpenAi,
+                  AppSettingsService.defaultLlmApiEndpoint,
+                  LlmProviderKind.openAi,
+                ),
+                _presetRow(
+                  Strings.llmPresetCustom,
+                  Strings.llmPresetCustomHint,
+                  LlmProviderKind.custom,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -125,38 +190,82 @@ class _LlmTranslationSettingsScreenState
                     controller: _endpointCtrl,
                     decoration: InputDecoration(
                       labelText: Strings.llmApiEndpoint,
+                      hintText: Strings.llmCustomEndpointHint,
                       border: const OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.url,
+                    onChanged: (_) => setState(() {}),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
             SettingsGroup(
-              header: Strings.llmModel,
+              header: Strings.llmMainModel,
+              footer: _provider.supportsModelAutocomplete
+                  ? Strings.llmModelAutocompleteHint
+                  : Strings.llmCustomModelHint,
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: TextField(
-                    controller: _modelCtrl,
-                    decoration: InputDecoration(
-                      labelText: Strings.llmModel,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
+                  child: _provider.supportsModelAutocomplete
+                      ? LlmModelAutocompleteField(
+                          key: ValueKey('main:$catalogKey'),
+                          controller: _modelCtrl,
+                          labelText: Strings.llmMainModel,
+                          endpoint: _endpointCtrl.text,
+                          apiKey: _apiKeyCtrl.text,
+                          catalog: _catalog,
+                        )
+                      : TextField(
+                          controller: _modelCtrl,
+                          decoration: InputDecoration(
+                            labelText: Strings.llmMainModel,
+                            border: const OutlineInputBorder(),
+                          ),
+                        ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SettingsGroup(
+              header: Strings.llmLiteModel,
+              footer: _provider.supportsModelAutocomplete
+                  ? Strings.llmModelAutocompleteHint
+                  : Strings.llmCustomModelHint,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: _provider.supportsModelAutocomplete
+                      ? LlmModelAutocompleteField(
+                          key: ValueKey('lite:$catalogKey'),
+                          controller: _liteModelCtrl,
+                          labelText: Strings.llmLiteModel,
+                          endpoint: _endpointCtrl.text,
+                          apiKey: _apiKeyCtrl.text,
+                          catalog: _catalog,
+                        )
+                      : TextField(
+                          controller: _liteModelCtrl,
+                          decoration: InputDecoration(
+                            labelText: Strings.llmLiteModel,
+                            border: const OutlineInputBorder(),
+                          ),
+                        ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
             SettingsGroup(
               header: Strings.llmApiKey,
+              footer: _providerFooter(),
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: TextField(
                     controller: _apiKeyCtrl,
                     obscureText: _obscureKey,
+                    onChanged: (_) => setState(() {}),
                     decoration: InputDecoration(
                       labelText: Strings.llmApiKey,
                       border: const OutlineInputBorder(),
@@ -172,6 +281,10 @@ class _LlmTranslationSettingsScreenState
                 ),
               ],
             ),
+            if (_provider == LlmProviderKind.openRouter) ...[
+              const SizedBox(height: 16),
+              _OpenRouterBalanceTile(client: GetIt.I<LlmClient>()),
+            ],
             const SizedBox(height: 16),
             ListenableBuilder(
               listenable: widget.settings,
@@ -351,15 +464,30 @@ class _LlmTranslationSettingsScreenState
     );
   }
 
-  Widget _presetRow(String label, String endpoint) {
+  String? _providerFooter() {
+    switch (_provider) {
+      case LlmProviderKind.gemini:
+        return Strings.llmGeminiUsageHint;
+      case LlmProviderKind.openRouter:
+        return Strings.llmOpenRouterUsageHint;
+      case LlmProviderKind.openAi:
+        return Strings.llmOpenAiUsageHint;
+      case LlmProviderKind.custom:
+        return Strings.llmCustomUsageHint;
+    }
+  }
+
+  Widget _presetRow(String label, String subtitle, LlmProviderKind kind) {
+    final selected = _provider == kind &&
+        (kind == LlmProviderKind.custom ||
+            _endpointCtrl.text.trim() ==
+                LlmEndpointUtils.presetFor(kind).endpoint);
     return SettingsTile.selection(
       title: label,
-      subtitle: endpoint,
+      subtitle: subtitle,
       leading: Icons.link_outlined,
-      selected: _endpointCtrl.text.trim() == endpoint,
-      onTap: () {
-        setState(() => _endpointCtrl.text = endpoint);
-      },
+      selected: selected,
+      onTap: () => _applyPreset(kind),
     );
   }
 
@@ -389,5 +517,69 @@ class _LlmTranslationSettingsScreenState
       case LlmSubtitleTargetLanguage.ko:
         return Strings.llmTargetLangKo;
     }
+  }
+}
+
+class _OpenRouterBalanceTile extends StatefulWidget {
+  final LlmClient client;
+
+  const _OpenRouterBalanceTile({required this.client});
+
+  @override
+  State<_OpenRouterBalanceTile> createState() => _OpenRouterBalanceTileState();
+}
+
+class _OpenRouterBalanceTileState extends State<_OpenRouterBalanceTile> {
+  String? _summary;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final balance = await widget.client.fetchAccountBalance();
+    if (!mounted) return;
+    setState(() {
+      _loading = false;
+      if (balance == null) {
+        _summary = Strings.llmOpenRouterBalanceUnavailable;
+      } else {
+        final usage = balance.usageUsd?.toStringAsFixed(4) ?? '—';
+        final limit = balance.limitUsd?.toStringAsFixed(2) ?? '—';
+        _summary =
+            '${Strings.llmOpenRouterBalanceUsage(usage)} · ${Strings.llmOpenRouterBalanceLimit(limit)}';
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsGroup(
+      header: Strings.llmOpenRouterBalance,
+      children: [
+        ListTile(
+          leading: _loading
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.account_balance_wallet_outlined),
+          title: Text(_summary ?? '…'),
+          trailing: IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loading
+                ? null
+                : () {
+                    setState(() => _loading = true);
+                    _load();
+                  },
+          ),
+        ),
+      ],
+    );
   }
 }

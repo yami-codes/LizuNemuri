@@ -11,6 +11,7 @@ class WorkFileItem extends StatelessWidget {
   final double indentation;
   final Function(Child file)? onFileTap;
   final Function(Child file)? onFileDownload;
+  final String? displayTitle;
 
   const WorkFileItem({
     super.key,
@@ -18,6 +19,7 @@ class WorkFileItem extends StatelessWidget {
     required this.indentation,
     this.onFileTap,
     this.onFileDownload,
+    this.displayTitle,
   });
 
   static const _videoExtensions = {
@@ -52,7 +54,7 @@ class WorkFileItem extends StatelessWidget {
       padding: EdgeInsets.only(left: indentation),
       child: ListTile(
         title: Text(
-          file.title ?? '',
+          displayTitle ?? file.title ?? '',
           style: TextStyle(
             color: colorScheme.onSurface,
           ),
