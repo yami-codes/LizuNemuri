@@ -293,6 +293,15 @@ class DetailViewModel extends ChangeNotifier {
 
   bool isImageFile(Child file) => isPreviewableImageFile(file);
 
+  /// Matched sibling subtitle for a media file (audio or video).
+  static Child? matchingSubtitleFor(Child file, Files? files) {
+    if (files == null || file.title == null) return null;
+    final siblings = FilePath.getSiblings(file, files);
+    return SubtitleMatcher.findMatchingSubtitle(file.title!, siblings);
+  }
+
+  Child? subtitleForFile(Child file) => matchingSubtitleFor(file, _files);
+
   /// Pure: collect audio under subtree and pair subtitles from same-directory siblings.
   static List<DownloadPair> collectAudioWithSubtitles(List<Child>? children) {
     final out = <DownloadPair>[];

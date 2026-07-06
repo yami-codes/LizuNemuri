@@ -425,6 +425,10 @@
   "versionLabel": "Version",
   "videoNeedsDownloadPrompt": "This video must be downloaded locally first. Continue?",
   "videoNeedsDownloadTitle": "Play video",
+  "videoPlayerError": "Failed to load video",
+  "videoPlayerLoading": "Loading video…",
+  "videoPlayerTitle": "Video",
+  "videoSubtitlesToggle": "Toggle subtitles",
   "voiceActors": "Voice actors",
   "worksCountLabel": "{count} works",
   "@worksCountLabel": {
@@ -516,6 +520,15 @@
   "logRemoveFromPlaylistFailed": "Failed to remove from playlist",
   "logAddToPlaylistFailedDetail": "Failed to add to playlist: {detail}",
   "logRemoveFromPlaylistFailedDetail": "Failed to remove from playlist: {detail}",
+  "logVideoPlayerLoadFailed": "Failed to load video player",
+  "logVideoSubtitleLoadFailed": "Video subtitle load failed: {error}",
+  "@logVideoSubtitleLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "logImagePreviewLoadFailed": "Failed to load image preview",
   "logSubtitlePreviewLoadFailed": "Failed to load subtitle preview",
   "logSubtitleImportFailed": "Subtitle import failed",

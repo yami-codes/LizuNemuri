@@ -318,6 +318,10 @@ class Strings {
   static String get versionLabel => _l10n.versionLabel;
   static String get videoNeedsDownloadPrompt => _l10n.videoNeedsDownloadPrompt;
   static String get videoNeedsDownloadTitle => _l10n.videoNeedsDownloadTitle;
+  static String get videoPlayerError => _l10n.videoPlayerError;
+  static String get videoPlayerLoading => _l10n.videoPlayerLoading;
+  static String get videoPlayerTitle => _l10n.videoPlayerTitle;
+  static String get videoSubtitlesToggle => _l10n.videoSubtitlesToggle;
   static String get voiceActors => _l10n.voiceActors;
   static String get markStatusTitle => _l10n.markStatusTitle;
   static String get markWantToListen => _l10n.markWantToListen;

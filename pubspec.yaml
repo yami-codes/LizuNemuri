@@ -46,7 +46,12 @@ dependencies:
   just_audio: ^0.9.36
   just_audio_windows: ^0.2.3
   just_audio_media_kit: ^2.1.0
+  media_kit: ^1.2.6
+  media_kit_video: ^2.0.1
   media_kit_libs_linux: any
+  media_kit_libs_android_video: any
+  media_kit_libs_windows_video: any
+  media_kit_libs_ios_video: any
   audio_session: ^0.1.18
   get_it: ^8.0.2
   audio_service: ^0.18.12
