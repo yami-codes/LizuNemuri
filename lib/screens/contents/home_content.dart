@@ -10,6 +10,8 @@ import 'package:lizunemu/presentation/viewmodels/home_viewmodel.dart';
 import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
 import 'package:lizunemu/widgets/translation/metadata_translate_page_bar.dart';
 import 'package:lizunemu/widgets/work_grid/enhanced_work_grid_view.dart';
+import 'package:lizunemu/widgets/work_grid/models/grid_config.dart';
+import 'package:lizunemu/utils/tag_filter_snackbar.dart';
 
 class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
@@ -61,6 +63,7 @@ class _HomeContentState extends State<HomeContent>
             onPresetSelected: vm.updatePreset,
             onSortDirectionChanged: vm.updateSortDirection,
             onIncludeTagsChanged: vm.updateIncludeTags,
+            onExcludeTagsChanged: vm.updateExcludeTags,
             onAgeRatingChanged: vm.updateAgeRating,
           ),
         ),
@@ -109,6 +112,24 @@ class _HomeContentState extends State<HomeContent>
                       layoutStrategy: _layoutStrategy,
                       scrollController: _scrollController,
                       translatedTitles: data.translatedTitles,
+                      config: GridConfig(
+                        onTagInclude: (name) {
+                          context.read<HomeViewModel>().addIncludeTag(name);
+                          showTagFilterSnackBar(
+                            context,
+                            tagLabel: name,
+                            excluded: false,
+                          );
+                        },
+                        onTagExclude: (name) {
+                          context.read<HomeViewModel>().addExcludeTag(name);
+                          showTagFilterSnackBar(
+                            context,
+                            tagLabel: name,
+                            excluded: true,
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ],

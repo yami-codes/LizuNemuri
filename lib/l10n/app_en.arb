@@ -164,6 +164,24 @@
   "filterOrderSales": "Sales",
   "filterMoreOptions": "More filters",
   "filterTags": "Tags",
+  "filterTagInclude": "Include in filter",
+  "filterTagExclude": "Exclude from filter",
+  "filterTagAddedInclude": "Added \"{tag}\" to filter",
+  "@filterTagAddedInclude": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "filterTagAddedExclude": "Excluded \"{tag}\" from results",
+  "@filterTagAddedExclude": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "filterTagsSelected": "{count} tags",
   "@filterTagsSelected": {
     "placeholders": {
@@ -325,6 +343,7 @@
   "screenKeepAwakeDesc": "Keep the screen on while playing",
   "search": "Search",
   "searchEmptyPrompt": "Enter a keyword to search",
+  "searchCommandHint": "Type $$ for filters…",
   "searchInputHint": "Search...",
   "searchNoResults": "No results found",
   "serverMain": "Main (asmr.one)",

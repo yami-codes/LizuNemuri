@@ -15,6 +15,7 @@ class AdvancedFilterBar extends StatelessWidget {
   final ValueChanged<WorkListFilterPreset> onPresetSelected;
   final ValueChanged<bool>? onSortDirectionChanged;
   final ValueChanged<List<String>>? onIncludeTagsChanged;
+  final ValueChanged<List<String>>? onExcludeTagsChanged;
   final ValueChanged<AgeRatingFilter>? onAgeRatingChanged;
   final bool showSortOptions;
   final bool showTagAndAgeFilters;
@@ -27,6 +28,7 @@ class AdvancedFilterBar extends StatelessWidget {
     required this.onPresetSelected,
     this.onSortDirectionChanged,
     this.onIncludeTagsChanged,
+    this.onExcludeTagsChanged,
     this.onAgeRatingChanged,
     this.showSortOptions = true,
     this.showTagAndAgeFilters = true,
@@ -200,6 +202,29 @@ class AdvancedFilterBar extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (onExcludeTagsChanged != null &&
+                    filterState.excludeTags.isNotEmpty) ...[
+                  ...filterState.excludeTags.map(
+                    (tag) => Padding(
+                      padding: const EdgeInsets.only(left: AppSpacing.space8),
+                      child: InputChip(
+                        label: Text(
+                          '−$tag',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        deleteIconColor: cs.onErrorContainer,
+                        backgroundColor: cs.errorContainer,
+                        onDeleted: () {
+                          final next =
+                              List<String>.from(filterState.excludeTags)
+                                ..remove(tag);
+                          onExcludeTagsChanged!(next);
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ],
               if (showTagAndAgeFilters && onAgeRatingChanged != null) ...[
                 const SizedBox(width: AppSpacing.space8),

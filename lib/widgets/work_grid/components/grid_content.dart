@@ -61,6 +61,8 @@ class GridContent extends StatelessWidget {
                 ),
               );
             },
+            onTagInclude: config?.onTagInclude,
+            onTagExclude: config?.onTagExclude,
           ),
         ),
         if (config?.enablePagination != false && 

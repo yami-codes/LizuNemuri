@@ -7,6 +7,8 @@ class WorkGrid extends StatelessWidget {
   final List<Work> works;
   final void Function(Work work)? onWorkTap;
   final Map<String, String>? translatedTitles;
+  final void Function(String apiTagName)? onTagInclude;
+  final void Function(String apiTagName)? onTagExclude;
   final WorkLayoutStrategy layoutStrategy;
 
   const WorkGrid({
@@ -14,6 +16,8 @@ class WorkGrid extends StatelessWidget {
     required this.works,
     this.onWorkTap,
     this.translatedTitles,
+    this.onTagInclude,
+    this.onTagExclude,
     this.layoutStrategy = const WorkLayoutStrategy(),
   });
 
@@ -36,6 +40,8 @@ class WorkGrid extends StatelessWidget {
               columnCount: columnsCount,
               onWorkTap: onWorkTap,
               translatedTitles: translatedTitles,
+              onTagInclude: onTagInclude,
+              onTagExclude: onTagExclude,
               spacing: columnSpacing,
             ),
           );
