@@ -8,7 +8,16 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
-## v2.0.0-rc.15 — 2026-07-06
+## v2.0.0-rc.16 — 2026-07-06
+
+### Added
+- **Metadata LLM streaming**: work list titles and detail track names update incrementally while Lite model streams (uses existing **LLM streaming** setting from subtitle translation).
+- **Progressive Google batches**: list/track translation emits partial results per Google chunk too.
+
+### Changed
+- Detail **Translate track names** button only shows when metadata translation is enabled and mode is **Manual** (auto still runs on open).
+
+---
 
 ### Fixed
 - **Windows playback**: when SQLite cannot load (`sqlite3.dll` missing), online streaming no longer fails — download lookup errors fall back to progressive URL playback instead of skipping every track.
