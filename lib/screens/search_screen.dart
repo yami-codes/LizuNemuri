@@ -8,9 +8,11 @@ import 'package:lizunemu/widgets/work_grid_view.dart';
 import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/widgets/pagination_controls.dart';
-import 'package:lizunemu/widgets/common/app_search_field.dart';
 import 'package:lizunemu/widgets/common/back_leading.dart';
 import 'package:lizunemu/widgets/filter/advanced_filter_bar.dart';
+import 'package:lizunemu/widgets/search/search_command_field.dart';
+import 'package:lizunemu/widgets/work_grid/models/grid_config.dart';
+import 'package:lizunemu/utils/tag_filter_snackbar.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
 class SearchScreen extends StatelessWidget {
@@ -43,36 +45,48 @@ class SearchScreenContent extends StatefulWidget {
 }
 
 class _SearchScreenContentState extends State<SearchScreenContent> {
-  late final TextEditingController _searchController;
+  late final TextEditingController _draftController;
   final _layoutStrategy = const WorkLayoutStrategy();
   final _scrollController = ScrollController();
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
-    _searchController = TextEditingController(text: widget.initialKeyword);
+    _draftController = TextEditingController();
+  }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialized) return;
+    _initialized = true;
+    final vm = context.read<SearchViewModel>();
+    vm.loadInitialKeyword(widget.initialKeyword);
+    _draftController.text = vm.keyword;
     if (widget.initialKeyword?.isNotEmpty == true) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _onSearch();
-      });
+      WidgetsBinding.instance.addPostFrameCallback((_) => _onSearch());
     }
   }
 
   @override
   void dispose() {
-    _searchController.dispose();
+    _draftController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
   void _onSearch() {
-    final keyword = _searchController.text.trim();
     final vm = context.read<SearchViewModel>();
-    if (keyword.isEmpty && !vm.filterState.hasTagOrAgeFilter) return;
+    final draft = _draftController.text.trim();
+    if (draft.isEmpty &&
+        vm.commandTokens.isEmpty &&
+        !vm.filterState.hasTagOrAgeFilter) {
+      return;
+    }
 
-    AppLogger.debug(LogStrings.logRunSearchKeyword2ee4b(keyword));
-    vm.search(keyword);
+    AppLogger.debug(LogStrings.logRunSearchKeyword2ee4b(draft));
+    vm.search(vm.keyword, draft: draft);
   }
 
   Future<void> _onPageChanged(int page) async {
@@ -85,6 +99,18 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
         curve: AppAnimations.enter,
       );
     }
+  }
+
+  void _onTagInclude(BuildContext context, String apiName) {
+    final vm = context.read<SearchViewModel>();
+    vm.addIncludeTag(apiName);
+    showTagFilterSnackBar(context, tagLabel: apiName, excluded: false);
+  }
+
+  void _onTagExclude(BuildContext context, String apiName) {
+    final vm = context.read<SearchViewModel>();
+    vm.addExcludeTag(apiName);
+    showTagFilterSnackBar(context, tagLabel: apiName, excluded: true);
   }
 
   @override
@@ -102,21 +128,27 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
               AppSpacing.pageMobile,
               0,
             ),
-            child: AppSearchField(
-              controller: _searchController,
-              hintText: Strings.searchInputHint,
-              onSubmitted: (_) => _onSearch(),
-              onChanged: (_) => setState(() {}),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear, size: 20),
-                      onPressed: () {
-                        _searchController.clear();
-                        context.read<SearchViewModel>().clear();
-                        setState(() {});
-                      },
-                    )
-                  : null,
+            child: Consumer<SearchViewModel>(
+              builder: (context, vm, _) => SearchCommandField(
+                tokens: vm.commandTokens,
+                onTokensChanged: vm.setCommandTokens,
+                draftController: _draftController,
+                hintText: Strings.searchCommandHint,
+                tagNames: vm.tagNames,
+                tagCatalog: vm.tagCatalog,
+                onSubmitted: (_) => _onSearch(),
+                suffixIcon: vm.commandTokens.isNotEmpty ||
+                        _draftController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 20),
+                        onPressed: () {
+                          _draftController.clear();
+                          vm.clear();
+                          setState(() {});
+                        },
+                      )
+                    : null,
+              ),
             ),
           ),
           Consumer<SearchViewModel>(
@@ -127,6 +159,7 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
               onPresetSelected: vm.updatePreset,
               onSortDirectionChanged: vm.updateSortDirection,
               onIncludeTagsChanged: vm.updateIncludeTags,
+              onExcludeTagsChanged: vm.updateExcludeTags,
               onAgeRatingChanged: vm.updateAgeRating,
             ),
           ),
@@ -137,6 +170,7 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                 Widget? emptyWidget;
                 if (viewModel.works.isEmpty &&
                     viewModel.keyword.isEmpty &&
+                    viewModel.commandTokens.isEmpty &&
                     !viewModel.filterState.hasTagOrAgeFilter) {
                   emptyWidget = Center(
                     child: Text(Strings.searchEmptyPrompt),
@@ -155,6 +189,10 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                   customEmptyWidget: emptyWidget,
                   layoutStrategy: _layoutStrategy,
                   scrollController: _scrollController,
+                  config: GridConfig(
+                    onTagInclude: (name) => _onTagInclude(context, name),
+                    onTagExclude: (name) => _onTagExclude(context, name),
+                  ),
                   bottomWidget: viewModel.works.isNotEmpty
                       ? PaginationControls(
                           currentPage: viewModel.currentPage,

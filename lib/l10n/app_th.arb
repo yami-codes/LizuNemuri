@@ -164,6 +164,24 @@
   "filterOrderSales": "ยอดขาย",
   "filterMoreOptions": "ตัวกรองเพิ่มเติม",
   "filterTags": "แท็ก",
+  "filterTagInclude": "รวมในตัวกรอง",
+  "filterTagExclude": "ยกเว้นจากตัวกรอง",
+  "filterTagAddedInclude": "เพิ่ม \"{tag}\" ในตัวกรองแล้ว",
+  "@filterTagAddedInclude": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "filterTagAddedExclude": "ยกเว้น \"{tag}\" แล้ว",
+  "@filterTagAddedExclude": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "filterTagsSelected": "{count} แท็ก",
   "@filterTagsSelected": {
     "placeholders": {
@@ -322,6 +340,7 @@
   "screenKeepAwakeDesc": "เปิดหน้าจอค้างขณะเล่น",
   "search": "ค้นหา",
   "searchEmptyPrompt": "ป้อนคำค้นหา",
+  "searchCommandHint": "พิมพ์ $$ เพื่อใช้ตัวกรอง…",
   "searchInputHint": "ค้นหา...",
   "searchNoResults": "ไม่พบผลลัพธ์",
   "serverMain": "หลัก (asmr.one)",

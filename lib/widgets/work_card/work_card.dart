@@ -6,11 +6,15 @@ import 'components/work_info_section.dart';
 class WorkCard extends StatelessWidget {
   final Work work;
   final VoidCallback? onTap;
+  final void Function(String apiTagName)? onTagInclude;
+  final void Function(String apiTagName)? onTagExclude;
 
   const WorkCard({
     super.key,
     required this.work,
     this.onTap,
+    this.onTagInclude,
+    this.onTagExclude,
   });
 
   @override
@@ -35,7 +39,11 @@ class WorkCard extends StatelessWidget {
               sourceId: work.sourceId ?? '',
               durationSeconds: work.duration,
             ),
-            WorkInfoSection(work: work),
+            WorkInfoSection(
+              work: work,
+              onTagInclude: onTagInclude,
+              onTagExclude: onTagExclude,
+            ),
           ],
         ),
       ),

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:lizunemu/data/models/tags/tag_item.dart';
+import 'package:lizunemu/data/models/works/i18n.dart';
 import 'package:lizunemu/data/models/works/work.dart';
 import 'package:lizunemu/data/models/works/pagination.dart';
 import 'package:lizunemu/data/services/api_service.dart';
@@ -10,6 +12,9 @@ import 'package:lizunemu/presentation/models/filter_state.dart';
 import 'package:lizunemu/presentation/models/age_rating_filter.dart';
 import 'package:lizunemu/presentation/models/work_list_filter_preset.dart';
 import 'package:lizunemu/presentation/models/work_list_query_builder.dart';
+import 'package:lizunemu/presentation/models/search_command_parser.dart';
+import 'package:lizunemu/presentation/models/search_command_suggestions.dart';
+import 'package:lizunemu/presentation/models/tag_filter_helper.dart';
 import 'package:lizunemu/utils/user_facing_error.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
@@ -26,6 +31,18 @@ class SearchViewModel extends ChangeNotifier {
 
   String _keyword = '';
   String get keyword => _keyword;
+
+  List<String> _commandTokens = [];
+  List<String> get commandTokens => _commandTokens;
+
+  List<String> _tagNames = [];
+  List<String> get tagNames => _tagNames;
+
+  Map<String, I18n> _tagCatalog = {};
+  Map<String, I18n> get tagCatalog => _tagCatalog;
+
+  bool _tagsLoaded = false;
+  bool get tagsLoaded => _tagsLoaded;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -48,6 +65,27 @@ class SearchViewModel extends ChangeNotifier {
 
   SearchViewModel() {
     _loadFilterState();
+    loadTagCatalog();
+  }
+
+  Future<void> loadTagCatalog() async {
+    try {
+      final tags = await _apiService.getTags();
+      _tagNames = tags
+          .map((t) => t.name)
+          .whereType<String>()
+          .where((n) => n.isNotEmpty)
+          .toList();
+      _tagCatalog = {
+        for (final t in tags)
+          if (t.name != null && t.name!.isNotEmpty && t.i18n != null)
+            t.name!: t.i18n!,
+      };
+      _tagsLoaded = true;
+      notifyListeners();
+    } catch (e) {
+      AppLogger.error(LogStrings.logLoadTagsFailed, e);
+    }
   }
 
   Future<void> _loadFilterState() async {
@@ -56,6 +94,7 @@ class SearchViewModel extends ChangeNotifier {
       final jsonStr = prefs.getString(_filterStateKey);
       if (jsonStr != null) {
         _filterState = FilterState.fromJson(jsonDecode(jsonStr));
+        _commandTokens = TagFilterHelper.tokensFromFilterState(_filterState);
         notifyListeners();
       }
     } catch (e) {
@@ -75,31 +114,55 @@ class SearchViewModel extends ChangeNotifier {
     }
   }
 
-  String _composedKeyword(String textKeyword) =>
+  void setCommandTokens(List<String> tokens) {
+    _commandTokens = List<String>.from(tokens);
+    _syncFilterFromTokens();
+    notifyListeners();
+  }
+
+  void _syncFilterFromTokens() {
+    final tagParts = SearchCommandParser.parseTagNames(_commandTokens);
+    var age = AgeRatingFilter.all;
+    for (final raw in _commandTokens) {
+      if (raw == r'$age:general$') age = AgeRatingFilter.general;
+      if (raw == r'$age:adult$') age = AgeRatingFilter.adult;
+    }
+    _filterState = _filterState.copyWith(
+      includeTags: tagParts.include,
+      excludeTags: tagParts.exclude,
+      ageRating: age,
+    );
+    _saveFilterState();
+  }
+
+  String _composedKeyword({String draft = ''}) =>
       WorkListQueryBuilder.buildSearchKeyword(
-        textKeyword: textKeyword,
+        textKeyword: draft,
         includeTags: _filterState.includeTags,
+        excludeTags: _filterState.excludeTags,
         ageRating: _filterState.ageRating,
+        extraTokens: _commandTokens.where((t) {
+          final tags = SearchCommandParser.parseTagNames([t]);
+          return tags.include.isEmpty && tags.exclude.isEmpty;
+        }),
       );
 
   bool get _canSearch =>
-      _keyword.isNotEmpty || _filterState.hasTagOrAgeFilter;
+      _keyword.isNotEmpty ||
+      _commandTokens.isNotEmpty ||
+      _filterState.hasTagOrAgeFilter;
 
   void toggleSubtitle() {
     _settings.setHasSubtitleFilter(!_settings.hasSubtitleFilter);
     notifyListeners();
-    if (_canSearch) {
-      search(_keyword);
-    }
+    if (_canSearch) search(_keyword);
   }
 
   void updatePreset(WorkListFilterPreset preset) {
     _filterState = _filterState.copyWithPreset(preset);
     _saveFilterState();
     notifyListeners();
-    if (_canSearch) {
-      search(_keyword);
-    }
+    if (_canSearch) search(_keyword);
   }
 
   void updateSortDirection(bool isDescending) {
@@ -107,13 +170,20 @@ class SearchViewModel extends ChangeNotifier {
     _filterState = _filterState.copyWith(isDescending: isDescending);
     _saveFilterState();
     notifyListeners();
-    if (_canSearch) {
-      search(_keyword);
-    }
+    if (_canSearch) search(_keyword);
   }
 
   void updateIncludeTags(List<String> tags) {
     _filterState = _filterState.copyWith(includeTags: tags);
+    _rebuildTokensFromFilter();
+    _saveFilterState();
+    notifyListeners();
+    search(_keyword);
+  }
+
+  void updateExcludeTags(List<String> tags) {
+    _filterState = _filterState.copyWith(excludeTags: tags);
+    _rebuildTokensFromFilter();
     _saveFilterState();
     notifyListeners();
     search(_keyword);
@@ -121,15 +191,51 @@ class SearchViewModel extends ChangeNotifier {
 
   void updateAgeRating(AgeRatingFilter rating) {
     _filterState = _filterState.copyWith(ageRating: rating);
+    _rebuildTokensFromFilter();
     _saveFilterState();
     notifyListeners();
     search(_keyword);
   }
 
-  /// Run search. [keyword] is free text; tag/age filters are composed separately.
-  Future<void> search(String keyword, {int page = 1}) async {
-    _keyword = keyword.trim();
-    final composed = _composedKeyword(_keyword);
+  void addIncludeTag(String apiName) {
+    _filterState = TagFilterHelper.addInclude(_filterState, apiName);
+    _rebuildTokensFromFilter();
+    _saveFilterState();
+    notifyListeners();
+    search(_keyword);
+  }
+
+  void addExcludeTag(String apiName) {
+    _filterState = TagFilterHelper.addExclude(_filterState, apiName);
+    _rebuildTokensFromFilter();
+    _saveFilterState();
+    notifyListeners();
+    search(_keyword);
+  }
+
+  void _rebuildTokensFromFilter() {
+    final other = _commandTokens.where((t) {
+      final tags = SearchCommandParser.parseTagNames([t]);
+      if (tags.include.isNotEmpty || tags.exclude.isNotEmpty) return false;
+      if (t.startsWith(r'$age:') || t.startsWith(r'$-age:')) return false;
+      return true;
+    });
+    _commandTokens = [
+      ...TagFilterHelper.tokensFromFilterState(_filterState),
+      ...other,
+    ];
+  }
+
+  Future<void> search(String keyword, {int page = 1, String draft = ''}) async {
+    final extracted = SearchCommandSuggestor.extractCompleteTokens(
+      tokens: _commandTokens,
+      draft: draft.isNotEmpty ? draft : keyword,
+    );
+    _commandTokens = extracted.tokens;
+    _keyword = extracted.draft.trim();
+    _syncFilterFromTokens();
+
+    final composed = _composedKeyword(draft: _keyword);
     if (composed.isEmpty) return;
     _isLoading = true;
     _error = null;
@@ -150,9 +256,6 @@ class SearchViewModel extends ChangeNotifier {
       _works = response.works;
       _pagination = response.pagination;
       _currentPage = page;
-      AppLogger.info(
-        LogStrings.logSearchSucceededResponseWorks55719(response.works.length),
-      );
     } catch (e) {
       AppLogger.error(LogStrings.logSearchFailed, e);
       _error = userFacingError(e);
@@ -162,19 +265,32 @@ class SearchViewModel extends ChangeNotifier {
     }
   }
 
-  /// Load a page.
   Future<void> loadPage(int page) async {
     if (!_canSearch) return;
     await search(_keyword, page: page);
   }
 
-  /// Clear search results.
   void clear() {
     _works = [];
     _keyword = '';
+    _commandTokens = [];
+    _filterState = _filterState.copyWith(
+      includeTags: const [],
+      excludeTags: const [],
+      ageRating: AgeRatingFilter.all,
+    );
     _error = null;
     _pagination = null;
     _currentPage = 1;
+    _saveFilterState();
     notifyListeners();
+  }
+
+  void loadInitialKeyword(String? raw) {
+    if (raw == null || raw.isEmpty) return;
+    final parsed = SearchCommandParser.parse(raw);
+    _commandTokens = parsed.tokens;
+    _keyword = parsed.remainder;
+    _syncFilterFromTokens();
   }
 }

@@ -6,12 +6,16 @@ import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
 class WorkGrid extends StatelessWidget {
   final List<Work> works;
   final void Function(Work work)? onWorkTap;
+  final void Function(String apiTagName)? onTagInclude;
+  final void Function(String apiTagName)? onTagExclude;
   final WorkLayoutStrategy layoutStrategy;
 
   const WorkGrid({
     super.key,
     required this.works,
     this.onWorkTap,
+    this.onTagInclude,
+    this.onTagExclude,
     this.layoutStrategy = const WorkLayoutStrategy(),
   });
 
@@ -33,6 +37,8 @@ class WorkGrid extends StatelessWidget {
               works: rows[index],
               columnCount: columnsCount,
               onWorkTap: onWorkTap,
+              onTagInclude: onTagInclude,
+              onTagExclude: onTagExclude,
               spacing: columnSpacing,
             ),
           );

@@ -7,10 +7,14 @@ import 'work_footer.dart';
 
 class WorkInfoSection extends StatelessWidget {
   final Work work;
+  final void Function(String apiTagName)? onTagInclude;
+  final void Function(String apiTagName)? onTagExclude;
 
   const WorkInfoSection({
     super.key,
     required this.work,
+    this.onTagInclude,
+    this.onTagExclude,
   });
 
   @override
@@ -23,7 +27,11 @@ class WorkInfoSection extends StatelessWidget {
         children: [
           WorkTitle(work: work),
           const SizedBox(height: AppSpacing.space8),
-          WorkTagsPanel(work: work),
+          WorkTagsPanel(
+            work: work,
+            onTagInclude: onTagInclude,
+            onTagExclude: onTagExclude,
+          ),
           const SizedBox(height: AppSpacing.space12),
           WorkFooter(work: work),
         ],

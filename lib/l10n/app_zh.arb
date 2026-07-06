@@ -164,6 +164,24 @@
   "filterOrderSales": "销量",
   "filterMoreOptions": "更多筛选",
   "filterTags": "标签",
+  "filterTagInclude": "加入筛选",
+  "filterTagExclude": "排除筛选",
+  "filterTagAddedInclude": "已加入筛选：{tag}",
+  "@filterTagAddedInclude": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "filterTagAddedExclude": "已排除：{tag}",
+  "@filterTagAddedExclude": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "filterTagsSelected": "{count} 个标签",
   "@filterTagsSelected": {
     "placeholders": {
@@ -322,6 +340,7 @@
   "screenKeepAwakeDesc": "播放时保持屏幕开启",
   "search": "搜索",
   "searchEmptyPrompt": "输入关键词开始搜索",
+  "searchCommandHint": "输入 $$ 使用筛选命令…",
   "searchInputHint": "搜索...",
   "searchNoResults": "没有找到相关结果",
   "serverMain": "主站 (asmr.one)",

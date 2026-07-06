@@ -3,7 +3,7 @@ import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/data/models/works/work.dart';
 import 'package:lizunemu/widgets/work_grid.dart';
 import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
-import 'package:lizunemu/screens/detail_screen.dart';
+import 'package:lizunemu/widgets/work_grid/models/grid_config.dart';
 
 class WorkGridView extends StatelessWidget {
   final List<Work> works;
@@ -17,6 +17,7 @@ class WorkGridView extends StatelessWidget {
   final WorkLayoutStrategy layoutStrategy;
   final ScrollController? scrollController;
   final Widget? bottomWidget;
+  final GridConfig? config;
 
   const WorkGridView({
     super.key,
@@ -31,6 +32,7 @@ class WorkGridView extends StatelessWidget {
     this.layoutStrategy = const WorkLayoutStrategy(),
     this.scrollController,
     this.bottomWidget,
+    this.config,
   });
 
   @override
@@ -97,6 +99,8 @@ class WorkGridView extends StatelessWidget {
                 ),
               );
             },
+            onTagInclude: config?.onTagInclude,
+            onTagExclude: config?.onTagExclude,
           ),
         ),
         if (bottomWidget != null)

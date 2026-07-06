@@ -22,6 +22,7 @@ class PopularTabContent extends StatelessWidget {
             onPresetSelected: vm.updatePreset,
             onSortDirectionChanged: vm.updateSortDirection,
             onIncludeTagsChanged: vm.updateIncludeTags,
+            onExcludeTagsChanged: vm.updateExcludeTags,
             onAgeRatingChanged: vm.updateAgeRating,
           ),
         ),

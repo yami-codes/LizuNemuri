@@ -134,6 +134,12 @@ class Strings {
   static String get filterOrderSales => _l10n.filterOrderSales;
   static String get filterMoreOptions => _l10n.filterMoreOptions;
   static String get filterTags => _l10n.filterTags;
+  static String get filterTagInclude => _l10n.filterTagInclude;
+  static String get filterTagExclude => _l10n.filterTagExclude;
+  static String filterTagAddedInclude(String tag) =>
+      _l10n.filterTagAddedInclude(tag);
+  static String filterTagAddedExclude(String tag) =>
+      _l10n.filterTagAddedExclude(tag);
   static String filterTagsSelected(int count) => _l10n.filterTagsSelected(count);
   static String get filterPickTags => _l10n.filterPickTags;
   static String get filterClearTags => _l10n.filterClearTags;
@@ -230,6 +236,7 @@ class Strings {
   static String get screenKeepAwakeDesc => _l10n.screenKeepAwakeDesc;
   static String get search => _l10n.search;
   static String get searchEmptyPrompt => _l10n.searchEmptyPrompt;
+  static String get searchCommandHint => _l10n.searchCommandHint;
   static String get searchInputHint => _l10n.searchInputHint;
   static String get searchNoResults => _l10n.searchNoResults;
   static String get serverMain => _l10n.serverMain;

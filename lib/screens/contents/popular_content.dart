@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:lizunemu/presentation/viewmodels/popular_viewmodel.dart';
 import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
 import 'package:lizunemu/widgets/work_grid/enhanced_work_grid_view.dart';
+import 'package:lizunemu/widgets/work_grid/models/grid_config.dart';
+import 'package:lizunemu/utils/tag_filter_snackbar.dart';
 
 class PopularContent extends StatefulWidget {
   const PopularContent({super.key});
@@ -61,6 +63,16 @@ class _PopularContentState extends State<PopularContent>
               context.read<PopularViewModel>().loadPopular(refresh: true),
           layoutStrategy: _layoutStrategy,
           scrollController: _scrollController,
+          config: GridConfig(
+            onTagInclude: (name) {
+              context.read<PopularViewModel>().addIncludeTag(name);
+              showTagFilterSnackBar(context, tagLabel: name, excluded: false);
+            },
+            onTagExclude: (name) {
+              context.read<PopularViewModel>().addExcludeTag(name);
+              showTagFilterSnackBar(context, tagLabel: name, excluded: true);
+            },
+          ),
         );
       },
     );
