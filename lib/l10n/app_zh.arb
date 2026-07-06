@@ -1085,6 +1085,12 @@
     }
   },
   "logDownloadCapacityReclaimFaile4d679": "下载容量回收失败",
+  "logDownloadLookupFailedFallbackStream": "下载记录查询失败，改为在线播放：{fileName}",
+  "@logDownloadLookupFailedFallbackStream": {
+    "placeholders": {
+      "fileName": { "type": "String" }
+    }
+  },
   "logDownloadRowSavedEntryWorkid6e26d": "下载记录已保存: {entry}/{entry2}",
   "@logDownloadRowSavedEntryWorkid6e26d": {
     "placeholders": {

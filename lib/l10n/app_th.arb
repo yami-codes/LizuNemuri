@@ -1085,6 +1085,12 @@
     }
   },
   "logDownloadCapacityReclaimFaile4d679": "下载容量回收ล้มเหลว",
+  "logDownloadLookupFailedFallbackStream": "ค้นหาไฟล์ดาวน์โหลดล้มเหลว สตรีมแทน: {fileName}",
+  "@logDownloadLookupFailedFallbackStream": {
+    "placeholders": {
+      "fileName": { "type": "String" }
+    }
+  },
   "logDownloadRowSavedEntryWorkid6e26d": "下载记录已保存: {entry}/{entry2}",
   "@logDownloadRowSavedEntryWorkid6e26d": {
     "placeholders": {

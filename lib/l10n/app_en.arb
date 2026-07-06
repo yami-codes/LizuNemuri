@@ -1085,6 +1085,12 @@
     }
   },
   "logDownloadCapacityReclaimFaile4d679": "Download capacity reclaim failed",
+  "logDownloadLookupFailedFallbackStream": "Download lookup failed, streaming instead: {fileName}",
+  "@logDownloadLookupFailedFallbackStream": {
+    "placeholders": {
+      "fileName": { "type": "String" }
+    }
+  },
   "logDownloadRowSavedEntryWorkid6e26d": "Download row saved: {entry}/{entry2}",
   "@logDownloadRowSavedEntryWorkid6e26d": {
     "placeholders": {

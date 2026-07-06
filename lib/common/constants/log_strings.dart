@@ -55,6 +55,8 @@ class LogStrings {
   static String get logCurrentFileNotInPlaylist => _l10n.logCurrentFileNotInPlaylist;
   static String get logDisposingPlaylistsviewmodele5090 => _l10n.logDisposingPlaylistsviewmodele5090;
   static String get logDownloadCapacityReclaimFaile4d679 => _l10n.logDownloadCapacityReclaimFaile4d679;
+  static String logDownloadLookupFailedFallbackStream(String fileName) =>
+      _l10n.logDownloadLookupFailedFallbackStream(fileName);
   static String get logExpand => _l10n.logExpand;
   static String get logFileAtRootUseRootFileList8c225 => _l10n.logFileAtRootUseRootFileList8c225;
   static String get logFileListEmpty => _l10n.logFileListEmpty;

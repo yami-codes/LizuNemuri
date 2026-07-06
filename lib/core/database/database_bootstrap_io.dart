@@ -16,6 +16,7 @@ Future<void> bootstrapDatabaseFactory() async {
 
 /// Desktop distros often ship only `libsqlite3.so.0` (no unversioned `.so`
 /// symlink). sqflite_common_ffi defaults to `libsqlite3.so` and fails to open.
+/// Windows portable builds may lack `sqlite3.dll` on PATH — try `winsqlite3.dll`.
 void _configureDesktopSqliteOpen() {
   if (Platform.isLinux) {
     open.overrideFor(OperatingSystem.linux, _openSqliteOnLinux);
@@ -41,7 +42,17 @@ DynamicLibrary _openSqliteOnLinux() {
 }
 
 DynamicLibrary _openSqliteOnWindows() {
-  const candidates = ['sqlite3.dll', 'sqlite3'];
+  // Bundled with sqlite3_flutter_libs when linked into the Windows runner.
+  try {
+    final self = DynamicLibrary.executable();
+    if (self.providesSymbol('sqlite3_open')) {
+      return self;
+    }
+  } on Object {
+    // Fall through to explicit DLL names.
+  }
+
+  const candidates = ['sqlite3.dll', 'winsqlite3.dll', 'sqlite3'];
   Object? lastError;
   for (final name in candidates) {
     try {

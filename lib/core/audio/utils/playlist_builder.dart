@@ -35,10 +35,18 @@ class PlaylistBuilder {
           continue;
         }
         if (downloadService != null) {
-          final localPath =
-              await downloadService.localPathIfDownloaded(workId!, files[i]);
-          if (localPath != null) {
-            source = AudioSource.uri(Uri.file(localPath));
+          try {
+            final localPath =
+                await downloadService.localPathIfDownloaded(workId!, files[i]);
+            if (localPath != null) {
+              source = AudioSource.uri(Uri.file(localPath));
+            }
+          } catch (e) {
+            AppLogger.warning(
+              LogStrings.logDownloadLookupFailedFallbackStream(files[i].title ?? ''),
+              error: e,
+              tag: 'playback',
+            );
           }
         }
         source ??= await AudioCacheManager.createAudioSource(

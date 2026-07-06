@@ -22,7 +22,13 @@ class WorkMediaUrlRefresher {
       if (updated == null) return file;
 
       if (patchInto != null) {
-        WorkMediaUtils.patchFileInTree(patchInto.children, file, updated);
+        try {
+          WorkMediaUtils.patchFileInTree(patchInto.children, file, updated);
+        } catch (e) {
+          AppLogger.warning(
+            'WorkMediaUrlRefresher patch skipped for ${file.title}: $e',
+          );
+        }
       }
 
       if (updated.mediaDownloadUrl != null &&
