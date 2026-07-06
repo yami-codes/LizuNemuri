@@ -1,4 +1,5 @@
 import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/data/models/files/files.dart';
 
 /// Shared helpers for work file trees and CDN media fetches.
 class WorkMediaUtils {
@@ -35,6 +36,9 @@ class WorkMediaUtils {
   }
 
   /// Patches [fresh] URL/hash into the in-memory tree node matching [target].
+  ///
+  /// Mutates [nodes] in place — only safe on growable lists. Prefer
+  /// [patchInFiles] for Freezed / JSON-backed trees.
   static bool patchFileInTree(List<Child>? nodes, Child target, Child fresh) {
     if (nodes == null) return false;
     for (var i = 0; i < nodes.length; i++) {
@@ -52,5 +56,44 @@ class WorkMediaUtils {
       }
     }
     return false;
+  }
+
+  /// Immutable patch for Freezed file trees (unmodifiable `children` lists).
+  static Files? patchInFiles(Files root, Child target, Child fresh) {
+    final children = root.children;
+    if (children == null) return null;
+    final patched = _patchChildrenCopy(children, target, fresh);
+    if (patched == null) return null;
+    return root.copyWith(children: patched);
+  }
+
+  static List<Child>? _patchChildrenCopy(
+    List<Child> nodes,
+    Child target,
+    Child fresh,
+  ) {
+    for (var i = 0; i < nodes.length; i++) {
+      final node = nodes[i];
+      if (node.type == 'folder') {
+        final kids = node.children;
+        if (kids == null) continue;
+        final patchedKids = _patchChildrenCopy(kids, target, fresh);
+        if (patchedKids != null) {
+          final copy = List<Child>.from(nodes);
+          copy[i] = node.copyWith(children: patchedKids);
+          return copy;
+        }
+        continue;
+      }
+      if (_sameFile(node, target)) {
+        final copy = List<Child>.from(nodes);
+        copy[i] = node.copyWith(
+          mediaDownloadUrl: fresh.mediaDownloadUrl ?? node.mediaDownloadUrl,
+          hash: fresh.hash ?? node.hash,
+        );
+        return copy;
+      }
+    }
+    return null;
   }
 }

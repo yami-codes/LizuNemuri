@@ -40,20 +40,25 @@ void main() {
     api = _FakeApiService();
   });
 
-  test('returns fresh URL even when patchInto tree is unmodifiable', () async {
+  test('returns fresh URL and patches unmodifiable tree via callback', () async {
     final stale = _leaf('track.wav', url: 'https://old.example/track.wav');
     final fresh = _leaf('track.wav', url: 'https://new.example/track.wav');
     api.nextFiles = Files(type: 'folder', children: [fresh]);
 
     final immutableTree = Files(type: 'folder', children: [stale]);
     final refresher = WorkMediaUrlRefresher(api);
+    Files? patched;
 
     final result = await refresher.refreshFile(
       workId: '123',
       file: stale,
       patchInto: immutableTree,
+      onTreePatched: (tree) => patched = tree,
     );
 
     expect(result.mediaDownloadUrl, 'https://new.example/track.wav');
+    expect(patched, isNotNull);
+    expect(patched!.children!.first.mediaDownloadUrl, 'https://new.example/track.wav');
+    expect(immutableTree.children!.first.mediaDownloadUrl, 'https://old.example/track.wav');
   });
 }

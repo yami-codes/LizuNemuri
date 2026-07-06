@@ -553,6 +553,10 @@ class DetailViewModel extends ChangeNotifier {
       workId: workId,
       file: file,
       patchInto: _files,
+      onTreePatched: (patched) {
+        _files = patched;
+        notifyListeners();
+      },
     );
   }
 
