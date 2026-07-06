@@ -10,9 +10,9 @@ class PlayerLayoutConfig {
   /// Cover diameter — prevents full-width square on desktop.
   static double coverSizeForWidth(double width) {
     if (width >= wideBreakpoint) {
-      return 240;
+      return 280;
     }
-    final padded = width - 64;
-    return padded.clamp(180, 280);
+    final padded = width - 48;
+    return padded.clamp(240, 340);
   }
 }

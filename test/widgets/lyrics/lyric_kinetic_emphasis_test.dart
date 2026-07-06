@@ -25,7 +25,7 @@ void main() {
         itemTrailingEdge: 0.1,
       );
       expect(lyricKineticEmphasis(near), greaterThan(lyricKineticEmphasis(far)));
-      expect(lyricKineticEmphasis(far), closeTo(0.35, 0.05));
+      expect(lyricKineticEmphasis(far), closeTo(0.22, 0.05));
     });
   });
 
@@ -64,7 +64,7 @@ void main() {
           isActive: false,
           positions: const [],
         ),
-        0.35,
+        0.22,
       );
     });
   });

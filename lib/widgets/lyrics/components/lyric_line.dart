@@ -39,18 +39,28 @@ class LyricLine extends StatelessWidget {
         : null;
 
     final t = emphasis.clamp(0.0, 1.0);
-    final scale = 0.94 + 0.06 * t;
-    final opacity = 0.42 + 0.58 * t;
-    final primarySize = 18.0 + 2.0 * t;
-    final secondarySize = 14.0 + 1.0 * t;
-    final fontWeight = FontWeight.lerp(FontWeight.w400, FontWeight.w600, t)!;
+    final scale = 0.88 + 0.12 * t;
+    final opacity = 0.28 + 0.72 * t;
+    final primarySize = 15.0 + 11.0 * t;
+    final secondarySize = 13.0 + 5.0 * t;
+    final fontWeight = FontWeight.lerp(FontWeight.w400, FontWeight.w700, t)!;
+    final letterSpacing = 0.1 + 0.35 * t;
 
     final primaryStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
           fontSize: primarySize,
-          height: 1.3,
+          height: 1.35,
+          letterSpacing: letterSpacing,
           color: Color.lerp(inactiveColor, activeColor, t),
           fontWeight: fontWeight,
-          shadows: shadow,
+          shadows: t > 0.85
+              ? [
+                  ...(shadow ?? []),
+                  Shadow(
+                    color: activeColor.withValues(alpha: 0.35),
+                    blurRadius: 12,
+                  ),
+                ]
+              : shadow,
         );
 
     final secondaryStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(

@@ -1,10 +1,12 @@
+import 'dart:ui';
+
 import 'package:lizunemu/core/platform/lyric_overlay_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lizunemu/presentation/viewmodels/player_viewmodel.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 import 'package:lizunemu/widgets/player/player_controls.dart';
-import 'package:lizunemu/widgets/player/waveform_progress.dart';
+import 'package:lizunemu/widgets/player/player_scrubber.dart';
 import 'package:lizunemu/widgets/player/player_art_panel.dart';
 import 'package:lizunemu/widgets/player/volume_control.dart';
 import 'package:lizunemu/widgets/player/player_speed_button.dart';
@@ -128,30 +130,33 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   Widget _buildViewModeToggle({required bool isWide}) {
     if (isWide) return const SizedBox.shrink();
+    final cs = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.space16,
         AppSpacing.space8,
         AppSpacing.space16,
-        0,
+        AppSpacing.space4,
       ),
-      child: SegmentedButton<bool>(
-        segments: [
-          ButtonSegment<bool>(
-            value: false,
-            label: Text(Strings.playerViewCover),
-            icon: const Icon(Icons.album_outlined, size: 18),
+      child: Center(
+        child: FilledButton.tonalIcon(
+          onPressed: () => setState(() => _showLyrics = !_showLyrics),
+          icon: Icon(
+            _showLyrics ? Icons.album_outlined : Icons.lyrics_outlined,
+            size: 18,
           ),
-          ButtonSegment<bool>(
-            value: true,
-            label: Text(Strings.playerViewSubtitles),
-            icon: const Icon(Icons.subtitles_outlined, size: 18),
+          label: Text(
+            _showLyrics ? Strings.playerViewCover : Strings.playerViewSubtitles,
           ),
-        ],
-        selected: {_showLyrics},
-        onSelectionChanged: (selection) {
-          setState(() => _showLyrics = selection.first);
-        },
+          style: FilledButton.styleFrom(
+            backgroundColor: cs.surface.withValues(alpha: 0.55),
+            foregroundColor: cs.onSurface,
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.space16,
+              vertical: AppSpacing.space8,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -278,19 +283,35 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Widget _buildControlsBar() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.space12,
-        0,
-        AppSpacing.space12,
-        AppSpacing.space32,
-      ),
-      child: const Column(
-        children: [
-          WaveformProgress(),
-          SizedBox(height: AppSpacing.space8),
-          PlayerControls(),
-        ],
+    final cs = Theme.of(context).colorScheme;
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.space12,
+            AppSpacing.space12,
+            AppSpacing.space12,
+            AppSpacing.space24,
+          ),
+          decoration: BoxDecoration(
+            color: cs.surface.withValues(alpha: 0.78),
+            border: Border(
+              top: BorderSide(
+                color: cs.outlineVariant.withValues(alpha: 0.25),
+              ),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              PlayerScrubber(),
+              SizedBox(height: AppSpacing.space4),
+              PlayerControls(),
+            ],
+          ),
+        ),
       ),
     );
   }

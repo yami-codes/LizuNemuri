@@ -42,4 +42,15 @@ class VolumeFader {
         volumeAtStep(from: from, to: to, step: i, totalSteps: total),
     ];
   }
+
+  /// After an interrupted fade, restore volume if playback is active but still
+  /// near-muted (common when rapid play/pause cancels mid-fade).
+  static bool shouldRestoreVolume({
+    required bool isPlaying,
+    required double currentVolume,
+    required double targetVolume,
+  }) {
+    if (!isPlaying || targetVolume <= 0) return false;
+    return currentVolume < targetVolume * 0.5;
+  }
 }

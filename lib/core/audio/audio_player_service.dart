@@ -153,19 +153,24 @@ class AudioPlayerService implements IAudioPlayerService {
     _cancelFade();
     final gen = _fadeGeneration;
     final settings = GetIt.I<AppSettingsService>();
-    if (fade && settings.playbackFadeEnabled && settings.playbackFadeMs > 0) {
-      final target = settings.playbackVolume;
-      final from = _player.volume;
-      await _animateVolume(
-        from: from,
-        to: 0,
-        durationMs: settings.playbackFadeMs,
-      );
-      if (gen != _fadeGeneration) return;
-      await _playbackController.pause();
-      await _player.setVolume(target.clamp(0.0, 1.0));
-    } else {
-      await _playbackController.pause();
+    final target = settings.playbackVolume.clamp(0.0, 1.0);
+    try {
+      if (fade && settings.playbackFadeEnabled && settings.playbackFadeMs > 0) {
+        final from = _player.volume;
+        await _animateVolume(
+          from: from,
+          to: 0,
+          durationMs: settings.playbackFadeMs,
+        );
+        if (gen != _fadeGeneration) return;
+        await _playbackController.pause();
+      } else {
+        await _playbackController.pause();
+      }
+    } finally {
+      if (!_player.playing) {
+        await _player.setVolume(target);
+      }
     }
     // 暂停是用户离开/切后台的强信号，立即 flush 一次，避免依赖 20s 节流。
     await _stateManager.saveState();
@@ -177,20 +182,31 @@ class AudioPlayerService implements IAudioPlayerService {
     _cancelFade();
     final gen = _fadeGeneration;
     final settings = GetIt.I<AppSettingsService>();
-    if (fade && settings.playbackFadeEnabled && settings.playbackFadeMs > 0) {
-      final target = settings.playbackVolume;
-      await _player.setVolume(0);
-      await _playbackController.play();
-      await _animateVolume(
-        from: 0,
-        to: target,
-        durationMs: settings.playbackFadeMs,
-      );
-      if (gen != _fadeGeneration) return;
-    } else {
-      final target = settings.playbackVolume;
-      await _player.setVolume(target.clamp(0.0, 1.0));
-      await _playbackController.play();
+    final target = settings.playbackVolume.clamp(0.0, 1.0);
+    try {
+      final session = await AudioSession.instance;
+      await session.setActive(true);
+      if (fade && settings.playbackFadeEnabled && settings.playbackFadeMs > 0) {
+        await _player.setVolume(0);
+        await _playbackController.play();
+        await _animateVolume(
+          from: 0,
+          to: target,
+          durationMs: settings.playbackFadeMs,
+        );
+        if (gen != _fadeGeneration) return;
+      } else {
+        await _player.setVolume(target);
+        await _playbackController.play();
+      }
+    } finally {
+      if (VolumeFader.shouldRestoreVolume(
+        isPlaying: _player.playing,
+        currentVolume: _player.volume,
+        targetVolume: target,
+      )) {
+        await setVolume(target, persist: false);
+      }
     }
   }
 

@@ -16,8 +16,8 @@ import 'lyric_line.dart';
 double lyricKineticEmphasis(
   ItemPosition position, {
   double viewportCenter = 0.5,
-  double falloff = 0.32,
-  double minEmphasis = 0.35,
+  double falloff = 0.28,
+  double minEmphasis = 0.22,
 }) {
   final itemCenter =
       (position.itemLeadingEdge + position.itemTrailingEdge) / 2;
@@ -38,7 +38,7 @@ double lyricEmphasisForIndex({
       return lyricKineticEmphasis(position);
     }
   }
-  return 0.35;
+  return 0.22;
 }
 
 class PlayerLyricView extends StatefulWidget {
@@ -196,9 +196,9 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
                     itemPositionsListener: _itemPositionsListener,
                     padding: EdgeInsets.symmetric(
                       vertical: widget.compact
-                          ? screenHeight * 0.08
-                          : screenHeight * 0.3,
-                      horizontal: baseUnit * 0.8,
+                          ? screenHeight * 0.1
+                          : screenHeight * 0.34,
+                      horizontal: baseUnit * 1.0,
                     ),
                     itemBuilder: (context, index) {
                       final subtitle = subtitleList.subtitles[index];
@@ -211,7 +211,7 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
 
                       return Padding(
                         padding: EdgeInsets.symmetric(
-                          vertical: baseUnit * 0.35,
+                          vertical: baseUnit * 0.5,
                         ),
                         child: LyricLine(
                           subtitle: subtitle,

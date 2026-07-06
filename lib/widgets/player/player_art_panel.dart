@@ -41,6 +41,7 @@ class PlayerArtPanel extends StatelessWidget {
                   coverUrl: viewModel.currentTrackInfo?.coverUrl,
                   maxSize: coverSize,
                   ringColor: ringColor,
+                  albumArtStyle: true,
                 ),
               ),
             ),
@@ -56,8 +57,9 @@ class PlayerArtPanel extends StatelessWidget {
                       color: Colors.transparent,
                       child: Text(
                         viewModel.currentTrackInfo?.title ?? Strings.notPlaying,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.3,
                             ),
                         textAlign: TextAlign.center,
                         maxLines: 3,
@@ -69,8 +71,11 @@ class PlayerArtPanel extends StatelessWidget {
                     const SizedBox(height: AppSpacing.space8),
                     Text(
                       viewModel.currentTrackInfo!.artist,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant,
+                            fontWeight: FontWeight.w500,
                           ),
                       textAlign: TextAlign.center,
                       maxLines: 2,
