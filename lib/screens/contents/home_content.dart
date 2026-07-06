@@ -59,6 +59,8 @@ class _HomeContentState extends State<HomeContent>
             onSubtitleChanged: vm.updateSubtitle,
             onPresetSelected: vm.updatePreset,
             onSortDirectionChanged: vm.updateSortDirection,
+            onIncludeTagsChanged: vm.updateIncludeTags,
+            onAgeRatingChanged: vm.updateAgeRating,
           ),
         ),
         const SizedBox(height: AppSpacing.space4),

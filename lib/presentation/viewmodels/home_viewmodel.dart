@@ -4,7 +4,9 @@ import 'package:lizunemu/data/services/api_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/presentation/models/filter_state.dart';
+import 'package:lizunemu/presentation/models/age_rating_filter.dart';
 import 'package:lizunemu/presentation/models/work_list_filter_preset.dart';
+import 'package:lizunemu/presentation/models/work_list_query_builder.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
@@ -85,6 +87,20 @@ class HomeViewModel extends PaginatedWorksViewModel {
     refresh();
   }
 
+  void updateIncludeTags(List<String> tags) {
+    _filterState = _filterState.copyWith(includeTags: tags);
+    _saveFilterState();
+    notifyListeners();
+    refresh();
+  }
+
+  void updateAgeRating(AgeRatingFilter rating) {
+    _filterState = _filterState.copyWith(ageRating: rating);
+    _saveFilterState();
+    notifyListeners();
+    refresh();
+  }
+
   void closeFilterPanel() {
     if (_filterPanelExpanded) {
       _filterPanelExpanded = false;
@@ -97,6 +113,18 @@ class HomeViewModel extends PaginatedWorksViewModel {
 
   @override
   Future<WorksResponse> fetchPage(int page) {
+    if (WorkListQueryBuilder.requiresSearchEndpoint(_filterState)) {
+      return apiService.searchWorks(
+        keyword: WorkListQueryBuilder.buildSearchKeyword(
+          includeTags: _filterState.includeTags,
+          ageRating: _filterState.ageRating,
+        ),
+        page: page,
+        hasSubtitle: hasSubtitle,
+        order: _filterState.orderField,
+        sort: _filterState.sortValue,
+      );
+    }
     return apiService.getWorks(
       page: page,
       hasSubtitle: hasSubtitle,

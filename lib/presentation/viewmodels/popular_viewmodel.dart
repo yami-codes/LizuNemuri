@@ -5,7 +5,9 @@ import 'package:lizunemu/data/services/api_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/presentation/models/filter_state.dart';
+import 'package:lizunemu/presentation/models/age_rating_filter.dart';
 import 'package:lizunemu/presentation/models/work_list_filter_preset.dart';
+import 'package:lizunemu/presentation/models/work_list_query_builder.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
@@ -31,9 +33,11 @@ class PopularViewModel extends PaginatedWorksViewModel {
   bool get filterPanelExpanded => _filterPanelExpanded;
   FilterState get filterState => _filterState;
 
-  /// Uses curated `/recommender/popular` only for default sales sort.
+  /// Uses curated `/recommender/popular` only for default sales sort with no tag/age filter.
   bool get _usesPopularEndpoint =>
-      _filterState.orderField == 'dl_count' && _filterState.isDescending;
+      _filterState.orderField == 'dl_count' &&
+      _filterState.isDescending &&
+      !_filterState.hasTagOrAgeFilter;
 
   Future<void> _loadFilterState() async {
     try {
@@ -90,6 +94,20 @@ class PopularViewModel extends PaginatedWorksViewModel {
     }
   }
 
+  void updateIncludeTags(List<String> tags) {
+    _filterState = _filterState.copyWith(includeTags: tags);
+    _saveFilterState();
+    notifyListeners();
+    refresh();
+  }
+
+  void updateAgeRating(AgeRatingFilter rating) {
+    _filterState = _filterState.copyWith(ageRating: rating);
+    _saveFilterState();
+    notifyListeners();
+    refresh();
+  }
+
   @override
   String get pageName => LogStrings.logPageNamePopular;
 
@@ -99,6 +117,18 @@ class PopularViewModel extends PaginatedWorksViewModel {
       return apiService.getPopular(
         page: page,
         hasSubtitle: hasSubtitle,
+      );
+    }
+    if (WorkListQueryBuilder.requiresSearchEndpoint(_filterState)) {
+      return apiService.searchWorks(
+        keyword: WorkListQueryBuilder.buildSearchKeyword(
+          includeTags: _filterState.includeTags,
+          ageRating: _filterState.ageRating,
+        ),
+        page: page,
+        hasSubtitle: hasSubtitle,
+        order: _filterState.orderField,
+        sort: _filterState.sortValue,
       );
     }
     return apiService.getWorks(

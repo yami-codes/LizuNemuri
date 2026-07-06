@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/core/theme/app_radius.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/presentation/models/age_rating_filter.dart';
 import 'package:lizunemu/presentation/models/filter_state.dart';
 import 'package:lizunemu/presentation/models/work_list_filter_preset.dart';
+import 'package:lizunemu/widgets/filter/tag_picker_sheet.dart';
 
-/// Eara-style horizontal filter chips: subtitle toggle + sort presets + more.
+/// Eara-style horizontal filter chips: subtitle, tags, age, sort presets + more.
 class AdvancedFilterBar extends StatelessWidget {
   final bool hasSubtitle;
   final FilterState filterState;
   final ValueChanged<bool> onSubtitleChanged;
   final ValueChanged<WorkListFilterPreset> onPresetSelected;
   final ValueChanged<bool>? onSortDirectionChanged;
+  final ValueChanged<List<String>>? onIncludeTagsChanged;
+  final ValueChanged<AgeRatingFilter>? onAgeRatingChanged;
   final bool showSortOptions;
+  final bool showTagAndAgeFilters;
 
   const AdvancedFilterBar({
     super.key,
@@ -21,8 +26,22 @@ class AdvancedFilterBar extends StatelessWidget {
     required this.onSubtitleChanged,
     required this.onPresetSelected,
     this.onSortDirectionChanged,
+    this.onIncludeTagsChanged,
+    this.onAgeRatingChanged,
     this.showSortOptions = true,
+    this.showTagAndAgeFilters = true,
   });
+
+  Future<void> _openTagPicker(BuildContext context) async {
+    if (onIncludeTagsChanged == null) return;
+    final result = await TagPickerSheet.show(
+      context,
+      initialSelected: filterState.includeTags,
+    );
+    if (result != null) {
+      onIncludeTagsChanged!(result);
+    }
+  }
 
   Future<void> _openMoreSheet(BuildContext context) async {
     final preset = await showModalBottomSheet<WorkListFilterPreset>(
@@ -91,6 +110,26 @@ class AdvancedFilterBar extends StatelessWidget {
     if (preset != null) onPresetSelected(preset);
   }
 
+  Widget _ageChip(
+    BuildContext context, {
+    required String label,
+    required AgeRatingFilter value,
+    required ColorScheme cs,
+  }) {
+    final selected = filterState.ageRating == value;
+    return Padding(
+      padding: const EdgeInsets.only(right: AppSpacing.space8),
+      child: FilterChip(
+        label: Text(label),
+        selected: selected,
+        onSelected: onAgeRatingChanged == null
+            ? null
+            : (_) => onAgeRatingChanged!(value),
+        showCheckmark: false,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -117,6 +156,72 @@ class AdvancedFilterBar extends StatelessWidget {
                   color: hasSubtitle ? cs.onPrimaryContainer : cs.onSurfaceVariant,
                 ),
               ),
+              if (showTagAndAgeFilters && onIncludeTagsChanged != null) ...[
+                const SizedBox(width: AppSpacing.space8),
+                ActionChip(
+                  avatar: Icon(
+                    Icons.label_outline,
+                    size: 18,
+                    color: filterState.includeTags.isNotEmpty
+                        ? cs.onPrimaryContainer
+                        : cs.primary,
+                  ),
+                  label: Text(
+                    filterState.includeTags.isEmpty
+                        ? Strings.filterTags
+                        : Strings.filterTagsSelected(
+                            filterState.includeTags.length,
+                          ),
+                  ),
+                  onPressed: () => _openTagPicker(context),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppRadius.smAll,
+                    side: BorderSide(
+                      color: filterState.includeTags.isNotEmpty
+                          ? cs.primary
+                          : cs.outlineVariant.withValues(alpha: 0.6),
+                    ),
+                  ),
+                ),
+                ...filterState.includeTags.map(
+                  (tag) => Padding(
+                    padding: const EdgeInsets.only(left: AppSpacing.space8),
+                    child: InputChip(
+                      label: Text(
+                        tag,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      onDeleted: () {
+                        final next = List<String>.from(filterState.includeTags)
+                          ..remove(tag);
+                        onIncludeTagsChanged!(next);
+                      },
+                    ),
+                  ),
+                ),
+              ],
+              if (showTagAndAgeFilters && onAgeRatingChanged != null) ...[
+                const SizedBox(width: AppSpacing.space8),
+                _ageChip(
+                  context,
+                  label: Strings.filterAgeAny,
+                  value: AgeRatingFilter.all,
+                  cs: cs,
+                ),
+                _ageChip(
+                  context,
+                  label: Strings.filterAgeGeneral,
+                  value: AgeRatingFilter.general,
+                  cs: cs,
+                ),
+                _ageChip(
+                  context,
+                  label: Strings.filterAgeAdult,
+                  value: AgeRatingFilter.adult,
+                  cs: cs,
+                ),
+              ],
               if (showSortOptions) ...[
                 const SizedBox(width: AppSpacing.space8),
                 ...WorkListFilterPresetX.primaryPresets.map((preset) {

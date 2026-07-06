@@ -163,6 +163,28 @@
   "filterOrderRj": "RJ号",
   "filterOrderSales": "销量",
   "filterMoreOptions": "更多筛选",
+  "filterTags": "标签",
+  "filterTagsSelected": "{count} 个标签",
+  "@filterTagsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterPickTags": "选择标签",
+  "filterClearTags": "全部清除",
+  "filterApplyTags": "应用 ({count})",
+  "@filterApplyTags": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterAgeAny": "不限",
+  "filterAgeGeneral": "全年龄",
+  "filterAgeAdult": "R18",
   "filterPresetLatest": "最新收录",
   "filterPresetPrice": "价格最高",
   "filterPresetRating": "评价最高",

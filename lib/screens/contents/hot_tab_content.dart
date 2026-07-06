@@ -21,6 +21,8 @@ class HotTabContent extends StatelessWidget {
             onSubtitleChanged: (_) => vm.toggleSubtitleFilter(),
             onPresetSelected: vm.updatePreset,
             onSortDirectionChanged: vm.updateSortDirection,
+            onIncludeTagsChanged: vm.updateIncludeTags,
+            onAgeRatingChanged: vm.updateAgeRating,
           ),
         ),
         const SizedBox(height: AppSpacing.space4),

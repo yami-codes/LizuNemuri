@@ -133,6 +133,14 @@ class Strings {
   static String get filterOrderRj => _l10n.filterOrderRj;
   static String get filterOrderSales => _l10n.filterOrderSales;
   static String get filterMoreOptions => _l10n.filterMoreOptions;
+  static String get filterTags => _l10n.filterTags;
+  static String filterTagsSelected(int count) => _l10n.filterTagsSelected(count);
+  static String get filterPickTags => _l10n.filterPickTags;
+  static String get filterClearTags => _l10n.filterClearTags;
+  static String filterApplyTags(int count) => _l10n.filterApplyTags(count);
+  static String get filterAgeAny => _l10n.filterAgeAny;
+  static String get filterAgeGeneral => _l10n.filterAgeGeneral;
+  static String get filterAgeAdult => _l10n.filterAgeAdult;
   static String get filterPresetLatest => _l10n.filterPresetLatest;
   static String get filterPresetPrice => _l10n.filterPresetPrice;
   static String get filterPresetRating => _l10n.filterPresetRating;

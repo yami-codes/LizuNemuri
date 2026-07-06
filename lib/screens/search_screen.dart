@@ -68,10 +68,11 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
 
   void _onSearch() {
     final keyword = _searchController.text.trim();
-    if (keyword.isEmpty) return;
+    final vm = context.read<SearchViewModel>();
+    if (keyword.isEmpty && !vm.filterState.hasTagOrAgeFilter) return;
 
     AppLogger.debug(LogStrings.logRunSearchKeyword2ee4b(keyword));
-    context.read<SearchViewModel>().search(keyword);
+    vm.search(keyword);
   }
 
   Future<void> _onPageChanged(int page) async {
@@ -125,6 +126,8 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
               onSubtitleChanged: (_) => vm.toggleSubtitle(),
               onPresetSelected: vm.updatePreset,
               onSortDirectionChanged: vm.updateSortDirection,
+              onIncludeTagsChanged: vm.updateIncludeTags,
+              onAgeRatingChanged: vm.updateAgeRating,
             ),
           ),
           const SizedBox(height: AppSpacing.space8),
@@ -132,11 +135,13 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
             child: Consumer<SearchViewModel>(
               builder: (context, viewModel, child) {
                 Widget? emptyWidget;
-                if (viewModel.works.isEmpty && viewModel.keyword.isEmpty) {
+                if (viewModel.works.isEmpty &&
+                    viewModel.keyword.isEmpty &&
+                    !viewModel.filterState.hasTagOrAgeFilter) {
                   emptyWidget = Center(
                     child: Text(Strings.searchEmptyPrompt),
                   );
-                } else if (viewModel.works.isEmpty) {
+                } else if (viewModel.works.isEmpty && !viewModel.isLoading) {
                   emptyWidget = Center(
                     child: Text(Strings.searchNoResults),
                   );
