@@ -200,6 +200,9 @@
   "homeTitlePopular": "热门作品",
   "homeTitleRecommend": "为你推荐",
   "imageCache": "图片缓存",
+  "imagePreviewError": "图片加载失败",
+  "imagePreviewLoading": "正在加载图片…",
+  "imagePreviewTitle": "图片预览",
   "importFileTooLarge": "文件过大（最大 5MB）",
   "importInvalidFormat": "不支持的字幕格式（仅支持 .vtt/.lrc）",
   "importIoError": "文件读取失败",
@@ -422,6 +425,10 @@
   "versionLabel": "版本",
   "videoNeedsDownloadPrompt": "打开该视频需要下载到本地磁盘，是否同意？",
   "videoNeedsDownloadTitle": "播放视频",
+  "videoPlayerError": "视频加载失败",
+  "videoPlayerLoading": "正在加载视频…",
+  "videoPlayerTitle": "视频播放",
+  "videoSubtitlesToggle": "字幕开关",
   "voiceActors": "声优",
   "worksCountLabel": "{count} 个作品",
   "@worksCountLabel": {
@@ -513,6 +520,16 @@
   "logRemoveFromPlaylistFailed": "从收藏夹移除失败",
   "logAddToPlaylistFailedDetail": "添加到收藏夹失败: {detail}",
   "logRemoveFromPlaylistFailedDetail": "从收藏夹移除失败: {detail}",
+  "logVideoPlayerLoadFailed": "视频播放器加载失败",
+  "logVideoSubtitleLoadFailed": "视频字幕加载失败：{error}",
+  "@logVideoSubtitleLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logImagePreviewLoadFailed": "图片预览加载失败",
   "logSubtitlePreviewLoadFailed": "字幕预览加载失败",
   "logSubtitleImportFailed": "字幕导入失败",
   "logSubtitleParseException": "字幕解析异常",

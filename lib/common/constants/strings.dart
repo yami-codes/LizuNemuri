@@ -156,6 +156,9 @@ class Strings {
   static String get homeTitlePopular => _l10n.homeTitlePopular;
   static String get homeTitleRecommend => _l10n.homeTitleRecommend;
   static String get imageCache => _l10n.imageCache;
+  static String get imagePreviewError => _l10n.imagePreviewError;
+  static String get imagePreviewLoading => _l10n.imagePreviewLoading;
+  static String get imagePreviewTitle => _l10n.imagePreviewTitle;
   static String get importFileTooLarge => _l10n.importFileTooLarge;
   static String get importInvalidFormat => _l10n.importInvalidFormat;
   static String get importIoError => _l10n.importIoError;
@@ -315,6 +318,10 @@ class Strings {
   static String get versionLabel => _l10n.versionLabel;
   static String get videoNeedsDownloadPrompt => _l10n.videoNeedsDownloadPrompt;
   static String get videoNeedsDownloadTitle => _l10n.videoNeedsDownloadTitle;
+  static String get videoPlayerError => _l10n.videoPlayerError;
+  static String get videoPlayerLoading => _l10n.videoPlayerLoading;
+  static String get videoPlayerTitle => _l10n.videoPlayerTitle;
+  static String get videoSubtitlesToggle => _l10n.videoSubtitlesToggle;
   static String get voiceActors => _l10n.voiceActors;
   static String get markStatusTitle => _l10n.markStatusTitle;
   static String get markWantToListen => _l10n.markWantToListen;

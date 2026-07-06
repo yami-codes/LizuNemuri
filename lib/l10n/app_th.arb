@@ -200,6 +200,9 @@
   "homeTitlePopular": "ผลงานยอดนิยม",
   "homeTitleRecommend": "แนะนำสำหรับคุณ",
   "imageCache": "แคชรูปภาพ",
+  "imagePreviewError": "โหลดรูปภาพไม่สำเร็จ",
+  "imagePreviewLoading": "กำลังโหลดรูปภาพ…",
+  "imagePreviewTitle": "ดูรูปภาพ",
   "importFileTooLarge": "ไฟล์ใหญ่เกินไป (สูงสุด 5 MB)",
   "importInvalidFormat": "รูปแบบไม่รองรับ (เฉพาะ .vtt / .lrc)",
   "importIoError": "อ่านไฟล์ไม่สำเร็จ",
@@ -422,6 +425,10 @@
   "versionLabel": "เวอร์ชัน",
   "videoNeedsDownloadPrompt": "ต้องดาวน์โหลดวิดีโอนี้ก่อน ดำเนินการต่อหรือไม่?",
   "videoNeedsDownloadTitle": "เล่นวิดีโอ",
+  "videoPlayerError": "โหลดวิดีโอไม่สำเร็จ",
+  "videoPlayerLoading": "กำลังโหลดวิดีโอ…",
+  "videoPlayerTitle": "เล่นวิดีโอ",
+  "videoSubtitlesToggle": "สลับคำบรรยาย",
   "voiceActors": "นักพากย์",
   "worksCountLabel": "{count} ผลงาน",
   "@worksCountLabel": {
@@ -513,6 +520,16 @@
   "logRemoveFromPlaylistFailed": "นำออกจากเพลย์ลิสต์ล้มเหลว",
   "logAddToPlaylistFailedDetail": "เพิ่มในเพลย์ลิสต์ล้มเหลว: {detail}",
   "logRemoveFromPlaylistFailedDetail": "นำออกจากเพลย์ลิสต์ล้มเหลว: {detail}",
+  "logVideoPlayerLoadFailed": "โหลดตัวเล่นวิดีโอล้มเหลว",
+  "logVideoSubtitleLoadFailed": "โหลดคำบรรยายวิดีโอล้มเหลว: {error}",
+  "@logVideoSubtitleLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "logImagePreviewLoadFailed": "โหลดตัวอย่างรูปภาพล้มเหลว",
   "logSubtitlePreviewLoadFailed": "โหลดตัวอย่างคำบรรยายล้มเหลว",
   "logSubtitleImportFailed": "นำเข้าคำบรรยายล้มเหลว",
   "logSubtitleParseException": "ข้อยกเว้นการแปลงคำบรรยาย",

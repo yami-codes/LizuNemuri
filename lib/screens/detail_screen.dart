@@ -19,6 +19,8 @@ import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/utils/user_facing_error.dart';
 import 'package:lizunemu/screens/similar_works_screen.dart';
 import 'package:lizunemu/screens/subtitle_preview_screen.dart';
+import 'package:lizunemu/screens/image_preview_screen.dart';
+import 'package:lizunemu/screens/video_player_screen.dart';
 import 'package:lizunemu/widgets/common/back_leading.dart';
 import 'package:open_filex/open_filex.dart';
 
@@ -281,13 +283,16 @@ class DetailScreen extends StatelessWidget {
                       },
                       onFileTap: (file) async {
                         // Video check first: extension over unreliable API `type`.
-                        // Video → download + external player, never audio pipeline.
+                        // Video → in-app player with optional sibling subtitle overlay.
                         if (viewModel.isVideoFile(file)) {
-                          await runDownload(
-                            file,
-                            openOnDone: true,
-                            title: Strings.videoNeedsDownloadTitle,
-                            prompt: Strings.videoNeedsDownloadPrompt,
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => VideoPlayerScreen(
+                                workId: work.id?.toString(),
+                                file: file,
+                                subtitleFile: viewModel.subtitleForFile(file),
+                              ),
+                            ),
                           );
                           return;
                         }
@@ -307,6 +312,17 @@ class DetailScreen extends StatelessWidget {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => SubtitlePreviewScreen(
+                                workId: work.id?.toString(),
+                                file: file,
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+                        if (viewModel.isImageFile(file)) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => ImagePreviewScreen(
                                 workId: work.id?.toString(),
                                 file: file,
                               ),
