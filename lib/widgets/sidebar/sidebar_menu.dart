@@ -14,9 +14,9 @@ import 'package:lizunemu/screens/browse/tags_screen.dart';
 import 'package:lizunemu/screens/browse/voice_actors_screen.dart';
 import 'package:lizunemu/screens/about_screen.dart';
 import 'package:lizunemu/screens/downloads_screen.dart';
-import 'package:lizunemu/screens/favorites_screen.dart';
 import 'package:lizunemu/screens/playlists_screen.dart';
-import 'package:lizunemu/screens/recommend_screen.dart';
+import 'package:lizunemu/screens/search_screen.dart';
+import 'package:lizunemu/screens/contents/library_tab_content.dart';
 import 'package:lizunemu/screens/dlsite/dlsite_library_screen.dart';
 import 'package:lizunemu/screens/settings/settings_screen.dart';
 import 'package:lizunemu/widgets/common/brand_wordmark.dart';
@@ -40,40 +40,6 @@ class SidebarMenu extends StatelessWidget {
     final rootNavigator = Navigator.of(context, rootNavigator: true);
     Navigator.pop(context);
     rootNavigator.push(CupertinoPageRoute(builder: (_) => screen));
-  }
-
-  void _navigateToFavorites(BuildContext context) {
-    final authVM = context.read<AuthViewModel>();
-    final rootNavigator = Navigator.of(context, rootNavigator: true);
-    Navigator.pop(context);
-    if (!authVM.isLoggedIn) {
-      showDialog(
-        context: rootNavigator.context,
-        useRootNavigator: true,
-        builder: (_) => const LoginDialog(),
-      );
-      return;
-    }
-    rootNavigator.push(
-      CupertinoPageRoute(builder: (_) => const FavoritesScreen()),
-    );
-  }
-
-  void _navigateToRecommend(BuildContext context) {
-    final authVM = context.read<AuthViewModel>();
-    final rootNavigator = Navigator.of(context, rootNavigator: true);
-    Navigator.pop(context);
-    if (!authVM.isLoggedIn) {
-      showDialog(
-        context: rootNavigator.context,
-        useRootNavigator: true,
-        builder: (_) => const LoginDialog(),
-      );
-      return;
-    }
-    rootNavigator.push(
-      CupertinoPageRoute(builder: (_) => const RecommendScreen()),
-    );
   }
 
   void _navigateToPlaylists(BuildContext context) {
@@ -183,14 +149,16 @@ class SidebarMenu extends StatelessWidget {
                           header: Strings.drawerSectionContent,
                           children: [
                             SidebarTile(
-                              icon: CupertinoIcons.heart,
-                              title: Strings.favorites,
-                              onTap: () => _navigateToFavorites(context),
+                              icon: Icons.library_music_outlined,
+                              title: Strings.tabLibrary,
+                              onTap: () =>
+                                  _navigate(context, const LibraryTabContent()),
                             ),
                             SidebarTile(
-                              icon: CupertinoIcons.star,
-                              title: Strings.homeTitleRecommend,
-                              onTap: () => _navigateToRecommend(context),
+                              icon: Icons.search,
+                              title: Strings.tabSearch,
+                              onTap: () =>
+                                  _navigate(context, const SearchScreen()),
                             ),
                             SidebarTile(
                               icon: CupertinoIcons.music_note_list,

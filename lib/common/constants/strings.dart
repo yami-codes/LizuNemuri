@@ -284,8 +284,11 @@ class Strings {
   static String get subtitlePreviewTitle => _l10n.subtitlePreviewTitle;
   static String get subtitleRemoved => _l10n.subtitleRemoved;
   static String get tabFavorites => _l10n.tabFavorites;
+  static String get tabHome => _l10n.tabHome;
   static String get tabHot => _l10n.tabHot;
   static String get tabLibrary => _l10n.tabLibrary;
+  static String get tabPopular => _l10n.tabPopular;
+  static String get tabRecommend => _l10n.tabRecommend;
   static String get tabSearch => _l10n.tabSearch;
   static String get tags => _l10n.tags;
   static String get telegramChannel => _l10n.telegramChannel;

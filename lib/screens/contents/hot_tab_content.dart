@@ -5,9 +5,9 @@ import 'package:lizunemu/presentation/viewmodels/popular_viewmodel.dart';
 import 'package:lizunemu/screens/contents/popular_content.dart';
 import 'package:lizunemu/widgets/filter/advanced_filter_bar.dart';
 
-/// Eara-style "Hot" tab — popular grid + quick filter chips (Milestone E).
-class HotTabContent extends StatelessWidget {
-  const HotTabContent({super.key});
+/// ASMR.one-style "Popular" tab — popular grid + quick filter chips.
+class PopularTabContent extends StatelessWidget {
+  const PopularTabContent({super.key});
 
   @override
   Widget build(BuildContext context) {
