@@ -2562,5 +2562,33 @@
     }
   },
   "playerViewCover": "Cover",
-  "playerViewSubtitles": "Subtitles"
+  "playerViewSubtitles": "Subtitles",
+  "logViewerTitle": "Diagnostic logs",
+  "logViewerSettingsDesc": "View, filter, and copy recent app logs",
+  "logViewerEmpty": "No logs match the current filter.",
+  "logViewerCopyAll": "Copy all",
+  "logViewerCopyEntry": "Copy entry",
+  "logViewerCopied": "Copied to clipboard",
+  "logViewerNothingToCopy": "Nothing to copy",
+  "logViewerClear": "Clear logs",
+  "logViewerCleared": "Logs cleared",
+  "logViewerClearConfirmTitle": "Clear all logs?",
+  "logViewerClearConfirmBody": "This removes every stored log entry. Errors that happen afterward will be captured again.",
+  "logViewerSearchHint": "Search message, tag, or error",
+  "logViewerFilterLevel": "Show from level",
+  "logViewerIncludeStack": "Include stack traces when copying",
+  "logViewerEntryCount": "{shown} shown · {total} stored",
+  "@logViewerEntryCount": {
+    "placeholders": {
+      "shown": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "logCaptureLevel": "Capture from level",
+  "logCaptureLevelDesc": "Only logs at this level or higher are stored in memory",
+  "logLevelVerbose": "Verbose",
+  "logLevelDebug": "Debug",
+  "logLevelInfo": "Info",
+  "logLevelWarning": "Warning",
+  "logLevelError": "Error"
 }

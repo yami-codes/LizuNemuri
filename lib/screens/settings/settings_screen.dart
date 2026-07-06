@@ -13,6 +13,7 @@ import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/core/settings/metadata_translation_mode.dart';
 import 'package:lizunemu/core/settings/metadata_translation_provider.dart';
 import 'package:lizunemu/core/library/scan_roots_store.dart';
+import 'package:lizunemu/screens/settings/app_log_viewer_screen.dart';
 import 'package:lizunemu/screens/settings/cache_manager_screen.dart';
 import 'package:lizunemu/screens/settings/audio_format_order_dialog.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
@@ -430,6 +431,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const CacheManagerScreen()),
+          ),
+        ),
+        SettingsTile.navigation(
+          title: Strings.logViewerTitle,
+          subtitle: Strings.logViewerSettingsDesc,
+          leading: Icons.bug_report_outlined,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AppLogViewerScreen()),
           ),
         ),
       ],

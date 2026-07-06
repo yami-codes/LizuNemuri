@@ -2562,5 +2562,33 @@
     }
   },
   "playerViewCover": "ปก",
-  "playerViewSubtitles": "ซับไตเติล"
+  "playerViewSubtitles": "ซับไตเติล",
+  "logViewerTitle": "บันทึกการวินิจฉัย",
+  "logViewerSettingsDesc": "ดู กรอง และคัดลอกบันทึกล่าสุดของแอป",
+  "logViewerEmpty": "ไม่มีบันทึกที่ตรงกับตัวกรองปัจจุบัน",
+  "logViewerCopyAll": "คัดลอกทั้งหมด",
+  "logViewerCopyEntry": "คัดลอกรายการ",
+  "logViewerCopied": "คัดลอกไปยังคลิปบอร์ดแล้ว",
+  "logViewerNothingToCopy": "ไม่มีข้อมูลให้คัดลอก",
+  "logViewerClear": "ล้างบันทึก",
+  "logViewerCleared": "ล้างบันทึกแล้ว",
+  "logViewerClearConfirmTitle": "ล้างบันทึกทั้งหมด?",
+  "logViewerClearConfirmBody": "จะลบบันทึกที่เก็บไว้ทั้งหมด ข้อผิดพลาดที่เกิดขึ้นหลังจากนี้จะถูกบันทึกใหม่",
+  "logViewerSearchHint": "ค้นหาข้อความ แท็ก หรือข้อผิดพลาด",
+  "logViewerFilterLevel": "แสดงตั้งแต่ระดับ",
+  "logViewerIncludeStack": "รวม stack trace เมื่อคัดลอก",
+  "logViewerEntryCount": "แสดง {shown} · เก็บไว้ {total}",
+  "@logViewerEntryCount": {
+    "placeholders": {
+      "shown": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "logCaptureLevel": "บันทึกตั้งแต่ระดับ",
+  "logCaptureLevelDesc": "เก็บเฉพาะบันทึกระดับนี้ขึ้นไปในหน่วยความจำ",
+  "logLevelVerbose": "Verbose",
+  "logLevelDebug": "Debug",
+  "logLevelInfo": "Info",
+  "logLevelWarning": "Warning",
+  "logLevelError": "Error"
 }

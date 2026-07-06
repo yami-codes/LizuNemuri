@@ -6,6 +6,7 @@ import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/core/audio/cache/audio_cache_manager.dart';
 import 'package:lizunemu/core/cache/cache_lifecycle_manager.dart';
 import 'package:lizunemu/core/platform/background_play_controller.dart';
+import 'package:lizunemu/core/logging/app_log_bootstrap.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:lizunemu/utils/platform_capabilities.dart';
@@ -42,6 +43,7 @@ void main() async {
   // MainScreen ViewModels fire tokenized requests in their constructors; deferring auth
   // would send the first batch without a token and misreport login state.
   await setupServiceLocator();
+  installAppLogHooks();
 
   runApp(const MyApp());
 

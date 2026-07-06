@@ -2,6 +2,7 @@ import 'dart:ui' show Locale;
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:lizunemu/core/di/service_locator.dart';
+import 'package:lizunemu/core/logging/app_log_level.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 
 /// Central UI copy — backed by generated [AppLocalizations].
@@ -179,6 +180,36 @@ class Strings {
   static String get lightMode => _l10n.lightMode;
   static String get loadFailed => _l10n.loadFailed;
   static String get loading => _l10n.loading;
+  static String get logCaptureLevel => _l10n.logCaptureLevel;
+  static String get logCaptureLevelDesc => _l10n.logCaptureLevelDesc;
+  static String get logLevelDebug => _l10n.logLevelDebug;
+  static String get logLevelError => _l10n.logLevelError;
+  static String get logLevelInfo => _l10n.logLevelInfo;
+  static String get logLevelVerbose => _l10n.logLevelVerbose;
+  static String get logLevelWarning => _l10n.logLevelWarning;
+  static String get logViewerClear => _l10n.logViewerClear;
+  static String get logViewerClearConfirmBody => _l10n.logViewerClearConfirmBody;
+  static String get logViewerClearConfirmTitle => _l10n.logViewerClearConfirmTitle;
+  static String get logViewerCopied => _l10n.logViewerCopied;
+  static String get logViewerCopyAll => _l10n.logViewerCopyAll;
+  static String get logViewerCopyEntry => _l10n.logViewerCopyEntry;
+  static String get logViewerCleared => _l10n.logViewerCleared;
+  static String get logViewerEmpty => _l10n.logViewerEmpty;
+  static String get logViewerFilterLevel => _l10n.logViewerFilterLevel;
+  static String get logViewerIncludeStack => _l10n.logViewerIncludeStack;
+  static String get logViewerNothingToCopy => _l10n.logViewerNothingToCopy;
+  static String get logViewerSearchHint => _l10n.logViewerSearchHint;
+  static String get logViewerSettingsDesc => _l10n.logViewerSettingsDesc;
+  static String get logViewerTitle => _l10n.logViewerTitle;
+  static String logViewerEntryCount(int shown, int total) =>
+      _l10n.logViewerEntryCount(shown, total);
+  static String logLevelLabel(AppLogLevel level) => switch (level) {
+        AppLogLevel.verbose => logLevelVerbose,
+        AppLogLevel.debug => logLevelDebug,
+        AppLogLevel.info => logLevelInfo,
+        AppLogLevel.warning => logLevelWarning,
+        AppLogLevel.error => logLevelError,
+      };
   static String get loggedInFallback => _l10n.loggedInFallback;
   static String get loggedInSubtitle => _l10n.loggedInSubtitle;
   static String get loginAction => _l10n.loginAction;

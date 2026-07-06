@@ -6,6 +6,7 @@ import 'package:lizunemu/core/download/download_service.dart';
 import 'package:lizunemu/core/media/work_media_url_refresher.dart';
 import 'package:lizunemu/core/subtitle/subtitle_loader.dart';
 import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/core/logging/app_log_tags.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
@@ -65,6 +66,10 @@ class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
         localPath: localPath,
         url: file.mediaDownloadUrl,
       );
+      AppLogger.info(
+        'Subtitle preview loaded: work=${widget.workId} file=${file.title} local=${localPath != null}',
+        tag: AppLogTags.subtitle,
+      );
       final parsed = _loader.parseOrNull(content);
       if (!mounted) return;
       setState(() {
@@ -75,8 +80,13 @@ class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
           _raw = content;
         }
       });
-    } catch (e) {
-      AppLogger.error(LogStrings.logSubtitlePreviewLoadFailed, e);
+    } catch (e, st) {
+      AppLogger.error(
+        LogStrings.logSubtitlePreviewLoadFailed,
+        e,
+        st,
+        AppLogTags.subtitle,
+      );
       if (!mounted) return;
       setState(() {
         _loading = false;

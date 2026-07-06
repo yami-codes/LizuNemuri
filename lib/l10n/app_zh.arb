@@ -2562,5 +2562,33 @@
     }
   },
   "playerViewCover": "封面",
-  "playerViewSubtitles": "字幕"
+  "playerViewSubtitles": "字幕",
+  "logViewerTitle": "诊断日志",
+  "logViewerSettingsDesc": "查看、筛选并复制最近的运行日志",
+  "logViewerEmpty": "当前筛选条件下没有日志。",
+  "logViewerCopyAll": "复制全部",
+  "logViewerCopyEntry": "复制条目",
+  "logViewerCopied": "已复制到剪贴板",
+  "logViewerNothingToCopy": "没有可复制的内容",
+  "logViewerClear": "清空日志",
+  "logViewerCleared": "日志已清空",
+  "logViewerClearConfirmTitle": "清空所有日志？",
+  "logViewerClearConfirmBody": "将删除内存中保存的全部日志。之后发生的错误会重新被记录。",
+  "logViewerSearchHint": "搜索消息、标签或错误",
+  "logViewerFilterLevel": "显示级别（从）",
+  "logViewerIncludeStack": "复制时包含堆栈",
+  "logViewerEntryCount": "显示 {shown} 条 · 共保存 {total} 条",
+  "@logViewerEntryCount": {
+    "placeholders": {
+      "shown": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "logCaptureLevel": "记录级别（从）",
+  "logCaptureLevelDesc": "仅保存该级别及以上的日志到内存",
+  "logLevelVerbose": "详细",
+  "logLevelDebug": "调试",
+  "logLevelInfo": "信息",
+  "logLevelWarning": "警告",
+  "logLevelError": "错误"
 }

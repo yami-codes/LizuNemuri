@@ -11,6 +11,7 @@ import 'package:lizunemu/core/audio/i_audio_player_service.dart';
 import 'package:lizunemu/core/download/download_service.dart';
 import 'package:lizunemu/utils/mark_status_strings.dart';
 import 'package:lizunemu/utils/user_facing_error.dart';
+import 'package:lizunemu/core/logging/app_log_tags.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/core/audio/models/playback_context.dart';
 import 'package:lizunemu/widgets/detail/playlist_selection_dialog.dart';
@@ -575,10 +576,18 @@ class DetailViewModel extends ChangeNotifier {
         ..addAll(map);
       return map.isEmpty ? Strings.metadataTrackTranslationFailed : null;
     } on LlmTranslationException catch (e) {
-      AppLogger.warning('Track name LLM translation failed: ${e.message}');
+      AppLogger.warning(
+        'Track name LLM translation failed: ${e.message}',
+        error: e,
+        tag: AppLogTags.translation,
+      );
       return e.userMessage;
     } catch (e) {
-      AppLogger.warning('Track name translation failed: $e');
+      AppLogger.warning(
+        'Track name translation failed: $e',
+        error: e,
+        tag: AppLogTags.translation,
+      );
       return Strings.metadataTrackTranslationFailed;
     } finally {
       _isTranslatingTracks = false;
@@ -833,10 +842,22 @@ class DetailViewModel extends ChangeNotifier {
     final resolved = await _freshFile(file);
 
     if (resolved.mediaDownloadUrl == null) {
+      AppLogger.error(
+        'Playback aborted: mediaDownloadUrl missing for ${resolved.title}',
+        null,
+        null,
+        AppLogTags.playback,
+      );
       throw UserFacingException(Strings.fileUrlMissing);
     }
 
     if (_files == null) {
+      AppLogger.error(
+        'Playback aborted: file list not loaded for work ${work.id}',
+        null,
+        null,
+        AppLogTags.playback,
+      );
       throw UserFacingException(Strings.fileListNotLoaded);
     }
 
@@ -847,10 +868,19 @@ class DetailViewModel extends ChangeNotifier {
         currentFile: resolved,
       );
 
+      AppLogger.info(
+        'Starting playback: work=${work.id} file=${resolved.title} url=${resolved.mediaDownloadUrl}',
+        tag: AppLogTags.playback,
+      );
       await _audioService.playWithContext(playbackContext);
-    } catch (e) {
+    } catch (e, st) {
       if (!_disposed) {
-        AppLogger.error(LogStrings.logPlaybackFailed, e);
+        AppLogger.error(
+          LogStrings.logPlaybackFailed,
+          e,
+          st,
+          AppLogTags.playback,
+        );
       }
       rethrow;
     }

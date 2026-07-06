@@ -52,6 +52,8 @@ import 'package:lizunemu/core/dlsite/dlsite_play_library_service.dart';
 import 'package:lizunemu/core/dlsite/dlsite_play_work_service.dart';
 import 'package:lizunemu/core/theme/dynamic_hue_controller.dart';
 import 'package:lizunemu/core/audio/effects/audio_effects_controller.dart';
+import 'package:lizunemu/core/logging/app_log_store.dart';
+import 'package:lizunemu/utils/logger.dart';
 
 final getIt = GetIt.instance;
 
@@ -142,6 +144,14 @@ Future<void> setupServiceLocator() async {
   // Register AppSettingsService
   getIt.registerSingleton<AppSettingsService>(
     AppSettingsService(prefs),
+  );
+
+  getIt.registerLazySingleton<AppLogStore>(() => AppLogStore());
+
+  AppLogger.configure(
+    store: getIt<AppLogStore>(),
+    captureMinLevel: getIt<AppSettingsService>().logCaptureMinLevel,
+    consoleEnabled: true,
   );
 
   getIt.registerLazySingleton<LlmApiKeyRepository>(

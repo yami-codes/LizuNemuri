@@ -8,6 +8,7 @@ import 'package:lizunemu/core/llm/llm_batch_planner.dart';
 import 'package:lizunemu/core/settings/llm_subtitle_display_mode.dart';
 import 'package:lizunemu/core/settings/playback_speed_presets.dart';
 import 'package:lizunemu/core/settings/llm_subtitle_target_language.dart';
+import 'package:lizunemu/core/logging/app_log_level.dart';
 import 'package:lizunemu/core/settings/metadata_translation_mode.dart';
 import 'package:lizunemu/core/settings/metadata_translation_provider.dart';
 
@@ -56,6 +57,7 @@ class AppSettingsService extends ChangeNotifier {
   static const String _playbackFadeEnabledKey = 'playback_fade_enabled';
   static const String _playbackFadeMsKey = 'playback_fade_ms';
   static const String _playerBackdropClarityKey = 'player_backdrop_clarity';
+  static const String _logCaptureMinLevelKey = 'log_capture_min_level';
 
   static const String defaultServerUrl = 'https://api.asmr.one/api';
   static const String defaultLlmApiEndpoint = 'https://api.openai.com/v1';
@@ -81,6 +83,7 @@ class AppSettingsService extends ChangeNotifier {
     'mp3', 'flac', 'wav', 'opus', 'm4a', 'aac'
   ];
   static const double defaultPlayerBackdropClarity = 0.35;
+  static const AppLogLevel defaultLogCaptureMinLevel = AppLogLevel.debug;
   static const bool defaultPlaybackFadeEnabled = true;
   static const int defaultPlaybackFadeMs = 300;
   static const int minPlaybackFadeMs = 100;
@@ -126,6 +129,7 @@ class AppSettingsService extends ChangeNotifier {
   late bool _playbackFadeEnabled;
   late int _playbackFadeMs;
   late double _playerBackdropClarity;
+  late AppLogLevel _logCaptureMinLevel;
 
   AppSettingsService(this._prefs) {
     _serverUrl = _prefs.getString(_serverUrlKey) ?? defaultServerUrl;
@@ -203,6 +207,10 @@ class AppSettingsService extends ChangeNotifier {
     _playerBackdropClarity = (_prefs.getDouble(_playerBackdropClarityKey) ??
             defaultPlayerBackdropClarity)
         .clamp(0.0, 1.0);
+    _logCaptureMinLevel = AppLogLevelX.fromName(
+      _prefs.getString(_logCaptureMinLevelKey),
+      fallback: defaultLogCaptureMinLevel,
+    );
   }
 
   // === UI Language ===
@@ -540,5 +548,15 @@ class AppSettingsService extends ChangeNotifier {
     _playerBackdropClarity = clamped;
     notifyListeners();
     await _prefs.setDouble(_playerBackdropClarityKey, clamped);
+  }
+
+  // === Diagnostic log capture ===
+  AppLogLevel get logCaptureMinLevel => _logCaptureMinLevel;
+
+  Future<void> setLogCaptureMinLevel(AppLogLevel level) async {
+    if (_logCaptureMinLevel == level) return;
+    _logCaptureMinLevel = level;
+    notifyListeners();
+    await _prefs.setString(_logCaptureMinLevelKey, level.name);
   }
 }
