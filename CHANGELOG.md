@@ -8,7 +8,15 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
-## v2.0.0-rc.13 — 2026-07-06
+## v2.0.0-rc.14 — 2026-07-06
+
+### Added
+- **Diagnostic logs**: Settings → Storage → view, filter by level, search, copy one/all, and clear in-memory logs (up to 2500 entries).
+- **Log capture level**: persisted setting for minimum severity stored (Verbose / Debug / Info / Warning / Error).
+- **Global error hooks**: uncaught Flutter and platform errors feed the in-app log store.
+- **Tagged failure logs**: playback, subtitle preview, and track translation errors include filterable tags.
+
+---
 
 ### Fixed
 - **Playback / subtitle preview**: refresh expired presigned `mediaDownloadUrl` from `/tracks/{id}` before play or preview.
