@@ -500,6 +500,10 @@ class DetailViewModel extends ChangeNotifier {
       workId: workId,
       sourceTitle: source,
       forceRefresh: forceRefresh,
+      onPartial: (_, text) {
+        _translatedTitle = text;
+        notifyListeners();
+      },
     );
 
     _isTitleTranslating = false;
@@ -566,15 +570,18 @@ class DetailViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final map = await _metadataTranslationService.translateTrackNames(
+      await _metadataTranslationService.translateTrackNames(
         workId: workId,
         fileKeyToTitle: titles,
         force: force,
+        onPartial: (fileKey, text) {
+          _translatedTrackNames[fileKey] = text;
+          notifyListeners();
+        },
       );
-      _translatedTrackNames
-        ..clear()
-        ..addAll(map);
-      return map.isEmpty ? Strings.metadataTrackTranslationFailed : null;
+      return _translatedTrackNames.isEmpty
+          ? Strings.metadataTrackTranslationFailed
+          : null;
     } on LlmTranslationException catch (e) {
       AppLogger.warning(
         'Track name LLM translation failed: ${e.message}',

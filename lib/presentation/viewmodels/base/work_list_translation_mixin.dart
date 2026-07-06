@@ -52,8 +52,13 @@ mixin WorkListTranslationMixin on ChangeNotifier {
     _isTranslatingWorkTitles = true;
     notifyListeners();
     try {
-      final map = await _metadataTranslation.translateWorkTitles(works);
-      _translatedWorkTitles.addAll(map);
+      await _metadataTranslation.translateWorkTitles(
+        works,
+        onPartial: (id, text) {
+          _translatedWorkTitles[id] = text;
+          notifyListeners();
+        },
+      );
     } catch (_) {
       // Best-effort — list still shows originals on failure.
     } finally {

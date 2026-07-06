@@ -56,6 +56,7 @@ class WorkTitleTranslationService {
     required String workId,
     required String sourceTitle,
     bool forceRefresh = false,
+    MetadataPartialCallback? onPartial,
   }) async {
     final source = sourceTitle.trim();
     if (source.isEmpty) {
@@ -82,6 +83,7 @@ class WorkTitleTranslationService {
         workId: workId,
         sourceTitle: source,
         forceRefresh: forceRefresh,
+        onPartial: onPartial,
       );
       if (translated == null || translated.isEmpty) {
         return WorkTitleTranslationResult.failure(

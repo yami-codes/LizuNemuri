@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:lizunemu/core/llm/streaming_metadata_parser.dart';
+import 'package:lizunemu/core/llm/llm_usage.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/core/settings/llm_model_slot.dart';
 import 'package:lizunemu/core/settings/llm_subtitle_target_language.dart';
@@ -14,6 +16,8 @@ import 'package:lizunemu/data/services/google_translate_client.dart';
 import 'package:lizunemu/data/services/llm_client.dart';
 import 'package:lizunemu/utils/logger.dart';
 
+typedef MetadataPartialCallback = void Function(String id, String text);
+
 /// Translates short metadata (work titles, track names) via Google or LLM Lite.
 class MetadataTranslationService {
   static const _workTitleScope = 'work_title';
@@ -26,6 +30,17 @@ Preserve catalog numbers (RJ codes), episode/chapter numbers, and file extension
 Return ONLY a JSON array with one object per input item in the same order:
 {"id":"<id>","text":"translated text"}
 Do not wrap in markdown fences.''';
+
+  static const _liteStreamingSystemPrompt = '''
+You are a professional translator for ASMR audio catalog metadata.
+Translate each item naturally into the target language.
+Preserve catalog numbers (RJ codes), episode/chapter numbers, and file extensions.
+Return one JSON object per line (NDJSON), each on its own line:
+{"id":"<id>","text":"translated text"}
+Do not wrap in markdown fences. Do not return a JSON array wrapper.''';
+
+  static const _googleChunkSize = 12;
+  static const _llmChunkSize = 24;
 
   final AppSettingsService _settings;
   final GoogleTranslateClient _google;
@@ -57,7 +72,10 @@ Do not wrap in markdown fences.''';
       _settings.metadataTranslationProvider;
 
   /// Bulk-translate work titles for a list page. Returns workId → translated title.
-  Future<Map<String, String>> translateWorkTitles(List<Work> works) async {
+  Future<Map<String, String>> translateWorkTitles(
+    List<Work> works, {
+    MetadataPartialCallback? onPartial,
+  }) async {
     if (!isEnabled || works.isEmpty) return {};
 
     final pending = <_PendingItem>[];
@@ -76,6 +94,7 @@ Do not wrap in markdown fences.''';
       );
       if (cached != null) {
         result[id] = cached;
+        onPartial?.call(id, cached);
       } else {
         pending.add(_PendingItem(id: id, source: source));
       }
@@ -83,21 +102,16 @@ Do not wrap in markdown fences.''';
 
     if (pending.isEmpty) return result;
 
-    final translated = await _translateBatch(
-      pending,
+    await _translateAndPersistBatch(
+      scope: _workTitleScope,
+      entityIdFor: (id) => id,
+      pending: pending,
       userHint: 'ASMR work titles',
+      onPartial: (id, text) {
+        result[id] = text;
+        onPartial?.call(id, text);
+      },
     );
-    for (final entry in translated.entries) {
-      result[entry.key] = entry.value;
-      final source = pending.firstWhere((p) => p.id == entry.key).source;
-      await _cache.save(
-        scope: _workTitleScope,
-        entityId: entry.key,
-        targetLang: _targetLang,
-        sourceText: source,
-        translatedText: entry.value,
-      );
-    }
     return result;
   }
 
@@ -106,6 +120,7 @@ Do not wrap in markdown fences.''';
     required String workId,
     required String sourceTitle,
     bool forceRefresh = false,
+    MetadataPartialCallback? onPartial,
   }) async {
     final source = sourceTitle.trim();
     if (source.isEmpty) return null;
@@ -117,24 +132,25 @@ Do not wrap in markdown fences.''';
         targetLang: _targetLang,
         sourceText: source,
       );
-      if (cached != null) return cached;
+      if (cached != null) {
+        onPartial?.call(workId, cached);
+        return cached;
+      }
     }
 
-    final map = await _translateBatch(
-      [_PendingItem(id: workId, source: source)],
+    final pending = [_PendingItem(id: workId, source: source)];
+    final map = <String, String>{};
+    await _translateAndPersistBatch(
+      scope: _workTitleScope,
+      entityIdFor: (id) => id,
+      pending: pending,
       userHint: 'ASMR work title',
+      onPartial: (id, text) {
+        map[id] = text;
+        onPartial?.call(id, text);
+      },
     );
-    final translated = map[workId];
-    if (translated != null) {
-      await _cache.save(
-        scope: _workTitleScope,
-        entityId: workId,
-        targetLang: _targetLang,
-        sourceText: source,
-        translatedText: translated,
-      );
-    }
-    return translated;
+    return map[workId];
   }
 
   Future<String?> cachedWorkTitle({
@@ -153,6 +169,7 @@ Do not wrap in markdown fences.''';
     required String workId,
     required Map<String, String> fileKeyToTitle,
     bool force = false,
+    MetadataPartialCallback? onPartial,
   }) async {
     if (!force && !isEnabled) return {};
     if (fileKeyToTitle.isEmpty) return {};
@@ -173,6 +190,7 @@ Do not wrap in markdown fences.''';
       );
       if (cached != null) {
         result[entry.key] = cached;
+        onPartial?.call(entry.key, cached);
       } else {
         pending.add(_PendingItem(id: entry.key, source: source));
       }
@@ -180,47 +198,71 @@ Do not wrap in markdown fences.''';
 
     if (pending.isEmpty) return result;
 
+    await _translateAndPersistBatch(
+      scope: _trackNameScope,
+      entityIdFor: (fileKey) => '$workId|$fileKey',
+      pending: pending,
+      userHint: 'ASMR audio track / file names',
+      onPartial: (fileKey, text) {
+        result[fileKey] = text;
+        onPartial?.call(fileKey, text);
+      },
+    );
+    return result;
+  }
+
+  Future<void> _translateAndPersistBatch({
+    required String scope,
+    required String Function(String id) entityIdFor,
+    required List<_PendingItem> pending,
+    required String userHint,
+    required MetadataPartialCallback onPartial,
+  }) async {
+    final sourceById = {for (final p in pending) p.id: p.source};
     final translated = await _translateBatch(
       pending,
-      userHint: 'ASMR audio track / file names',
+      userHint: userHint,
+      onPartial: onPartial,
     );
 
     for (final entry in translated.entries) {
-      result[entry.key] = entry.value;
-      final source = pending.firstWhere((p) => p.id == entry.key).source;
+      final source = sourceById[entry.key];
+      if (source == null) continue;
       await _cache.save(
-        scope: _trackNameScope,
-        entityId: '$workId|${entry.key}',
+        scope: scope,
+        entityId: entityIdFor(entry.key),
         targetLang: _targetLang,
         sourceText: source,
         translatedText: entry.value,
       );
     }
-    return result;
   }
 
   Future<Map<String, String>> _translateBatch(
     List<_PendingItem> items, {
     required String userHint,
+    MetadataPartialCallback? onPartial,
   }) async {
     if (items.isEmpty) return {};
 
     switch (provider) {
       case MetadataTranslationProvider.google:
-        return _translateBatchGoogle(items);
+        return _translateBatchGoogle(items, onPartial: onPartial);
       case MetadataTranslationProvider.llm:
-        return _translateBatchLlm(items, userHint: userHint);
+        return _translateBatchLlm(items, userHint: userHint, onPartial: onPartial);
     }
   }
 
   Future<Map<String, String>> _translateBatchGoogle(
-    List<_PendingItem> items,
-  ) async {
+    List<_PendingItem> items, {
+    MetadataPartialCallback? onPartial,
+  }) async {
     final result = <String, String>{};
-    const chunkSize = 12;
 
-    for (var start = 0; start < items.length; start += chunkSize) {
-      final end = start + chunkSize > items.length ? items.length : start + chunkSize;
+    for (var start = 0; start < items.length; start += _googleChunkSize) {
+      final end = start + _googleChunkSize > items.length
+          ? items.length
+          : start + _googleChunkSize;
       final chunk = items.sublist(start, end);
       try {
         final texts = chunk.map((e) => e.source).toList();
@@ -232,6 +274,7 @@ Do not wrap in markdown fences.''';
           final text = i < translated.length ? translated[i].trim() : '';
           if (text.isNotEmpty) {
             result[chunk[i].id] = text;
+            onPartial?.call(chunk[i].id, text);
           }
         }
       } catch (e) {
@@ -246,6 +289,7 @@ Do not wrap in markdown fences.''';
             );
             if (text.trim().isNotEmpty) {
               result[item.id] = text.trim();
+              onPartial?.call(item.id, text.trim());
             }
           } catch (inner) {
             AppLogger.warning('Google metadata single failed: $inner');
@@ -259,53 +303,119 @@ Do not wrap in markdown fences.''';
   Future<Map<String, String>> _translateBatchLlm(
     List<_PendingItem> items, {
     required String userHint,
+    MetadataPartialCallback? onPartial,
   }) async {
+    final result = <String, String>{};
     final key = await _apiKeyRepo.getApiKey();
     if (key == null || key.trim().isEmpty) {
       AppLogger.warning(
         'LLM metadata translate skipped (no API key) — falling back to Google',
       );
-      return _translateBatchGoogle(items);
+      return _translateBatchGoogle(items, onPartial: onPartial);
     }
 
-    try {
-      final payload = jsonEncode([
-        for (final item in items) {'id': item.id, 'text': item.source},
-      ]);
+    for (var start = 0; start < items.length; start += _llmChunkSize) {
+      final end =
+          start + _llmChunkSize > items.length ? items.length : start + _llmChunkSize;
+      final chunk = items.sublist(start, end);
+      try {
+        final chunkResult = await _translateLlmChunk(
+          chunk,
+          userHint: userHint,
+          onPartial: onPartial,
+        );
+        result.addAll(chunkResult);
+      } on LlmTranslationException catch (e) {
+        AppLogger.warning('LLM metadata chunk failed ($e) — trying Google');
+        final google = await _translateBatchGoogle(chunk, onPartial: onPartial);
+        result.addAll(google);
+        if (google.isEmpty) rethrow;
+      } catch (e) {
+        AppLogger.warning('LLM metadata chunk error ($e) — trying Google');
+        final google = await _translateBatchGoogle(chunk, onPartial: onPartial);
+        result.addAll(google);
+        if (google.isEmpty) rethrow;
+      }
+    }
+    return result;
+  }
 
-      final result = await _llm.chatCompletionWithUsage(
+  Future<Map<String, String>> _translateLlmChunk(
+    List<_PendingItem> items, {
+    required String userHint,
+    MetadataPartialCallback? onPartial,
+  }) async {
+    final payload = jsonEncode([
+      for (final item in items) {'id': item.id, 'text': item.source},
+    ]);
+
+    final messages = [
+      {
+        'role': 'system',
+        'content': _settings.llmStreamingEnabled
+            ? _liteStreamingSystemPrompt
+            : _liteSystemPrompt,
+      },
+      {
+        'role': 'user',
+        'content':
+            'Target language: $_targetLang\nContext: $userHint\nTranslate these items:\n$payload',
+      },
+    ];
+
+    final result = <String, String>{};
+    LlmUsage? usage;
+
+    if (_settings.llmStreamingEnabled) {
+      final parser = StreamingMetadataParser();
+      await for (final chunk in _llm.chatCompletionStream(
         modelSlot: LlmModelSlot.lite,
-        messages: [
-          {'role': 'system', 'content': _liteSystemPrompt},
-          {
-            'role': 'user',
-            'content':
-                'Target language: $_targetLang\nContext: $userHint\nTranslate these items:\n$payload',
-          },
-        ],
+        messages: messages,
+        temperature: 0.2,
+        onUsage: (u) => usage = u,
+      )) {
+        for (final entry in parser.feed(chunk)) {
+          result[entry.key] = entry.value;
+          onPartial?.call(entry.key, entry.value);
+        }
+      }
+      for (final entry in parser.flush()) {
+        result[entry.key] = entry.value;
+        onPartial?.call(entry.key, entry.value);
+      }
+    } else {
+      final response = await _llm.chatCompletionWithUsage(
+        modelSlot: LlmModelSlot.lite,
+        messages: messages,
         temperature: 0.2,
       );
+      usage = response.usage;
+      final parsed = _parseLlmBatchResponse(response.content, items);
+      result.addAll(parsed);
+      for (final entry in parsed.entries) {
+        onPartial?.call(entry.key, entry.value);
+      }
+    }
 
-      if (result.usage != null && _usageRepo != null) {
-        await _usageRepo.record(
+    final recordedUsage = usage;
+    if (recordedUsage != null) {
+      final repo = _usageRepo;
+      if (repo != null) {
+        await repo.record(
           model: _settings.llmLiteModel,
           operation: 'metadata_translate',
-          usage: result.usage!,
+          usage: recordedUsage,
         );
       }
-
-      return _parseLlmBatchResponse(result.content, items);
-    } on LlmTranslationException catch (e) {
-      AppLogger.warning('LLM metadata batch failed ($e) — trying Google');
-      final google = await _translateBatchGoogle(items);
-      if (google.isNotEmpty) return google;
-      rethrow;
-    } catch (e) {
-      AppLogger.warning('LLM metadata batch error ($e) — trying Google');
-      final google = await _translateBatchGoogle(items);
-      if (google.isNotEmpty) return google;
-      rethrow;
     }
+
+    if (result.isEmpty) {
+      throw LlmTranslationException(
+        LlmTranslationErrorType.invalidResponse,
+        'empty metadata LLM response',
+      );
+    }
+    return result;
   }
 
   @visibleForTesting
@@ -335,7 +445,6 @@ Do not wrap in markdown fences.''';
 
     if (result.length == items.length) return result;
 
-    // Positional fallback when model omitted ids.
     if (result.isEmpty && rows.length == items.length) {
       for (var i = 0; i < items.length; i++) {
         final text = rows[i]['text']?.toString().trim() ??

@@ -23,6 +23,9 @@ import 'package:lizunemu/screens/similar_works_screen.dart';
 import 'package:lizunemu/screens/subtitle_preview_screen.dart';
 import 'package:lizunemu/screens/image_preview_screen.dart';
 import 'package:lizunemu/screens/video_player_screen.dart';
+import 'package:get_it/get_it.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/settings/metadata_translation_mode.dart';
 import 'package:lizunemu/widgets/common/back_leading.dart';
 import 'package:open_filex/open_filex.dart';
 
@@ -356,23 +359,31 @@ class _DetailFilesSection extends StatelessWidget {
           ));
         }
 
+        final metadataSettings = GetIt.I<AppSettingsService>();
+        final showManualTrackTranslate =
+            metadataSettings.metadataTranslationEnabled &&
+                metadataSettings.metadataTranslationMode ==
+                    MetadataTranslationMode.manual;
+
         return WorkFilesList(
           files: viewModel.files!,
           onFolderDownload: runBatch,
           onFolderTranslate: runBulkTranslate,
           trackTitleFor: viewModel.displayTrackTitle,
           isTranslatingTrackNames: viewModel.isTranslatingTracks,
-          onTranslateTrackNames: () async {
-            final msg = await viewModel.translateTrackNames(force: true);
-            if (!context.mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  msg ?? Strings.metadataTrackTranslationDone,
-                ),
-              ),
-            );
-          },
+          onTranslateTrackNames: showManualTrackTranslate
+              ? () async {
+                  final msg = await viewModel.translateTrackNames(force: true);
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        msg ?? Strings.metadataTrackTranslationDone,
+                      ),
+                    ),
+                  );
+                }
+              : null,
           onFileTap: (file) async {
             if (viewModel.isVideoFile(file)) {
               await Navigator.of(context).push(
