@@ -1,13 +1,19 @@
 # Milestone F — Local folder scan library
 
-- **创建时间**：2026-07-05
-- **状态**：active
-- **关联 PR**：#11
+- **Created**: 2026-07-05
+- **Owner**: cursor-agent
+- **Status**: active
+- **Related Issue / PR**: #11
 
-## Goal
+---
+
+## 1. Goal
+
 Eara-style local library: scan roots, album list, offline play.
 
-## Scope
+## 2. Scope
+
+**In scope:**
 - DB v3: `local_scan_roots`, `local_albums`, `local_tracks`
 - `LocalLibraryScanner`, `LocalLibraryRepository`, `ScanRootsStore`
 - `LocalLibraryViewModel` + `LocalLibraryContent`
@@ -15,7 +21,11 @@ Eara-style local library: scan roots, album list, offline play.
 - Settings: manage scan folders
 - `PlaylistBuilder` `file://` support
 
-## Acceptance
+**Out of scope:**
+- (none listed)
+
+## 3. Acceptance
+
 - [ ] User can add folder + scan
 - [ ] Albums listed grouped by folder
 - [ ] Tap album plays local files

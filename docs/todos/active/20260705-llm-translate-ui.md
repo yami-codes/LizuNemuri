@@ -1,33 +1,36 @@
 # LLM translate UI / auto-translate feedback
 
-- **创建时间**：2026-07-05
-- **负责人**：cursor-agent
-- **状态**：active
+- **Created**: 2026-07-05
+- **Owner**: cursor-agent
+- **Status**: active
+- **Related Issue / PR**:
 
-## 1. 目标
+---
+
+## 1. Goal
 
 Expose manual "Translate with LLM" in the player, re-run auto-translate when the toggle is enabled mid-track, and surface API/config errors instead of silent no-ops.
 
-## 2. 范围
+## 2. Scope
 
-**包含：**
+**In scope:**
 - Player subtitle menu: translate now / show original / open LLM settings
 - `SubtitleTranslationResult` + service `translateNow` / API-key precheck
 - `PlayerViewModel` settings listener + failure fallback to original subs + snackbar feedback
 - zh/en/th strings
 
-**不包含：**
+**Out of scope:**
 - Subtitle preview screen translate
 - Re-translate on target-language change without user action
 
-## 3. 验收标准
+## 3. Acceptance
 
 - [x] Player → subtitle (⋮) shows "Translate subtitles with LLM" when subs loaded
 - [x] Auto toggle re-triggers on current track when enabled
 - [x] Missing API key / network errors show SnackBar; originals still display
 - [x] `flutter test` pass
 
-## 4. 步骤
+## 4. Steps
 
 - [x] `SubtitleTranslationResult` + service refactor
 - [x] PlayerViewModel + PlayerScreen menu

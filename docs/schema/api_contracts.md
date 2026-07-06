@@ -1,23 +1,23 @@
-# API 接口契约 (已锁定)
+# API Contracts (Locked)
 
-## 新增接口
+## New Endpoints
 
-| 接口 | 方法 | 认证 | 响应模型 |
+| Endpoint | Method | Auth | Response Model |
 |------|------|------|----------|
-| /api/tags/ | GET | 否 | List&lt;TagItem&gt; |
-| /api/circles/ | GET | 否 | List&lt;CircleItem&gt; |
-| /api/vas/ | GET | 否 | List&lt;VoiceActor&gt; |
-| /api/workInfo/{id} | GET | 否 | WorkInfo |
+| /api/tags/ | GET | No | List&lt;TagItem&gt; |
+| /api/circles/ | GET | No | List&lt;CircleItem&gt; |
+| /api/vas/ | GET | No | List&lt;VoiceActor&gt; |
+| /api/workInfo/{id} | GET | No | WorkInfo |
 
-## 参数升级
+## Parameter Upgrades
 
-| 接口 | 变更 |
+| Endpoint | Change |
 |------|------|
 | GET /api/tracks/{id} | v=1 → v=2 |
-| GET /api/search/{keyword} | 新增 includeTranslationWorks (already implemented in code) |
-| GET /api/playlist/get-playlists | 新增 filterBy, pageSize |
+| GET /api/search/{keyword} | Added includeTranslationWorks (already implemented in code) |
+| GET /api/playlist/get-playlists | Added filterBy, pageSize |
 
-## 搜索语法扩展
-- `$tag:标签名$` — 按标签筛选
-- `$circle:社团名$` — 按社团筛选
-- `$va:声优名$` — 按声优筛选
+## Search Syntax Extensions
+- `$tag:tag-name$` — filter by tag
+- `$circle:circle-name$` — filter by circle
+- `$va:voice-actor-name$` — filter by voice actor

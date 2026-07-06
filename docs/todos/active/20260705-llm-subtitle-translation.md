@@ -1,28 +1,31 @@
 # LLM subtitle translation (OpenAI / OpenRouter)
 
-- **创建时间**：2026-07-05
-- **负责人**：cursor-agent
-- **状态**：active
+- **Created**: 2026-07-05
+- **Owner**: cursor-agent
+- **Status**: active
+- **Related Issue / PR**:
 
-## 1. 目标
+---
+
+## 1. Goal
 
 Playback subtitles auto-translate via OpenAI-compatible or OpenRouter APIs, with rich work/playlist context, configurable target language, system prompt override, and optional jailbreak prompt for stable adult-content translation.
 
-## 2. 范围
+## 2. Scope
 
-**包含：**
+**In scope:**
 - `LlmClient` + `SubtitleTranslationService` + disk cache
 - Secure API key storage
 - `AppSettingsService` LLM prefs + settings screen
 - Hook in `PlayerViewModel` after subtitle parse
 - zh/en/th UI strings
 
-**不包含：**
+**Out of scope:**
 - Real-time per-cue streaming translation UI
 - Subtitle preview screen translation
 - Server-side proxy
 
-## 3. 验收标准
+## 3. Acceptance
 
 - [ ] Toggle enables/disables LLM translation during playback
 - [ ] Endpoint/model/key configurable; OpenRouter preset works
@@ -31,7 +34,7 @@ Playback subtitles auto-translate via OpenAI-compatible or OpenRouter APIs, with
 - [ ] Translated cache reused on replay
 - [ ] `flutter analyze` + unit tests pass
 
-## 4. 步骤
+## 4. Steps
 
 - [ ] Core services + repository
 - [ ] Settings + UI

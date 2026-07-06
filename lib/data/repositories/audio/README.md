@@ -1,15 +1,15 @@
-# 音频数据仓库
+# Audio Repositories
 
-此目录包含音频数据访问的仓库实现。
+This directory contains repository implementations for audio data access.
 
-## 文件结构
+## File Layout
 
-- `audio_repository.dart` - 音频数据仓库实现
-- `audio_repository_impl.dart` - 音频数据仓库具体实现
-- `audio_cache_repository.dart` - 音频缓存仓库
+- `audio_repository.dart` — audio repository interface
+- `audio_repository_impl.dart` — concrete implementation
+- `audio_cache_repository.dart` — audio cache repository
 
-## 职责
+## Responsibilities
 
-- 音频数据的获取和存储
-- 播放历史记录的管理
-- 音频缓存的处理 
+- Fetching and persisting audio data
+- Managing playback history
+- Handling audio cache

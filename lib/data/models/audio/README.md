@@ -1,16 +1,16 @@
-# 音频数据模型
+# Audio Data Models
 
-此目录包含所有音频相关的数据模型定义。
+This directory holds all audio-related data model definitions.
 
-## 文件结构
+## File Layout
 
-- `audio_track.dart` - 音频轨道模型
-- `playlist.dart` - 播放列表模型
-- `audio_metadata.dart` - 音频元数据模型
+- `audio_track.dart` — audio track model
+- `playlist.dart` — playlist model
+- `audio_metadata.dart` — audio metadata model
 
-## 说明
+## Purpose
 
-这些模型用于：
-- 音频文件信息的封装
-- 播放列表数据的组织
-- 音频元数据的管理 
+These models are used for:
+- Encapsulating audio file information
+- Organizing playlist data
+- Managing audio metadata
