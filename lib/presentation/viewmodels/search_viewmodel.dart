@@ -146,7 +146,7 @@ class SearchViewModel extends ChangeNotifier with WorkListTranslationMixin {
         extraTokens: _commandTokens.where((t) {
           final tags = SearchCommandParser.parseTagNames([t]);
           return tags.include.isEmpty && tags.exclude.isEmpty;
-        }),
+        }).toList(),
       );
 
   bool get _canSearch =>

@@ -8,6 +8,14 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.12 — 2026-07-06
+
+### Fixed
+- **CI compile**: `SearchViewModel._composedKeyword` passes `List<String>` for `extraTokens` (`.toList()` on filtered command tokens).
+- **Android release**: pin `media_kit_video` to `1.2.5` for Flutter 3.27 `SurfaceProducer.Callback` compatibility.
+
+---
+
 ## v2.0.0-rc.11 — 2026-07-06
 
 ### Added
