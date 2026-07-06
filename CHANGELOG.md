@@ -8,7 +8,14 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
-## v2.0.0-rc.14 — 2026-07-06
+## v2.0.0-rc.15 — 2026-07-06
+
+### Fixed
+- **Windows playback**: when SQLite cannot load (`sqlite3.dll` missing), online streaming no longer fails — download lookup errors fall back to progressive URL playback instead of skipping every track.
+- **Windows SQLite**: bundle `sqlite3_flutter_libs`; open path tries executable-linked sqlite3, `sqlite3.dll`, then system `winsqlite3.dll`.
+- **URL refresh**: `WorkMediaUrlRefresher` no longer returns a stale URL when in-memory tree patch hits Freezed unmodifiable lists.
+
+---
 
 ### Added
 - **Diagnostic logs**: Settings → Storage → view, filter by level, search, copy one/all, and clear in-memory logs (up to 2500 entries).
