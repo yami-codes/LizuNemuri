@@ -546,6 +546,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       overlayBaseColor: cs.surface,
                       tintBaseColor: palette.backdropTint,
                       isDark: isDark,
+                      animating: _viewModel.isPlaying,
                     ),
                     SafeArea(
                       child: LayoutBuilder(
@@ -562,6 +563,17 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                 child: isWide
                                     ? _buildWideContent(coverSize)
                                     : GestureDetector(
+                                        onVerticalDragEnd: (details) {
+                                          if (!_canSwitchView) return;
+                                          final vy =
+                                              details.primaryVelocity ?? 0;
+                                          if (vy < -280) {
+                                            setState(() => _showLyrics = true);
+                                          } else if (vy > 280) {
+                                            setState(
+                                                () => _showLyrics = false);
+                                          }
+                                        },
                                         onTap: () {
                                           if (_canSwitchView) {
                                             setState(() =>

@@ -42,8 +42,51 @@ void main() {
       await tester.pumpWidget(host(showLyrics: false));
       await tester.pumpWidget(host(showLyrics: true));
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 150));
+      await tester.pump(const Duration(milliseconds: 250));
       expect(find.text('lyrics'), findsOneWidget);
+    });
+  });
+
+  group('playerSurfaceTransitionBuilder', () {
+    testWidgets('uses 12% slide and 0.94 scale at start', (tester) async {
+      final animation = AnimationController(
+        vsync: const TestVSync(),
+        duration: AppAnimations.long,
+      );
+      addTearDown(animation.dispose);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AnimatedBuilder(
+            animation: animation,
+            builder: (context, _) {
+              return playerSurfaceTransitionBuilder(
+                const SizedBox(key: kPlayerLyricsSurfaceKey),
+                animation,
+              );
+            },
+          ),
+        ),
+      );
+
+      animation.value = 0;
+      await tester.pump();
+
+      final slide = tester.widget<SlideTransition>(
+        find.byType(SlideTransition),
+      );
+      expect(
+        slide.position.value.dy,
+        closeTo(0.12, 0.001),
+      );
+
+      final scale = tester.widget<ScaleTransition>(
+        find.byType(ScaleTransition),
+      );
+      expect(
+        scale.scale.value,
+        closeTo(0.94, 0.001),
+      );
     });
   });
 

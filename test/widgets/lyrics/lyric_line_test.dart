@@ -64,7 +64,7 @@ void main() {
       );
       final high = tester.widget<Text>(find.text('translated line'));
       expect(high.style?.fontWeight, FontWeight.w700);
-      expect(high.style?.fontSize, 26);
+      expect(high.style?.fontSize, LyricLine.primaryFontSize);
     });
 
     testWidgets('low emphasis uses lighter primary style', (tester) async {
@@ -77,8 +77,8 @@ void main() {
         ),
       );
       final low = tester.widget<Text>(find.text('translated line'));
-      expect(low.style?.fontWeight, FontWeight.w400);
-      expect(low.style?.fontSize, 15);
+      expect(low.style?.fontWeight, FontWeight.w500);
+      expect(low.style?.fontSize, LyricLine.primaryFontSize);
     });
 
     testWidgets('immersive scope tints active lyric color', (tester) async {
