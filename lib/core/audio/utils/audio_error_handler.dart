@@ -2,11 +2,11 @@ import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
 enum AudioErrorType {
-  playback,    // 播放错误
-  playlist,    // 播放列表错误
-  state,       // 状态错误
-  context,     // 上下文错误
-  init,        // 初始化错误
+  playback,    // Playback error
+  playlist,    // Playlist error
+  state,       // State error
+  context,     // Context error
+  init,        // Initialization error
 }
 
 class AudioError implements Exception {

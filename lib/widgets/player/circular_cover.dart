@@ -4,7 +4,7 @@ import 'package:lizunemu/core/theme/app_radius.dart';
 import 'package:lizunemu/core/image/cache/image_cache_manager.dart';
 import 'package:lizunemu/widgets/common/skeleton_pulse.dart';
 
-/// 播放器封面：圆形或 Apple Music 式圆角方形专辑图。
+/// Player cover: circular or Apple Music-style rounded-square album art.
 class CircularCover extends StatelessWidget {
   const CircularCover({
     super.key,

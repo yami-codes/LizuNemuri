@@ -23,13 +23,13 @@ abstract class PaginatedWorksViewModel extends ChangeNotifier {
     _init();
   }
 
-  // 修改为异步初始化
+  // Async initialization
   Future<void> _init() async {
-    await onInit(); // 添加初始化钩子
+    await onInit(); // Subclass init hook
     loadPage(1);
   }
 
-  // 添加初始化钩子，供子类重写
+  // Init hook for subclasses
   Future<void> onInit() async {}
 
   // Getters
@@ -42,16 +42,16 @@ abstract class PaginatedWorksViewModel extends ChangeNotifier {
       ? (_pagination!.totalCount! / _pagination!.pageSize!).ceil()
       : null;
 
-  // 获取页面名称，用于日志
+  // Page name for logging
   String get pageName;
 
-  // 子类必须实现的方法
+  // Methods subclasses must implement
   Future<WorksResponse> fetchPage(int page);
 
-  // 获取 ApiService 实例，供子类使用
+  // ApiService accessor for subclasses
   ApiService get apiService => _apiService;
 
-  // 通用的加载逻辑
+  // Shared load logic
   Future<void> loadPage(int page) async {
     if (_isLoading) return;
     if (page < 1 || (totalPages != null && page > totalPages!)) return;
@@ -91,7 +91,7 @@ abstract class PaginatedWorksViewModel extends ChangeNotifier {
     }
   }
 
-  /// 预加载下一页数据（空闲时调用以减少翻页延迟）
+  /// Preload next page when idle to reduce page-turn latency.
   void maybePrefetchNext() {
     final nextPage = _currentPage + 1;
     if (_isPrefetching) return;
@@ -111,13 +111,13 @@ abstract class PaginatedWorksViewModel extends ChangeNotifier {
     });
   }
 
-  /// 清除预加载缓存（当查询条件变更时调用）
+  /// Clear preload cache when query filters change.
   void _invalidatePrefetch() {
     _prefetchedResponse = null;
     _prefetchedPage = null;
   }
 
-  // 刷新方法
+  // Refresh
   Future<void> refresh() async {
     _invalidatePrefetch();
     AppLogger.info(LogStrings.logRefreshingPagenamee3eb2(pageName));
@@ -130,6 +130,6 @@ abstract class PaginatedWorksViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  // 添加 pagination getter
+  // Pagination getter
   Pagination? get pagination => _pagination;
 } 

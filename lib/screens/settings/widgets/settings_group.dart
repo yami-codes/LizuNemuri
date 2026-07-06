@@ -9,7 +9,7 @@ class SettingsGroup extends StatelessWidget {
   final List<Widget> children;
   final EdgeInsetsGeometry margin;
 
-  // 分割线起点 = 左内边距(16) + leading 槽(40) + 文字间距(12)，对齐标题文字。
+  // Divider indent = left padding (16) + leading slot (40) + text gap (12).
   static const double _dividerIndent = 68;
 
   const SettingsGroup({

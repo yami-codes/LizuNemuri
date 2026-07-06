@@ -7,20 +7,18 @@ import 'package:lizunemu/core/audio/i_audio_player_service.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/utils/logger.dart';
 
-/// 睡眠定时器：选定时长后到点自动 **暂停** 播放（用 `pause()` 而非
-/// `stop()`——`stop()` 会清空持久化播放态，睡眠场景需可恢复）。
+/// Sleep timer: at expiry **pause** playback (`pause()` not `stop()` — stop clears persisted state).
 ///
-/// 可选在最后 [fadeOutSeconds] 秒线性淡出音量，并在播放器上叠加睡眠模式暗幕。
+/// Optional linear volume fade in the last [fadeOutSeconds] plus a sleep-mode dim overlay.
 ///
-/// 刻意 **不持久化**：这是会话级控制，重启后静默重新计时是坏 UX，
-/// 也避开 `playback_state` 持久化不变量。
+/// **Not persisted**: session-only; re-arming on launch is bad UX and avoids playback_state invariants.
 class SleepTimerController extends ChangeNotifier {
   static const _tag = 'SleepTimer';
 
-  /// 可选时长档（分钟）。`null` 即对话框里的「关闭」。
+  /// Preset durations in minutes. `null` = off in the dialog.
   static const List<int> presetMinutes = [15, 30, 45, 60, 90];
 
-  /// 到期前音量淡出窗口（秒）。
+  /// Volume fade window before expiry (seconds).
   static const int fadeOutSeconds = 30;
 
   static const double baseDimOpacity = 0.35;
@@ -38,19 +36,19 @@ class SleepTimerController extends ChangeNotifier {
 
   SleepTimerController(this._audioService, this._settings);
 
-  /// 当前选定时长（分钟）；`null` = 未设置/已关闭。
+  /// Selected duration in minutes; `null` = off.
   int? get minutes => _minutes;
 
   bool get isActive => _timer != null;
 
   bool get isFading => _isFading;
 
-  /// 剩余时间；未激活时为 `null`。
+  /// Remaining time; `null` when inactive.
   Duration? get remaining => _remainingSeconds == null
       ? null
       : Duration(seconds: _remainingSeconds!);
 
-  /// 睡眠模式暗幕不透明度（0 = 无暗幕）。
+  /// Sleep-mode dim overlay opacity (0 = none).
   double get dimOpacity => computeDimOpacity(
         isActive: isActive,
         dimEnabled: _settings.sleepTimerDimScreenEnabled,
@@ -75,7 +73,7 @@ class SleepTimerController extends ChangeNotifier {
         (maxDimOpacity - baseDimOpacity) * t.clamp(0.0, 1.0);
   }
 
-  /// 设置定时时长。`null` 或 `<= 0` = 取消。重复设置会先取消旧 Timer。
+  /// Set duration. `null` or `<= 0` cancels. Replaces any existing Timer.
   void setMinutes(int? minutes) {
     _cancelTimers();
     _restoreVolumeIfNeeded();

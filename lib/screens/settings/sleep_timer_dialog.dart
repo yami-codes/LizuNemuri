@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/core/platform/sleep_timer_controller.dart';
 
-/// 睡眠定时单选对话框：关闭 / 15 / 30 / 45 / 60 / 90 分钟。
-/// 选择即写入 [SleepTimerController] 并关闭（无确认按钮，符合单选语义）。
+/// Sleep timer radio dialog: off / 15 / 30 / 45 / 60 / 90 minutes.
+/// Selection writes [SleepTimerController] and closes (no confirm button).
 class SleepTimerDialog extends StatelessWidget {
   final SleepTimerController controller;
 

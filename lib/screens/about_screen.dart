@@ -39,7 +39,7 @@ class _AboutScreenState extends State<AboutScreen> {
     }
   }
 
-  // 居中品牌头：标志锁定 + 版本 + 简介（对齐参考图关于页结构）。
+  // Centered brand header: wordmark + version + intro (about page layout).
   Widget _header(BuildContext context, String version) {
     final cs = Theme.of(context).colorScheme;
     return Padding(

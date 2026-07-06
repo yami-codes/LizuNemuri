@@ -36,7 +36,7 @@ class FavoritesViewModel extends ChangeNotifier {
           ? (_pagination!.totalCount! / _pagination!.pageSize!).ceil()
           : null;
 
-  /// 加载指定页面的数据
+  /// Load a specific page.
   Future<void> loadPage(int page) async {
     if (_isLoading) return;
     if (page < 1 || (totalPages != null && page > totalPages!)) return;
@@ -76,7 +76,7 @@ class FavoritesViewModel extends ChangeNotifier {
     }
   }
 
-  /// 加载收藏列表(用于初始加载和刷新)
+  /// Load favorites (initial load and refresh).
   Future<void> loadFavorites({bool refresh = false}) async {
     await loadPage(1);
   }

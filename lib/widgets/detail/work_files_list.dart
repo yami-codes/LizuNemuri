@@ -11,11 +11,10 @@ class WorkFilesList extends StatelessWidget {
   final Function(Child file)? onFileTap;
   final Function(Child file)? onFileDownload;
 
-  /// 下载整部作品 / 某文件夹子树全部音频（含匹配字幕）。
-  /// 参数为 null 代表整部作品，否则为该文件夹节点。
+  /// Download all audio (+ matched subtitles) for whole work or folder subtree. null = whole work.
   final void Function(Child? folderNode)? onFolderDownload;
 
-  /// 批量 LLM 预翻译整部作品 / 文件夹子树（含匹配字幕）。
+  /// Batch LLM pre-translate for whole work or folder subtree.
   final void Function(Child? folderNode)? onFolderTranslate;
 
   const WorkFilesList({

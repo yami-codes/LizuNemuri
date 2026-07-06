@@ -3,12 +3,10 @@ import 'package:lizunemu/common/constants/log_strings.dart';
 
 part 'update_info.freezed.dart';
 
-/// 一个 GitHub Release 的精简视图。
+/// Slim view of one GitHub Release.
 ///
-/// 字段是从 GitHub Release JSON **派生**的（`version` 剥掉 `v` 前缀、
-/// `apkDownloadUrl` 从 assets 里挑首个 `.apk`），1:1 的 generated `fromJson`
-/// 并不适用，故仅用 Freezed + 自定义 [UpdateInfo.fromReleaseJson]，不接
-/// json_serializable（无 `.g.dart`）。
+/// Fields are **derived** from GitHub Release JSON (version strips `v`, apk from first `.apk` asset);
+/// custom [UpdateInfo.fromReleaseJson] with Freezed only, no json_serializable.
 @freezed
 class UpdateInfo with _$UpdateInfo {
   const factory UpdateInfo({
@@ -20,11 +18,10 @@ class UpdateInfo with _$UpdateInfo {
     required String publishedAt,
   }) = _UpdateInfo;
 
-  /// 从单个 GitHub Release JSON 构造。
+  /// Builds from one GitHub Release JSON object.
   ///
-  /// 缺少 `tag_name` 或 `html_url`（无法定位与跳转）时抛 [FormatException]，
-  /// 由 `UpdateService` 统一转成 `UpdateException(invalidPayload)`——模型层
-  /// 不依赖 service 层异常，保持层次干净且便于单测。
+  /// Throws [FormatException] if `tag_name` or `html_url` is missing;
+  /// UpdateService maps to `UpdateException(invalidPayload)`.
   factory UpdateInfo.fromReleaseJson(Map<String, dynamic> json) {
     final tag = json['tag_name'];
     final html = json['html_url'];

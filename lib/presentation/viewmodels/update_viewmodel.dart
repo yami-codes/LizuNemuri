@@ -25,8 +25,8 @@ class UpdateViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    // Dialog 在检查中被遮罩/返回键关掉时，ChangeNotifierProvider 会 dispose
-    // 这个本地 VM；in-flight 请求回来后若再 notify 会 "used after disposed"。
+    // When the dialog is dismissed mid-check, the local VM is disposed;
+    // in-flight completion must not notifyListeners on a disposed ChangeNotifier.
     _disposed = true;
     super.dispose();
   }
@@ -38,7 +38,7 @@ class UpdateViewModel extends ChangeNotifier {
 
   bool get isChecking => _isChecking;
 
-  /// 是否已完成过至少一次检查（用于区分「检查中」与「已是最新」初始态）。
+  /// Whether at least one check has completed (vs initial "checking" / "up to date").
   bool get checked => _checked;
   String? get error => _error;
   UpdateInfo? get latest => _latest;
@@ -58,7 +58,7 @@ class UpdateViewModel extends ChangeNotifier {
       _hasUpdate = r.hasUpdate;
       _currentVersion = r.currentVersion;
     } on UpdateException catch (e) {
-      // 走 GitHub 专用文案；ViewModel 不依赖 NetworkException。
+      // Use GitHub-specific copy; do not depend on NetworkException.
       AppLogger.error(LogStrings.logUpdateviewmodelUpdateCheckFacead5, e);
       _error = e.userMessage;
     } catch (e) {
@@ -71,8 +71,7 @@ class UpdateViewModel extends ChangeNotifier {
     }
   }
 
-  /// 外部打开下载地址。Android 优先打开 `.apk` 直链，缺失时回退打开
-  /// Release 页；iOS / 其它平台一律打开 Release 页。返回是否成功唤起。
+  /// Open download URL externally. Android prefers `.apk` asset; else release page.
   Future<bool> openDownload() async {
     final info = _latest;
     if (info == null) return false;

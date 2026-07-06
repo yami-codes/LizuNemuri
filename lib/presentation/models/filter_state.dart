@@ -21,13 +21,13 @@ class FilterState {
     );
   }
 
-  // 用于持久化
+  // Serialization
   Map<String, dynamic> toJson() => {
     'orderField': orderField,
     'isDescending': isDescending,
   };
 
-  // 从持久化恢复
+  // Deserialization
   factory FilterState.fromJson(Map<String, dynamic> json) => FilterState(
     orderField: json['orderField'] ?? 'create_date',
     isDescending: json['isDescending'] ?? true,

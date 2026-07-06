@@ -21,7 +21,7 @@ class AuthInterceptor extends Interceptor {
       handler.next(options);
     } catch (e) {
       AppLogger.error(LogStrings.logAuthinterceptorRequestFailed68aba, e);
-      handler.next(options);  // 即使出错也继续请求
+      handler.next(options);  // Continue the request even on read error
     }
   }
 } 

@@ -53,8 +53,7 @@ class _HomeContentState extends State<HomeContent>
     super.build(context);
     return Column(
       children: [
-        // 顶部搜索框（对齐参考图）：只读，点击进入现有搜索页，
-        // 不改动下方网格/分页/筛选逻辑。
+        // Top search field (reference design): read-only tap navigates to search; grid/pagination unchanged.
         Padding(
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.space16,

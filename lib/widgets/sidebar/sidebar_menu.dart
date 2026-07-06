@@ -25,11 +25,8 @@ import 'package:lizunemu/widgets/sidebar/sidebar_group.dart';
 import 'package:lizunemu/widgets/sidebar/sidebar_header.dart';
 import 'package:lizunemu/widgets/sidebar/sidebar_tile.dart';
 
-/// 侧边抽屉。2026-05-16 用户决策：推翻旧「深色玻璃拟态不可回退」视觉不变量，
-/// 改为**跟随应用主题的清爽列表**（对齐参考图：浅色模式=浅色，暗色/mono=深色）。
-/// 保留的性能教训：**不引入任何全屏 BackdropFilter**（旧版 256ms 真机 jank，
-/// 见 docs/todos/done/20260515-sidebar-first-open-jank.md）；参考图为扁平设计，
-/// 本就不需要模糊。
+/// Sidebar drawer. Flat theme-following list (light/dark/mono per app theme).
+/// **No fullscreen BackdropFilter** (256ms first-open jank on real devices; see done TODO).
 class SidebarMenu extends StatelessWidget {
   const SidebarMenu({super.key});
 
@@ -149,7 +146,7 @@ class SidebarMenu extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // 底部装饰水印（参考图）：内容之下、可点穿；无 BackdropFilter。
+            // Bottom watermark under content, pass-through; no BackdropFilter.
             Positioned(
               left: 0,
               right: 0,
@@ -306,7 +303,7 @@ class SidebarMenu extends StatelessWidget {
   }
 }
 
-/// 主题模式小药丸（中性 chip，非玻璃）。
+/// Theme-mode pill (neutral chip, not glass).
 class _ThemeModeBadge extends StatelessWidget {
   const _ThemeModeBadge({required this.label});
 

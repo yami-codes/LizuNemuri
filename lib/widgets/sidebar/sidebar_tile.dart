@@ -4,12 +4,9 @@ import 'package:lizunemu/core/theme/app_radius.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 import 'package:lizunemu/core/theme/app_text_styles.dart';
 
-/// 侧边栏菜单项（对齐参考图）：干净行 + 中性线性图标 + 主题色文字；
-/// `selected` 时整行为实心 accent 胶囊（`primary`/`onPrimary`），未选中透明 + 涟漪。
-/// 不再用白色硬编码 / 彩色图标徽章 / 分割线（参考图无）。
+/// Sidebar row: neutral icon + themed text; selected = solid accent pill.
 class SidebarTile extends StatelessWidget {
-  // spec §2.3：单行列表项 56dp。与 SettingsTile._kRowMinHeight 一致，
-  // 使侧边栏列表节奏与设置统一（56 不在 AppSpacing 网格，沿用具名常量先例）。
+  // spec §2.3: 56dp row height, aligned with SettingsTile._kRowMinHeight.
   static const double _kRowMinHeight = 56;
 
   const SidebarTile({
@@ -26,7 +23,7 @@ class SidebarTile extends StatelessWidget {
   final VoidCallback onTap;
   final bool selected;
 
-  /// 自定义尾部组件；为 null 且未选中时显示淡 chevron。
+  /// Custom trailing; default faint chevron when null and unselected.
   final Widget? trailing;
 
   @override

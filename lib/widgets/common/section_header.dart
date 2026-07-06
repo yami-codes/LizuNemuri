@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 import 'package:lizunemu/core/theme/app_text_styles.dart';
 
-/// 分区标题 + 可选「更多 >」动作。规范 §2.1 复用矩阵（首页/设置/关于）。
+/// Section title + optional "more" action. Spec §2.1 reuse matrix.
 ///
-/// 文案由调用方传入（不内嵌中文），accent 取自 Theme（三配色不变量）。
+/// Copy from caller; accent from Theme (three-variant invariant).
 class SectionHeader extends StatelessWidget {
   const SectionHeader({
     super.key,

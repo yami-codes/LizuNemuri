@@ -5,11 +5,12 @@ import 'package:lizunemu/core/theme/app_spacing.dart';
 import 'package:lizunemu/core/theme/app_text_styles.dart';
 import 'package:lizunemu/presentation/viewmodels/player_viewmodel.dart';
 
-/// 波形进度条（对齐参考图），`PlayerProgress` 的视觉替代——拖拽/点击 seek
-/// 与时间绑定**完全复用** `PlayerViewModel`（同 `seek`/position/duration）。
+/// Waveform progress bar (reference design). Visual replacement for `PlayerProgress`;
+/// drag/tap seek and time binding fully reuse `PlayerViewModel` (same seek/position/duration).
 ///
-/// 说明：波形条高是确定性母题（流式客户端无逐轨真实振幅数据，参考图同理），
-/// 属装饰；已播放比例 / 拖拽定位是真实数据。已播放段染 accent，余下中性。
+/// Bar heights are a deterministic motif (streaming clients lack per-track amplitude;
+/// same as the reference). Decorative only; played fraction and drag position are real.
+/// Played segment uses accent; remainder is neutral.
 class WaveformProgress extends StatelessWidget {
   const WaveformProgress({super.key});
 
@@ -130,7 +131,7 @@ class _WaveformPainter extends CustomPainter {
       ..strokeWidth = barW;
 
     for (var i = 0; i < n; i++) {
-      // 确定性波形母题：两组不同频率正弦叠加，看起来像波形又不抖动。
+      // Deterministic waveform motif: two sine waves at different frequencies for a stable wave look.
       final t = i.toDouble();
       final amp = 0.18 +
           0.82 *

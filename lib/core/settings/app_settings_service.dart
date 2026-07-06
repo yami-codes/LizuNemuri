@@ -25,8 +25,8 @@ class AppSettingsService extends ChangeNotifier {
   static const String _colorVariantKey = 'color_variant';
   static const String _lyricOverlayUnlockedKey = 'lyric_overlay_unlocked';
   static const String _backgroundPlayKey = 'background_play_enabled';
-  // 跨多个列表 ViewModel 共享的「仅看带字幕作品」筛选。收敛到此单点，
-  // 取代各 VM 自行 SharedPreferences.getInstance() + dispose 回写陈旧值。
+  // Shared "subtitle works only" filter across list ViewModels. Single source of truth
+  // instead of each VM calling SharedPreferences.getInstance() and writing stale values on dispose.
   static const String _subtitleFilterKey = 'subtitle_filter';
   static const String _appLanguageKey = 'app_language';
   static const String _llmTranslationEnabledKey = 'llm_translation_enabled';
@@ -251,7 +251,7 @@ class AppSettingsService extends ChangeNotifier {
   }
 
   // === Lyric Overlay Lock ===
-  /// `true` → 悬浮歌词可拖动调整位置；`false` → 锁定（点穿，默认）。
+  /// `true` → floating lyrics draggable; `false` → locked pass-through (default).
   bool get lyricOverlayUnlocked => _lyricOverlayUnlocked;
 
   Future<void> setLyricOverlayUnlocked(bool unlocked) async {
@@ -262,7 +262,7 @@ class AppSettingsService extends ChangeNotifier {
   }
 
   // === Background Play ===
-  /// `true`（默认）→ 切后台继续播放（现有行为）；`false` → 切后台自动暂停。
+  /// `true` (default) → keep playing in background; `false` → pause when backgrounded.
   bool get backgroundPlayEnabled => _backgroundPlayEnabled;
 
   Future<void> setBackgroundPlayEnabled(bool enabled) async {

@@ -5,8 +5,7 @@ import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/data/services/update_service.dart';
 import 'package:lizunemu/presentation/viewmodels/update_viewmodel.dart';
 
-/// 「检查更新」对话框：打开即自动检查，四态——
-/// 检查中 / 已是最新 / 有新版本 / 出错（带重试）。
+/// Update-check dialog: auto-check on open — checking / up to date / new version / error with retry.
 class UpdateDialog extends StatelessWidget {
   const UpdateDialog({super.key});
 

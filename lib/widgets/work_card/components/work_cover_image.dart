@@ -8,7 +8,7 @@ class WorkCoverImage extends StatelessWidget {
   final int workId;
   final String sourceId;
 
-  /// 作品时长（秒）。非空时在封面左下角显示时长角标（对齐参考图）。
+  /// Work duration in seconds; shows bottom-left badge on cover when set.
   final int? durationSeconds;
 
   // 195/146 ≈ 1.336

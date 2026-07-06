@@ -39,7 +39,7 @@ class PlaybackContext {
     }
   }
 
-  // 私有构造函数
+  // Private constructor
   const PlaybackContext._({
     required this.work,
     required this.files,
@@ -49,7 +49,7 @@ class PlaybackContext {
     this.playMode = PlayMode.sequence,
   });
 
-  // 公开的工厂构造函数，只需要基本参数
+  // Public factory constructor; only basic parameters required
   factory PlaybackContext({
     required Work work,
     required Files files,
@@ -84,7 +84,7 @@ class PlaybackContext {
     );
   }
 
-  // 获取同级文件列表（同目录 + 同扩展名 + 可播放音频）
+  // Sibling files in the same directory, extension, and playable audio
   static List<Child> _getPlaylistFromSameDirectory(Child currentFile, Files files) {
     if (!AudioFileClassifier.isPlayableAudio(currentFile)) {
       final extension = currentFile.title?.split('.').last.toLowerCase();
@@ -124,29 +124,29 @@ class PlaybackContext {
     );
   }
 
-  // 便捷方法：检查是否有下一曲
+  // Convenience: whether a next track exists
   bool get hasNext => currentIndex < playlist.length - 1;
 
-  // 便捷方法：检查是否有上一曲
+  // Convenience: whether a previous track exists
   bool get hasPrevious => currentIndex > 0;
 
-  // 获取下一曲（考虑播放模式）
+  // Next track (respects play mode)
   Child? getNextFile() {
     if (playlist.isEmpty) return null;
     
     switch (playMode) {
       case PlayMode.single:
-        return currentFile;  // 单曲循环返回当前文件
+        return currentFile;  // Single-repeat returns the current file
       case PlayMode.loop:
-        // 列表循环：最后一首返回第一首，否则返回下一首
+        // Playlist loop: last track wraps to first, otherwise next
         return hasNext ? playlist[currentIndex + 1] : playlist[0];
       case PlayMode.sequence:
-        // 顺序播放：有下一首则返回，否则返回null
+        // Sequential: return next if available, otherwise null
         return hasNext ? playlist[currentIndex + 1] : null;
     }
   }
 
-  // 获取上一曲
+  // Previous track
   Child? getPreviousFile() {
     if (playlist.isEmpty) return null;
     
@@ -154,22 +154,19 @@ class PlaybackContext {
       case PlayMode.single:
         return currentFile;
       case PlayMode.loop:
-        // 列表循环：第一首返回最后一首，否则返回上一首
+        // Playlist loop: first track wraps to last, otherwise previous
         return hasPrevious ? playlist[currentIndex - 1] : playlist[playlist.length - 1];
       case PlayMode.sequence:
-        // 顺序播放：有上一首则返回，否则返回null
+        // Sequential: return previous if available, otherwise null
         return hasPrevious ? playlist[currentIndex - 1] : null;
     }
   }
 
-  // 这两个方法 copy 的设计思路是遵循了"不可变对象"模式，
-  // 通过创建新的实例而不是修改现有实例来更新状态。这种模式有以下好处：
-  // 状态可预测
-  // 线程安全
-  // 便于调试
-  // 符合函数式编程思想
+  // copyWith* methods follow immutable-object design: update state by creating
+  // new instances instead of mutating existing ones (predictable state, thread-safe,
+  // easier debugging, functional style).
 
-  // 创建新的上下文（用于切换文件）
+  // New context when switching files
   PlaybackContext copyWithFile(Child newFile) {
     return PlaybackContext(
       work: work,
@@ -179,7 +176,7 @@ class PlaybackContext {
     );
   }
 
-  // 创建新的上下文（用于切换播放模式）
+  // New context when switching play mode
   PlaybackContext copyWithMode(PlayMode newMode) {
     return PlaybackContext(
       work: work,
@@ -189,7 +186,7 @@ class PlaybackContext {
     );
   }
 
-  // 便捷方法：获取可播放文件列表
+  // Convenience: list of playable files
   List<Child> getPlayableFiles() {
     if (files.children == null) return [];
     return files.children!.where((file) => 
@@ -198,7 +195,7 @@ class PlaybackContext {
     ).toList();
   }
 
-  // 工具方法：获取文件名（不含扩展名）
+  // Helper: file base name without extension
   String? _getBaseName(String? filename) {
     if (filename == null) return null;
     return filename.replaceAll(RegExp(r'\.[^.]+$'), '');

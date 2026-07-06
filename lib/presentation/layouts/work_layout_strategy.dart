@@ -2,44 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:lizunemu/data/models/works/work.dart';
 import 'package:lizunemu/presentation/layouts/work_layout_config.dart';
 
-/// 作品布局策略
+/// Work grid layout strategy.
 class WorkLayoutStrategy {
   const WorkLayoutStrategy();
 
-  /// 获取设备类型
+  /// Device type from context.
   DeviceType _getDeviceType(BuildContext context) {
     return DeviceType.fromWidth(MediaQuery.of(context).size.width);
   }
 
-  /// 获取每行的列数（宽度自适应，宽屏更多列、卡片更小）
+  /// Column count per row (responsive; more columns on wide screens).
   int getColumnsCount(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     return WorkLayoutConfig.columnsForWidth(width);
   }
 
-  /// 获取行间距
+  /// Row spacing.
   double getRowSpacing(BuildContext context) {
     return WorkLayoutConfig.getSpacing(_getDeviceType(context));
   }
 
-  /// 获取列间距
+  /// Column spacing.
   double getColumnSpacing(BuildContext context) {
     return WorkLayoutConfig.getSpacing(_getDeviceType(context));
   }
 
-  /// 获取内边距
+  /// Page padding.
   EdgeInsets getPadding(BuildContext context) {
     return WorkLayoutConfig.getPadding(_getDeviceType(context));
   }
 
-  // 最近一次输入+输出 memo（规范 §7.3）。键 = works 引用 + 列数。
-  // WorkLayoutStrategy 为 const 不可有实例可变状态，故用类级单槽缓存：
-  // 同一 works 实例 + 同列数的重复 build 直接复用，换页/旋转→重算。
+  // Last input+output memo (spec §7.3). Key = works identity + column count.
+  // WorkLayoutStrategy is const — class-level single-slot cache: reuse same works + columns; recompute on page/rotation change.
   static List<Work>? _memoWorks;
   static int? _memoCols;
   static List<List<Work>>? _memoRows;
 
-  /// 将作品列表分组为行
+  /// Group works into grid rows.
   List<List<Work>> groupWorksIntoRows(List<Work> works, int columnsCount) {
     if (identical(_memoWorks, works) &&
         _memoCols == columnsCount &&

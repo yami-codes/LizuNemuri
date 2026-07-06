@@ -10,13 +10,12 @@ import 'package:lizunemu/presentation/viewmodels/home_viewmodel.dart';
 import 'package:lizunemu/presentation/viewmodels/popular_viewmodel.dart';
 import 'package:lizunemu/common/constants/strings.dart';
 
-/// MainScreen 是应用的主界面，负责管理底部导航栏和对应的内容页面。
-/// 它采用了集中式的状态管理架构，所有子页面的 ViewModel 都在这里初始化和提供。
+/// MainScreen is the app root: bottom navigation and tab content.
 ///
-/// 架构说明：
-/// 1. ViewModel 初始化：所有页面的 ViewModel 都在 MainScreen 中初始化，确保单一实例
-/// 2. 状态提供：通过 MultiProvider 将 ViewModel 提供给整个子树
-/// 3. 生命周期管理：负责所有 ViewModel 的创建和销毁
+/// Architecture:
+/// 1. ViewModels initialized here as singletons per tab
+/// 2. MultiProvider exposes them to the subtree
+/// 3. Lifecycle: create and dispose ViewModels
 ///
 /// Eara Milestone D: bottom bar = Library | Search | Hot (3 tabs).
 class MainScreen extends StatefulWidget {

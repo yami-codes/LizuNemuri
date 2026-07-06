@@ -8,9 +8,8 @@ import 'package:lizunemu/data/models/files/child.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
-/// 只读字幕预览：已下载则读本地文件（离线可用），否则拉
-/// `mediaDownloadUrl`（带缓存）。能按时间轴解析就逐行列出，
-/// 不支持的格式（.srt/.txt 等）回退显示原始文本。
+/// Read-only subtitle preview: local file when downloaded, else `mediaDownloadUrl` with cache.
+/// Timeline list when parseable; raw text fallback for .srt/.txt etc.
 class SubtitlePreviewScreen extends StatefulWidget {
   final String? workId;
   final Child file;
@@ -31,8 +30,8 @@ class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
 
   bool _loading = true;
   String? _error;
-  SubtitleList? _parsed; // 解析成功 → 时间轴列表
-  String? _raw; // 解析失败 → 原文兜底
+  SubtitleList? _parsed; // Parse OK → timeline list
+  String? _raw; // Parse failed → raw text fallback
 
   @override
   void initState() {
@@ -171,7 +170,7 @@ class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
       );
     }
 
-    // 原文兜底（.srt/.txt 等无法按时间轴解析）
+    // Raw text fallback (.srt/.txt etc. cannot be timeline-parsed)
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [

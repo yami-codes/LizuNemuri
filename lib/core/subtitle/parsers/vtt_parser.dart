@@ -15,7 +15,7 @@ class VttParser extends BaseSubtitleParser {
     final subtitles = <Subtitle>[];
     int index = 0;
     
-    // 跳过WEBVTT头部
+    // Skip WEBVTT header
     while (index < lines.length && !lines[index].contains('-->')) {
       index++;
     }
@@ -28,7 +28,7 @@ class VttParser extends BaseSubtitleParser {
           final start = _parseTimeString(times[0].trim());
           final end = _parseTimeString(times[1].trim());
           
-          // 收集字幕文本
+          // Collect cue text
           index++;
           String text = '';
           while (index < lines.length && lines[index].trim().isNotEmpty) {

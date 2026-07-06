@@ -1,16 +1,16 @@
 import 'package:flutter/widgets.dart';
 
-/// 圆角令牌。规范 §1.4。
+/// Radius tokens. Spec §1.4.
 ///
-/// `*All` 为 const [BorderRadius]，可直接用于 const 主题/装饰，零分配。
-/// 圆形封面（`CircularCover`）用 `BoxShape.circle`，不在此列。
+/// `*All` are const [BorderRadius] for zero-allocation theme/decoration.
+/// Circular covers use `BoxShape.circle`, not these.
 class AppRadius {
   AppRadius._();
 
   static const double sm = 8; // Chip / Tooltip
-  static const double md = 12; // 作品卡片 / 列表项
-  static const double lg = 16; // 播放器抽屉 / 底部面板 / 对话框
-  static const double full = 999; // 胶囊按钮 / 搜索框 / 头像 / AccentPill
+  static const double md = 12; // Work cards / list items
+  static const double lg = 16; // Player sheet / bottom panel / dialogs
+  static const double full = 999; // Pills / search field / avatar / AccentPill
 
   static const BorderRadius smAll = BorderRadius.all(Radius.circular(sm));
   static const BorderRadius mdAll = BorderRadius.all(Radius.circular(md));

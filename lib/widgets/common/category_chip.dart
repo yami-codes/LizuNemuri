@@ -3,11 +3,10 @@ import 'package:lizunemu/core/theme/app_radius.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 import 'package:lizunemu/core/theme/app_text_styles.dart';
 
-/// 图标 + 标签分类芯片（首页「热门分类」）。规范 §2.1。
+/// Icon + label category chip (home hot categories). Spec §2.1.
 ///
-/// 软底用 `primaryContainer`、图标用 `primary`——三配色随 accent 变化；
-/// 文字保持中性 `onSurface`。与详情页用的 [TagChip]（纯文本）是不同语义，
-/// 不复用。
+/// Soft `primaryContainer` background, `primary` icon; text stays neutral `onSurface`.
+/// Different semantic from [TagChip] on detail — not shared.
 class CategoryChip extends StatelessWidget {
   const CategoryChip({
     super.key,

@@ -1,31 +1,31 @@
 import 'package:lizunemu/core/audio/models/subtitle.dart';
 
 abstract class ISubtitleService {
-  // 字幕加载
+  // Subtitle loading
   Future<void> loadSubtitle(String url);
 
   /// Load subtitle from an already-parsed SubtitleList (for local imports)
   Future<void> loadSubtitleFromContent(SubtitleList subtitleList);
   
-  // 字幕状态流
+  // Subtitle state stream
   Stream<SubtitleList?> get subtitleStream;
   
-  // 当前字幕流
+  // Current subtitle stream
   Stream<Subtitle?> get currentSubtitleStream;
   
-  // 当前字幕
+  // Current subtitle
   Subtitle? get currentSubtitle;
   
-  // 更新播放位置
+  // Update playback position
   void updatePosition(Duration position);
   
-  // 资源释放
+  // Release resources
   void dispose();
   
-  // 添加这一行
-  SubtitleList? get subtitleList;  // 获取当前字幕列表
+  // Added:
+  SubtitleList? get subtitleList;  // Current subtitle list
   
-  // 添加清除字幕的方法
+  // Clear loaded subtitles
   void clearSubtitle();
   
   Stream<SubtitleWithState?> get currentSubtitleWithStateStream;

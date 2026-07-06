@@ -3,11 +3,11 @@ import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'app_colors.dart';
 import 'app_radius.dart';
 
-/// 应用主题配置
+/// App theme configuration.
 class AppTheme {
   const AppTheme._();
 
-  // 暗色主题
+  // Dark theme
   static ThemeData dark(ColorVariant variant) => fromColorScheme(
         AppColors.darkSchemeFor(variant),
       );
@@ -30,7 +30,7 @@ class AppTheme {
         ),
       );
 
-  // 亮色主题
+  // Light theme
   static ThemeData light(ColorVariant variant) => fromColorScheme(
         AppColors.lightSchemeFor(variant),
       );

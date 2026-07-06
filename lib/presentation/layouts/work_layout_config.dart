@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-/// 设备类型
+/// Device type.
 enum DeviceType {
   mobile,
   tablet,
   desktop;
 
-  /// 根据屏幕宽度获取设备类型
+  /// Device type from screen width.
   static DeviceType fromWidth(double width) {
     if (width >= WorkLayoutConfig.desktopBreakpoint) return DeviceType.desktop;
     if (width >= WorkLayoutConfig.tabletBreakpoint) return DeviceType.tablet;
@@ -14,36 +14,36 @@ enum DeviceType {
   }
 }
 
-/// 作品布局配置
+/// Work grid layout configuration.
 class WorkLayoutConfig {
-  // 断点
+  // Breakpoints
   static const double desktopBreakpoint = 1200;
   static const double tabletBreakpoint = 800;
 
-  // 列数（legacy 档位；实际列数以 [columnsForWidth] 为准）
+  // Column counts (legacy; [columnsForWidth] is authoritative)
   static const int desktopColumns = 4;
   static const int tabletColumns = 3;
   static const int mobileColumns = 2;
 
-  /// 目标卡片最大宽度（px）。宽屏按此反算列数，避免 Windows 桌面两列巨卡。
+  /// Target max card width (px); wide screens derive column count from this.
   static const double maxCardWidth = 180;
 
   static const int minColumns = 2;
   static const int maxColumns = 10;
 
-  // 间距
+  // Spacing
   static const double desktopSpacing = 16;
   static const double tabletSpacing = 12;
   static const double mobileSpacing = 8;
 
-  // 内边距
+  // Padding
   static const EdgeInsets desktopPadding = EdgeInsets.all(16);
   static const EdgeInsets tabletPadding = EdgeInsets.all(12);
   static const EdgeInsets mobilePadding = EdgeInsets.all(8);
 
   const WorkLayoutConfig._();
 
-  /// 根据设备类型获取列数（窄屏回退档位）
+  /// Column count by device type (narrow-screen fallback).
   static int getColumnsCount(DeviceType deviceType) {
     switch (deviceType) {
       case DeviceType.desktop:
@@ -55,7 +55,7 @@ class WorkLayoutConfig {
     }
   }
 
-  /// 按可用宽度计算列数，使单卡宽度 ≤ [maxCardWidth]。
+  /// Column count from available width so card width ≤ [maxCardWidth].
   static int columnsForWidth(double width) {
     final deviceType = DeviceType.fromWidth(width);
     final horizontalPadding = getPadding(deviceType).horizontal;
@@ -67,7 +67,7 @@ class WorkLayoutConfig {
     return cols.clamp(minColumns, maxColumns);
   }
 
-  /// 根据设备类型获取间距
+  /// Spacing by device type.
   static double getSpacing(DeviceType deviceType) {
     switch (deviceType) {
       case DeviceType.desktop:
@@ -79,7 +79,7 @@ class WorkLayoutConfig {
     }
   }
 
-  /// 根据设备类型获取内边距
+  /// Padding by device type.
   static EdgeInsets getPadding(DeviceType deviceType) {
     switch (deviceType) {
       case DeviceType.desktop:

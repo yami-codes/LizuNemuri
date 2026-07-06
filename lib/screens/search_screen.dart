@@ -51,7 +51,7 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
     super.initState();
     _searchController = TextEditingController(text: widget.initialKeyword);
     
-    // 如果有初始关键词，自动执行搜索
+    // Auto-search when initial keyword is provided
     if (widget.initialKeyword?.isNotEmpty == true) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _onSearch();

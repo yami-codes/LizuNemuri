@@ -28,13 +28,13 @@ class PlaybackController {
        _playlist = playlist,
        _eventHub = eventHub;
 
-  // 基础播放控制
+  // Basic playback controls
   Future<void> play() => _player.play();
   Future<void> pause() => _player.pause();
   Future<void> stop() => _player.stop();
   Future<void> seek(Duration position, {int? index}) => _player.seek(position, index: index);
   
-  // 播放列表控制
+  // Playlist controls
   Future<void> next() async {
     try {
       AppLogger.debug(LogStrings.logTrySkipNextac03e);
@@ -87,13 +87,13 @@ class PlaybackController {
     }
   }
 
-  // 播放上下文设置
+  // Playback context setup
   Future<void> setPlaybackContext(PlaybackContext originalContext, {Duration? initialPosition}) async {
     try {
       AppLogger.debug(LogStrings.logPreparePlaybackContextWorkid46397(originalContext.work.id, originalContext.currentFile.title));
       AppLogger.debug(LogStrings.logPlaylistStateLengthOriginalc24b5f(originalContext.playlist.length, originalContext.currentIndex));
 
-      // 验证上下文
+      // Validate context
       try {
         originalContext.validate();
       } catch (e) {
@@ -101,11 +101,11 @@ class PlaybackController {
         rethrow;
       }
 
-      // 1. 先停止当前播放
+      // 1. Stop current playback first
       AppLogger.debug(LogStrings.logStopCurrentPlayback61998);
       await _player.stop();
 
-      // 2. 设置新的播放源
+      // 2. Set the new audio source
       AppLogger.debug(LogStrings.logSetPlaybackSourceInitial(initialPosition?.inMilliseconds.toString() ?? '0'));
       List<Child> loadedFiles;
       try {
@@ -122,7 +122,7 @@ class PlaybackController {
         rethrow;
       }
 
-      // 3. 加载成功后更新上下文
+      // 3. Update context after load succeeds
       var context = originalContext;
       if (loadedFiles.length != originalContext.playlist.length) {
         final currentFile = loadedFiles.contains(originalContext.currentFile)
@@ -141,7 +141,7 @@ class PlaybackController {
       // Set loop mode based on play mode
       await _player.setLoopMode(context.playMode.toLoopMode());
 
-      // 4. 更新轨道信息
+      // 4. Update track info
       AppLogger.debug(LogStrings.logUpdateTrackInfoeb504);
       _updateTrackAndContext(context.currentFile, context.work);
 
@@ -159,7 +159,7 @@ class PlaybackController {
     }
   }
 
-  // 私有辅助方法
+  // Private helpers
   void _updateTrackAndContext(Child file, Work work) {
     AppLogger.debug(LogStrings.logUpdateTrackAndContextFileFile5842(file.title));
     _stateManager.updateTrackAndContext(file, work);

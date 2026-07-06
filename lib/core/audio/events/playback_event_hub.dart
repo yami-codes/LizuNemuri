@@ -2,10 +2,10 @@ import 'package:rxdart/rxdart.dart';
 import './playback_event.dart';
 
 class PlaybackEventHub {
-  // 统一的事件流，处理所有类型的事件
+  // Unified event stream for all event types
   final _eventSubject = PublishSubject<PlaybackEvent>();
 
-  // 分类后的特定事件流
+  // Typed event streams
   late final Stream<PlaybackStateEvent> playbackState = _eventSubject
       .whereType<PlaybackStateEvent>()
       .distinct();
@@ -23,7 +23,7 @@ class PlaybackEventHub {
   late final Stream<PlaybackErrorEvent> errors = _eventSubject
       .whereType<PlaybackErrorEvent>();
 
-  // 添加新的事件流
+  // Additional event streams
   late final Stream<InitialStateEvent> initialState = _eventSubject
       .whereType<InitialStateEvent>();
       
@@ -36,9 +36,9 @@ class PlaybackEventHub {
   late final Stream<PlaybackCompletedEvent> playbackCompleted = _eventSubject
       .whereType<PlaybackCompletedEvent>();
 
-  // 发送事件
+  // Emit events
   void emit(PlaybackEvent event) => _eventSubject.add(event);
 
-  // 资源释放
+  // Release resources
   void dispose() => _eventSubject.close();
 } 

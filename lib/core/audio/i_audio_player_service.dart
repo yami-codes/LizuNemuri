@@ -2,7 +2,7 @@ import './models/audio_track_info.dart';
 import './models/playback_context.dart';
 
 abstract class IAudioPlayerService {
-  // 基础播放控制
+  // Basic playback controls
   Future<void> pause({bool fade = true});
   Future<void> resume({bool fade = true});
   Future<void> stop();
@@ -11,14 +11,14 @@ abstract class IAudioPlayerService {
   Future<void> next();
   Future<void> dispose();
 
-  // 上下文管理
+  // Context management
   Future<void> playWithContext(PlaybackContext context);
   
-  // 状态访问
+  // State access
   AudioTrackInfo? get currentTrack;
   PlaybackContext? get currentContext;
 
-  // 状态持久化
+  // State persistence
   Future<void> savePlaybackState();
   Future<void> restorePlaybackState();
 

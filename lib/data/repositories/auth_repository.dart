@@ -5,14 +5,11 @@ import 'package:lizunemu/data/models/auth/auth_resp/auth_resp.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
-/// 认证数据仓库。
+/// Authentication data repository.
 ///
-/// - 含 bearer token 的 [AuthResp] 整体 JSON blob 存 [FlutterSecureStorage]
-///   （Android EncryptedSharedPreferences / iOS Keychain），不再明文落 prefs。
-/// - 内存缓存（[_cached]/[_loaded]）：[AuthInterceptor] 每个 HTTP 请求都会
-///   读取，首次加载后零存储开销、零 json 解码。
-/// - 旧版明文 `auth_data` 一次性迁移：迁移成功才清明文；迁移/读写失败
-///   **防御式降级**回 prefs，绝不因 Keystore 故障登出用户或崩溃。
+/// - [AuthResp] JSON blob (bearer token) in [FlutterSecureStorage], not plaintext prefs.
+/// - In-memory cache ([_cached]/[_loaded]): zero storage/JSON work per request after first load.
+/// - One-time legacy plaintext migration; defensive fallback to prefs on secure-storage failure.
 class AuthRepository {
   static const _authDataKey = 'auth_data';
 
@@ -23,10 +20,7 @@ class AuthRepository {
   bool _loaded = false;
   Future<AuthResp?>? _loadFuture;
 
-  // 串行化所有 secure/prefs 写操作：保证「发起顺序 == 落盘顺序」。配合
-  // 加载/迁移前的 `if (_loaded) return` 守卫（无 save/clear 时迁移才入链），
-  // 杜绝在途 legacy 迁移写在平台层与并发 save/clear 乱序、使旧 token 在
-  // secure 复活。最后发起的写是最终落盘状态。
+  // Serialize all secure/prefs writes so issue order == persist order; guards prevent stale token resurrection.
   Future<void> _writeLock = Future<void>.value();
 
   AuthRepository(this._prefs, {FlutterSecureStorage? secureStorage})
@@ -34,29 +28,27 @@ class AuthRepository {
 
   Future<R> _serialize<R>(Future<R> Function() action) {
     final run = _writeLock.then((_) => action());
-    // 无论本次成败，链都继续（吞掉错误只为不卡死后续操作）。
+    // Chain continues regardless of success (swallow errors to avoid blocking).
     _writeLock = run.then<void>((_) {}, onError: (_) {});
     return run;
   }
 
   Future<AuthResp?> getAuthData() async {
     if (_loaded) return _cached;
-    // `??=` 与赋值间无 await 挂起点：并发首访（拦截器并行请求）共享同一
-    // in-flight Future，只加载/迁移一次。
+    // `??=` with no await: concurrent first access shares one in-flight load/migrate.
     return _loadFuture ??= _loadAndMigrate();
   }
 
   Future<AuthResp?> _loadAndMigrate() async {
     try {
-      // 1. 安全存储优先。
+      // 1. Secure storage first.
       String? jsonStr;
       try {
         jsonStr = await _secure.read(key: _authDataKey);
       } catch (e) {
         AppLogger.warning(LogStrings.logSecureStorageReadFailedFallb4e79f(e));
       }
-      // 若在途加载期间发生了 save/clear（已置 _loaded），其内存态才是
-      // 权威值——放弃本次加载结果，避免旧态覆盖新登录/登出态。
+      // If save/clear ran during load, in-memory state is authoritative — discard load result.
       if (_loaded) return _cached;
       if (jsonStr != null) {
         _cached = _decode(jsonStr);
@@ -64,12 +56,10 @@ class AuthRepository {
         return _cached;
       }
 
-      // 2. 迁移旧版明文 prefs.auth_data。
+      // 2. Migrate legacy plaintext prefs.auth_data.
       final legacy = _prefs.getString(_authDataKey);
       if (legacy != null) {
-        // save/clear 已在途期间产生权威内存态 → 跳过迁移（其旧值会反而
-        // 把并发写入 secure 的新 token 覆盖回旧值）。守卫在入链前，确保
-        // 迁移写只会排在尚未发生的 save/clear 之前。
+        // Authoritative memory state during in-flight save/clear — skip migration to avoid overwriting new token.
         if (_loaded) return _cached;
         await _serialize<void>(() async {
           try {
@@ -78,21 +68,20 @@ class AuthRepository {
             AppLogger.warning(LogStrings.logAuthMigrationFailedKeepPrefs5e139(e));
             return;
           }
-          // 迁移成功才清明文：否则「清明文 + 迁移失败」= 登出用户。
+          // Clear plaintext only after successful migration.
           try {
             await _prefs.remove(_authDataKey);
           } catch (_) {}
           AppLogger.info(LogStrings.logAuthDataMigratedToSecureStor5b637);
         });
-        // 无论迁移是否成功，都用 legacy 内容回填内存（迁移失败=防御式
-        // 降级，不登出）。
+        // Backfill memory from legacy whether migration succeeded (failure = degrade, not logout).
         if (_loaded) return _cached;
         _cached = _decode(legacy);
         _loaded = true;
         return _cached;
       }
 
-      // 3. 未登录。
+      // 3. Not logged in.
       if (_loaded) return _cached;
       _cached = null;
       _loaded = true;
@@ -115,17 +104,17 @@ class AuthRepository {
     final jsonStr = json.encode(authData.toJson());
     _cached = authData;
     _loaded = true;
-    // 整个写入序列入串行链，保证相对 legacy 迁移/clear 的落盘顺序。
+    // Enqueue entire write on serial chain for correct order vs migration/clear.
     await _serialize<void>(() async {
       try {
         await _secure.write(key: _authDataKey, value: jsonStr);
-        // 写安全存储成功 → 清掉可能残留的旧明文。
+        // Secure write OK → remove any leftover plaintext.
         try {
           await _prefs.remove(_authDataKey);
         } catch (_) {}
         AppLogger.info(LogStrings.logAuthDataSavedSecureStoragef9d9f);
       } catch (e) {
-        // 防御式降级：安全存储不可用时落 prefs，至少保住登录态。
+        // Degrade to prefs when secure storage unavailable.
         AppLogger.warning(LogStrings.logSecureStorageWriteFailedFallfdfba(e));
         try {
           await _prefs.setString(_authDataKey, jsonStr);

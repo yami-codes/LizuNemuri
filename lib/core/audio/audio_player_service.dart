@@ -116,7 +116,7 @@ class AudioPlayerService implements IAudioPlayerService {
     }
   }
 
-  // 基础播放控制
+  // Basic playback controls
   void _cancelFade() => _fadeGeneration++;
 
   Future<void> _animateVolume({
@@ -172,7 +172,7 @@ class AudioPlayerService implements IAudioPlayerService {
         await _player.setVolume(target);
       }
     }
-    // 暂停是用户离开/切后台的强信号，立即 flush 一次，避免依赖 20s 节流。
+    // Pause is a strong signal that the user left or backgrounded the app; flush immediately instead of waiting for the 20s throttle.
     await _stateManager.saveState();
   }
 
@@ -216,7 +216,7 @@ class AudioPlayerService implements IAudioPlayerService {
     _cancelFade();
     await _playbackController.stop();
     _stateManager.clearState();
-    // 停止 = 用户主动结束，清掉持久化，避免下次启动误恢复已停止内容。
+    // Stop = user explicitly ended playback; clear persistence so the next launch does not restore stopped content.
     await _stateManager.clearSavedState();
   }
 
@@ -238,16 +238,16 @@ class AudioPlayerService implements IAudioPlayerService {
     await _playbackController.next();
   }
 
-  // 上下文管理
+  // Context management
   @override
   Future<void> playWithContext(PlaybackContext context) async {
     await ready;
     await _playbackController.setPlaybackContext(context);
-    // 添加自动播放
+    // Enable auto-play
     await resume();
   }
 
-  // 状态访问
+  // State access
   @override
   AudioTrackInfo? get currentTrack => _stateManager.currentTrack;
 
@@ -280,7 +280,7 @@ class AudioPlayerService implements IAudioPlayerService {
     }
   }
 
-  // 状态持久化
+  // State persistence
   @override
   Future<void> savePlaybackState() => _stateManager.saveState();
 

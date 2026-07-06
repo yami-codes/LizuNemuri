@@ -9,15 +9,14 @@ part 'playback_state.g.dart';
 
 @freezed
 class PlaybackState with _$PlaybackState {
-  // playlist / currentIndex 不再持久化：恢复时 PlaybackContext 工厂会从
-  // files + currentFile 重新派生，持久化它们只是冗余复制整棵文件树节点。
+  // playlist / currentIndex not persisted: PlaybackContext factory re-derives from files + currentFile.
   const factory PlaybackState({
     required Work work,
     required Files files,
     required Child currentFile,
     required PlayMode playMode,
-    required int position,  // 使用毫秒存储
-    required String timestamp,  // ISO8601 格式
+    required int position,  // Stored in milliseconds
+    required String timestamp,  // ISO8601 string
   }) = _PlaybackState;
 
   factory PlaybackState.fromJson(Map<String, dynamic> json) => 

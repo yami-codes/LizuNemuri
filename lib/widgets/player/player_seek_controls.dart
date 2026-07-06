@@ -12,7 +12,7 @@ class PlayerSeekControls extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        // 后退30s
+        // Rewind 30s
         IconButton(
           icon: const Icon(Icons.replay_30),
           iconSize: 24,
@@ -23,7 +23,7 @@ class PlayerSeekControls extends StatelessWidget {
             }
           },
         ),
-        // 后退5s
+        // Rewind 5s
         IconButton(
           icon: const Icon(Icons.replay_5),
           iconSize: 24,
@@ -34,19 +34,19 @@ class PlayerSeekControls extends StatelessWidget {
             }
           },
         ),
-        // 上一句歌词
+        // Previous lyric line
         IconButton(
           icon: const Icon(Icons.skip_previous),
           iconSize: 24,
           onPressed: () => viewModel.seekToPreviousLyric(),
         ),
-        // 下一句歌词
+        // Next lyric line
         IconButton(
           icon: const Icon(Icons.skip_next),
           iconSize: 24,
           onPressed: () => viewModel.seekToNextLyric(),
         ),
-        // 快进5s
+        // Forward 5s
         IconButton(
           icon: const Icon(Icons.forward_5),
           iconSize: 24,
@@ -57,7 +57,7 @@ class PlayerSeekControls extends StatelessWidget {
             }
           },
         ),
-        // 快进30s
+        // Forward 30s
         IconButton(
           icon: const Icon(Icons.forward_30),
           iconSize: 24,

@@ -2,36 +2,34 @@ import 'package:dio/dio.dart';
 import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
-/// 检查更新的错误分类。
+/// Update-check error classification.
 ///
-/// **刻意不复用 `NetworkException`**：后者的 `userMessage` 强绑定 asmr.one
-/// 语义（403/401 → 「请先登录」、连接失败 → 「请先连接 VPN 服务」，因为
-/// asmr.one 被地理封锁）。GitHub 不被地理封锁，且 403/429 是 rate limit 而
-/// 非鉴权失败——直接复用会给用户错误的恢复指引。
+/// **Does not reuse `NetworkException`**: its copy is asmr.one-specific (VPN/login hints).
+/// GitHub 403/429 is rate limiting, not auth failure.
 enum UpdateErrorType {
-  /// 连接失败 / 超时 / 证书 / 无响应的未知网络错误。
+  /// Connection failure / timeout / TLS / unknown network error.
   network,
 
-  /// GitHub 未鉴权 REST API 限流：60 次/小时/IP，超限返回 403 或 429。
+  /// Unauthenticated GitHub REST rate limit: 60/hour/IP → 403 or 429.
   rateLimited,
 
-  /// 仓库 / releases 端点 404。
+  /// Repository / releases endpoint 404.
   notFound,
 
-  /// 列表为空，或没有任何 tag 形如 `vX.Y.Z` 的合法发布。
+  /// Empty list or no tag matching `vX.Y.Z`.
   noRelease,
 
-  /// 响应 JSON 结构非法 / 缺关键字段。
+  /// Invalid JSON / missing required fields.
   invalidPayload,
 
-  /// 其它未归类错误。
+  /// Other uncategorized error.
   unknown,
 }
 
 class UpdateException implements Exception {
   final UpdateErrorType type;
 
-  /// 技术描述，仅用于日志，不直接展示给用户。
+  /// Technical message for logs only.
   final String message;
   final int? statusCode;
   final dynamic originalError;
@@ -58,7 +56,7 @@ class UpdateException implements Exception {
       case DioExceptionType.badResponse:
         final code = e.response?.statusCode;
         if (code == 403 || code == 429) {
-          // 公开只读端点的 403/429 ≈ 未鉴权限流（GitHub 文档）。
+          // Public read-only 403/429 ≈ unauthenticated rate limit (GitHub docs).
           return UpdateException(
             type: UpdateErrorType.rateLimited,
             message: LogStrings.logGithubRateLimited(code),
@@ -90,7 +88,7 @@ class UpdateException implements Exception {
     }
   }
 
-  /// 面向用户的恢复指引文案。
+  /// User-facing recovery guidance.
   String get userMessage {
     switch (type) {
       case UpdateErrorType.network:

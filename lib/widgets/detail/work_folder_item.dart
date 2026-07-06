@@ -17,7 +17,7 @@ class WorkFolderItem extends StatelessWidget {
   final void Function(Child? folderNode)? onFolderDownload;
   final void Function(Child? folderNode)? onFolderTranslate;
 
-  // 支持的音频格式列表，按优先级排序
+  // Supported audio formats by priority
   static List<String> get _audioFormats {
     try {
       return GetIt.I<AppSettingsService>().audioExtensions;
@@ -26,10 +26,10 @@ class WorkFolderItem extends StatelessWidget {
     }
   }
 
-  // 静态变量用于跟踪第一个包含音频的文件夹的完整路径
+  // Static: path of first folder containing audio
   static List<String>? _audioFolderPath;
 
-  // 静态方法用于重置展开状态
+  // Static: reset expand state
   static void resetExpandState() {
     _audioFolderPath = null;
   }
@@ -52,13 +52,13 @@ class WorkFolderItem extends StatelessWidget {
       // If settings not available, default to enabled
     }
 
-    // 如果还没有找到第一个音频文件夹，就搜索并记录
+    // Search and record first audio folder if not found yet
     _audioFolderPath ??= FilePath.findFirstAudioFolderPath(
         [folder],
         formats: _audioFormats,
       );
 
-    // 判断当前文件夹是否在音频文件夹的路径上
+    // Whether this folder is on the path to the audio folder
     return FilePath.isInPath(_audioFolderPath, folder.title);
   }
 
@@ -72,7 +72,7 @@ class WorkFolderItem extends StatelessWidget {
       child: Theme(
         data: Theme.of(context).copyWith(
           dividerColor: Colors.transparent,
-          // 确保子组件也能继承正确的文字颜色
+          // Ensure children inherit correct text color
           textTheme: Theme.of(context).textTheme.apply(
             bodyColor: colorScheme.onSurface,
             displayColor: colorScheme.onSurface,

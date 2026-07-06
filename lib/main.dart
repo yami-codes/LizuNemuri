@@ -24,27 +24,26 @@ void main() async {
 
   await bootstrapDatabaseFactory();
 
-  // 内存图片缓存预算上限
+  // In-memory image cache budget cap
   PaintingBinding.instance.imageCache.maximumSizeBytes = 100 << 20; // 100 MiB
 
-  // 初始化服务定位器。仅保留首帧必需：prefs + 已保存鉴权态——
-  // MainScreen 的各 ViewModel 在构造时即发起带 token 的请求，
-  // 推迟鉴权会导致首批请求未带 token、误报登录态异常。
+  // Initialize service locator with first-frame essentials only: prefs + saved auth —
+  // MainScreen ViewModels fire tokenized requests in their constructors; deferring auth
+  // would send the first batch without a token and misreport login state.
   await setupServiceLocator();
 
   runApp(const MyApp());
 
-  // 缓存生命周期 / 旧缓存迁移：本就在 runApp 之后执行，且 CacheLifecycleManager
-  // 内部已用 addPostFrameCallback 延迟首扫并自带 6h 节流，cleanLegacyCache 为
-  // fire-and-forget 异步。直接调用即可——不再外套一层 post-frame，否则会把启动
-  // 清理推到更靠后的帧（addPostFrameCallback 本身不主动请求下一帧）。
+  // Cache lifecycle / legacy cleanup already runs after runApp; CacheLifecycleManager
+  // defers its first scan via addPostFrameCallback with a 6h throttle; cleanLegacyCache is
+  // fire-and-forget. Call directly — no extra post-frame wrapper or startup cleanup slips later.
   CacheLifecycleManager().initialize();
   AudioCacheManager.cleanLegacyCache();
 
-  // 后台播放开关执行端：注册生命周期观察者（默认开启＝行为不变）。
+  // Background-play switch: register lifecycle observer (default on preserves behavior).
   getIt<BackgroundPlayController>().initialize();
 
-  // 悬浮歌词管理器初始化会做平台通道往返，推迟到首帧绘制之后，避免拖慢首个可交互帧。
+  // Lyric overlay init does platform I/O; defer until after first frame to avoid jank.
   WidgetsBinding.instance.addPostFrameCallback((_) {
     if (kDebugMode) {
       startupStopwatch!.stop();

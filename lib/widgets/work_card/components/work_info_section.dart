@@ -15,8 +15,7 @@ class WorkInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 时长已移至封面左下角标（对齐参考图），此处不再重复展示，
-    // 顺带修正旧的连续两个 SizedBox 草率写法。
+    // Duration moved to cover badge; removed duplicate display and redundant SizedBox spacing.
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.space8),
       child: Column(

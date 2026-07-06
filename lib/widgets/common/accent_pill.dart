@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 import 'package:lizunemu/core/theme/app_text_styles.dart';
 
-/// 实心 accent 胶囊：侧边栏选中项 / 「关注」 / 主行动按钮。规范 §2.2。
+/// Solid accent pill: sidebar selection / follow / primary CTA. Spec §2.2.
 ///
-/// 底色 = `colorScheme.primary`，文字/图标 = `onPrimary`——三配色仅此变化。
+/// Background `primary`, foreground `onPrimary` — accent-only variant change.
 class AccentPill extends StatelessWidget {
   const AccentPill({
     super.key,
@@ -18,7 +18,7 @@ class AccentPill extends StatelessWidget {
   final IconData? icon;
   final VoidCallback? onTap;
 
-  /// 紧凑尺寸（如「关注」小药丸）。
+  /// Compact size (e.g. small follow pill).
   final bool dense;
 
   @override

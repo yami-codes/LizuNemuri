@@ -41,7 +41,7 @@ class WakeLockController extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       AppLogger.error(LogStrings.logTagToggleStateFailed284fe(_tag), e);
-      // 恢复状态
+      // Restore prior state
       _enabled = !_enabled;
       notifyListeners();
     }

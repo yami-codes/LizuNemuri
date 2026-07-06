@@ -33,10 +33,10 @@ class SearchViewModel extends ChangeNotifier {
   bool _hasSubtitle = false;
   bool get hasSubtitle => _hasSubtitle;
 
-  String _order = 'create_date'; // 默认按创建时间
+  String _order = 'create_date'; // Default: create date
   String get order => _order;
 
-  String _sort = 'desc'; // 默认降序
+  String _sort = 'desc'; // Default: descending
   String get sort => _sort;
 
   void toggleSubtitle() {
@@ -56,7 +56,7 @@ class SearchViewModel extends ChangeNotifier {
     }
   }
 
-  /// 执行搜索
+  /// Run search.
   Future<void> search(String keyword, {int page = 1}) async {
     if (keyword.isEmpty) return;
 
@@ -72,7 +72,7 @@ class SearchViewModel extends ChangeNotifier {
         page: page,
         order: _order,
         sort: _sort,
-        hasSubtitle: _hasSubtitle, // 添加字幕过滤
+        hasSubtitle: _hasSubtitle, // Subtitle filter
       );
 
       _works = response.works;
@@ -88,13 +88,13 @@ class SearchViewModel extends ChangeNotifier {
     }
   }
 
-  /// 加载指定页
+  /// Load a page.
   Future<void> loadPage(int page) async {
     if (_keyword.isEmpty) return;
     await search(_keyword, page: page);
   }
 
-  /// 清空搜索结果
+  /// Clear search results.
   void clear() {
     _works = [];
     _keyword = '';

@@ -1,6 +1,6 @@
-/// 间距令牌（4px 基准网格）。规范 §1.3。
+/// Spacing tokens (4px grid). Spec §1.3.
 ///
-/// 命名按像素值，便于机械替换与规范对照；业务代码禁止再写裸数字间距。
+/// Named by pixel value; no magic-number spacing in UI code.
 class AppSpacing {
   AppSpacing._();
 
@@ -15,7 +15,7 @@ class AppSpacing {
   static const double space48 = 48;
   static const double space64 = 64;
 
-  /// 布局边距：移动端 16，平板/桌面 24（规范 §1.3 / §5）。
+  /// Page margins: mobile 16, tablet/desktop 24 (spec §1.3 / §5).
   static const double pageMobile = space16;
   static const double pageTabletDesktop = space24;
 }

@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/presentation/viewmodels/detail_viewmodel.dart';
 
-/// 文件夹 / 整部作品"下载全部"对话框：
-/// 阶段 1 = 确认（共 [audioCount] 个音频，含匹配字幕）；[audioCount]==0 时
-/// 只显示"无可下载音频"并以 null pop。
-/// 阶段 2 = 聚合进度（i/N + 当前文件名 + 当前文件进度条）+ 取消。
-/// 完成/取消时以 [BatchDownloadOutcome] pop；确认阶段取消 → pop(null)。
+/// Batch "download all" dialog for folder or whole work.
+/// Phase 1 = confirm; phase 2 = aggregate progress + cancel.
+/// Pops [BatchDownloadOutcome] on done/cancel; null on confirm dismiss.
 class BatchDownloadDialog extends StatefulWidget {
   final int audioCount;
   final Future<BatchDownloadOutcome> Function(
@@ -36,8 +34,7 @@ class _BatchDownloadDialogState extends State<BatchDownloadDialog> {
 
   @override
   void dispose() {
-    // 弹窗/详情页被程序化移除（非点取消）时兜底中断，
-    // 否则批量下载会在后台继续写盘。token 已驱动 downloadFolder 循环。
+    // Cancel token when dialog/page dismissed programmatically — stops background writes.
     _cancelToken?.cancel();
     super.dispose();
   }
@@ -63,7 +60,7 @@ class _BatchDownloadDialogState extends State<BatchDownloadDialog> {
         }
       });
     } catch (_) {
-      // 最后防线：极端未捕获时以失败结果 pop，避免批量进度弹窗卡死。
+      // Last resort: pop failure on uncaught error so progress sheet cannot stick.
       outcome = BatchDownloadOutcome(
         ok: 0,
         skipped: 0,

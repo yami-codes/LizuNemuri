@@ -18,7 +18,7 @@ class PlaylistsViewModel extends ChangeNotifier {
   Pagination? _pagination;
   int _currentPage = 1;
 
-  // 添加视图切换相关状态
+  // View-switch state
   Playlist? _selectedPlaylist;
   List<Work> _playlistWorks = [];
   bool _loadingWorks = false;
@@ -47,7 +47,7 @@ class PlaylistsViewModel extends ChangeNotifier {
     loadPlaylists();
   }
 
-  /// 加载播放列表
+  /// Load playlists.
   Future<void> loadPlaylists({int page = 1}) async {
     if (_isLoading) return;
     if (page < 1 || (totalPages != null && page > totalPages!)) return;
@@ -71,12 +71,12 @@ class PlaylistsViewModel extends ChangeNotifier {
     }
   }
 
-  /// 刷新播放列表
+  /// Refresh playlists.
   Future<void> refresh() async {
     await loadPlaylists(page: 1);
   }
 
-  /// 选择播放列表并加载作品
+  /// Select playlist and load works.
   Future<void> selectPlaylist(Playlist playlist) async {
     _selectedPlaylist = playlist;
     _playlistWorks = [];
@@ -88,7 +88,7 @@ class PlaylistsViewModel extends ChangeNotifier {
     await loadPlaylistWorks();
   }
 
-  /// 清除选中的播放列表
+  /// Clear selected playlist.
   void clearSelectedPlaylist() {
     _selectedPlaylist = null;
     _playlistWorks = [];
@@ -98,7 +98,7 @@ class PlaylistsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 加载播放列表作品
+  /// Load works in selected playlist.
   Future<void> loadPlaylistWorks({int page = 1}) async {
     if (_loadingWorks || _selectedPlaylist == null) return;
     if (page < 1 || (worksTotalPages != null && page > worksTotalPages!)) return;
@@ -126,10 +126,10 @@ class PlaylistsViewModel extends ChangeNotifier {
     }
   }
 
-  /// 刷新播放列表作品
+  /// Refresh playlist works.
   Future<void> refreshWorks() => loadPlaylistWorks(page: 1);
 
-  /// 获取播放列表显示名称
+  /// Display name for a playlist.
   String getDisplayName(String? name) {
     switch (name) {
       case '__SYS_PLAYLIST_MARKED':

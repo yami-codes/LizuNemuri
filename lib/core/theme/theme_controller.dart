@@ -6,7 +6,7 @@ class ThemeController extends ChangeNotifier {
   final SharedPreferences _prefs;
 
   ThemeController(this._prefs) {
-    // 从持久化存储加载主题模式
+    // Load theme mode from persistence
     final savedThemeMode = _prefs.getString(_themeKey);
     if (savedThemeMode != null) {
       _themeMode = ThemeMode.values.firstWhere(
@@ -20,18 +20,18 @@ class ThemeController extends ChangeNotifier {
   
   ThemeMode get themeMode => _themeMode;
 
-  // 切换主题模式
+  // Set theme mode
   Future<void> setThemeMode(ThemeMode mode) async {
     if (_themeMode == mode) return;
     
     _themeMode = mode;
     notifyListeners();
     
-    // 保存到持久化存储
+    // Persist theme mode
     await _prefs.setString(_themeKey, mode.toString());
   }
 
-  // 切换到下一个主题模式
+  // Cycle to next theme mode
   Future<void> toggleThemeMode() async {
     const modes = ThemeMode.values;
     final currentIndex = modes.indexOf(_themeMode);

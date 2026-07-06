@@ -10,16 +10,16 @@ class PlaylistBuilder {
   /// Build audio sources with per-item error handling.
   /// Returns a record of (sources, originalIndices) to maintain index mapping.
   ///
-  /// 若提供 [workId] 且该文件已有完整本地下载，则直接用本地文件源（离线可放），
-  /// 否则回退到原有的 `LockCachingAudioSource` 流式+缓存路径。
+  /// When [workId] is provided and the file is fully downloaded locally, use a local file source (offline playback);
+  /// otherwise fall back to the existing `LockCachingAudioSource` streaming + cache path.
   static Future<(List<AudioSource>, List<int>)> buildAudioSources(
     List<Child> files, {
     String? workId,
   }) async {
     final sources = <AudioSource>[];
     final originalIndices = <int>[];
-    // 用 GetIt.I 直取（与 audio_player_service 中 GetIt.I<ISubtitleService>()
-    // 同一模式），避免 import service_locator 造成 core/audio↔core/di 文件环。
+    // Resolve via GetIt.I directly (same pattern as GetIt.I<ISubtitleService>() in audio_player_service)
+    // to avoid importing service_locator and creating a core/audio <-> core/di circular dependency.
     final downloadService =
         workId != null ? GetIt.I<DownloadService>() : null;
 

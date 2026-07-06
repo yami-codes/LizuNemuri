@@ -3,10 +3,10 @@ import 'package:lizunemu/core/theme/app_colors.dart';
 import 'package:lizunemu/core/theme/app_radius.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 
-/// 圆角搜索框（首页 / 浏览页通用）。规范 §2.2。
+/// Rounded search field (home / browse). Spec §2.2.
 ///
-/// Full 圆角 + Surface L2 中性底（不随配色变化），无可见描边。
-/// API 是 `BrowseSearchBar` 的超集，Phase D 可平滑替换后者。
+/// Full radius + neutral Surface L2 background, no border.
+/// Superset of `BrowseSearchBar` for Phase D migration.
 class AppSearchField extends StatelessWidget {
   const AppSearchField({
     super.key,
@@ -25,8 +25,7 @@ class AppSearchField extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
   final Widget? suffixIcon;
 
-  /// 只读 + [onTap]：搜索框作为导航触发器（点击跳转到搜索页），
-  /// 不在原地编辑。用于首页（对齐参考图）。
+  /// Read-only + [onTap]: navigates to search page; used on home (reference design).
   final bool readOnly;
   final VoidCallback? onTap;
 

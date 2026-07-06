@@ -31,7 +31,7 @@ class CacheManagerScreen extends StatelessWidget {
 
             return ListView(
               children: [
-                // 音频缓存
+                // Audio cache
                 ListTile(
                   title: Text(Strings.audioCache),
                   subtitle: Text(viewModel.audioCacheSizeFormatted),
@@ -44,7 +44,7 @@ class CacheManagerScreen extends StatelessWidget {
                 ),
                 const Divider(),
                 
-                // 字幕缓存
+                // Subtitle cache
                 ListTile(
                   title: Text(Strings.subtitleCache),
                   subtitle: Text(viewModel.subtitleCacheSizeFormatted),
@@ -57,7 +57,7 @@ class CacheManagerScreen extends StatelessWidget {
                 ),
                 const Divider(),
 
-                // 图片缓存
+                // Image cache
                 ListTile(
                   title: Text(Strings.imageCache),
                   subtitle: Text(viewModel.imageCacheSizeFormatted),
@@ -70,7 +70,7 @@ class CacheManagerScreen extends StatelessWidget {
                 ),
                 const Divider(),
 
-                // 总缓存大小
+                // Total cache size
                 ListTile(
                   title: Text(Strings.totalCacheSize),
                   subtitle: Text(viewModel.totalCacheSizeFormatted),
@@ -83,7 +83,7 @@ class CacheManagerScreen extends StatelessWidget {
                 ),
                 const Divider(),
                 
-                // 缓存说明
+                // Cache description
                 ListTile(
                   title: Text(Strings.cacheExplainTitle),
                   subtitle: Text(Strings.cacheExplainBody),

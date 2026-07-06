@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 
-/// 单个社交入口。
+/// One social link entry.
 class SocialAction {
   const SocialAction({
     required this.icon,
@@ -14,10 +14,9 @@ class SocialAction {
   final String semanticLabel;
 }
 
-/// 圆形社交图标排（关于页）。规范 §2.2。
+/// Circular social icon row (about page). Spec §2.2.
 ///
-/// 圆底用中性 `surfaceContainerHighest`，图标 `onSurfaceVariant`——
-/// 不引入 accent，保持三配色一致。
+/// Neutral `surfaceContainerHighest` circle, `onSurfaceVariant` icon — no accent.
 class SocialIconRow extends StatelessWidget {
   const SocialIconRow({super.key, required this.actions});
 

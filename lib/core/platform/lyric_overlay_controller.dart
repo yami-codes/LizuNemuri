@@ -15,8 +15,7 @@ class LyricOverlayController implements ILyricOverlayController {
       await _channel.invokeMethod('initialize');
     } catch (e) {
       AppLogger.error(LogStrings.logTagInitFailed3648a(_tag), e);
-      // 这里我们不抛出异常,而是静默失败
-      // 因为这个错误不应该影响应用的主要功能
+      // Fail silently — this error must not affect core app functionality
     }
   }
   

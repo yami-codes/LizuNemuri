@@ -29,10 +29,10 @@ import 'package:lizunemu/core/audio/models/subtitle.dart';
 import 'package:dio/dio.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
-/// 一条批量下载项：音频 + 同目录匹配到的字幕（可空）。
+/// One batch download item: audio + matched subtitle in the same directory (optional).
 typedef DownloadPair = ({Child audio, Child? subtitle});
 
-/// 批量下载结果汇总。
+/// Aggregated batch download outcome.
 class BatchDownloadOutcome {
   final int ok;
   final int skipped;
@@ -97,7 +97,7 @@ class DetailViewModel extends ChangeNotifier {
   bool _hasRecommendations = false;
   bool _checkingRecommendations = false;
 
-  // 收藏夹相关状态
+  // Playlist / favorites state
   bool _loadingPlaylists = false;
   String? _playlistsError;
   List<Playlist>? _playlists;
@@ -132,7 +132,7 @@ class DetailViewModel extends ChangeNotifier {
   bool _loadingMark = false;
   bool get loadingMark => _loadingMark;
 
-  // 添加取消标记
+  // Cancellation flag
   final _cancelToken = CancelToken();
 
   DetailViewModel({
@@ -156,7 +156,7 @@ class DetailViewModel extends ChangeNotifier {
   WorkInfo? get workInfo => _workInfo;
   bool get isLoadingInfo => _isLoadingInfo;
 
-  // 收藏夹相关 getters
+  // Playlist / favorites getters
   bool get loadingPlaylists => _loadingPlaylists;
   String? get playlistsError => _playlistsError;
   List<Playlist>? get playlists => _playlists;
@@ -256,22 +256,18 @@ class DetailViewModel extends ChangeNotifier {
     if (!_disposed) notifyListeners();
   }
 
-  /// 扩展名是否属已知视频集。**比 API `type` 更可靠**：asmr.one 实测会把
-  /// "介绍视频.mp4"等下发成 `type:"audio"`，若信 `type` 会被当音频送进
-  /// 播放管线、播放列表按扩展名过滤后为空 → "播放列表为空/播放失败"。
+  /// Known video extension check — **more reliable than API `type`** (mislabeled videos).
   static bool _hasVideoExtension(String? title) {
     final ext = title?.split('.').last.toLowerCase();
     return ext != null && _videoExtensions.contains(ext);
   }
 
-  /// 该文件是否为视频（`type==video` 或视频扩展名）。视频不直接判为
-  /// "无法打开"，而是引导下载到本地用外部查看器播放（见 detail_screen）。
+  /// Whether file is video (`type==video` or video extension) — download + external player.
   bool isVideoFile(Child file) =>
       (file.type ?? '').toLowerCase() == 'video' ||
       _hasVideoExtension(file.title);
 
-  /// 静态纯判定：是音频且**不是**视频扩展名。视频扩展名优先于不可靠的
-  /// API `type`，否则错标 `type:audio` 的 .mp4 会被当音频。
+  /// Static: audio and not a video extension (extension wins over API `type`).
   static bool _isAudioChild(Child c) =>
       (c.type ?? '').toLowerCase() == 'audio' &&
       !_hasVideoExtension(c.title);
@@ -280,15 +276,13 @@ class DetailViewModel extends ChangeNotifier {
 
   static const _subtitleExtensions = {'vtt', 'lrc', 'srt', 'txt'};
 
-  /// 该文件是否为可预览字幕（.vtt/.lrc/.srt/.txt）。
+  /// Whether file is a previewable subtitle (.vtt/.lrc/.srt/.txt).
   bool isSubtitleFile(Child file) {
     final ext = file.title?.split('.').last.toLowerCase();
     return ext != null && _subtitleExtensions.contains(ext);
   }
 
-  /// 纯函数：递归收集子树下所有音频，并就近（同目录同级）配对字幕。
-  /// 字幕匹配只在该音频所在目录的兄弟节点中找（与 [SubtitleLoader]
-  /// `findSubtitleFile` 的 `getSiblings` 语义一致）。
+  /// Pure: collect audio under subtree and pair subtitles from same-directory siblings.
   static List<DownloadPair> collectAudioWithSubtitles(List<Child>? children) {
     final out = <DownloadPair>[];
     if (children == null) return out;
@@ -308,13 +302,11 @@ class DetailViewModel extends ChangeNotifier {
   List<Child>? _nodeChildren(Child? folder) =>
       folder == null ? _files?.children : folder.children;
 
-  /// 该节点（null=整部作品）子树下可下载音频数。
+  /// Count of downloadable audio under node (null = whole work).
   int batchAudioCount(Child? folder) =>
       collectAudioWithSubtitles(_nodeChildren(folder)).length;
 
-  /// 单个音频下载：下完音频后顺带把同目录匹配字幕也下了（best-effort，
-  /// 字幕失败/无字幕都不影响音频结果）。UI 负责确认弹窗与进度展示。
-  /// 视频文件无字幕配对，行为与原先一致。
+  /// Single audio download + best-effort matched subtitle. UI owns confirm/progress dialogs.
   Future<DownloadResult> downloadFile(
     Child file, {
     void Function(double progress)? onProgress,
@@ -351,9 +343,7 @@ class DetailViewModel extends ChangeNotifier {
     return SubtitleMatcher.findMatchingSubtitle(audio.title!, siblings);
   }
 
-  /// 顺序批量下载 [folder]（null=整部作品）子树下所有音频 + 匹配字幕。
-  /// 幂等去重由 `DownloadService.download` 保证；字幕 best-effort。
-  /// [onProgress]：(已处理序号 1-based, 总数, 当前音频名, 当前文件进度 0~1)。
+  /// Sequential batch download of audio + subtitles under [folder] (null = whole work).
   Future<BatchDownloadOutcome> downloadFolder({
     Child? folder,
     required void Function(int index, int total, String name, double progress)
@@ -397,18 +387,17 @@ class DetailViewModel extends ChangeNotifier {
             file: sub,
             cancelToken: cancelToken,
           );
-          // 字幕下载被取消也要让整批标记 cancelled（否则末项音频带
-          // 字幕、用户在字幕阶段取消时，循环自然结束会误报"完成"）。
+          // Subtitle cancel must mark whole batch cancelled (last item subtitle phase).
           if (sr.status == DownloadStatus.cancelled) {
             cancelled = true;
             break;
           }
-          // 字幕网络/IO 失败属 best-effort，仅记日志、不计入 failed。
+          // Subtitle network/IO failure is best-effort — log only, not failed.
         } catch (e) {
           AppLogger.warning(LogStrings.logPairedSubtitleDownloadFailedd44d7(e));
         }
       }
-      // 末项之后无循环顶部检查，这里兜底捕获取消。
+      // Tail cancel check after last item (no loop head check).
       if (cancelToken?.isCancelled ?? false) {
         cancelled = true;
         break;
@@ -691,8 +680,7 @@ class DetailViewModel extends ChangeNotifier {
   }
 
   Future<void> playFile(Child file, BuildContext context) async {
-    // 用统一分类：错标 type=audio 的视频在这里被挡下，给清晰错误，
-    // 而不是放进播放管线产生"播放列表为空"的误导性失败。
+    // Unified classifier blocks mislabeled videos with a clear error, not empty playlist.
     if (!isAudioFile(file)) {
       throw UserFacingException(
         Strings.unsupportedVideoFile(file.title ?? ''),
@@ -723,7 +711,7 @@ class DetailViewModel extends ChangeNotifier {
     }
   }
 
-  /// 加载收藏夹列表
+  /// Load user playlists.
   Future<void> loadPlaylists({int page = 1}) async {
     if (_loadingPlaylists) return;
 
@@ -801,7 +789,7 @@ class DetailViewModel extends ChangeNotifier {
         );
       }
       
-      // 更新本地收藏夹状态
+      // Update local playlist state
       final index = _playlists?.indexWhere((p) => p.id == playlist.id);
       if (index != null && index != -1) {
         _playlists = List<Playlist>.from(_playlists!)
@@ -876,7 +864,7 @@ class DetailViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    // 取消所有正在进行的请求
+    // Cancel all in-flight requests
     _cancelToken.cancel('ViewModel disposed');
     _disposed = true;
     super.dispose();

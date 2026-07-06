@@ -3,8 +3,7 @@ import 'package:lizunemu/core/cache/cache_coordinator.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
-/// 缓存生命周期管理器
-/// 监听应用生命周期事件，自动触发缓存维护
+/// Cache lifecycle manager — listens to app lifecycle for automatic cache maintenance.
 class CacheLifecycleManager with WidgetsBindingObserver {
   static final CacheLifecycleManager _instance = CacheLifecycleManager._internal();
   factory CacheLifecycleManager() => _instance;
@@ -15,16 +14,16 @@ class CacheLifecycleManager with WidgetsBindingObserver {
   DateTime? _lastCleanup;
   static const _minCleanupInterval = Duration(hours: 6);
 
-  /// 初始化并注册为生命周期观察者（幂等）
+  /// Initialize and register as lifecycle observer (idempotent).
   void initialize() {
     if (_initialized) return;
     _initialized = true;
     WidgetsBinding.instance.addObserver(this);
-    // 启动清理延后到首帧之后，避免 stat-heavy 扫描与首帧渲染争抢主隔离区。
+    // Defer startup cleanup until after first frame to avoid stat-heavy scan vs first paint.
     WidgetsBinding.instance.addPostFrameCallback((_) => _triggerCleanup());
   }
 
-  /// 注销观察者
+  /// Unregister observer.
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
   }

@@ -10,7 +10,7 @@ class WorkFilesSkeleton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          // 图标占位
+          // Icon placeholder
           Container(
             width: 24,
             height: 24,
@@ -20,7 +20,7 @@ class WorkFilesSkeleton extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          // 标题占位
+          // Title placeholder
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +58,7 @@ class WorkFilesSkeleton extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 标题占位
+            // Title placeholder
             Padding(
               padding: const EdgeInsets.all(16),
               child: Container(
@@ -71,7 +71,7 @@ class WorkFilesSkeleton extends StatelessWidget {
               ),
             ),
             const Divider(height: 1),
-            // 列表项占位
+            // List item placeholder
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),

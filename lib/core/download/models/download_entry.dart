@@ -1,20 +1,19 @@
-/// 一条已完成的本地下载记录。
+/// One completed local download record.
 ///
-/// 纯类 + toMap/fromMap，无 codegen。去重键是 [fileKey]（稳定身份摘要），
-/// 与 `downloads` 表 `UNIQUE(work_id, file_key)` 一致——**不是**展示名
-/// [fileName]：同一作品下不同目录/URL 的同名文件必须算不同下载。
+/// Plain class + toMap/fromMap, no codegen. Dedup key is [fileKey], matching
+/// `UNIQUE(work_id, file_key)` — **not** display [fileName].
 class DownloadEntry {
   final int? id;
   final String workId;
 
-  /// 稳定身份摘要（md5(hash|url|title)）。去重 / 查询 / 删除均用它。
+  /// Stable identity digest (md5(hash|url|title)) for dedup/query/delete.
   final String fileKey;
 
-  /// 原始展示文件名（`Child.title`），仅用于 UI 展示。
+  /// Original display filename (`Child.title`) for UI only.
   final String fileName;
   final String filePath;
 
-  /// 'audio' | 'video'——来源 `Child.type`，决定离线播放走音频管线还是外部查看器。
+  /// 'audio' | 'video' from `Child.type` — audio pipeline vs external viewer offline.
   final String mediaType;
   final String sourceUrl;
   final int size;

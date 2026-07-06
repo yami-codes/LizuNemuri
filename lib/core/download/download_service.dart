@@ -24,7 +24,7 @@ enum DownloadStatus {
 class DownloadResult {
   final DownloadStatus status;
 
-  /// 完成（success / alreadyExists）时的本地绝对路径，否则 null。
+  /// Local absolute path on success / alreadyExists; otherwise null.
   final String? localPath;
 
   const DownloadResult(this.status, [this.localPath]);
@@ -33,21 +33,19 @@ class DownloadResult {
       status == DownloadStatus.success || status == DownloadStatus.alreadyExists;
 }
 
-/// 本地媒体下载服务。
+/// Local media download service.
 ///
-/// - 用**独立 `Dio()`**（无 `AuthInterceptor`、不随节点轮换）：媒体
-///   `mediaDownloadUrl` 是 API 下发的预签名/限时绝对地址，与 asmr 节点无关，
-///   `LockCachingAudioSource` 也是无 token 直取（见 spike 结论）。
-/// - Android 落盘在**外部应用专属目录** `getExternalStorageDirectory()`
+/// - Uses a **standalone `Dio()`** (no `AuthInterceptor`, no node rotation): media
+///   `mediaDownloadUrl` is an API-issued presigned absolute URL, unrelated to asmr nodes;
+///   same as tokenless `LockCachingAudioSource` (see spike notes).
+/// - On Android, files land in the **app-specific external directory** via `getExternalStorageDirectory()`
 ///   （`/storage/emulated/0/Android/data/<pkg>/files/downloads/<workId>/`）：
-///   该目录在所有 Android 版本均无需声明存储权限、规避 scoped storage，
-///   且可经 USB/MTP 在电脑端访问；卸载随 App 清理。取不到时回退 App 内部
-///   `getApplicationDocumentsDirectory()`。非 Android 平台仍用内部目录
-///   （`getExternalStorageDirectory()` 在 iOS 会抛 `UnsupportedError`）。
-/// - 原子写复刻 `SubtitleImportService`：tmp → (备份旧文件) → rename → upsert，
-///   任一步失败回滚，**新文件确认前绝不破坏已存在的好文件**。
-/// - 容量 LRU 复刻 `AudioCacheManager`：删不掉的文件仍计入容量、不丢弃，
-///   避免实际占用突破上限。
+///   No storage permission on any Android version; USB/MTP visible; cleared on uninstall.
+///   Falls back to internal `getApplicationDocumentsDirectory()` when unavailable. Non-Android
+///   always uses internal storage (`getExternalStorageDirectory()` throws on iOS).
+/// - Atomic write mirrors `SubtitleImportService`: tmp → (backup existing) → rename → upsert;
+///   any failure rolls back; **never destroy a good existing file before the new one is confirmed**.
+/// - Capacity LRU mirrors `AudioCacheManager`: undeletable files still count toward capacity.
 class DownloadService {
   static const int _maxTotalSize = 4 * 1024 * 1024 * 1024; // 4 GB
 
@@ -58,20 +56,17 @@ class DownloadService {
       : _repository = repository,
         _dio = dio ?? Dio();
 
-  /// Windows/MTP 设备保留名（电脑端打不开/复制异常，与"外部可见"目标冲突）。
+  /// Windows/MTP reserved device names (breaks external visibility goal).
   static final RegExp _reservedStem = RegExp(
     r'^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$',
     caseSensitive: false,
   );
 
-  /// 文件名安全化：**保留接口原始标题**（含日文/中文等 Unicode），
-  /// 仅把文件系统真正非法的字符（路径分隔符、Windows/FAT/exFAT 保留字、
-  /// 控制字符）替换为 `_`，并去掉首尾空白与**首尾点**（尾随点 FAT/Windows
-  /// 会吞；前导点在 macOS/Linux/文件管理器里成隐藏文件，违背"外部可见"）。
-  /// 退化输入（空 / 清理后只剩 `_ . 空格` / `.` / `..`）回退为 `file`；
-  /// 命中 Windows 保留名加 `_` 前缀避开。结果确定。最后按 UTF-8 字节裁剪到
-  /// [_maxNameBytes] 以下、保留扩展名，避免外部 SD（FAT/exFAT 单文件名
-  /// 255 字节上限）写入失败。
+  /// Sanitizes filenames while **preserving the API original title** (Unicode JP/CN, etc.):
+  /// only true FS-illegal chars (path separators, Windows/FAT reserved names, controls) → `_`;
+  /// trim whitespace and **leading/trailing dots** (FAT/Windows eats trailing dots; leading dot = hidden).
+  /// Degenerate input falls back to `file`; Windows reserved stems get a `_` prefix. Clamped to
+  /// [_maxNameBytes] UTF-8 bytes keeping the extension (FAT/exFAT 255-byte filename limit).
   static String sanitizeFileName(String name) {
     var cleaned = name
         .replaceAll(RegExp(r'[\x00-\x1F/\\:*?"<>|]'), '_')
@@ -87,12 +82,11 @@ class DownloadService {
     return _clampNameBytes(cleaned);
   }
 
-  /// FAT/exFAT 单文件名上限 255 字节；留余量给 `.dl_tmp`/`.dl_bak` 后缀。
+  /// FAT/exFAT 255-byte filename limit; headroom for `.dl_tmp`/`.dl_bak` suffixes.
   static const int _maxNameBytes = 180;
 
-  /// 按 UTF-8 字节裁剪文件名到 [_maxNameBytes]，保留扩展名，
-  /// 不在多字节字符中间截断（逐字符重建）。若"扩展名"本身异常长
-  /// （非真扩展名）则当作正文整体裁剪，保证结果**必定** ≤ 上限。
+  /// Clamps filename to [_maxNameBytes] UTF-8 bytes, preserving extension without splitting
+  /// multibyte chars. Abnormally long "extensions" are treated as part of the stem.
   static String _clampNameBytes(String name) {
     if (utf8.encode(name).length <= _maxNameBytes) return name;
     var ext = p.extension(name);
@@ -111,13 +105,10 @@ class DownloadService {
     return clampedBase.isEmpty ? 'file$ext' : '$clampedBase$ext';
   }
 
-  /// 稳定身份键：DB 去重 / 查询 / 删除 / **落盘子目录** 都用它，**不用展示名**。
+  /// Stable identity key for DB dedup/query/delete and **on-disk subdir** — not the display name.
   ///
-  /// 不同标题（`a/b.mp4` vs `a:b.mp4`、大量非 ASCII、同一作品树内不同文件夹
-  /// 下同名 `01.mp3`）必须算作不同下载，否则会互相误判命中（DB 行或物理
-  /// 路径）。落盘名已改回接口原始标题（见 [diskFileName]），同名冲突由
-  /// `_destPath` 的 `<fileKey>/` 子目录隔离。身份取 `hash`（API 提供，最稳）
-  /// > `mediaDownloadUrl` > `title`，md5 摘要。
+  /// Distinct titles/paths must be distinct downloads. On-disk names use API titles ([diskFileName]);
+  /// `<fileKey>/` subdirs isolate same-name collisions. Identity: `hash` > `mediaDownloadUrl` > `title`, md5.
   static String fileKey(Child file) {
     final idSource = (file.hash != null && file.hash!.isNotEmpty)
         ? file.hash!
@@ -125,15 +116,12 @@ class DownloadService {
     return md5.convert(utf8.encode(idSource)).toString();
   }
 
-  /// 落盘文件名 = **接口返回的原始标题**（仅做 FS 安全化，保留可读性与
-  /// 扩展名）。物理唯一性由 `_destPath` 的 `<fileKey>/` 子目录保证，故此处
-  /// 不再用 md5 命名——用户在电脑上看到的就是接口文件列表里的名字。
+  /// On-disk name = **API original title** (FS-sanitized, human-readable). Uniqueness via `<fileKey>/` subdir.
   static String diskFileName(Child file) {
     return sanitizeFileName(file.title ?? '');
   }
 
-  /// 下载根目录：Android 优先外部应用专属目录（电脑可见、免权限），
-  /// 取不到则回退内部私有目录；非 Android 仅用内部目录。
+  /// Download root: Android prefers external app dir; fallback internal; non-Android internal only.
   Future<Directory> _baseDir() async {
     if (PlatformCapabilities.isAndroid) {
       try {
@@ -153,11 +141,8 @@ class DownloadService {
     return dir;
   }
 
-  /// 落盘路径 = `<下载根>/downloads/<workId>/<fileKey>/<原始标题>`。
-  /// 每个文件独占 `<fileKey>/` 子目录：同一作品树内不同文件夹的同名文件
-  /// （如各章节都有 `01.mp3`，但 hash/url 不同 → fileKey 不同）互不覆盖，
-  /// 同时文件名保持接口原样、用户在电脑上可读。tmp/bak/dest 同处该子目录，
-  /// 同卷 rename 原子写不变量不受影响。
+  /// Path = `<root>/downloads/<workId>/<fileKey>/<original title>`. Each file gets its own `<fileKey>/`
+  /// subdir so same-name files in different folders never collide. tmp/bak/dest share the subdir for atomic rename.
   Future<String> _destPath(String workId, Child file) async {
     final dir = await _workDir(workId);
     final sub = Directory(p.join(dir.path, fileKey(file)));
@@ -165,8 +150,7 @@ class DownloadService {
     return p.join(sub.path, diskFileName(file));
   }
 
-  /// best-effort 删除已空的 `<fileKey>/` 子目录（删文件后调用），
-  /// 让用户可见的下载文件夹不残留空 md5 目录；失败无害（与孤儿文件同理）。
+  /// Best-effort prune empty `<fileKey>/` dirs after file delete; failure is harmless.
   Future<void> _pruneEmptyDir(String filePath) async {
     try {
       final parent = Directory(p.dirname(filePath));
@@ -176,8 +160,7 @@ class DownloadService {
     } catch (_) {}
   }
 
-  /// 已完成且文件确实在盘上的下载记录（按稳定身份 [key] 查）；若 DB 有行但
-  /// 文件已丢失，删除失效行（一致性：失效行会让 app 误判已下载）后返回 null。
+  /// Completed download with file on disk (lookup by stable [key]); stale DB rows without files are removed.
   Future<DownloadEntry?> findCompleted(String workId, String key) async {
     final entry = await _repository.find(workId, key);
     if (entry == null) return null;
@@ -191,10 +174,9 @@ class DownloadService {
     return null;
   }
 
-  /// 若该文件已完整下载，返回本地路径（供离线播放走本地源）。
+  /// Returns local path if fully downloaded (for offline local-source playback).
   ///
-  /// 主路径按 [fileKey] 查 DB；下载中心离线播放等场景下 Child 可能无法
-  /// 还原原始 hash，则按 [Child.title] 与 [DownloadEntry.fileName] 回退匹配。
+  /// Primary lookup by [fileKey]; falls back to [Child.title] vs [DownloadEntry.fileName] when hash is unavailable.
   Future<String?> localPathIfDownloaded(String workId, Child file) async {
     if (file.title == null) return null;
     final entry = await findCompleted(workId, fileKey(file));
@@ -209,8 +191,7 @@ class DownloadService {
     return null;
   }
 
-  /// 下载一个文件（音频/视频/字幕）到本地下载目录（Android 为外部应用专属
-  /// 目录，详见类文档）。幂等：已完整下载则直接返回。
+  /// Downloads one file (audio/video/subtitle) to the local download dir. Idempotent if already complete.
   Future<DownloadResult> download({
     required String workId,
     required Child file,
@@ -226,16 +207,15 @@ class DownloadService {
 
     final key = fileKey(file);
 
-    // 前置 IO/DB（去重查询、路径解析、tmp/bak 构造）也纳入同一 try：
-    // DB 打开/迁移失败、path_provider/目录创建失败、File.exists 权限异常
-    // 均收敛为 ioError + 清理，绝不外抛未捕获异步异常。
+    // Pre-flight IO/DB (dedup, paths, tmp/bak) inside the same try: DB open/migration,
+    // path_provider/dir create, File.exists permission errors → ioError + cleanup, never uncaught.
     String? destPath;
     File? tmpFile;
     File? bakFile;
     var backedUp = false;
 
     try {
-      // 去重：已完整下载直接复用（正常早返回，不进 catch）。
+      // Dedup: reuse completed download (early return, not catch).
       final existing = await findCompleted(workId, key);
       if (existing != null) {
         return DownloadResult(DownloadStatus.alreadyExists, existing.filePath);
@@ -247,7 +227,7 @@ class DownloadService {
       tmpFile = File(tmpPath);
       bakFile = File(bakPath);
 
-      // 1. 先下载到临时文件——失败时不动既有任何文件。
+      // 1. Download to temp — failures must not touch existing files.
       await _dio.download(
         url,
         tmpPath,
@@ -259,16 +239,16 @@ class DownloadService {
         },
       );
 
-      // 2. 既有同路径文件先挪到备份，便于失败回滚。
+      // 2. Move existing dest to backup for rollback.
       if (await File(destPath).exists()) {
         await File(destPath).rename(bakPath);
         backedUp = true;
       }
 
-      // 3. 同卷 rename 原子生效。
+      // 3. Same-volume rename is atomic.
       await tmpFile.rename(destPath);
 
-      // 4. 持久化 DB（文件已就位）。
+      // 4. Persist DB row (file is in place).
       final size = await File(destPath).length();
       await _repository.upsert(DownloadEntry(
         workId: workId,
@@ -281,15 +261,14 @@ class DownloadService {
         createdAt: DateTime.now().millisecondsSinceEpoch,
       ));
 
-      // 5. 成功——丢弃刚被替换文件的备份。
+      // 5. Success — delete backup of replaced file.
       if (backedUp) {
         try {
           if (await bakFile.exists()) await bakFile.delete();
         } catch (_) {}
       }
 
-      // 6. 容量回收（失败不影响本次下载结果）。排除刚完成的文件，
-      //    避免"先返回 success 再被异步回收删掉"导致 OpenFilex 打开到空路径。
+      // 6. Capacity enforcement (failure does not affect this download). Exclude just-finished file.
       unawaited(enforceCapacity(
         exceptWorkId: workId,
         exceptFileKey: key,
@@ -298,8 +277,7 @@ class DownloadService {
       AppLogger.debug(LogStrings.logDownloadCompleteWorkidFilena3d481(workId, fileName, destPath));
       return DownloadResult(DownloadStatus.success, destPath);
     } catch (e) {
-      // 清理临时文件并还原用户原文件，失败绝不破坏既有数据。
-      // 前置失败时 tmp/bak/destPath 可能尚未赋值——null 守卫，绝不 NPE。
+      // Cleanup tmp and restore backup; never destroy existing data. Null-guard tmp/bak/destPath on pre-flight failure.
       final tf = tmpFile;
       final bf = bakFile;
       final dp = destPath;
@@ -332,8 +310,7 @@ class DownloadService {
     } catch (e) {
       AppLogger.error(LogStrings.logQueryDownloadToRemoveFailedb00ee, e);
     }
-    // DB 行先删（一致性关键：失效行会让 app 误判已下载）；
-    // 本地文件 best-effort，孤儿文件只是磁盘浪费、无害。
+    // Remove DB row first (stale row makes app think file is downloaded); file delete is best-effort.
     var dbRemoved = false;
     try {
       await _repository.remove(workId, key);
@@ -352,9 +329,8 @@ class DownloadService {
     }
   }
 
-  /// 真 LRU：总量超上限时从最旧开始逐条删（文件 + DB 行），直到不超上限。
-  /// 删不掉的文件仍在盘上 → 必须继续计入容量、且不删其 DB 行（行仍有效），
-  /// 否则容量统计偏小、实际占用可能远超上限。
+  /// True LRU: when over capacity, delete oldest (file + DB row) until within limit.
+  /// Undeletable files still on disk must keep counting and retain valid DB rows.
   Future<void> enforceCapacity({
     String? exceptWorkId,
     String? exceptFileKey,
@@ -370,19 +346,18 @@ class DownloadService {
             total += (await f.stat()).size;
             live.add(e);
           } else {
-            // 文件已不在：清失效行，不计容量。
+            // File gone: remove stale row, do not count.
             await _repository.remove(e.workId, e.fileKey);
           }
         } catch (_) {
-          // stat 失败但行可能仍指向占用文件：用 DB size 保守计容量、
-          // 保留在 live（与"删不掉/不可 stat 文件仍计容量"不变量一致）。
+          // stat failed but row may still point at an in-use file: count DB size conservatively.
           total += e.size;
           live.add(e);
         }
       }
       for (final e in live) {
         if (total <= _maxTotalSize) break;
-        // 跳过刚完成的文件：不能把用户刚要的东西回收掉。
+        // Skip the file just finished — do not evict what the user just got.
         if (e.workId == exceptWorkId && e.fileKey == exceptFileKey) continue;
         try {
           final f = File(e.filePath);
@@ -397,7 +372,7 @@ class DownloadService {
           await _pruneEmptyDir(e.filePath);
           total -= sz;
         } catch (_) {
-          // 占用中删不掉：保留文件与 DB 行（行仍有效），容量继续计，跳过。
+          // In use: keep file and DB row, still count toward capacity, skip.
         }
       }
     } catch (e) {

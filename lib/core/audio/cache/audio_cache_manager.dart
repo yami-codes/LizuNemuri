@@ -6,21 +6,21 @@ import 'package:just_audio/just_audio.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
-/// 音频缓存管理器
-/// 负责管理音频文件的缓存,对外隐藏具体的缓存实现
+/// Audio cache manager.
+/// Manages audio file caching and hides the concrete cache implementation from callers.
 class AudioCacheManager {
-  static const int _maxCacheSize = 1024 * 1024 * 1024; // 总缓存限制 1024MB
+  static const int _maxCacheSize = 1024 * 1024 * 1024; // Total cache limit: 1024 MB
   static const Duration _cacheExpiration = Duration(days: 30);
 
-  /// 创建音频源
-  /// 内部处理缓存逻辑,对外只返回 AudioSource
+  /// Creates an audio source.
+  /// Handles caching internally and returns only an [AudioSource] to callers.
   static Future<AudioSource> createAudioSource(String url, {String? hash}) async {
     try {
       final cacheFile = await _getCacheFile(url, hash: hash);
       final fileName = _generateFileName(url, hash: hash);
       AppLogger.debug(LogStrings.logCreateaudioUrlUrlCachefil14d8a(url, fileName));
       
-      // 检查缓存文件是否存在且有效
+      // Check whether the cache file exists and is still valid.
       final isValid = await _isCacheValid(cacheFile, fileName);
       
       if (isValid) {
@@ -38,36 +38,37 @@ class AudioCacheManager {
     }
   }
 
-  /// 清理过期和超量的缓存（真 LRU：删最旧直到总量 ≤ 上限）
+  /// Cleans expired and over-capacity cache entries (true LRU: delete oldest until total size <= limit).
   static Future<void> cleanCache() async {
     try {
       final cacheDir = await _getCacheDir();
       final entities = await cacheDir.list().toList();
 
-      // 一次性异步收集 (file, stat)，避免在 sort comparator 里同步 statSync
-      // 造成 O(N log N) 次阻塞文件系统调用拖垮主隔离区。
+      // Collect (file, stat) asynchronously in one pass; avoid synchronous statSync
+      // inside a sort comparator, which would cause O(N log N) blocking FS calls on the main isolate.
       final entries = <({File file, FileStat stat})>[];
       for (final e in entities) {
         if (e is! File) continue;
         try {
           entries.add((file: e, stat: await e.stat()));
         } catch (_) {
-          // 文件可能正被占用或已被删除，跳过。
+          // File may be in use or already deleted; skip.
         }
       }
 
       final now = DateTime.now();
 
-      // 1) 先删过期文件，其余进入存活集合。
+      // 1) Delete expired files first; survivors go into the live set.
       final live = <({File file, FileStat stat})>[];
       for (final entry in entries) {
         if (now.difference(entry.stat.modified) > _cacheExpiration) {
           try {
             await entry.file.delete();
           } catch (_) {
-            // 占用中删不掉：文件仍在磁盘，必须计入容量；它 modified 最旧，
-            // 会排到 live 队首，在 LRU 阶段优先重试删除。不能直接丢弃，
-            // 否则容量统计偏小、实际占用可能远超上限。
+            // Delete failed while file is in use: it still occupies disk and must count
+            // toward capacity. With the oldest modified time, it lands at the front of live
+            // and gets retried first during LRU eviction. Do not drop it, or capacity
+            // accounting shrinks while actual usage can far exceed the limit.
             live.add(entry);
           }
         } else {
@@ -75,8 +76,8 @@ class AudioCacheManager {
         }
       }
 
-      // 2) 真 LRU：按 modified 升序（最旧在前），从最旧开始删，
-      //    每删一个回退 totalSize，直到总量不超上限。
+      // 2) True LRU: sort by modified ascending (oldest first), delete from oldest,
+      //    decrementing totalSize after each delete until total size is within the limit.
       live.sort((a, b) => a.stat.modified.compareTo(b.stat.modified));
       var totalSize = live.fold<int>(0, (sum, e) => sum + e.stat.size);
       for (final entry in live) {
@@ -85,7 +86,7 @@ class AudioCacheManager {
           await entry.file.delete();
           totalSize -= entry.stat.size;
         } catch (_) {
-          // 占用中跳过，继续尝试下一个较旧文件。
+          // In use; skip and try the next older file.
         }
       }
     } catch (e) {
@@ -93,8 +94,8 @@ class AudioCacheManager {
     }
   }
 
-  /// 清空所有音频缓存（用户主动清理时调用）
-  /// 返回删除结果，如有文件无法删除则抛出异常
+  /// Clears all audio cache (invoked on user-initiated cleanup).
+  /// Throws if any file cannot be deleted.
   static Future<void> clearAllCache() async {
     final cacheDir = await _getCacheDir();
     final entities = await cacheDir.list().toList();
@@ -125,7 +126,7 @@ class AudioCacheManager {
     }
   }
 
-  /// 获取缓存大小
+  /// Returns total cache size in bytes.
   static Future<int> getCacheSize() async {
     try {
       final cacheDir = await _getCacheDir();
@@ -144,9 +145,9 @@ class AudioCacheManager {
     }
   }
 
-  // 私有方法
+  // Private helpers
 
-  /// 创建缓存音频源
+  /// Creates a caching audio source backed by [cacheFile].
   static AudioSource _createCachingSource(String url, File cacheFile) {
     return LockCachingAudioSource(
       Uri.parse(url),
@@ -154,7 +155,7 @@ class AudioCacheManager {
     );
   }
 
-  /// 检查缓存是否有效
+  /// Checks whether [cacheFile] is a valid cache entry.
   static Future<bool> _isCacheValid(File cacheFile, String fileName) async {
     final exists = await cacheFile.exists();
     if (!exists) {
@@ -169,7 +170,7 @@ class AudioCacheManager {
       
       AppLogger.debug(LogStrings.logFilenameCachevalidateSizef7217(size, fileName, age));
       
-      // 移除单个文件大小检查，只保留过期检查
+      // Per-file size check removed; only expiration is enforced.
       if (age > _cacheExpiration) {
         AppLogger.debug(LogStrings.logFilenameCacheinvalidFileexpif9f0f(fileName, age, _cacheExpiration));
         await cacheFile.delete();
@@ -184,14 +185,14 @@ class AudioCacheManager {
     }
   }
 
-  /// 获取缓存文件
+  /// Resolves the on-disk cache file for [url].
   static Future<File> _getCacheFile(String url, {String? hash}) async {
     final cacheDir = await _getCacheDir();
     final fileName = _generateFileName(url, hash: hash);
     return File('${cacheDir.path}/$fileName');
   }
 
-  /// 生成缓存文件名
+  /// Generates a stable cache file name from [url] and optional [hash].
   static String _generateFileName(String url, {String? hash}) {
     if (hash != null && hash.isNotEmpty) {
       // Sanitize hash to ensure filesystem safety
@@ -202,7 +203,7 @@ class AudioCacheManager {
     return digest.toString();
   }
 
-  /// 获取缓存目录
+  /// Returns the audio cache directory, creating it if needed.
   static Future<Directory> _getCacheDir() async {
     final appDir = await getApplicationSupportDirectory();
     final audioCacheDir = Directory('${appDir.path}/audio_cache');

@@ -1,29 +1,28 @@
 abstract class ILyricOverlayController {
-  /// 初始化悬浮窗
+  /// Initialize overlay.
   Future<void> initialize();
   
-  /// 显示悬浮窗
+  /// Show overlay.
   Future<void> show();
   
-  /// 隐藏悬浮窗
+  /// Hide overlay.
   Future<void> hide();
   
-  /// 更新歌词内容
+  /// Update lyric text.
   Future<void> updateLyric(String? text);
   
-  /// 检查悬浮窗权限
+  /// Check overlay permission.
   Future<bool> checkPermission();
   
-  /// 请求悬浮窗权限
+  /// Request overlay permission.
   Future<bool> requestPermission();
   
-  /// 释放资源
+  /// Release resources.
   Future<void> dispose();
   
-  /// 获取悬浮窗当前显示状态
+  /// Whether overlay is currently shown.
   Future<bool> isShowing();
 
-  /// 切换可拖动状态：true 时悬浮窗接收触摸（用于上下拖动调整位置），
-  /// false 时窗口对所有触摸事件透明（默认态，下层 app 可正常操作）。
+  /// Toggle draggable: true accepts touch for vertical drag; false is pass-through (default).
   Future<void> setEditable(bool editable);
 }

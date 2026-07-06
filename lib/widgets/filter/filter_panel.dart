@@ -55,7 +55,7 @@ class FilterPanel extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           children: [
-            // 字幕过滤
+            // Subtitle filter
             Container(
               decoration: BoxDecoration(
                 border: Border.all(
@@ -96,7 +96,7 @@ class FilterPanel extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            // 排序字段
+            // Sort field
             Container(
               decoration: BoxDecoration(
                 border: Border.all(
@@ -134,7 +134,7 @@ class FilterPanel extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            // 排序方向
+            // Sort direction
             Container(
               decoration: BoxDecoration(
                 border: Border.all(

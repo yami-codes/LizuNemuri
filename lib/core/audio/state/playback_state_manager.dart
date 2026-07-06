@@ -25,10 +25,10 @@ class PlaybackStateManager {
   Timer? _saveDebounceTimer;
   static const _saveInterval = Duration(seconds: 20);
 
-  // 持久化串行化 + tombstone：所有 save/clear 进同一条 Future 链，保证
-  // stop() 的 remove 一定排在任何在途 save 之后；_persistSuppressed 让
-  // stop 后、下一个非空播放上下文设置前的任何 save 变为 no-op，避免把
-  // 已主动停止的内容写回 prefs。
+  // Persistence serialization + tombstone: all save/clear ops share one Future chain so
+  // stop()'s remove always runs after any in-flight save; _persistSuppressed makes any
+  // save between stop() and the next non-null playback context a no-op, preventing
+  // actively stopped content from being written back to prefs.
   Future<void> _persistChain = Future<void>.value();
   bool _persistSuppressed = false;
 
@@ -40,9 +40,9 @@ class PlaybackStateManager {
        _eventHub = eventHub,
        _stateRepository = stateRepository;
 
-  // 初始化状态监听
+  // Initialize state listeners
   void initStateListeners() {
-    // 监听播放器索引变化
+    // Listen for player index changes
     _subscriptions.add(
       _player.currentIndexStream.listen((index) {
         if (index != null && _currentContext != null) {
@@ -54,13 +54,13 @@ class PlaybackStateManager {
       }),
     );
 
-    // 直接监听 AudioPlayer 的原始流
+    // Listen directly to AudioPlayer raw streams
     _subscriptions.add(
       _player.playerStateStream.listen((state) async {
         final position = _player.position;
         final duration = _player.duration;
 
-        // 转换并发送到 EventHub
+        // Convert and emit to EventHub
         _eventHub.emit(PlaybackStateEvent(state, position, duration));
 
         if (state.processingState == ProcessingState.completed) {
@@ -79,7 +79,7 @@ class PlaybackStateManager {
       }),
     );
 
-    // 监听播放器错误
+    // Listen for player errors
     _subscriptions.add(
       _player.playbackEventStream.listen(
         (_) {},
@@ -99,11 +99,11 @@ class PlaybackStateManager {
     });
   }
 
-  // 状态更新方法
+  // State update methods
   void updateContext(PlaybackContext? context) {
     _currentContext = context;
     if (context != null) {
-      // 有新播放内容，解除 stop 设置的持久化抑制。
+      // New playback content lifts the persistence suppression set by stop().
       _persistSuppressed = false;
       _eventHub.emit(PlaybackContextEvent(context));
     }
@@ -132,7 +132,7 @@ class PlaybackStateManager {
     _eventHub.emit(PlaybackCompletedEvent(_currentContext!));
   }
 
-  // 状态访问
+  // State access
   AudioTrackInfo? get currentTrack => _currentTrack;
   PlaybackContext? get currentContext => _currentContext;
 
@@ -142,17 +142,17 @@ class PlaybackStateManager {
     _eventHub.emit(PlaybackClearedEvent());
   }
 
-  // 状态持久化（全部经 _persistChain 串行化，消除 save/clear 写入竞态）
+  // State persistence (all serialized via _persistChain to eliminate save/clear races)
   Future<void> saveState() {
     if (_persistSuppressed) return _persistChain;
     final context = _currentContext;
     if (context == null) return _persistChain;
 
-    // 调用时刻就快照上下文与播放位置：链体执行时 _currentContext 可能已被
-    // stop() 置空，快照保证写入的是请求那一刻的真实状态。
+    // Snapshot context and position at call time: when the chain runs, _currentContext
+    // may already be cleared by stop(); the snapshot preserves the state at request time.
     final positionMs = _player.position.inMilliseconds;
     _persistChain = _persistChain.then((_) async {
-      // 入链后、执行前若已 stop，丢弃本次写入。
+      // If stop() ran after enqueue but before execution, drop this write.
       if (_persistSuppressed) return;
       try {
         final state = PlaybackState(
@@ -177,8 +177,8 @@ class PlaybackStateManager {
   }
 
   Future<void> clearSavedState() {
-    // 同步置位：此后调用的 saveState() 立即变 no-op；remove 排到链尾，
-    // 必然晚于任何已入链的 save 完成，保证 remove 是最后一次写入。
+    // Set synchronously: subsequent saveState() calls become no-ops immediately;
+    // remove is appended to the chain tail, always after enqueued saves, so remove is the final write.
     _persistSuppressed = true;
     _persistChain = _persistChain.then((_) async {
       try {
@@ -210,7 +210,7 @@ class PlaybackStateManager {
   }
 
   void _setupEventListeners() {
-    // 处理初始状态请求
+    // Handle initial-state requests
     _subscriptions.add(
       _eventHub.requestInitialState.listen((_) {
         _eventHub.emit(InitialStateEvent(
@@ -222,7 +222,7 @@ class PlaybackStateManager {
   }
 
   void dispose() {
-    // 取消 timer 前尽力把最后状态落盘（best-effort，dispose 不可 await）。
+    // Best-effort flush before cancelling the timer (dispose cannot await).
     if (_currentContext != null) {
       saveState();
     }

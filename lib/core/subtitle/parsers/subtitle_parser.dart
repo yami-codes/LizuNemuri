@@ -1,16 +1,16 @@
 import 'package:lizunemu/core/audio/models/subtitle.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
-/// 字幕解析器接口
+/// Subtitle parser interface.
 abstract class SubtitleParser {
-  /// 解析字幕内容
+  /// Parses subtitle content.
   SubtitleList parse(String content);
   
-  /// 检查内容格式是否匹配
+  /// Whether content matches this format.
   bool canParse(String content);
 }
 
-/// 字幕解析器基类
+/// Base subtitle parser.
 abstract class BaseSubtitleParser implements SubtitleParser {
   @override
   SubtitleList parse(String content) {
@@ -20,6 +20,6 @@ abstract class BaseSubtitleParser implements SubtitleParser {
     return doParse(content);
   }
   
-  /// 具体的解析实现
+  /// Concrete parse implementation.
   SubtitleList doParse(String content);
 } 

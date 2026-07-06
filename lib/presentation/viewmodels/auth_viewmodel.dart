@@ -40,7 +40,7 @@ class AuthViewModel extends ChangeNotifier {
       AppLogger.info(LogStrings.logAuthviewmodelLoginStart6547f);
       _authData = await _authService.login(name, password);
       
-      // 保存认证数据
+      // Persist auth data
       await _authRepository.saveAuthData(_authData!);
       
       AppLogger.info(LogStrings.logAuthLoginSuccessDetail(

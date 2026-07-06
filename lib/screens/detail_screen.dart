@@ -126,9 +126,8 @@ class DetailScreen extends StatelessWidget {
                   }
 
                   if (viewModel.files != null) {
-                    // 确认弹窗 → 下载（带进度/取消）→ 结果提示。
-                    // [openOnDone]=true（视频）完成后用外部查看器打开；
-                    // false（音频离线下载）仅提示完成。
+                    // Confirm → download (progress/cancel) → result snackbar.
+                    // [openOnDone]=true opens externally for video; false for offline audio.
                     Future<void> runDownload(
                       Child file, {
                       required bool openOnDone,
@@ -149,7 +148,7 @@ class DetailScreen extends StatelessWidget {
                           ),
                         ),
                       );
-                      // 拒绝（确认阶段取消）→ no-op
+                      // Dismiss at confirm stage → no-op
                       if (result == null || !context.mounted) return;
                       final messenger = ScaffoldMessenger.of(context);
                       if (result.isPlayable && result.localPath != null) {
@@ -268,9 +267,8 @@ class DetailScreen extends StatelessWidget {
                       onFolderDownload: runBatch,
                       onFolderTranslate: runBulkTranslate,
                       onFileTap: (file) async {
-                        // 视频判断前置：视频扩展名优先于不可靠的 API
-                        // `type`（会把视频错标 audio）。视频走下载+外部
-                        // 播放，绝不进音频播放管线（否则"播放列表为空"）。
+                        // Video check first: extension over unreliable API `type`.
+                        // Video → download + external player, never audio pipeline.
                         if (viewModel.isVideoFile(file)) {
                           await runDownload(
                             file,

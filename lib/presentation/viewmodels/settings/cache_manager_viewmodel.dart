@@ -21,7 +21,7 @@ class CacheManagerViewModel extends ChangeNotifier {
   int get totalCacheSize => _audioCacheSize + _subtitleCacheSize + _imageCacheSize;
   String? get error => _error;
 
-  // 格式化缓存大小显示
+  // Format cache size for display
   String _formatSize(int size) {
     if (size < 1024) return '${size}B';
     if (size < 1024 * 1024) return '${(size / 1024).toStringAsFixed(2)}KB';
@@ -33,7 +33,7 @@ class CacheManagerViewModel extends ChangeNotifier {
   String get imageCacheSizeFormatted => _formatSize(_imageCacheSize);
   String get totalCacheSizeFormatted => _formatSize(totalCacheSize);
 
-  // 加载缓存大小
+  // Load cache sizes
   Future<void> loadCacheSize() async {
     try {
       _isLoading = true;
@@ -54,7 +54,7 @@ class CacheManagerViewModel extends ChangeNotifier {
     }
   }
 
-  // 清理音频缓存
+  // Clear audio cache
   Future<void> clearAudioCache() async {
     try {
       _isLoading = true;
@@ -72,7 +72,7 @@ class CacheManagerViewModel extends ChangeNotifier {
     }
   }
 
-  // 清理字幕缓存
+  // Clear subtitle cache
   Future<void> clearSubtitleCache() async {
     try {
       _isLoading = true;
@@ -90,7 +90,7 @@ class CacheManagerViewModel extends ChangeNotifier {
     }
   }
 
-  // 清理图片缓存
+  // Clear image cache
   Future<void> clearImageCache() async {
     try {
       _isLoading = true;
@@ -108,7 +108,7 @@ class CacheManagerViewModel extends ChangeNotifier {
     }
   }
 
-  // 清理所有缓存
+  // Clear all caches
   Future<void> clearAllCache() async {
     try {
       _isLoading = true;

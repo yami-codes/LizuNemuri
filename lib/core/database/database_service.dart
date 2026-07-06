@@ -7,8 +7,7 @@ class DatabaseService {
   static const _databaseName = 'lizunemu.db';
   static const _databaseVersion = 3;
 
-  // schema 定义集中一处，`_onCreate`（全新安装拿到最新完整 schema）与
-  // `_migrations`（旧库逐版本升级）共用同一字符串，避免两条路径漂移。
+  // Schema DDL in one place shared by `_onCreate` (fresh install) and `_migrations` (upgrades).
   static const _createUserSubtitlesTable = '''
       CREATE TABLE user_subtitles (
         id            INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,9 +21,7 @@ class DatabaseService {
       )
     ''';
 
-  // file_key = 稳定身份摘要（md5(hash|url|title)）。去重/UNIQUE 用 file_key，
-  // 不用展示名 file_name：同一作品下不同目录/URL 的同名文件（如两个 01.mp3）
-  // 必须算作不同下载，否则会互相误判命中。file_name 仅用于展示。
+  // file_key = stable identity digest. UNIQUE on file_key, not display file_name.
   static const _createDownloadsTable = '''
       CREATE TABLE downloads (
         id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -64,9 +61,7 @@ class DatabaseService {
       )
     ''';
 
-  // 缓存的是 Future 而非已解析的 Database：`??=` 与赋值之间没有 await
-  // 挂起点，单线程事件循环下并发首访只会触发一次 _open()，所有调用方
-  // 共享同一 in-flight Future，避免重复 openDatabase() 双句柄。
+  // Cache Future<Database>, not Database: concurrent first access shares one in-flight _open().
   Future<Database>? _databaseFuture;
 
   Future<Database> get database => _databaseFuture ??= _open();
@@ -75,7 +70,7 @@ class DatabaseService {
     try {
       return await _initDatabase();
     } catch (e) {
-      // 一次打开失败不应永久毒化后续访问：清缓存让下次访问可重试。
+      // Clear cache on open failure so the next access can retry.
       _databaseFuture = null;
       rethrow;
     }
@@ -94,9 +89,8 @@ class DatabaseService {
     );
   }
 
-  /// 全新安装：sqflite 只调 onCreate（**不会**再调 onUpgrade），因此这里必须
-  /// 建出「当前版本」的完整 schema（所有表），而非只建 v1。新增表时两处都要加：
-  /// 这里（给全新安装）+ `_migrations`（给旧库升级）。
+  /// Fresh install: sqflite calls onCreate only — build the full current schema here.
+  /// New tables go in both `_onCreate` and `_migrations`.
   Future<void> _onCreate(Database db, int version) async {
     await db.execute(_createUserSubtitlesTable);
     await db.execute(_createDownloadsTable);
@@ -105,14 +99,11 @@ class DatabaseService {
     AppLogger.debug(LogStrings.logDatabaseTablesCreatedVVersiofa44c(version));
   }
 
-  /// 版本顺序迁移表：键为目标版本，值为「从 (键-1) 升到 键」要执行的步骤。
-  /// 新增一次 schema 变更时：bump [_databaseVersion]，在 `_onCreate` 补上新表/列
-  /// （给全新安装），并在此加一条 `<newVersion>: (db) async {...}`（给旧库升级）。
-  /// `_onUpgrade` 会按版本号升序逐步应用，保证多版本跨越升级也安全。
+  /// Ordered migrations map: version → upgrade step from (version-1). Bump [_databaseVersion],
+  /// update `_onCreate`, and add a migration entry for existing installs.
   static final Map<int, Future<void> Function(Database db)> _migrations = {
-    // 1 由 _onCreate 建立，无迁移。
-    // 2: 新增 downloads 表（本地下载/离线）。旧 v1 库走此路径补建；
-    //    全新安装由 _onCreate 直接建好，不会进 _onUpgrade。
+    // v1 created by _onCreate; no migration.
+    // v2: add downloads table. v1 DBs migrate here; fresh installs get it from _onCreate.
     2: (db) async {
       await db.execute(_createDownloadsTable);
     },

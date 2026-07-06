@@ -3,13 +3,11 @@ import 'package:lizunemu/data/models/files/child.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
-/// 文件路径工具类
-/// 用于在文件树中定位文件和获取同级文件
+/// File path utilities for locating files in the tree and listing siblings.
 class FilePath {
   static const separator = '/';
 
-  /// 获取文件的完整路径
-  /// 返回类似 /folder1/folder2/file.mp3 的路径
+  /// Returns the full file path, e.g. /folder1/folder2/file.mp3.
   static String? getPath(Child targetFile, Files root) {
     AppLogger.debug(LogStrings.logStartResolvingFilePathTargetb9a7f(targetFile.title));
     final segments = _findPathSegments(root.children, targetFile);
@@ -24,7 +22,7 @@ class FilePath {
     return path;
   }
 
-  /// 递归查找文件路径段
+  /// Recursively finds path segments for a file.
   static List<String>? _findPathSegments(List<Child>? children, Child targetFile, [List<String> currentPath = const []]) {
     if (children == null) return null;
 
@@ -32,7 +30,7 @@ class FilePath {
       if (child.title == targetFile.title && 
           child.mediaDownloadUrl == targetFile.mediaDownloadUrl && 
           child.type == targetFile.type &&
-          child.size == targetFile.size) {  // size 作为额外验证
+          child.size == targetFile.size) {  // size as an extra identity check
         return [...currentPath, child.title!];
       }
 
@@ -49,31 +47,30 @@ class FilePath {
     return null;
   }
 
-  /// 获取同级文件列表
-  /// 返回与目标文件在同一目录下的所有文件
+  /// Returns all files in the same directory as [targetFile].
   static List<Child> getSiblings(Child targetFile, Files root) {
     AppLogger.debug(LogStrings.logGetSiblingFilesTargetfileTit6cf37(targetFile.title));
     
-    // 获取目标文件的路径
+    // Resolve the target file path
     final path = getPath(targetFile, root);
     if (path == null) {
       AppLogger.debug(LogStrings.logCannotResolveFilePathReturnEff0fd);
       return [];
     }
 
-    // 获取父目录路径
+    // Resolve the parent directory path
     final lastSeparator = path.lastIndexOf(separator);
     final parentPath = lastSeparator > 0 ? path.substring(0, lastSeparator) : separator;
     AppLogger.debug(LogStrings.logParentDirPathParentpathd3aa7(parentPath));
 
-    // 查找父目录内容
+    // Look up parent directory contents
     List<Child>? siblings;
     if (parentPath == separator) {
-      // 如果是根目录，直接使用 root.children
+      // At root, use root.children directly
       AppLogger.debug(LogStrings.logFileAtRootUseRootFileList8c225);
       siblings = root.children;
     } else {
-      // 否则查找父目录
+      // Otherwise walk to the parent directory
       siblings = _findDirectoryByPath(root.children, parentPath);
     }
 
@@ -86,20 +83,20 @@ class FilePath {
     return siblings;
   }
 
-  /// 根据路径查找目录内容
+  /// Finds directory contents by path.
   static List<Child>? _findDirectoryByPath(List<Child>? children, String path) {
     if (children == null || path.isEmpty) return null;
 
-    // 如果是根路径，直接返回
+    // Root path: return directly
     if (path == separator) return children;
 
-    // 分割路径
+    // Split path segments
     final segments = path.split(separator)
       ..removeWhere((s) => s.isEmpty);
     
     List<Child>? current = children;
     
-    // 逐级查找目录
+    // Walk directories segment by segment
     for (final segment in segments) {
       final nextDir = current?.firstWhere(
         (child) => child.title == segment && child.type == 'folder',
@@ -113,8 +110,8 @@ class FilePath {
     return current;
   }
 
-  /// 查找第一个包含音频文件的目录路径
-  /// 返回从根目录到目标目录的完整路径数组
+  /// Finds the first directory containing audio files.
+  /// Returns the full path array from root to that directory.
   static List<String>? findFirstAudioFolderPath(
     List<Child>? children, {
     List<String> formats = const ['.mp3', '.wav'],
@@ -127,7 +124,7 @@ class FilePath {
       if (audioFolderPath != null) return;
 
       if (folder.children != null) {
-        // 首先检查当前��录是否直接包含音频文件
+        // First check whether this directory directly contains audio files
         bool hasDirectAudio = folder.children!.any((child) {
           if (child.type != 'folder') {
             final fileName = child.title?.toLowerCase() ?? '';
@@ -136,13 +133,13 @@ class FilePath {
           return false;
         });
 
-        // 如果当前目录包含音频文件，记录完整路径
+        // If audio files are present, record the full path
         if (hasDirectAudio) {
           audioFolderPath = currentPath;
           return;
         }
 
-        // 如果当前目录没有音频文件，递归检查子目录
+        // Otherwise recurse into subdirectories
         for (final child in folder.children!) {
           if (child.type == 'folder') {
             List<String> newPath = List.from(currentPath)..add(child.title ?? '');
@@ -152,7 +149,7 @@ class FilePath {
       }
     }
 
-    // 遍历根目录下的所有文件夹
+    // Walk top-level folders under root
     for (final child in children) {
       if (child.type == 'folder') {
         findPath(child, [child.title ?? '']);
@@ -163,8 +160,7 @@ class FilePath {
     return audioFolderPath;
   }
 
-  /// 检查路径是否包含指定的目录名
-  /// 用于判断某个目录是否在音频文件夹的路径上
+  /// Whether [path] contains [folderName] (e.g. on the path to an audio folder).
   static bool isInPath(List<String>? path, String? folderName) {
     if (path == null || folderName == null) return false;
     return path.contains(folderName);

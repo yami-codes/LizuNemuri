@@ -9,8 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
 class HomeViewModel extends PaginatedWorksViewModel {
-  // home_filter_state（排序）是本页私有、单写者，无跨 VM 竞态，沿用本地
-  // prefs 持久化；共享的字幕筛选收敛到 AppSettingsService。
+  // home_filter_state (sort) is page-private prefs; shared subtitle filter uses AppSettingsService.
   static const String _filterStateKey = 'home_filter_state';
 
   final AppSettingsService _settings = GetIt.I<AppSettingsService>();
@@ -62,7 +61,7 @@ class HomeViewModel extends PaginatedWorksViewModel {
   }
 
   void updateOrderField(String value) {
-    // 如果切换到随机排序，强制设置为降序
+    // Random sort forces descending order
     final newState = _filterState.copyWith(
       orderField: value,
       isDescending: value == 'random' ? true : _filterState.isDescending,

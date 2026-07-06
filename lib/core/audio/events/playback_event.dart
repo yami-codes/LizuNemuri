@@ -4,10 +4,10 @@ import '../models/playback_context.dart';
 import 'package:lizunemu/data/models/files/child.dart';
 import 'package:lizunemu/data/models/works/work.dart';
 
-/// 播放事件基类
+/// Base playback event.
 abstract class PlaybackEvent {}
 
-/// 播放状态事件
+/// Playback state event.
 class PlaybackStateEvent extends PlaybackEvent {
   final PlayerState state;
   final Duration position;
@@ -32,13 +32,13 @@ class PlaybackStateEvent extends PlaybackEvent {
       );
 }
 
-/// 播放上下文事件
+/// Playback context event.
 class PlaybackContextEvent extends PlaybackEvent {
   final PlaybackContext context;
   PlaybackContextEvent(this.context);
 }
 
-/// 音轨变更事件
+/// Track change event.
 class TrackChangeEvent extends PlaybackEvent {
   final AudioTrackInfo track;
   final Child file;
@@ -46,7 +46,7 @@ class TrackChangeEvent extends PlaybackEvent {
   TrackChangeEvent(this.track, this.file, this.work);
 }
 
-/// 播放错误事件
+/// Playback error event.
 class PlaybackErrorEvent extends PlaybackEvent {
   final String operation;
   final dynamic error;
@@ -54,13 +54,13 @@ class PlaybackErrorEvent extends PlaybackEvent {
   PlaybackErrorEvent(this.operation, this.error, [this.stackTrace]);
 }
 
-/// 播放完成事件
+/// Playback completed event.
 class PlaybackCompletedEvent extends PlaybackEvent {
   final PlaybackContext context;
   PlaybackCompletedEvent(this.context);
 }
 
-/// 播放进度事件
+/// Playback progress event.
 class PlaybackProgressEvent extends PlaybackEvent {
   final Duration position;
   final Duration? bufferedPosition;
@@ -76,7 +76,7 @@ class PlaybackProgressEvent extends PlaybackEvent {
   int get hashCode => position.hashCode;
 }
 
-/// 添加初始状态相关事件
+/// Initial-state related events.
 class RequestInitialStateEvent extends PlaybackEvent {}
 
 class InitialStateEvent extends PlaybackEvent {

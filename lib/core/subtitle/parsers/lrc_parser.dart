@@ -23,22 +23,22 @@ class LrcParser extends BaseSubtitleParser {
       final trimmedLine = line.trim();
       if (trimmedLine.isEmpty) continue;
       
-      // 检查是否是ID标签
+      // Check for ID tag
       final idMatch = _idTagRegex.firstMatch(trimmedLine);
       if (idMatch != null) {
         metadata[idMatch.group(1)!] = idMatch.group(2)!;
         continue;
       }
       
-      // 解析时间标签和歌词
+      // Parse time tags and lyrics
       final timeMatches = _timeTagRegex.allMatches(trimmedLine);
       if (timeMatches.isEmpty) continue;
       
-      // 获取歌词内容 (移除所有时间标签)
+      // Lyric text with all time tags stripped
       final text = trimmedLine.replaceAll(_timeTagRegex, '').trim();
       if (text.isEmpty) continue;
       
-      // 一行可能有多个时间标签
+      // One line may have multiple time tags
       for (final match in timeMatches) {
         try {
           final timestamp = _parseTimestamp(
@@ -49,7 +49,7 @@ class LrcParser extends BaseSubtitleParser {
           
           subtitles.add(Subtitle(
             start: timestamp,
-            end: timestamp + const Duration(seconds: 5), // 默认持续5秒
+            end: timestamp + const Duration(seconds: 5), // Default 5s duration
             text: text,
             index: subtitles.length,
           ));
@@ -60,10 +60,10 @@ class LrcParser extends BaseSubtitleParser {
       }
     }
     
-    // 按时间排序
+    // Sort by start time
     subtitles.sort((a, b) => a.start.compareTo(b.start));
     
-    // 设置正确的结束时间
+    // Set correct end times
     for (int i = 0; i < subtitles.length - 1; i++) {
       subtitles[i] = Subtitle(
         start: subtitles[i].start,

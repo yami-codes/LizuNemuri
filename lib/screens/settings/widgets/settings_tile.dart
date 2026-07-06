@@ -6,8 +6,7 @@ import 'package:lizunemu/core/theme/app_spacing.dart';
 enum _TileType { navigation, toggle, selection }
 
 class SettingsTile extends StatelessWidget {
-  // spec §2.3：单行列表项 56dp。56 不在 AppSpacing 4px 网格令牌内，
-  // 沿用 SettingsGroup._dividerIndent 先例用具名常量（不为单数造共享令牌）。
+  // spec §2.3: 56dp row; not on AppSpacing grid — named constant like SettingsGroup._dividerIndent.
   static const double _kRowMinHeight = 56;
 
   final _TileType _type;
@@ -20,8 +19,8 @@ class SettingsTile extends StatelessWidget {
   final ValueChanged<bool>? onChanged;
   final bool? selected;
 
-  /// 可选 leading 图标着色；为 null 时维持中性 `onSurfaceVariant`。
-  /// 仅供「内容即颜色」的场景（如配色选择器显示各配色真实强调色）。
+  /// Optional leading icon color; null keeps neutral `onSurfaceVariant`.
+  /// For "content is the color" cases (e.g. variant picker swatches).
   final Color? leadingColor;
 
   const SettingsTile._({
@@ -122,8 +121,7 @@ class SettingsTile extends StatelessWidget {
     );
   }
 
-  // 参考图：设置项 leading 为克制的中性线性图标，accent 仅出现在分区头/
-  // 开关/选中态/滑块。不再用「每行 accent 圆角徽章」（accent 过载，背离参考图）。
+  // Reference design: neutral leading icons; accent only on headers/toggles/selection.
   Widget _buildLeadingIcon(ColorScheme colorScheme) {
     return SizedBox(
       width: AppSpacing.space40,

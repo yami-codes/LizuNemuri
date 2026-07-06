@@ -16,7 +16,7 @@ class PopularViewModel extends PaginatedWorksViewModel {
   void toggleSubtitleFilter() {
     _settings.setHasSubtitleFilter(!_settings.hasSubtitleFilter);
     notifyListeners();
-    refresh(); // 刷新列表
+    refresh(); // Refresh list
   }
 
   void toggleFilterPanel() {
@@ -42,7 +42,7 @@ class PopularViewModel extends PaginatedWorksViewModel {
     );
   }
 
-  // 保持原有的便捷方法
+  // Keep existing convenience methods
   Future<void> loadPopular({bool refresh = false}) =>
     refresh ? this.refresh() : loadPage(1);
 } 

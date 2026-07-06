@@ -24,7 +24,7 @@ mixin _$PlaybackState {
   Files get files => throw _privateConstructorUsedError;
   Child get currentFile => throw _privateConstructorUsedError;
   PlayMode get playMode => throw _privateConstructorUsedError;
-  int get position => throw _privateConstructorUsedError; // 使用毫秒存储
+  int get position => throw _privateConstructorUsedError; // Stored in milliseconds
   String get timestamp => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -220,7 +220,7 @@ class _$PlaybackStateImpl implements _PlaybackState {
   final PlayMode playMode;
   @override
   final int position;
-// 使用毫秒存储
+// Stored in milliseconds
   @override
   final String timestamp;
 
@@ -287,7 +287,7 @@ abstract class _PlaybackState implements PlaybackState {
   PlayMode get playMode;
   @override
   int get position;
-  @override // 使用毫秒存储
+  @override // Stored in milliseconds
   String get timestamp;
   @override
   @JsonKey(ignore: true)

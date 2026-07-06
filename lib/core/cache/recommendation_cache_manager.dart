@@ -4,24 +4,24 @@ import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
 class RecommendationCacheManager {
-  // 单例模式
+  // Singleton
   static final RecommendationCacheManager _instance = RecommendationCacheManager._internal();
   factory RecommendationCacheManager() => _instance;
   RecommendationCacheManager._internal();
 
-  // 使用 LinkedHashMap 便于按访问顺序管理缓存
+  // LinkedHashMap preserves access order for eviction
   final _cache = <String, _CacheItem>{};
   
-  // 缓存配置
-  static const int _maxCacheSize = 1000; // 最大缓存条目数
-  static const Duration _cacheDuration = Duration(hours: 24); // 缓存有效期
+  // Cache configuration
+  static const int _maxCacheSize = 1000; // Max cache entries
+  static const Duration _cacheDuration = Duration(hours: 24); // Cache TTL
 
-  /// 生成缓存键
+  /// Build cache key.
   String _generateKey(String itemId, int page, int subtitle) {
     return '$itemId-$page-$subtitle';
   }
 
-  /// 获取缓存数据
+  /// Get cached data.
   WorksResponse? get(String itemId, int page, int subtitle) {
     final key = _generateKey(itemId, page, subtitle);
     final item = _cache[key];
@@ -30,7 +30,7 @@ class RecommendationCacheManager {
       return null;
     }
 
-    // 检查是否过期
+    // Check expiry
     if (item.isExpired) {
       _cache.remove(key);
       AppLogger.debug(LogStrings.logCacheExpiredKey3dbc2(key));
@@ -41,11 +41,11 @@ class RecommendationCacheManager {
     return item.data;
   }
 
-  /// 存储缓存数据
+  /// Store cached data.
   void set(String itemId, int page, int subtitle, WorksResponse data) {
     final key = _generateKey(itemId, page, subtitle);
     
-    // 检查缓存大小,如果达到上限则移除最早的条目
+    // Evict oldest entry when at capacity
     if (_cache.length >= _maxCacheSize) {
       _cache.remove(_cache.keys.first);
     }
@@ -54,20 +54,20 @@ class RecommendationCacheManager {
     AppLogger.debug(LogStrings.logCacheAddKey26f96(key));
   }
 
-  /// 清除所有缓存
+  /// Clear all cache.
   void clear() {
     _cache.clear();
     AppLogger.debug(LogStrings.logClearAllRecommendationCache6c408);
   }
 
-  /// 移除指定作品的缓存
+  /// Remove cache for one work.
   void remove(String itemId) {
     _cache.removeWhere((key, _) => key.startsWith('$itemId-'));
     AppLogger.debug(LogStrings.logRemoveWorkCacheItemid82faf(itemId));
   }
 }
 
-/// 缓存条目包装类
+/// Cache entry wrapper.
 class _CacheItem {
   final WorksResponse data;
   final DateTime timestamp;

@@ -54,24 +54,24 @@ final getIt = GetIt.instance;
 Future<void> setupServiceLocator() async {
   final prefs = await SharedPreferences.getInstance();
 
-  // 注册 EventHub
+  // Register EventHub
   getIt.registerLazySingleton(() => PlaybackEventHub());
 
-  // 注册 SharedPreferences 实例
+  // Register SharedPreferences instance
   getIt.registerSingleton<SharedPreferences>(prefs);
 
-  // 数据库服务
+  // Database service
   getIt.registerLazySingleton<DatabaseService>(() => DatabaseService());
 
-  // 用户字幕存储
+  // User subtitle storage
   getIt.registerLazySingleton<IUserSubtitleRepository>(
     () => UserSubtitleRepository(getIt<DatabaseService>()),
   );
 
-  // 文件选择器
+  // File picker
   getIt.registerLazySingleton<IFilePickerService>(() => FilePickerService());
 
-  // 字幕导入服务
+  // Subtitle import service
   getIt.registerLazySingleton<SubtitleImportService>(
     () => SubtitleImportService(
       picker: getIt<IFilePickerService>(),
@@ -79,7 +79,7 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
-  // 下载存储 + 服务（依赖 DatabaseService，已于上方注册）
+  // Download storage + service (depends on DatabaseService registered above)
   getIt.registerLazySingleton<IDownloadRepository>(
     () => DownloadRepository(getIt<DatabaseService>()),
   );
@@ -87,12 +87,12 @@ Future<void> setupServiceLocator() async {
     () => DownloadService(repository: getIt<IDownloadRepository>()),
   );
 
-  // 注册 PlaybackStateRepository
+  // Register PlaybackStateRepository
   getIt.registerLazySingleton<IPlaybackStateRepository>(
     () => PlaybackStateRepository(getIt()),
   );
 
-  // 核心服务
+  // Core services
   getIt.registerLazySingleton<IAudioPlayerService>(
     () => AudioPlayerService(
       eventHub: getIt(),
@@ -100,7 +100,7 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
-  // 注册 PlayerViewModel
+  // Register PlayerViewModel
   getIt.registerLazySingleton<PlayerViewModel>(
     () => PlayerViewModel(
       audioService: getIt(),
@@ -135,7 +135,7 @@ Future<void> setupServiceLocator() async {
     () => DlsitePlayWorkService(getIt<DlsiteAuthRepository>()),
   );
 
-  // 注册 AppSettingsService
+  // Register AppSettingsService
   getIt.registerSingleton<AppSettingsService>(
     AppSettingsService(prefs),
   );
@@ -170,27 +170,27 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
-  // API 服务
+  // API services
   getIt.registerLazySingleton<ApiService>(
     () => ApiService(settings: getIt<AppSettingsService>()),
   );
 
-  // 检查更新服务（独立 GitHub Dio，与 asmr 节点解耦）
+  // Update check service (standalone GitHub Dio, decoupled from asmr nodes)
   getIt.registerLazySingleton<UpdateService>(
     () => UpdateService(),
   );
 
-  // 添加 AuthService 注册
+  // Register AuthService
   getIt.registerLazySingleton<AuthService>(
     () => AuthService(settings: getIt<AppSettingsService>()),
   );
 
-  // 添加 AuthRepository 注册
+  // Register AuthRepository
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepository(prefs),
   );
 
-  // 修改 AuthViewModel 注册
+  // Register AuthViewModel
   getIt.registerSingleton<AuthViewModel>(
     AuthViewModel(
       authService: getIt<AuthService>(),
@@ -198,25 +198,25 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
-  // 等待 AuthViewModel 完成初始化
+  // Wait for AuthViewModel initialization
   await getIt<AuthViewModel>().loadSavedAuth();
 
-  // 添加字幕服务注册
+  // Register subtitle services
   getIt.registerLazySingleton<ISubtitleService>(
     () => SubtitleService(),
   );
 
   setupSubtitleServices();
 
-  // 注册主题控制器
+  // Register theme controller
   getIt.registerLazySingleton<ThemeController>(
     () => ThemeController(prefs),
   );
 
-  // 注册 WakeLockController
+  // Register WakeLockController
   getIt.registerLazySingleton(() => WakeLockController(prefs));
 
-  // 注册 SleepTimerController（会话级；到点 pause()，不持久化）
+  // Register SleepTimerController (session-only; expires to pause(), not persisted)
   getIt.registerLazySingleton(
     () => SleepTimerController(
       getIt<IAudioPlayerService>(),
@@ -224,7 +224,7 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
-  // 注册 BackgroundPlayController（后台播放开关执行端，main 中 initialize）
+  // Register BackgroundPlayController (background-play switch; initialize in main)
   getIt.registerLazySingleton(
     () => BackgroundPlayController(
       settings: getIt<AppSettingsService>(),
@@ -253,11 +253,11 @@ void setupSubtitleServices() {
   ));
 }
 
-/// 首帧之后再执行的非关键启动初始化。
+/// Non-critical startup work deferred until after the first frame.
 ///
-/// `LyricOverlayManager.initialize()` 会做平台通道往返（controller.initialize /
-/// isShowing），放在冷启动关键路径（runApp 之前）上会拖慢首个可交互帧，而悬浮
-/// 歌词在有曲目播放、用户开启之前并不需要——因此推迟到首帧绘制之后再做。
+/// `LyricOverlayManager.initialize()` does platform-channel round-trips (controller.initialize /
+/// isShowing). Running that on the cold-start critical path (before runApp) delays the first
+/// interactive frame; floating lyrics are not needed until playback and user opt-in — defer until after first paint.
 Future<void> initDeferredStartupServices() async {
   await getIt<LyricOverlayManager>().initialize();
 }

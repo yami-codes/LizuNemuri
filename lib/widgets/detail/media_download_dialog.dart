@@ -3,12 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/core/download/download_service.dart';
 
-/// 媒体"下载到本地磁盘"对话框：
-/// 阶段 1 = 确认（[promptText]，视频默认为固定文案
-/// 「打开该视频需要下载到本地磁盘，是否同意？」）；
-/// 阶段 2 = 下载进度 + 取消。完成/取消/失败时以 [DownloadResult] pop。
+/// Media download-to-disk dialog: confirm then progress + cancel; pops [DownloadResult].
 ///
-/// 拒绝（确认阶段点取消 / 关闭）→ pop(null)，调用方按 no-op 处理。
+/// Dismiss at confirm → pop(null); caller treats as no-op.
 class MediaDownloadDialog extends StatefulWidget {
   final String fileName;
   final String titleText;
@@ -50,8 +47,7 @@ class _MediaDownloadDialogState extends State<MediaDownloadDialog> {
         if (mounted) setState(() => _progress = p);
       });
     } catch (_) {
-      // 最后防线：服务已把前置失败收敛为 ioError，此处兜底极端未捕获，
-      // 避免进度弹窗（PopScope canPop:false）卡死无法关闭。
+      // Last resort for uncaught errors so PopScope progress sheet cannot stick.
       result = const DownloadResult(DownloadStatus.ioError);
     }
 

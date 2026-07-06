@@ -116,7 +116,7 @@ class PlayerViewModel extends ChangeNotifier {
   }
 
   void _initStreams() {
-    // 播放状态事件 - 状态变化时通知（播放/暂停/缓冲等）
+    // Playback state events — notify on play/pause/buffer changes, etc.
     _subscriptions.add(
       _eventHub.playbackState.listen(
         (event) {
@@ -131,7 +131,7 @@ class PlayerViewModel extends ChangeNotifier {
       ),
     );
 
-    // 音轨变更事件
+    // Track change events
     _subscriptions.add(
       _eventHub.trackChange.listen(
         (event) {
@@ -141,7 +141,7 @@ class PlayerViewModel extends ChangeNotifier {
       ),
     );
 
-    // 播放进度 - UI更新路径：节流到200ms，减少rebuild频率
+    // Playback progress — UI path: throttled to 200ms to reduce rebuilds
     _subscriptions.add(
       _eventHub.playbackProgress
           .throttleTime(const Duration(milliseconds: 200))
@@ -154,7 +154,7 @@ class PlayerViewModel extends ChangeNotifier {
       ),
     );
 
-    // 播放进度 - 字幕同步路径：保持全精度，不触发rebuild
+    // Playback progress — subtitle sync path: full precision, no rebuild
     _subscriptions.add(
       _eventHub.playbackProgress.listen(
         (event) {
@@ -164,7 +164,7 @@ class PlayerViewModel extends ChangeNotifier {
       ),
     );
 
-    // 上下文变更事件
+    // Context change events
     _subscriptions.add(
       _eventHub.contextChange.listen(
         (event) async {
@@ -177,7 +177,7 @@ class PlayerViewModel extends ChangeNotifier {
       ),
     );
 
-    // 初始状态流
+    // Initial state stream
     _subscriptions.add(
       _eventHub.initialState.listen(
         (event) {
@@ -192,7 +192,7 @@ class PlayerViewModel extends ChangeNotifier {
       ),
     );
 
-    // 错误事件
+    // Error events
     _subscriptions.add(
       _eventHub.errors.listen(
         (event) {
@@ -204,7 +204,7 @@ class PlayerViewModel extends ChangeNotifier {
       ),
     );
 
-    // 清空状态事件
+    // Cleared-state events
     _subscriptions.add(
       _eventHub.playbackCleared.listen(
         (_) {
@@ -220,7 +220,7 @@ class PlayerViewModel extends ChangeNotifier {
       ),
     );
 
-    // 播放完成事件
+    // Playback completed events
     _subscriptions.add(
       _eventHub.playbackCompleted.listen(
         (event) {
@@ -315,7 +315,7 @@ class PlayerViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  // 请求初始状态
+  // Request initial state
   void _requestInitialState() {
     _volume = _settings.playbackVolume;
     _playbackSpeed = _settings.playbackSpeed;
@@ -551,7 +551,7 @@ class PlayerViewModel extends ChangeNotifier {
     final workId = context.work.id?.toString();
     final fileName = context.currentFile.title;
 
-    // 1. 用户导入优先
+    // 1. User-imported subtitles take priority
     if (workId != null && fileName != null) {
       final entry = await _importService.findImported(workId, fileName);
       if (_loadVersion != version) return;
@@ -571,7 +571,7 @@ class PlayerViewModel extends ChangeNotifier {
       }
     }
 
-    // 2. 自动匹配。优先级：已下载本地字幕（离线可用）> 在线 URL。
+    // 2. Auto-match. Priority: downloaded local subtitle (offline) > online URL.
     _isUserImportedSubtitle = false;
     final subtitleFile = _subtitleLoader.findSubtitleFile(
       context.currentFile,
@@ -583,7 +583,7 @@ class PlayerViewModel extends ChangeNotifier {
       return;
     }
 
-    // 2a. 该字幕已随音频下载到本地 → 读本地文件，断网也能显示。
+    // 2a. Subtitle downloaded with audio — read local file; works offline.
     if (workId != null) {
       final localPath =
           await _downloadService.localPathIfDownloaded(workId, subtitleFile);
@@ -599,7 +599,7 @@ class PlayerViewModel extends ChangeNotifier {
       }
     }
 
-    // 2b. 在线 URL（需网络）。
+    // 2b. Online URL (requires network).
     if (subtitleFile.mediaDownloadUrl != null) {
       final list =
           await _subtitleLoader.loadSubtitleContent(subtitleFile.mediaDownloadUrl!);

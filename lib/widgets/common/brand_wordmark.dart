@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 
-/// 品牌标志锁定：波形图标 + 文字。规范 §2.1（侧边栏顶 / 关于页中部）。
+/// Brand lockup: waveform icon + text. Spec §2.1 (sidebar top / about center).
 ///
-/// 图标用 accent（三配色随之变化），文字用 onSurface。无外部资源依赖。
+/// Icon uses accent; text uses onSurface. No external assets.
 class BrandWordmark extends StatelessWidget {
   const BrandWordmark({
     super.key,

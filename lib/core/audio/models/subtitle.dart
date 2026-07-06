@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 
 enum SubtitleState {
-  current,  // 当前播放的字幕
-  waiting,  // 即将播放的字幕
-  passed    // 已经播放过的字幕
+  current,  // Currently playing subtitle line
+  waiting,  // Upcoming subtitle line
+  passed    // Already played subtitle line
 }
 
 class Subtitle {

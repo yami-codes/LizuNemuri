@@ -22,7 +22,7 @@ class SimilarWorksViewModel extends ChangeNotifier {
   SimilarWorksViewModel(this.work)
       : _apiService = GetIt.I<ApiService>(),
         _settings = GetIt.I<AppSettingsService>() {
-    // 共享筛选值由 AppSettingsService 同步提供，构造即可直接首载。
+    // Shared filter from AppSettingsService; load on construct.
     loadSimilarWorks(refresh: true);
   }
 
@@ -38,7 +38,7 @@ class SimilarWorksViewModel extends ChangeNotifier {
           ? (_pagination!.totalCount! / _pagination!.pageSize!).ceil()
           : null;
 
-  // 切换字幕筛选
+  // Toggle subtitle filter
   void toggleSubtitleFilter() {
     _settings.setHasSubtitleFilter(!_settings.hasSubtitleFilter);
     notifyListeners();
@@ -57,7 +57,7 @@ class SimilarWorksViewModel extends ChangeNotifier {
     }
   }
 
-  /// 加载指定页面的数据
+  /// Load a specific page.
   Future<void> loadPage(int page) async {
     if (_isLoading) return;
     if (page < 1 || (totalPages != null && page > totalPages!)) return;
@@ -70,7 +70,7 @@ class SimilarWorksViewModel extends ChangeNotifier {
       final response = await _apiService.getItemNeighbors(
         itemId: work.id.toString(),
         page: page,
-        hasSubtitle: hasSubtitle, // 添加字幕筛选参数
+        hasSubtitle: hasSubtitle, // Subtitle filter param
       );
       _works = response.works;
       _pagination = response.pagination;
@@ -85,7 +85,7 @@ class SimilarWorksViewModel extends ChangeNotifier {
     }
   }
 
-  /// 加载相关推荐(用于初始加载和刷新)
+  /// Load similar works (initial load and refresh).
   Future<void> loadSimilarWorks({bool refresh = false}) async {
     await loadPage(1);
   }

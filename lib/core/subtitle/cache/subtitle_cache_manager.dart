@@ -11,14 +11,14 @@ class SubtitleCacheManager {
   static final CacheManager instance = CacheManager(
     Config(
       key,
-      stalePeriod: const Duration(days: 365), // 字幕文件不会变更，设置较长的有效期
-      maxNrOfCacheObjects: 1000, // 最大缓存文件数
+      stalePeriod: const Duration(days: 365), // Subtitles rarely change; long TTL
+      maxNrOfCacheObjects: 1000, // Max cached files
       repo: JsonCacheInfoRepository(databaseName: key),
       fileService: HttpFileService(),
     ),
   );
 
-  /// 获取缓存的字幕内容
+  /// Returns cached subtitle content.
   static Future<String?> getCachedContent(String url) async {
     try {
       final fileInfo = await instance.getFileFromCache(url);
@@ -39,7 +39,7 @@ class SubtitleCacheManager {
     }
   }
 
-  /// 保存字幕内容到缓存
+  /// Saves subtitle content to cache.
   static Future<void> cacheContent(String url, String content) async {
     try {
       await instance.putFile(
@@ -53,7 +53,7 @@ class SubtitleCacheManager {
     }
   }
 
-  /// 清理缓存
+  /// Cleans cache.
   static Future<void> clearCache() async {
     try {
       await instance.emptyCache();
@@ -63,7 +63,7 @@ class SubtitleCacheManager {
     }
   }
 
-  /// 获取缓存大小
+  /// Returns cache size.
   static Future<int> getSize() async {
     try {
       return instance.store.getCacheSize();

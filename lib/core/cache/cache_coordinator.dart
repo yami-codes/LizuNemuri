@@ -5,14 +5,13 @@ import 'package:lizunemu/core/cache/recommendation_cache_manager.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
-/// 统一缓存协调器
-/// 提供单一 API 查询、清理和清除所有应用缓存
+/// Unified cache coordinator — single API to query, clean, and clear all app caches.
 class CacheCoordinator {
   static final CacheCoordinator _instance = CacheCoordinator._internal();
   factory CacheCoordinator() => _instance;
   CacheCoordinator._internal();
 
-  /// 获取各缓存类型的大小报告
+  /// Size report per cache type.
   Future<CacheSizeReport> getSizeReport() async {
     final results = await Future.wait([
       AudioCacheManager.getCacheSize(),
@@ -26,16 +25,16 @@ class CacheCoordinator {
     );
   }
 
-  /// 运行所有缓存的过期清理（自动维护用）
+  /// Run expiry cleanup on all caches (automatic maintenance).
   Future<void> cleanAll() async {
     AppLogger.info(LogStrings.logStartUnifiedCacheCleanup964c6);
     await AudioCacheManager.cleanCache();
-    // SubtitleCacheManager 和 ImageCacheManager 使用 flutter_cache_manager 内置的过期策略
+    // SubtitleCacheManager and ImageCacheManager use built-in flutter_cache_manager expiry
     _cleanRecommendationExpired();
     AppLogger.info(LogStrings.logUnifiedCacheCleanupDoneea48b);
   }
 
-  /// 清除所有缓存数据（用户主动清理）
+  /// Clear all cache data (user-initiated).
   Future<void> clearAll() async {
     AppLogger.info(LogStrings.logClearingAllCache16985);
     await Future.wait([
@@ -52,7 +51,7 @@ class CacheCoordinator {
   }
 }
 
-/// 缓存大小报告
+/// Cache size report.
 class CacheSizeReport {
   final int audio;
   final int subtitle;

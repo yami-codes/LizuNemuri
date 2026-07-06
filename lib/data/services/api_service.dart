@@ -54,7 +54,7 @@ class ApiService {
     }
   }
 
-  /// 获取作品文件列表
+  /// Fetch work file tree.
   Future<Files> getWorkFiles(String workId, {CancelToken? cancelToken}) async {
     try {
       final response = await _dio.get(
@@ -62,7 +62,7 @@ class ApiService {
         queryParameters: {
           'v': '2',
         },
-        cancelToken: cancelToken,  // 添加 cancelToken 支持
+        cancelToken: cancelToken,  // Optional cancel token
       );
 
       if (response.statusCode == 200) {
@@ -85,7 +85,7 @@ class ApiService {
     }
   }
 
-  /// 获取作品列表
+  /// Fetch paginated works list.
   Future<WorksResponse> getWorks({
     int page = 1,
     bool hasSubtitle = false,
@@ -101,7 +101,7 @@ class ApiService {
         'sort': sort,
       };
 
-      // 如果提供了收藏夹ID，添加到查询参数
+      // Add playlist ID to query params when provided
       if (playlistId.isNotEmpty) {
         queryParams['withPlaylistStatus[]'] = playlistId;
       }
@@ -131,13 +131,11 @@ class ApiService {
     }
   }
 
-  /// 搜索作品
+  /// Search works.
   ///
-  /// 注意：`keyword` 直接作为路径段拼接。某些标签的 `name` 含 `/`
-  /// （例如 "巨乳/爆乳"），如果用字符串拼接构造 path，`%2F` 在 Dio
-  /// 内部 `Uri.parse` 后可能被还原为 `/`，服务器收到后会按路径分隔符
-  /// 拆段 → 404。这里改用 `Uri.pathSegments` 显式构造，再走 `getUri`
-  /// 直接交给 Dio，确保整段 keyword 在 wire 上始终是单个 segment。
+  /// Note: `keyword` is a path segment. Tag names may contain `/` (e.g. "巨乳/爆乳");
+  /// string concatenation can decode `%2F` back to `/` and the server splits the path → 404.
+  /// Use `Uri.pathSegments` + `getUri` so the keyword stays one segment on the wire.
   Future<WorksResponse> searchWorks({
     required String keyword,
     int page = 1,
@@ -198,11 +196,8 @@ class ApiService {
     );
   }
 
-  /// 公开供单元测试覆盖：构造 `/search/<keyword>` 的完整 URI。
-  /// 关键保证：keyword 在 wire 上始终是 **单个 path segment** —
-  /// `Uri.pathSegments` 不会把 `/` 当分隔符，并且会把会破坏路径解析的
-  /// 保留字（`/ ? #` 等）一律 percent-encode，从而避免服务器把 `/`
-  /// 当分隔符拆段。其它字符（如 `+`、`:`）作为合法的 pchar 不会被编码。
+  /// Public for unit tests: build full `/search/<keyword>` URI.
+  /// Guarantees keyword is always **one path segment** on the wire via `Uri.pathSegments`.
   static Uri buildSearchUri({
     required String baseUrl,
     required String keyword,
@@ -224,7 +219,7 @@ class ApiService {
     );
   }
 
-  /// 获取收藏列表
+  /// Fetch favorites.
   Future<WorksResponse> getFavorites({int page = 1}) async {
     try {
       final response = await _dio.get('/review', queryParameters: {
@@ -253,7 +248,7 @@ class ApiService {
     }
   }
 
-  /// 获取推荐作品
+  /// Fetch recommended works.
   Future<WorksResponse> getRecommendations({
     required String uuid,
     int page = 1,
@@ -292,7 +287,7 @@ class ApiService {
     }
   }
 
-  /// 获取热门作品
+  /// Fetch popular works.
   Future<WorksResponse> getPopular({
     int page = 1,
     bool hasSubtitle = false,
@@ -329,20 +324,20 @@ class ApiService {
     }
   }
 
-  /// 获取相关推荐作品
+  /// Fetch similar works.
   Future<WorksResponse> getItemNeighbors({
     required String itemId,
     int page = 1,
     bool hasSubtitle = false,
   }) async {
     try {
-      // 先尝试从缓存获取
+      // Try cache first
       final cachedData = _recommendationCache.get(itemId, page, hasSubtitle ? 1 : 0);
       if (cachedData != null) {
         return cachedData;
       }
 
-      // 缓存未命中，从网络获取
+      // Cache miss — fetch from network
       final response = await _dio.post(
         '/recommender/item-neighbors',
         data: {
@@ -364,7 +359,7 @@ class ApiService {
           pagination: pagination,
         );
 
-        // 存入缓存
+        // Store in cache
         _recommendationCache.set(itemId, page, hasSubtitle ? 1 : 0, worksResponse);
 
         return worksResponse;
@@ -380,7 +375,7 @@ class ApiService {
     }
   }
 
-  /// 获取作品在收藏夹中的状态
+  /// Fetch work mark status in playlists.
   Future<PlaylistsWithExistStatu> getWorkExistStatusInPlaylists({
     required String workId,
     int page = 1,
@@ -409,7 +404,7 @@ class ApiService {
     }
   }
 
-  /// 添加作品到收藏夹
+  /// Add work to playlist.
   Future<void> addWorkToPlaylist({
     required String playlistId,
     required String workId,
@@ -431,7 +426,7 @@ class ApiService {
     }
   }
 
-  /// 从收藏夹移除作品
+  /// Remove work from playlist.
   Future<void> removeWorkFromPlaylist({
     required String playlistId,
     required String workId,
@@ -453,7 +448,7 @@ class ApiService {
     }
   }
 
-  /// 更新作品的标记状态
+  /// Update work mark status.
   Future<void> updateWorkMarkStatus(String workId, String status) async {
     try {
       final response = await _dio.put(
@@ -476,7 +471,7 @@ class ApiService {
     }
   }
 
-  /// 将 MarkStatus 枚举转换为 API 参数
+  /// Map MarkStatus enum to API param.
   String convertMarkStatusToApi(MarkStatus status) {
     switch (status) {
       case MarkStatus.wantToListen:
@@ -492,7 +487,7 @@ class ApiService {
     }
   }
 
-  /// 获取默认标记目标收藏夹
+  /// Fetch default mark target playlist.
   Future<Playlist> getDefaultMarkTargetPlaylist() async {
     try {
       final response = await _dio.get('/playlist/get-default-mark-target-playlist');
@@ -513,7 +508,7 @@ class ApiService {
     }
   }
 
-  /// 获取用户的播放列表
+  /// Fetch user playlists.
   Future<MyPlaylists> getMyPlaylists({int page = 1}) async {
     try {
       final response = await _dio.get(
@@ -539,7 +534,7 @@ class ApiService {
     }
   }
 
-  /// 获取所有标签列表
+  /// Fetch all tags.
   Future<List<TagItem>> getTags() async {
     try {
       final response = await _dio.get('/tags/');
@@ -559,7 +554,7 @@ class ApiService {
     }
   }
 
-  /// 获取所有社团列表
+  /// Fetch all circles.
   Future<List<CircleItem>> getCircles() async {
     try {
       final response = await _dio.get('/circles/');
@@ -579,7 +574,7 @@ class ApiService {
     }
   }
 
-  /// 获取所有声优列表
+  /// Fetch all voice actors.
   Future<List<VoiceActor>> getVoiceActors() async {
     try {
       final response = await _dio.get('/vas/');
@@ -599,7 +594,7 @@ class ApiService {
     }
   }
 
-  /// 获取作品详细信息
+  /// Fetch work details.
   Future<WorkInfo> getWorkInfo(String workId, {CancelToken? cancelToken}) async {
     try {
       final response = await _dio.get('/workInfo/$workId', cancelToken: cancelToken);
@@ -618,7 +613,7 @@ class ApiService {
     }
   }
 
-  /// 获取播放列表中的作品
+  /// Fetch works in a playlist.
   Future<WorksResponse> getPlaylistWorks({
     required String playlistId,
     int page = 1,

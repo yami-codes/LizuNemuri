@@ -206,8 +206,9 @@ class SubtitleImportService {
       AppLogger.error(LogStrings.logRemoveSubtitleDbRowFailedKeea4675, e);
     }
 
-    // 仅在 DB 行确实删除后才删本地文件：否则会留下"文件已删、DB 行还在"
-    // 的失效行（app 会误判字幕仍存在）；DB 删失败时保留文件，关联仍可用。
+    // Delete the local file only after the DB row is removed; otherwise a stale row
+    // points at a missing file and the app thinks a subtitle still exists. On DB delete
+    // failure, keep the file so the association remains usable.
     if (dbRemoved && filePath != null) {
       try {
         final file = File(filePath);

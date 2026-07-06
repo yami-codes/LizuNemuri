@@ -17,20 +17,17 @@ class UpdateCheckResult {
   });
 }
 
-/// 读取本仓库 GitHub Releases 并与当前版本比对。
+/// Reads this repo's GitHub Releases and compares to the current app version.
 ///
-/// 独立 Dio，host 固定为 api.github.com：**刻意不监听 `AppSettingsService`**，
-/// 因为 asmr 节点切换与 GitHub 无关；也不挂 `AuthInterceptor`。
+/// Standalone Dio to api.github.com — **does not follow `AppSettingsService`** or `AuthInterceptor`.
 class UpdateService {
   static const String _owner = 'yami-codes';
   static const String _repo = 'LizuNemu';
 
-  /// CI 用 `softprops/action-gh-release` 且 `prerelease: true`，所以
-  /// `/releases/latest`（只返回 non-prerelease）取不到——必须用列表端点。
+  /// CI publishes with `prerelease: true`, so `/releases/latest` is unusable — use list endpoint.
   static const String _releasesPath = '/repos/$_owner/$_repo/releases';
 
-  /// 只接受恰好 `vX.Y.Z` 形态的 tag（`$` 锚定：拒绝 `v1.2.3-rc.1`、
-  /// `v1.2.3foo` 等带后缀 tag）。CI 的 tag 恒为精确三段式。
+  /// Accepts only `vX.Y.Z` tags (`$` anchor rejects suffix tags).
   static final RegExp _tagRe = RegExp(r'^v?\d+\.\d+\.\d+$');
 
   final Dio _dio;
@@ -93,11 +90,11 @@ class UpdateService {
     }
   }
 
-  /// 从 releases 列表里挑出 **semver 最大** 的合法发布。
+  /// Pick the **max semver** valid release from the list.
   ///
-  /// 不取 `[0]`：GitHub 不承诺列表首项即最大，后补发旧/异常 tag 会误判。
-  /// 单个 release 解析失败（如缺 `html_url`）会被跳过而非拖垮整次检查。
-  /// 全部不合法时返回 `null`，由调用方转成 `noRelease`。
+  /// Do not use `[0]` — GitHub does not guarantee list order is newest.
+  /// One bad release is skipped instead of failing the whole check.
+  /// Returns `null` when none are valid → caller maps to `noRelease`.
   static UpdateInfo? selectLatestRelease(List<dynamic> releases) {
     UpdateInfo? best;
     for (final r in releases) {
@@ -118,9 +115,9 @@ class UpdateService {
     return best;
   }
 
-  /// 纯函数语义化版本比较：返回 `>0` 表示 a 比 b 新，`0` 相等，`<0` 更旧。
+  /// Pure semver compare: `>0` newer, `0` equal, `<0` older.
   ///
-  /// 容错：剥 `v` 前缀、位数不齐按 0 补齐（`1.2` == `1.2.0`）、非数字段按 0。
+  /// Tolerant: strip `v`, pad segments with 0 (`1.2` == `1.2.0`), non-numeric → 0.
   static int compareSemver(String a, String b) {
     List<int> parts(String v) {
       var s = v.trim();

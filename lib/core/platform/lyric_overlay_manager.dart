@@ -76,7 +76,7 @@ class LyricOverlayManager {
     _isShowing = true;
     final currentSubtitle = _subtitleService.currentSubtitleWithState;
     await _pushOverlayLyric(currentSubtitle?.subtitle);
-    // 显示后统一以持久化偏好为准（锁定 / 解锁拖动）。
+    // After show, apply persisted preference (locked / draggable).
     await setEditable(_settings.lyricOverlayUnlocked);
   }
 
@@ -90,7 +90,7 @@ class LyricOverlayManager {
 
   bool get isEditable => _isEditable;
 
-  /// 切换悬浮窗可拖动状态。仅在悬浮窗显示中生效；隐藏时自动恢复为不可拖动。
+  /// Toggle overlay draggability while visible; hide resets to non-draggable.
   Future<void> setEditable(bool editable) async {
     if (!_isShowing) {
       _isEditable = false;
@@ -102,7 +102,7 @@ class LyricOverlayManager {
 
   Future<void> toggleEditable() => setEditable(!_isEditable);
 
-  /// 持久化「解锁悬浮歌词位置」偏好，并在悬浮窗显示时立即应用。
+  /// Persist "unlock floating lyric position" and apply when overlay is shown.
   Future<void> setUnlockedPreference(bool unlocked) async {
     await _settings.setLyricOverlayUnlocked(unlocked);
     if (_isShowing) {
@@ -110,7 +110,7 @@ class LyricOverlayManager {
     }
   }
 
-  /// 处理显示悬浮歌词的完整流程
+  /// Full flow to show floating lyrics.
   Future<void> showWithPermissionCheck(BuildContext context) async {
     final hasPermission = await checkPermission();
     if (hasPermission) {
@@ -149,7 +149,7 @@ class LyricOverlayManager {
     ) ?? false;
   }
 
-  /// 切换显示/隐藏状态
+  /// Toggle show/hide.
   Future<void> toggle(BuildContext context) async {
     if (_isShowing) {
       await hide();
@@ -158,7 +158,7 @@ class LyricOverlayManager {
     }
   }
   
-  // 其他控制方法...
+  // Other control methods...
 
   Future<void> syncState() async {
     _isShowing = await _controller.isShowing();

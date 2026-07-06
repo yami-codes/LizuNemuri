@@ -48,7 +48,7 @@ class WorkActionButtons extends StatelessWidget {
             icon: Icons.star_border,
             label: Strings.actionRate,
             onTap: () {
-              // TODO: 实现评分功能
+              // TODO: implement rating
             },
           ),
           _ActionButton(

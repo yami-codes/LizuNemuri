@@ -2,8 +2,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
-/// 图片缓存管理器
-/// 统一管理应用内所有图片的缓存策略
+/// Image cache manager — unified image caching policy.
 class ImageCacheManager {
   static const String key = 'imageCache';
 
@@ -17,7 +16,7 @@ class ImageCacheManager {
     ),
   );
 
-  /// 获取缓存大小
+  /// Returns cache size.
   static Future<int> getSize() async {
     try {
       return instance.store.getCacheSize();
@@ -27,7 +26,7 @@ class ImageCacheManager {
     }
   }
 
-  /// 清理图片缓存
+  /// Clears image cache.
   static Future<void> clearCache() async {
     try {
       await instance.emptyCache();

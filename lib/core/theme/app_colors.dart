@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/core/theme/player_hue_derivation.dart';
 
-/// 应用颜色配置
+/// App color configuration.
 ///
 /// Three accent variants × two brightness modes = six ColorScheme presets.
 /// Surfaces stay neutral (white in light, near-black in dark) across all
@@ -104,25 +104,25 @@ class AppColors {
     );
   }
 
-  // === Surface层级令牌 (Design Tokens) ===
+  // === Surface level tokens (design tokens) ===
   // Neutralized in the color-palette-simplification task: previous values
   // (#F7F2FA / #F3EDF7 / #25232A / #2B2930) had a subtle purple tint that
   // leaked into mono/green light mode. Replaced with hue-free neutrals so
   // surfaces stay neutral across all three accent variants.
   //
-  // Surface L1: 容器层、次级卡片（如迷你播放器背景）
+  // Surface L1: containers, secondary cards (e.g. mini player background)
   static const Color lightSurfaceL1 = Color(0xFFF7F7F7);
   static const Color darkSurfaceL1 = Color(0xFF1F1F1F);
 
-  // Surface L2: 侧边栏、搜索框、对话框背景
+  // Surface L2: sidebar, search field, dialog backgrounds
   static const Color lightSurfaceL2 = Color(0xFFF2F2F2);
   static const Color darkSurfaceL2 = Color(0xFF252525);
 
-  /// 根据当前亮度获取 Surface L1 颜色
+  /// Surface L1 for current brightness.
   static Color surfaceL1(Brightness brightness) =>
       brightness == Brightness.light ? lightSurfaceL1 : darkSurfaceL1;
 
-  /// 根据当前亮度获取 Surface L2 颜色
+  /// Surface L2 for current brightness.
   static Color surfaceL2(Brightness brightness) =>
       brightness == Brightness.light ? lightSurfaceL2 : darkSurfaceL2;
 }
