@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/core/audio/models/subtitle.dart';
 import 'package:lizunemu/core/download/download_service.dart';
+import 'package:lizunemu/core/media/work_media_url_refresher.dart';
 import 'package:lizunemu/core/subtitle/subtitle_loader.dart';
 import 'package:lizunemu/data/models/files/child.dart';
 import 'package:lizunemu/utils/logger.dart';
@@ -27,6 +28,7 @@ class SubtitlePreviewScreen extends StatefulWidget {
 class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
   final _loader = GetIt.I<SubtitleLoader>();
   final _downloadService = GetIt.I<DownloadService>();
+  final _mediaUrlRefresher = GetIt.I<WorkMediaUrlRefresher>();
 
   bool _loading = true;
   String? _error;
@@ -48,15 +50,20 @@ class _SubtitlePreviewScreenState extends State<SubtitlePreviewScreen> {
     });
     try {
       String? localPath;
+      var file = widget.file;
       if (widget.workId != null) {
         localPath = await _downloadService.localPathIfDownloaded(
           widget.workId!,
           widget.file,
         );
+        file = await _mediaUrlRefresher.refreshFile(
+          workId: widget.workId!,
+          file: widget.file,
+        );
       }
       final content = await _loader.loadRawContent(
         localPath: localPath,
-        url: widget.file.mediaDownloadUrl,
+        url: file.mediaDownloadUrl,
       );
       final parsed = _loader.parseOrNull(content);
       if (!mounted) return;

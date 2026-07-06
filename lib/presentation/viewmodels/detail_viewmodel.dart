@@ -28,8 +28,10 @@ import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/core/settings/metadata_translation_mode.dart';
 import 'package:lizunemu/core/translation/metadata_translation_service.dart';
 import 'package:lizunemu/core/subtitle/subtitle_loader.dart';
+import 'package:lizunemu/core/media/work_media_url_refresher.dart';
 import 'package:lizunemu/core/subtitle/subtitle_import_service.dart';
 import 'package:lizunemu/core/audio/models/subtitle.dart';
+import 'package:lizunemu/data/services/exceptions/llm_translation_exception.dart';
 import 'package:dio/dio.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
@@ -88,6 +90,7 @@ class DetailViewModel extends ChangeNotifier {
   late final AppSettingsService _appSettings;
   late final SubtitleLoader _subtitleLoader;
   late final SubtitleImportService _importService;
+  late final WorkMediaUrlRefresher _mediaUrlRefresher;
   final Work work;
 
   static const _videoExtensions = {'mp4', 'mkv', 'mov', 'avi', 'webm', 'm4v'};
@@ -179,6 +182,7 @@ class DetailViewModel extends ChangeNotifier {
     _appSettings = GetIt.I<AppSettingsService>();
     _subtitleLoader = GetIt.I<SubtitleLoader>();
     _importService = GetIt.I<SubtitleImportService>();
+    _mediaUrlRefresher = GetIt.I<WorkMediaUrlRefresher>();
     _checkRecommendations();
   }
 
@@ -537,6 +541,16 @@ class DetailViewModel extends ChangeNotifier {
     await translateWorkTitle();
   }
 
+  Future<Child> _freshFile(Child file) async {
+    final workId = work.id?.toString();
+    if (workId == null) return file;
+    return _mediaUrlRefresher.refreshFile(
+      workId: workId,
+      file: file,
+      patchInto: _files,
+    );
+  }
+
   Future<String?> translateTrackNames({bool force = false}) async {
     final workId = work.id?.toString();
     if (workId == null || _files == null) {
@@ -560,7 +574,11 @@ class DetailViewModel extends ChangeNotifier {
         ..clear()
         ..addAll(map);
       return map.isEmpty ? Strings.metadataTrackTranslationFailed : null;
-    } catch (_) {
+    } on LlmTranslationException catch (e) {
+      AppLogger.warning('Track name LLM translation failed: ${e.message}');
+      return e.userMessage;
+    } catch (e) {
+      AppLogger.warning('Track name translation failed: $e');
       return Strings.metadataTrackTranslationFailed;
     } finally {
       _isTranslatingTracks = false;
@@ -812,7 +830,9 @@ class DetailViewModel extends ChangeNotifier {
       );
     }
 
-    if (file.mediaDownloadUrl == null) {
+    final resolved = await _freshFile(file);
+
+    if (resolved.mediaDownloadUrl == null) {
       throw UserFacingException(Strings.fileUrlMissing);
     }
 
@@ -824,7 +844,7 @@ class DetailViewModel extends ChangeNotifier {
       final playbackContext = PlaybackContext(
         work: work,
         files: _files!,
-        currentFile: file,
+        currentFile: resolved,
       );
 
       await _audioService.playWithContext(playbackContext);

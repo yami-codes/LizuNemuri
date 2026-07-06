@@ -217,31 +217,39 @@ Do not wrap in markdown fences.''';
     List<_PendingItem> items,
   ) async {
     final result = <String, String>{};
-    try {
-      final texts = items.map((e) => e.source).toList();
-      final translated = await _google.translateBatch(
-        texts: texts,
-        targetLang: _targetLang,
-      );
-      for (var i = 0; i < items.length; i++) {
-        final text = i < translated.length ? translated[i].trim() : '';
-        if (text.isNotEmpty) {
-          result[items[i].id] = text;
-        }
-      }
-    } catch (e) {
-      AppLogger.warning('Google metadata batch failed, falling back sequential: $e');
-      for (final item in items) {
-        try {
-          final text = await _google.translate(
-            text: item.source,
-            targetLang: _targetLang,
-          );
-          if (text.trim().isNotEmpty) {
-            result[item.id] = text.trim();
+    const chunkSize = 12;
+
+    for (var start = 0; start < items.length; start += chunkSize) {
+      final end = start + chunkSize > items.length ? items.length : start + chunkSize;
+      final chunk = items.sublist(start, end);
+      try {
+        final texts = chunk.map((e) => e.source).toList();
+        final translated = await _google.translateBatch(
+          texts: texts,
+          targetLang: _targetLang,
+        );
+        for (var i = 0; i < chunk.length; i++) {
+          final text = i < translated.length ? translated[i].trim() : '';
+          if (text.isNotEmpty) {
+            result[chunk[i].id] = text;
           }
-        } catch (inner) {
-          AppLogger.warning('Google metadata single failed: $inner');
+        }
+      } catch (e) {
+        AppLogger.warning(
+          'Google metadata batch chunk failed, falling back sequential: $e',
+        );
+        for (final item in chunk) {
+          try {
+            final text = await _google.translate(
+              text: item.source,
+              targetLang: _targetLang,
+            );
+            if (text.trim().isNotEmpty) {
+              result[item.id] = text.trim();
+            }
+          } catch (inner) {
+            AppLogger.warning('Google metadata single failed: $inner');
+          }
         }
       }
     }
@@ -254,38 +262,50 @@ Do not wrap in markdown fences.''';
   }) async {
     final key = await _apiKeyRepo.getApiKey();
     if (key == null || key.trim().isEmpty) {
-      throw const LlmTranslationException(
-        LlmTranslationErrorType.missingApiKey,
-        'missing api key',
+      AppLogger.warning(
+        'LLM metadata translate skipped (no API key) — falling back to Google',
       );
+      return _translateBatchGoogle(items);
     }
 
-    final payload = jsonEncode([
-      for (final item in items) {'id': item.id, 'text': item.source},
-    ]);
+    try {
+      final payload = jsonEncode([
+        for (final item in items) {'id': item.id, 'text': item.source},
+      ]);
 
-    final result = await _llm.chatCompletionWithUsage(
-      modelSlot: LlmModelSlot.lite,
-      messages: [
-        {'role': 'system', 'content': _liteSystemPrompt},
-        {
-          'role': 'user',
-          'content':
-              'Target language: $_targetLang\nContext: $userHint\nTranslate these items:\n$payload',
-        },
-      ],
-      temperature: 0.2,
-    );
-
-    if (result.usage != null && _usageRepo != null) {
-      await _usageRepo.record(
-        model: _settings.llmLiteModel,
-        operation: 'metadata_translate',
-        usage: result.usage!,
+      final result = await _llm.chatCompletionWithUsage(
+        modelSlot: LlmModelSlot.lite,
+        messages: [
+          {'role': 'system', 'content': _liteSystemPrompt},
+          {
+            'role': 'user',
+            'content':
+                'Target language: $_targetLang\nContext: $userHint\nTranslate these items:\n$payload',
+          },
+        ],
+        temperature: 0.2,
       );
-    }
 
-    return _parseLlmBatchResponse(result.content, items);
+      if (result.usage != null && _usageRepo != null) {
+        await _usageRepo.record(
+          model: _settings.llmLiteModel,
+          operation: 'metadata_translate',
+          usage: result.usage!,
+        );
+      }
+
+      return _parseLlmBatchResponse(result.content, items);
+    } on LlmTranslationException catch (e) {
+      AppLogger.warning('LLM metadata batch failed ($e) — trying Google');
+      final google = await _translateBatchGoogle(items);
+      if (google.isNotEmpty) return google;
+      rethrow;
+    } catch (e) {
+      AppLogger.warning('LLM metadata batch error ($e) — trying Google');
+      final google = await _translateBatchGoogle(items);
+      if (google.isNotEmpty) return google;
+      rethrow;
+    }
   }
 
   @visibleForTesting

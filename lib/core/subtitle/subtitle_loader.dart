@@ -1,3 +1,4 @@
+import 'package:lizunemu/core/media/work_media_utils.dart';
 import 'package:universal_io/io.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
@@ -98,7 +99,10 @@ class SubtitleLoader {
   Future<Response<String>> _fetchPlainText(String url) {
     return _dio.get<String>(
       url,
-      options: Options(responseType: ResponseType.plain),
+      options: Options(
+        responseType: ResponseType.plain,
+        headers: WorkMediaUtils.mediaFetchHeaders,
+      ),
     );
   }
 

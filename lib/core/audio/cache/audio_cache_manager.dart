@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:just_audio/just_audio.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
+import 'package:lizunemu/core/media/work_media_utils.dart';
 import 'package:lizunemu/utils/platform_capabilities.dart';
 
 /// Audio cache manager.
@@ -27,7 +28,10 @@ class AudioCacheManager {
   static Future<AudioSource> createAudioSource(String url, {String? hash}) async {
     if (shouldUseDirectStreaming(isDesktop: PlatformCapabilities.isDesktop)) {
       AppLogger.debug(LogStrings.logCreateaudioUrlUrlCachefil14d8a(url, 'desktop-progressive'));
-      return ProgressiveAudioSource(Uri.parse(url));
+      return ProgressiveAudioSource(
+        Uri.parse(url),
+        headers: WorkMediaUtils.mediaFetchHeaders,
+      );
     }
 
     try {
@@ -49,7 +53,10 @@ class AudioCacheManager {
     } catch (e, stackTrace) {
       AppLogger.warning(LogStrings.logCacheAudioSourceFailedStreama308a(url));
       AppLogger.error(LogStrings.logCacheSourceCreationError7469b, e, stackTrace);
-      return ProgressiveAudioSource(Uri.parse(url));
+      return ProgressiveAudioSource(
+        Uri.parse(url),
+        headers: WorkMediaUtils.mediaFetchHeaders,
+      );
     }
   }
 
@@ -167,6 +174,7 @@ class AudioCacheManager {
     return LockCachingAudioSource(
       Uri.parse(url),
       cacheFile: cacheFile,
+      headers: WorkMediaUtils.mediaFetchHeaders,
     );
   }
 

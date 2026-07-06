@@ -43,6 +43,7 @@ import 'package:lizunemu/core/llm/subtitle_translation_service.dart';
 import 'package:lizunemu/core/llm/work_title_translation_service.dart';
 import 'package:lizunemu/core/translation/metadata_translation_service.dart';
 import 'package:lizunemu/data/services/google_translate_client.dart';
+import 'package:lizunemu/core/media/work_media_url_refresher.dart';
 import 'package:lizunemu/core/download/download_service.dart';
 import 'package:lizunemu/core/library/scan_roots_store.dart';
 import 'package:lizunemu/core/library/storage/local_library_repository.dart';
@@ -191,6 +192,10 @@ Future<void> setupServiceLocator() async {
   // API services
   getIt.registerLazySingleton<ApiService>(
     () => ApiService(settings: getIt<AppSettingsService>()),
+  );
+
+  getIt.registerLazySingleton<WorkMediaUrlRefresher>(
+    () => WorkMediaUrlRefresher(getIt<ApiService>()),
   );
 
   // Update check service (standalone GitHub Dio, decoupled from asmr nodes)

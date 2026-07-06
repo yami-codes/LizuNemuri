@@ -1,3 +1,5 @@
+import 'package:lizunemu/core/audio/utils/audio_error_handler.dart';
+import 'package:lizunemu/common/constants/log_strings.dart';
 import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/data/services/auth_service.dart';
 import 'package:lizunemu/data/services/exceptions/network_exception.dart';
@@ -27,6 +29,13 @@ String userFacingError(Object error) {
     if (message != null && message.isNotEmpty) {
       return message;
     }
+    return Strings.networkErrorGeneric;
+  }
+  if (error is AudioError) {
+    return Strings.networkErrorGeneric;
+  }
+  if (error is Exception &&
+      error.toString().contains(LogStrings.logNoAudioSources)) {
     return Strings.networkErrorGeneric;
   }
   if (error is DioException) {

@@ -6,6 +6,7 @@ import 'package:lizunemu/common/constants/log_strings.dart';
 import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/core/audio/models/subtitle.dart';
 import 'package:lizunemu/core/download/download_service.dart';
+import 'package:lizunemu/core/media/work_media_url_refresher.dart';
 import 'package:lizunemu/core/subtitle/subtitle_loader.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 import 'package:lizunemu/data/models/files/child.dart';
@@ -35,6 +36,7 @@ class VideoPlayerScreen extends StatefulWidget {
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   final _downloadService = GetIt.I<DownloadService>();
   final _subtitleLoader = GetIt.I<SubtitleLoader>();
+  final _mediaUrlRefresher = GetIt.I<WorkMediaUrlRefresher>();
 
   late final Player _player;
   late final VideoController _videoController;
@@ -78,10 +80,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   Future<void> _openVideo() async {
     String? localPath;
+    var file = widget.file;
     if (widget.workId != null) {
       localPath = await _downloadService.localPathIfDownloaded(
         widget.workId!,
         widget.file,
+      );
+      file = await _mediaUrlRefresher.refreshFile(
+        workId: widget.workId!,
+        file: widget.file,
       );
     }
     if (localPath != null && await File(localPath).exists()) {
@@ -89,7 +96,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       return;
     }
 
-    final url = widget.file.mediaDownloadUrl;
+    final url = file.mediaDownloadUrl;
     if (url == null || url.isEmpty) {
       throw StateError('missing video url');
     }
@@ -102,15 +109,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
     try {
       String? localPath;
+      var resolved = subtitleFile;
       if (widget.workId != null) {
         localPath = await _downloadService.localPathIfDownloaded(
           widget.workId!,
-          subtitleFile,
+          resolved,
+        );
+        resolved = await _mediaUrlRefresher.refreshFile(
+          workId: widget.workId!,
+          file: resolved,
         );
       }
       final content = await _subtitleLoader.loadRawContent(
         localPath: localPath,
-        url: subtitleFile.mediaDownloadUrl,
+        url: resolved.mediaDownloadUrl,
       );
       _subtitleList = _subtitleLoader.parseOrNull(content);
     } catch (e) {
