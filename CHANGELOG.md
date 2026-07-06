@@ -8,6 +8,16 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.9 — 2026-07-06
+
+### Fixed
+- **PC playback (all formats)**: desktop now streams presigned URLs directly instead of the byte-stream cache proxy that broke Windows/Linux playback for mp3, m4a, wav, and every other online track.
+- **PC subtitle preview**: removed auth header from presigned CDN fetches; plain-text response decoding for `.txt`/`.vtt`/`.lrc`/`.srt`.
+- **Linux audio**: register `just_audio_media_kit` backend.
+- **Android silent playback**: wait for audio pipeline ready before volume fade-in on resume.
+
+---
+
 ## v2.0.0-rc.8 — 2026-07-06
 
 ### Added
