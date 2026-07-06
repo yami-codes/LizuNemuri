@@ -20,6 +20,7 @@ import 'package:lizunemu/data/models/works/work_info.dart';
 import 'package:lizunemu/widgets/detail/work_folder_item.dart';
 import 'package:lizunemu/core/audio/models/file_path.dart';
 import 'package:lizunemu/core/subtitle/utils/subtitle_matcher.dart';
+import 'package:lizunemu/utils/image_file_extensions.dart';
 import 'package:lizunemu/core/llm/subtitle_translation_service.dart';
 import 'package:lizunemu/core/llm/subtitle_translation_progress.dart';
 import 'package:lizunemu/core/llm/work_title_translation_service.dart';
@@ -281,6 +282,16 @@ class DetailViewModel extends ChangeNotifier {
     final ext = file.title?.split('.').last.toLowerCase();
     return ext != null && _subtitleExtensions.contains(ext);
   }
+
+  /// Raster image preview (.jpg/.png/.webp/…) or API `type: image`.
+  static bool isPreviewableImageFile(Child file) {
+    if ((file.type ?? '').toLowerCase() == 'image') {
+      return true;
+    }
+    return ImageFileExtensions.hasPreviewableExtension(file.title);
+  }
+
+  bool isImageFile(Child file) => isPreviewableImageFile(file);
 
   /// Pure: collect audio under subtree and pair subtitles from same-directory siblings.
   static List<DownloadPair> collectAudioWithSubtitles(List<Child>? children) {

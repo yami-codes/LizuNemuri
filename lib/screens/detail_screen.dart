@@ -19,6 +19,7 @@ import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/utils/user_facing_error.dart';
 import 'package:lizunemu/screens/similar_works_screen.dart';
 import 'package:lizunemu/screens/subtitle_preview_screen.dart';
+import 'package:lizunemu/screens/image_preview_screen.dart';
 import 'package:lizunemu/widgets/common/back_leading.dart';
 import 'package:open_filex/open_filex.dart';
 
@@ -294,6 +295,17 @@ class DetailScreen extends StatelessWidget {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => SubtitlePreviewScreen(
+                                workId: work.id?.toString(),
+                                file: file,
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+                        if (viewModel.isImageFile(file)) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => ImagePreviewScreen(
                                 workId: work.id?.toString(),
                                 file: file,
                               ),

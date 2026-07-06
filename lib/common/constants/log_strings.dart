@@ -161,6 +161,7 @@ class LogStrings {
   static String get logSubtitleImportFailed => _l10n.logSubtitleImportFailed;
   static String get logSubtitleNotFoundClearing => _l10n.logSubtitleNotFoundClearing;
   static String get logSubtitleParseException => _l10n.logSubtitleParseException;
+  static String get logImagePreviewLoadFailed => _l10n.logImagePreviewLoadFailed;
   static String get logSubtitlePreviewLoadFailed => _l10n.logSubtitlePreviewLoadFailed;
   static String get logSubtitleStateCleared0e6a2 => _l10n.logSubtitleStateCleared0e6a2;
   static String get logSubtitleUrlEmpty => _l10n.logSubtitleUrlEmpty;

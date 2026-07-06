@@ -4,6 +4,7 @@ import 'package:lizunemu/data/models/files/child.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/utils/file_size_formatter.dart';
 import 'package:lizunemu/utils/platform_capabilities.dart';
+import 'package:lizunemu/utils/image_file_extensions.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
 class WorkFileItem extends StatelessWidget {
@@ -39,13 +40,19 @@ class WorkFileItem extends StatelessWidget {
     return ext != null && _subtitleExtensions.contains(ext);
   }
 
+  bool get _isImage {
+    if ((file.type ?? '').toLowerCase() == 'image') return true;
+    return ImageFileExtensions.hasPreviewableExtension(file.title);
+  }
+
   @override
   Widget build(BuildContext context) {
     // Video extension over API `type` — mislabeled videos route to download + external player.
     final bool isVideo = _isVideo;
     final bool isAudio = _isAudio && !isVideo;
     final bool isSubtitle = !isAudio && !isVideo && _isSubtitle;
-    final bool tappable = isAudio || isVideo || isSubtitle;
+    final bool isImage = !isAudio && !isVideo && !isSubtitle && _isImage;
+    final bool tappable = isAudio || isVideo || isSubtitle || isImage;
     final colorScheme = Theme.of(context).colorScheme;
     
     return Padding(
@@ -70,14 +77,18 @@ class WorkFileItem extends StatelessWidget {
                   ? Icons.movie_outlined
                   : isSubtitle
                       ? Icons.subtitles_outlined
-                      : Icons.insert_drive_file,
+                      : isImage
+                          ? Icons.image_outlined
+                          : Icons.insert_drive_file,
           color: isAudio
               ? Colors.green
               : isVideo
                   ? Colors.deepPurple
                   : isSubtitle
                       ? Colors.orange
-                      : Colors.blue,
+                      : isImage
+                          ? Colors.lightBlue
+                          : Colors.blue,
         ),
         trailing: PlatformCapabilities.supportsLocalDownloads && isAudio && onFileDownload != null
             ? IconButton(
