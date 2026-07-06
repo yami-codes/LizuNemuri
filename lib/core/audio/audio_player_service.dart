@@ -119,6 +119,25 @@ class AudioPlayerService implements IAudioPlayerService {
   // Basic playback controls
   void _cancelFade() => _fadeGeneration++;
 
+  /// Wait until ExoPlayer / desktop pipeline attaches before ramping volume.
+  /// Without this, Android can stay silent at volume 0 until the user moves the slider.
+  Future<void> _waitForPlaybackPipelineReady() async {
+    final state = _player.processingState;
+    if (state == ProcessingState.ready || state == ProcessingState.completed) {
+      return;
+    }
+    try {
+      await _player.processingStateStream
+          .firstWhere(
+            (s) =>
+                s == ProcessingState.ready || s == ProcessingState.completed,
+          )
+          .timeout(const Duration(seconds: 60));
+    } on TimeoutException {
+      // Best-effort — still run fade restore so volume is not stuck at zero.
+    }
+  }
+
   Future<void> _animateVolume({
     required double from,
     required double to,
@@ -189,12 +208,15 @@ class AudioPlayerService implements IAudioPlayerService {
       if (fade && settings.playbackFadeEnabled && settings.playbackFadeMs > 0) {
         await _player.setVolume(0);
         await _playbackController.play();
+        await _waitForPlaybackPipelineReady();
+        if (gen != _fadeGeneration) return;
         await _animateVolume(
           from: 0,
           to: target,
           durationMs: settings.playbackFadeMs,
         );
         if (gen != _fadeGeneration) return;
+        await setVolume(target, persist: false);
       } else {
         await _player.setVolume(target);
         await _playbackController.play();

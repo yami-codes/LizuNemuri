@@ -55,11 +55,11 @@ class SubtitleLoader {
 
       // Cache miss — load from network
       AppLogger.debug(LogStrings.logLoadSubtitleFromNetworkUrl9145d(url));
-      final response = await _dio.get(url);
+      final response = await _fetchPlainText(url);
       AppLogger.debug(LogStrings.logSubtitlefiledownloadstateResd5fd5(response.statusCode));
       
       if (response.statusCode == 200) {
-        final content = response.data as String;
+        final content = response.data ?? '';
         
         // Save to cache
         await SubtitleCacheManager.cacheContent(url, content);
@@ -86,13 +86,20 @@ class SubtitleLoader {
     }
     final cached = await SubtitleCacheManager.getCachedContent(url);
     if (cached != null) return cached;
-    final response = await _dio.get(url);
+    final response = await _fetchPlainText(url);
     if (response.statusCode != 200) {
       throw Exception(LogStrings.logSubtitleDownloadFailedCode(response.statusCode.toString()));
     }
-    final content = response.data as String;
+    final content = response.data ?? '';
     await SubtitleCacheManager.cacheContent(url, content);
     return content;
+  }
+
+  Future<Response<String>> _fetchPlainText(String url) {
+    return _dio.get<String>(
+      url,
+      options: Options(responseType: ResponseType.plain),
+    );
   }
 
   /// Parses raw text into a timeline; unsupported formats **or parse errors** return null
