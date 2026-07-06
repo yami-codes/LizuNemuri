@@ -8,6 +8,21 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.11 — 2026-07-06
+
+### Added
+- **Zoomable image preview** in work detail file tree (jpg/png/webp/gif/etc.).
+- **In-app video player** with sibling subtitle overlay (media_kit).
+- **ASMR.one-style bottom nav**: Favorites | Home | Recommended | Popular.
+- **Advanced search**: `$command` chips, autocomplete, tag include/exclude gestures.
+- **Desktop detail layout**: two-column with capped cover (≥800px), max 1200px content width.
+- **Detail tag filters**: English labels when app language ≠ zh; tap/long-press → search filters.
+
+### Changed
+- Sidebar trimmed (no duplicate Favorites/Recommend entries).
+
+---
+
 ## v2.0.0-rc.10 — 2026-07-06
 
 ### Added
