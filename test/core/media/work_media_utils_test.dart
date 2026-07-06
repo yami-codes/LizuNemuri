@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lizunemu/core/media/work_media_utils.dart';
 import 'package:lizunemu/data/models/files/child.dart';
+import 'package:lizunemu/data/models/files/files.dart';
 
 void main() {
   group('WorkMediaUtils.findMatchingFile', () {
@@ -52,6 +53,45 @@ void main() {
       final target = Child(type: 'audio', title: 'a.wav', mediaDownloadUrl: 'old');
       expect(WorkMediaUtils.patchFileInTree(nodes, target, fresh), isTrue);
       expect(nodes.first.mediaDownloadUrl, 'new');
+    });
+  });
+
+  group('WorkMediaUtils.patchInFiles', () {
+    test('patches unmodifiable Freezed tree without mutating original', () {
+      final stale = Child(type: 'audio', title: 'a.wav', mediaDownloadUrl: 'old');
+      final fresh = Child(type: 'audio', title: 'a.wav', mediaDownloadUrl: 'new');
+      final target = stale;
+      final tree = Files(type: 'folder', children: [stale]);
+
+      final patched = WorkMediaUtils.patchInFiles(tree, target, fresh);
+
+      expect(patched, isNotNull);
+      expect(patched!.children!.first.mediaDownloadUrl, 'new');
+      expect(tree.children!.first.mediaDownloadUrl, 'old');
+    });
+
+    test('patches nested folder leaf', () {
+      final target = Child(type: 'audio', title: 'nested.wav');
+      final tree = Files(
+        type: 'folder',
+        children: [
+          Child(
+            type: 'folder',
+            title: 'mp3',
+            children: [
+              Child(type: 'audio', title: 'nested.wav', mediaDownloadUrl: 'old'),
+            ],
+          ),
+        ],
+      );
+      final fresh = Child(type: 'audio', title: 'nested.wav', mediaDownloadUrl: 'new');
+
+      final patched = WorkMediaUtils.patchInFiles(tree, target, fresh);
+
+      expect(
+        patched?.children?.first.children?.first.mediaDownloadUrl,
+        'new',
+      );
     });
   });
 }

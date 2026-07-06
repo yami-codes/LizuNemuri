@@ -11,10 +11,14 @@ class WorkMediaUrlRefresher {
   WorkMediaUrlRefresher(this._api);
 
   /// Returns [file] with a fresh URL when the API still lists the same leaf.
+  ///
+  /// When [patchInto] is set, a patched copy of the tree is delivered via
+  /// [onTreePatched] (Freezed trees use immutable copy — never in-place write).
   Future<Child> refreshFile({
     required String workId,
     required Child file,
     Files? patchInto,
+    void Function(Files patched)? onTreePatched,
   }) async {
     try {
       final freshTree = await _api.getWorkFiles(workId);
@@ -22,11 +26,12 @@ class WorkMediaUrlRefresher {
       if (updated == null) return file;
 
       if (patchInto != null) {
-        try {
-          WorkMediaUtils.patchFileInTree(patchInto.children, file, updated);
-        } catch (e) {
+        final patched = WorkMediaUtils.patchInFiles(patchInto, file, updated);
+        if (patched != null) {
+          onTreePatched?.call(patched);
+        } else {
           AppLogger.warning(
-            'WorkMediaUrlRefresher patch skipped for ${file.title}: $e',
+            'WorkMediaUrlRefresher patch missed for ${file.title}',
           );
         }
       }
