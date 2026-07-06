@@ -8,7 +8,9 @@ import 'package:get_it/get_it.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
-class SimilarWorksViewModel extends ChangeNotifier {
+import 'package:lizunemu/presentation/viewmodels/base/work_list_translation_mixin.dart';
+
+class SimilarWorksViewModel extends ChangeNotifier with WorkListTranslationMixin {
   final ApiService _apiService;
   final AppSettingsService _settings;
   final Work work;
@@ -76,6 +78,7 @@ class SimilarWorksViewModel extends ChangeNotifier {
       _pagination = response.pagination;
       _currentPage = page;
       AppLogger.info(LogStrings.logPageListLoaded(page.toString(), LogStrings.logPageNameSimilar, response.works.length.toString()));
+      await maybeAutoTranslateWorks(_works);
     } catch (e) {
       AppLogger.error(LogStrings.logLoadSimilarFailed, e);
       _error = userFacingError(e);
@@ -87,6 +90,7 @@ class SimilarWorksViewModel extends ChangeNotifier {
 
   /// Load similar works (initial load and refresh).
   Future<void> loadSimilarWorks({bool refresh = false}) async {
+    if (refresh) clearTranslatedWorkTitles();
     await loadPage(1);
   }
 

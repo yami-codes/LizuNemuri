@@ -8,7 +8,9 @@ import 'package:lizunemu/utils/logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
-class PlaylistWorksViewModel extends ChangeNotifier {
+import 'package:lizunemu/presentation/viewmodels/base/work_list_translation_mixin.dart';
+
+class PlaylistWorksViewModel extends ChangeNotifier with WorkListTranslationMixin {
   final ApiService _apiService = GetIt.I<ApiService>();
   final Playlist playlist;
   
@@ -46,6 +48,7 @@ class PlaylistWorksViewModel extends ChangeNotifier {
       _pagination = response.pagination;
       _currentPage = page;
       AppLogger.info(LogStrings.logPageListLoaded(page.toString(), LogStrings.logPageNamePlaylistWorks, response.works.length.toString()));
+      await maybeAutoTranslateWorks(_works);
     } catch (e) {
       AppLogger.error(LogStrings.logLoadPlaylistWorksFailed, e);
       _error = userFacingError(e);
@@ -55,5 +58,8 @@ class PlaylistWorksViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> refresh() => loadWorks(page: 1);
+  Future<void> refresh() {
+    clearTranslatedWorkTitles();
+    return loadWorks(page: 1);
+  }
 }

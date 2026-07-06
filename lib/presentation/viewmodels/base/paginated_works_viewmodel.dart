@@ -7,7 +7,10 @@ import 'package:lizunemu/utils/user_facing_error.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
-abstract class PaginatedWorksViewModel extends ChangeNotifier {
+import 'package:lizunemu/presentation/viewmodels/base/work_list_translation_mixin.dart';
+
+abstract class PaginatedWorksViewModel extends ChangeNotifier
+    with WorkListTranslationMixin {
   final ApiService _apiService;
   List<Work> _works = [];
   bool _isLoading = false;
@@ -76,6 +79,7 @@ abstract class PaginatedWorksViewModel extends ChangeNotifier {
       _pagination = response.pagination;
       _currentPage = page;
       AppLogger.info(LogStrings.logPageWorksLoaded(page.toString(), pageName, response.works.length.toString()));
+      await maybeAutoTranslateWorks(_works);
     } catch (e) {
       AppLogger.error(LogStrings.logPageLoadFailed(pageName), e);
       if (e is NetworkException) {
@@ -120,6 +124,7 @@ abstract class PaginatedWorksViewModel extends ChangeNotifier {
   // Refresh
   Future<void> refresh() async {
     _invalidatePrefetch();
+    clearTranslatedWorkTitles();
     AppLogger.info(LogStrings.logRefreshingPagenamee3eb2(pageName));
     await loadPage(1);
   }

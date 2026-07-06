@@ -266,6 +266,19 @@ class DetailScreen extends StatelessWidget {
                       files: viewModel.files!,
                       onFolderDownload: runBatch,
                       onFolderTranslate: runBulkTranslate,
+                      trackTitleFor: viewModel.displayTrackTitle,
+                      isTranslatingTrackNames: viewModel.isTranslatingTracks,
+                      onTranslateTrackNames: () async {
+                        final msg = await viewModel.translateTrackNames(force: true);
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              msg ?? Strings.metadataTrackTranslationDone,
+                            ),
+                          ),
+                        );
+                      },
                       onFileTap: (file) async {
                         // Video check first: extension over unreliable API `type`.
                         // Video → download + external player, never audio pipeline.

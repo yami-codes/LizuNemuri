@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lizunemu/presentation/viewmodels/home_viewmodel.dart';
 import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
+import 'package:lizunemu/widgets/translation/metadata_translate_page_bar.dart';
 import 'package:lizunemu/widgets/work_grid/enhanced_work_grid_view.dart';
 
 class HomeContent extends StatefulWidget {
@@ -72,7 +73,9 @@ class _HomeContentState extends State<HomeContent>
                 bool isLoading,
                 String? error,
                 int currentPage,
-                int? totalPages
+                int? totalPages,
+                Map<String, String> translatedTitles,
+                bool isTranslatingTitles,
               })>(
             selector: (_, vm) => (
               works: vm.works,
@@ -80,20 +83,35 @@ class _HomeContentState extends State<HomeContent>
               error: vm.error,
               currentPage: vm.currentPage,
               totalPages: vm.totalPages,
+              translatedTitles: vm.translatedWorkTitles,
+              isTranslatingTitles: vm.isTranslatingWorkTitles,
             ),
             builder: (context, data, child) {
-              return EnhancedWorkGridView(
-                works: data.works,
-                isLoading: data.isLoading,
-                error: data.error,
-                currentPage: data.currentPage,
-                totalPages: data.totalPages,
-                onPageChanged: (page) =>
-                    context.read<HomeViewModel>().loadPage(page),
-                onRefresh: () => context.read<HomeViewModel>().refresh(),
-                onRetry: () => context.read<HomeViewModel>().refresh(),
-                layoutStrategy: _layoutStrategy,
-                scrollController: _scrollController,
+              return Column(
+                children: [
+                  MetadataTranslatePageBar(
+                    isTranslating: data.isTranslatingTitles,
+                    onTranslate: () => context
+                        .read<HomeViewModel>()
+                        .translateWorksManual(data.works),
+                  ),
+                  Expanded(
+                    child: EnhancedWorkGridView(
+                      works: data.works,
+                      isLoading: data.isLoading,
+                      error: data.error,
+                      currentPage: data.currentPage,
+                      totalPages: data.totalPages,
+                      onPageChanged: (page) =>
+                          context.read<HomeViewModel>().loadPage(page),
+                      onRefresh: () => context.read<HomeViewModel>().refresh(),
+                      onRetry: () => context.read<HomeViewModel>().refresh(),
+                      layoutStrategy: _layoutStrategy,
+                      scrollController: _scrollController,
+                      translatedTitles: data.translatedTitles,
+                    ),
+                  ),
+                ],
               );
             },
           ),

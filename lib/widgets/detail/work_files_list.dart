@@ -17,6 +17,14 @@ class WorkFilesList extends StatelessWidget {
   /// Batch LLM pre-translate for whole work or folder subtree.
   final void Function(Child? folderNode)? onFolderTranslate;
 
+  /// Optional track title resolver (metadata translation).
+  final String Function(Child file)? trackTitleFor;
+
+  /// Manual translate all track names in this tree.
+  final VoidCallback? onTranslateTrackNames;
+
+  final bool isTranslatingTrackNames;
+
   const WorkFilesList({
     super.key,
     required this.files,
@@ -24,6 +32,9 @@ class WorkFilesList extends StatelessWidget {
     this.onFileDownload,
     this.onFolderDownload,
     this.onFolderTranslate,
+    this.trackTitleFor,
+    this.onTranslateTrackNames,
+    this.isTranslatingTrackNames = false,
   });
 
   @override
@@ -59,6 +70,19 @@ class WorkFilesList extends StatelessWidget {
                     icon: const Icon(Icons.translate, size: 18),
                     label: Text(Strings.batchTranslateTooltip),
                   ),
+                if (onTranslateTrackNames != null)
+                  TextButton.icon(
+                    onPressed:
+                        isTranslatingTrackNames ? null : onTranslateTrackNames,
+                    icon: isTranslatingTrackNames
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.subtitles_outlined, size: 18),
+                    label: Text(Strings.metadataTranslateTracks),
+                  ),
               ],
             ),
           ),
@@ -75,12 +99,14 @@ class WorkFilesList extends StatelessWidget {
                           onFileDownload: onFileDownload,
                           onFolderDownload: onFolderDownload,
                           onFolderTranslate: onFolderTranslate,
+                          trackTitleFor: trackTitleFor,
                         )
                       : WorkFileItem(
                           file: child,
                           indentation: 0,
                           onFileTap: onFileTap,
                           onFileDownload: onFileDownload,
+                          displayTitle: trackTitleFor?.call(child),
                         ))
                   .toList() ??
               [],

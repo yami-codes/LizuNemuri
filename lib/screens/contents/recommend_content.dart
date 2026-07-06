@@ -6,6 +6,7 @@ import 'package:lizunemu/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:lizunemu/presentation/viewmodels/recommend_viewmodel.dart';
 import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
 import 'package:lizunemu/presentation/widgets/auth/login_dialog.dart';
+import 'package:lizunemu/widgets/translation/metadata_translate_page_bar.dart';
 import 'package:lizunemu/widgets/work_grid/enhanced_work_grid_view.dart';
 import 'package:lizunemu/widgets/filter/filter_with_keyword.dart';
 
@@ -58,7 +59,7 @@ class _RecommendContentState extends State<RecommendContent> with AutomaticKeepA
     return Stack(
       children: [
         // Grid: only rebuilds when list data changes
-        Selector<RecommendViewModel, ({List<Work> works, bool isLoading, String? error, bool isLoginError, int currentPage, int? totalPages})>(
+        Selector<RecommendViewModel, ({List<Work> works, bool isLoading, String? error, bool isLoginError, int currentPage, int? totalPages, Map<String, String> translatedTitles, bool isTranslatingTitles})>(
           selector: (_, vm) => (
             works: vm.works,
             isLoading: vm.isLoading,
@@ -66,21 +67,41 @@ class _RecommendContentState extends State<RecommendContent> with AutomaticKeepA
             isLoginError: vm.isLoginError,
             currentPage: vm.currentPage,
             totalPages: vm.totalPages,
+            translatedTitles: vm.translatedWorkTitles,
+            isTranslatingTitles: vm.isTranslatingWorkTitles,
           ),
           builder: (context, data, child) {
-            return EnhancedWorkGridView(
-              works: data.works,
-              isLoading: data.isLoading,
-              error: data.error,
-              isLoginError: data.isLoginError,
-              onLogin: _promptLogin,
-              currentPage: data.currentPage,
-              totalPages: data.totalPages,
-              onPageChanged: (page) => context.read<RecommendViewModel>().loadPage(page),
-              onRefresh: () => context.read<RecommendViewModel>().loadRecommendations(refresh: true),
-              onRetry: () => context.read<RecommendViewModel>().loadRecommendations(refresh: true),
-              layoutStrategy: _layoutStrategy,
-              scrollController: _scrollController,
+            return Column(
+              children: [
+                MetadataTranslatePageBar(
+                  isTranslating: data.isTranslatingTitles,
+                  onTranslate: () => context
+                      .read<RecommendViewModel>()
+                      .translateWorksManual(data.works),
+                ),
+                Expanded(
+                  child: EnhancedWorkGridView(
+                    works: data.works,
+                    isLoading: data.isLoading,
+                    error: data.error,
+                    isLoginError: data.isLoginError,
+                    onLogin: _promptLogin,
+                    currentPage: data.currentPage,
+                    totalPages: data.totalPages,
+                    onPageChanged: (page) =>
+                        context.read<RecommendViewModel>().loadPage(page),
+                    onRefresh: () => context
+                        .read<RecommendViewModel>()
+                        .loadRecommendations(refresh: true),
+                    onRetry: () => context
+                        .read<RecommendViewModel>()
+                        .loadRecommendations(refresh: true),
+                    layoutStrategy: _layoutStrategy,
+                    scrollController: _scrollController,
+                    translatedTitles: data.translatedTitles,
+                  ),
+                ),
+              ],
             );
           },
         ),

@@ -16,6 +16,7 @@ class GridContent extends StatelessWidget {
   final Future<void> Function(int page)? onPageChanged;
   final ScrollController? scrollController;
   final GridConfig? config;
+  final Map<String, String>? translatedTitles;
 
   const GridContent({
     super.key,
@@ -27,6 +28,7 @@ class GridContent extends StatelessWidget {
     this.onPageChanged,
     this.scrollController,
     this.config,
+    this.translatedTitles,
   });
 
   void _scrollToTop() {
@@ -50,6 +52,7 @@ class GridContent extends StatelessWidget {
           sliver: WorkGrid(
             works: works,
             layoutStrategy: layoutStrategy,
+            translatedTitles: translatedTitles,
             onWorkTap: (work) {
               Navigator.push(
                 context,

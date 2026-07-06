@@ -1,9 +1,9 @@
-import 'package:lizunemu/core/theme/app_animations.dart';
 import 'package:lizunemu/data/models/works/work.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lizunemu/presentation/viewmodels/popular_viewmodel.dart';
 import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
+import 'package:lizunemu/widgets/translation/metadata_translate_page_bar.dart';
 import 'package:lizunemu/widgets/work_grid/enhanced_work_grid_view.dart';
 
 class PopularContent extends StatefulWidget {
@@ -37,7 +37,9 @@ class _PopularContentState extends State<PopularContent>
           bool isLoading,
           String? error,
           int currentPage,
-          int? totalPages
+          int? totalPages,
+          Map<String, String> translatedTitles,
+          bool isTranslatingTitles,
         })>(
       selector: (_, vm) => (
         works: vm.works,
@@ -45,22 +47,37 @@ class _PopularContentState extends State<PopularContent>
         error: vm.error,
         currentPage: vm.currentPage,
         totalPages: vm.totalPages,
+        translatedTitles: vm.translatedWorkTitles,
+        isTranslatingTitles: vm.isTranslatingWorkTitles,
       ),
       builder: (context, data, child) {
-        return EnhancedWorkGridView(
-          works: data.works,
-          isLoading: data.isLoading,
-          error: data.error,
-          currentPage: data.currentPage,
-          totalPages: data.totalPages,
-          onPageChanged: (page) =>
-              context.read<PopularViewModel>().loadPage(page),
-          onRefresh: () =>
-              context.read<PopularViewModel>().loadPopular(refresh: true),
-          onRetry: () =>
-              context.read<PopularViewModel>().loadPopular(refresh: true),
-          layoutStrategy: _layoutStrategy,
-          scrollController: _scrollController,
+        return Column(
+          children: [
+            MetadataTranslatePageBar(
+              isTranslating: data.isTranslatingTitles,
+              onTranslate: () => context
+                  .read<PopularViewModel>()
+                  .translateWorksManual(data.works),
+            ),
+            Expanded(
+              child: EnhancedWorkGridView(
+                works: data.works,
+                isLoading: data.isLoading,
+                error: data.error,
+                currentPage: data.currentPage,
+                totalPages: data.totalPages,
+                onPageChanged: (page) =>
+                    context.read<PopularViewModel>().loadPage(page),
+                onRefresh: () =>
+                    context.read<PopularViewModel>().loadPopular(refresh: true),
+                onRetry: () =>
+                    context.read<PopularViewModel>().loadPopular(refresh: true),
+                layoutStrategy: _layoutStrategy,
+                scrollController: _scrollController,
+                translatedTitles: data.translatedTitles,
+              ),
+            ),
+          ],
         );
       },
     );

@@ -4,6 +4,7 @@ import 'package:lizunemu/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:lizunemu/presentation/viewmodels/favorites_viewmodel.dart';
 import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
 import 'package:lizunemu/presentation/widgets/auth/login_dialog.dart';
+import 'package:lizunemu/widgets/translation/metadata_translate_page_bar.dart';
 import 'package:lizunemu/widgets/work_grid/enhanced_work_grid_view.dart';
 
 class FavoritesContent extends StatefulWidget {
@@ -52,19 +53,30 @@ class _FavoritesContentState extends State<FavoritesContent>
     super.build(context);
     return Consumer<FavoritesViewModel>(
       builder: (context, viewModel, child) {
-        return EnhancedWorkGridView(
-          works: viewModel.works,
-          isLoading: viewModel.isLoading,
-          error: viewModel.error,
-          isLoginError: viewModel.isLoginError,
-          onLogin: () => _promptLogin(viewModel),
-          currentPage: viewModel.currentPage,
-          totalPages: viewModel.totalPages,
-          onPageChanged: (page) => viewModel.loadPage(page),
-          onRefresh: () => viewModel.loadFavorites(refresh: true),
-          onRetry: () => viewModel.loadFavorites(refresh: true),
-          layoutStrategy: _layoutStrategy,
-          scrollController: _scrollController,
+        return Column(
+          children: [
+            MetadataTranslatePageBar(
+              isTranslating: viewModel.isTranslatingWorkTitles,
+              onTranslate: () => viewModel.translateWorksManual(viewModel.works),
+            ),
+            Expanded(
+              child: EnhancedWorkGridView(
+                works: viewModel.works,
+                isLoading: viewModel.isLoading,
+                error: viewModel.error,
+                isLoginError: viewModel.isLoginError,
+                onLogin: () => _promptLogin(viewModel),
+                currentPage: viewModel.currentPage,
+                totalPages: viewModel.totalPages,
+                onPageChanged: (page) => viewModel.loadPage(page),
+                onRefresh: () => viewModel.loadFavorites(refresh: true),
+                onRetry: () => viewModel.loadFavorites(refresh: true),
+                layoutStrategy: _layoutStrategy,
+                scrollController: _scrollController,
+                translatedTitles: viewModel.translatedWorkTitles,
+              ),
+            ),
+          ],
         );
       },
     );

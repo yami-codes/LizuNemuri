@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lizunemu/data/models/works/work.dart';
 import 'package:lizunemu/presentation/viewmodels/similar_works_viewmodel.dart';
+import 'package:lizunemu/widgets/translation/metadata_translate_page_bar.dart';
 import 'package:lizunemu/widgets/work_grid_view.dart';
 import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
 import 'package:lizunemu/widgets/common/back_leading.dart';
@@ -81,6 +82,11 @@ class _SimilarWorksScreenState extends State<SimilarWorksScreen> {
               children: [
                 Column(
                   children: [
+                    MetadataTranslatePageBar(
+                      isTranslating: viewModel.isTranslatingWorkTitles,
+                      onTranslate: () =>
+                          viewModel.translateWorksManual(viewModel.works),
+                    ),
                     Expanded(
                       child: WorkGridView(
                         works: viewModel.works,
@@ -89,6 +95,7 @@ class _SimilarWorksScreenState extends State<SimilarWorksScreen> {
                         onRetry: () => viewModel.loadSimilarWorks(),
                         layoutStrategy: _layoutStrategy,
                         scrollController: _scrollController,
+                        translatedTitles: viewModel.translatedWorkTitles,
                         bottomWidget: viewModel.works.isNotEmpty
                             ? PaginationControls(
                                 currentPage: viewModel.currentPage,

@@ -15,7 +15,9 @@ import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SearchViewModel extends ChangeNotifier {
+import 'package:lizunemu/presentation/viewmodels/base/work_list_translation_mixin.dart';
+
+class SearchViewModel extends ChangeNotifier with WorkListTranslationMixin {
   static const String _filterStateKey = 'search_filter_state';
 
   final _apiService = GetIt.I<ApiService>();
@@ -131,6 +133,7 @@ class SearchViewModel extends ChangeNotifier {
     _keyword = keyword.trim();
     final composed = _composedKeyword(_keyword);
     if (composed.isEmpty) return;
+    if (page == 1) clearTranslatedWorkTitles();
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -153,6 +156,7 @@ class SearchViewModel extends ChangeNotifier {
       AppLogger.info(
         LogStrings.logSearchSucceededResponseWorks55719(response.works.length),
       );
+      await maybeAutoTranslateWorks(_works);
     } catch (e) {
       AppLogger.error(LogStrings.logSearchFailed, e);
       _error = userFacingError(e);
@@ -175,6 +179,7 @@ class SearchViewModel extends ChangeNotifier {
     _error = null;
     _pagination = null;
     _currentPage = 1;
+    clearTranslatedWorkTitles();
     notifyListeners();
   }
 }

@@ -11,7 +11,9 @@ import 'package:get_it/get_it.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
-class RecommendViewModel extends ChangeNotifier {
+import 'package:lizunemu/presentation/viewmodels/base/work_list_translation_mixin.dart';
+
+class RecommendViewModel extends ChangeNotifier with WorkListTranslationMixin {
   final ApiService _apiService;
   final AppSettingsService _settings;
   final AuthViewModel _authViewModel;
@@ -96,6 +98,7 @@ class RecommendViewModel extends ChangeNotifier {
       _pagination = response.pagination;
       _currentPage = page;
       AppLogger.info(LogStrings.logPageListLoaded(page.toString(), LogStrings.logPageNameRecommend, response.works.length.toString()));
+      await maybeAutoTranslateWorks(_works);
     } catch (e) {
       AppLogger.error(LogStrings.logLoadRecommendFailed, e);
       if (e is NetworkException) {

@@ -26,6 +26,7 @@ class _LlmTranslationSettingsScreenState
     extends State<LlmTranslationSettingsScreen> {
   late final TextEditingController _endpointCtrl;
   late final TextEditingController _modelCtrl;
+  late final TextEditingController _liteModelCtrl;
   late final TextEditingController _apiKeyCtrl;
   late final TextEditingController _systemPromptCtrl;
   late final TextEditingController _jailbreakPromptCtrl;
@@ -37,7 +38,9 @@ class _LlmTranslationSettingsScreenState
   void initState() {
     super.initState();
     _endpointCtrl = TextEditingController(text: widget.settings.llmApiEndpoint);
-    _modelCtrl = TextEditingController(text: widget.settings.llmModel);
+    _modelCtrl = TextEditingController(text: widget.settings.llmMainModel);
+    _liteModelCtrl =
+        TextEditingController(text: widget.settings.llmLiteModel);
     _apiKeyCtrl = TextEditingController();
     _systemPromptCtrl =
         TextEditingController(text: widget.settings.llmSystemPromptOverride);
@@ -59,6 +62,7 @@ class _LlmTranslationSettingsScreenState
   void dispose() {
     _endpointCtrl.dispose();
     _modelCtrl.dispose();
+    _liteModelCtrl.dispose();
     _apiKeyCtrl.dispose();
     _systemPromptCtrl.dispose();
     _jailbreakPromptCtrl.dispose();
@@ -71,7 +75,8 @@ class _LlmTranslationSettingsScreenState
     setState(() => _saving = true);
     try {
       await widget.settings.setLlmApiEndpoint(_endpointCtrl.text);
-      await widget.settings.setLlmModel(_modelCtrl.text);
+      await widget.settings.setLlmMainModel(_modelCtrl.text);
+      await widget.settings.setLlmLiteModel(_liteModelCtrl.text);
       await widget.settings.setLlmSystemPromptOverride(_systemPromptCtrl.text);
       await widget.settings.setLlmJailbreakPrompt(_jailbreakPromptCtrl.text);
       final batchSize = int.tryParse(_manualBatchSizeCtrl.text.trim());
@@ -134,14 +139,30 @@ class _LlmTranslationSettingsScreenState
             ),
             const SizedBox(height: 16),
             SettingsGroup(
-              header: Strings.llmModel,
+              header: Strings.llmMainModel,
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: TextField(
                     controller: _modelCtrl,
                     decoration: InputDecoration(
-                      labelText: Strings.llmModel,
+                      labelText: Strings.llmMainModel,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SettingsGroup(
+              header: Strings.llmLiteModel,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: TextField(
+                    controller: _liteModelCtrl,
+                    decoration: InputDecoration(
+                      labelText: Strings.llmLiteModel,
                       border: const OutlineInputBorder(),
                     ),
                   ),

@@ -8,6 +8,7 @@ import 'package:lizunemu/presentation/viewmodels/favorites_viewmodel.dart';
 import 'package:lizunemu/presentation/layouts/work_layout_strategy.dart';
 import 'package:lizunemu/presentation/widgets/auth/login_dialog.dart';
 import 'package:lizunemu/widgets/pagination_controls.dart';
+import 'package:lizunemu/widgets/translation/metadata_translate_page_bar.dart';
 import 'package:lizunemu/widgets/work_grid_view.dart';
 
 class FavoritesScreen extends StatefulWidget {
@@ -78,6 +79,11 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           builder: (context, viewModel, child) {
             return Column(
               children: [
+                MetadataTranslatePageBar(
+                  isTranslating: viewModel.isTranslatingWorkTitles,
+                  onTranslate: () =>
+                      viewModel.translateWorksManual(viewModel.works),
+                ),
                 Expanded(
                   child: WorkGridView(
                     works: viewModel.works,
@@ -88,6 +94,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     onRetry: () => viewModel.loadFavorites(),
                     layoutStrategy: _layoutStrategy,
                     scrollController: _scrollController,
+                    translatedTitles: viewModel.translatedWorkTitles,
                     bottomWidget: viewModel.works.isNotEmpty
                         ? PaginationControls(
                             currentPage: viewModel.currentPage,

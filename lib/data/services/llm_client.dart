@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:lizunemu/core/llm/llm_usage.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/settings/llm_model_slot.dart';
 import 'package:lizunemu/data/models/llm/llm_usage_record.dart';
 import 'package:lizunemu/data/repositories/llm_api_key_repository.dart';
 import 'package:lizunemu/data/services/exceptions/llm_translation_exception.dart';
@@ -48,7 +49,7 @@ class LlmClient {
   bool get _isOpenRouter =>
       _normalizeEndpoint(_settings.llmApiEndpoint).contains('openrouter.ai');
 
-  Future<Map<String, String>> _authHeaders() async {
+  Future<Map<String, String>> _authHeaders({LlmModelSlot? modelSlot}) async {
     final endpoint = _normalizeEndpoint(_settings.llmApiEndpoint);
     if (endpoint.isEmpty) {
       throw const LlmTranslationException(
@@ -65,7 +66,7 @@ class LlmClient {
       );
     }
 
-    final model = _settings.llmModel.trim();
+    final model = _resolveModel(modelSlot).trim();
     if (model.isEmpty) {
       throw const LlmTranslationException(
         LlmTranslationErrorType.invalidConfig,
@@ -84,13 +85,24 @@ class LlmClient {
     return headers;
   }
 
+  String _resolveModel(LlmModelSlot? slot) {
+    switch (slot ?? LlmModelSlot.main) {
+      case LlmModelSlot.main:
+        return _settings.llmMainModel;
+      case LlmModelSlot.lite:
+        return _settings.llmLiteModel;
+    }
+  }
+
   Future<String> chatCompletion({
     required List<Map<String, String>> messages,
     double temperature = 0.2,
+    LlmModelSlot modelSlot = LlmModelSlot.main,
   }) async {
     final result = await chatCompletionWithUsage(
       messages: messages,
       temperature: temperature,
+      modelSlot: modelSlot,
     );
     return result.content;
   }
@@ -98,11 +110,13 @@ class LlmClient {
   Future<LlmChatResult> chatCompletionWithUsage({
     required List<Map<String, String>> messages,
     double temperature = 0.2,
+    LlmModelSlot modelSlot = LlmModelSlot.main,
   }) =>
       _chatCompletionInternal(
         messages: messages,
         temperature: temperature,
         stream: false,
+        modelSlot: modelSlot,
       );
 
   /// Streaming chat completion — yields text deltas, then a final [LlmChatResult]
@@ -111,9 +125,10 @@ class LlmClient {
     required List<Map<String, String>> messages,
     double temperature = 0.2,
     void Function(LlmUsage? usage)? onUsage,
+    LlmModelSlot modelSlot = LlmModelSlot.main,
   }) async* {
-    final headers = await _authHeaders();
-    final model = _settings.llmModel.trim();
+    final headers = await _authHeaders(modelSlot: modelSlot);
+    final model = _resolveModel(modelSlot).trim();
 
     try {
       final response = await _dio.post<ResponseBody>(
@@ -242,9 +257,10 @@ class LlmClient {
     required List<Map<String, String>> messages,
     double temperature = 0.2,
     required bool stream,
+    LlmModelSlot modelSlot = LlmModelSlot.main,
   }) async {
-    final headers = await _authHeaders();
-    final model = _settings.llmModel.trim();
+    final headers = await _authHeaders(modelSlot: modelSlot);
+    final model = _resolveModel(modelSlot).trim();
 
     try {
       final response = await _dio.post<Map<String, dynamic>>(
