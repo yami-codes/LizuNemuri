@@ -588,6 +588,7 @@ class DetailViewModel extends ChangeNotifier {
         error: e,
         tag: AppLogTags.translation,
       );
+      if (_translatedTrackNames.isNotEmpty) return null;
       return e.userMessage;
     } catch (e) {
       AppLogger.warning(
@@ -595,6 +596,7 @@ class DetailViewModel extends ChangeNotifier {
         error: e,
         tag: AppLogTags.translation,
       );
+      if (_translatedTrackNames.isNotEmpty) return null;
       return Strings.metadataTrackTranslationFailed;
     } finally {
       _isTranslatingTracks = false;

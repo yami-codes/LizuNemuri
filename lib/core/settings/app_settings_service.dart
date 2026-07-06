@@ -189,7 +189,7 @@ class AppSettingsService extends ChangeNotifier {
     final savedDisplayMode = _prefs.getString(_llmSubtitleDisplayModeKey);
     _llmSubtitleDisplayMode = LlmSubtitleDisplayMode.values.firstWhere(
       (v) => v.name == savedDisplayMode,
-      orElse: () => LlmSubtitleDisplayMode.dual,
+      orElse: () => LlmSubtitleDisplayMode.translationOnly,
     );
     _playbackVolume = _prefs.getDouble(_playbackVolumeKey) ?? 1.0;
     _playbackSpeed = PlaybackSpeedPresets.clamp(

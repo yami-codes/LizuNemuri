@@ -25,12 +25,12 @@ void main() {
         itemTrailingEdge: 0.1,
       );
       expect(lyricKineticEmphasis(near), greaterThan(lyricKineticEmphasis(far)));
-      expect(lyricKineticEmphasis(far), closeTo(0.22, 0.05));
+      expect(lyricKineticEmphasis(far), closeTo(0.18, 0.05));
     });
   });
 
   group('lyricEmphasisForIndex', () {
-    test('active line follows viewport proximity (clamped 0.75–1.0)', () {
+    test('active line follows viewport proximity (clamped 0.92–1.0)', () {
       const positions = [
         ItemPosition(
           index: 2,
@@ -55,7 +55,7 @@ void main() {
           isActive: true,
           positions: const [],
         ),
-        0.85,
+        0.92,
       );
     });
 
@@ -72,7 +72,8 @@ void main() {
         isActive: false,
         positions: positions,
       );
-      expect(emphasis, greaterThan(0.9));
+      expect(emphasis, greaterThan(0.5));
+      expect(emphasis, lessThan(0.72));
     });
 
     test('off-screen inactive lines use baseline emphasis', () {
@@ -82,7 +83,7 @@ void main() {
           isActive: false,
           positions: const [],
         ),
-        0.22,
+        0.18,
       );
     });
   });

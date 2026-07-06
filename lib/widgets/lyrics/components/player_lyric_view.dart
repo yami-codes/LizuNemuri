@@ -16,8 +16,8 @@ import 'lyric_line.dart';
 double lyricKineticEmphasis(
   ItemPosition position, {
   double viewportCenter = 0.5,
-  double falloff = 0.28,
-  double minEmphasis = 0.22,
+  double falloff = 0.14,
+  double minEmphasis = 0.18,
 }) {
   final itemCenter =
       (position.itemLeadingEdge + position.itemTrailingEdge) / 2;
@@ -25,6 +25,8 @@ double lyricKineticEmphasis(
   final proximity = 1.0 - (distance / falloff).clamp(0.0, 1.0);
   return minEmphasis + (1.0 - minEmphasis) * proximity;
 }
+
+const _kMinEmphasis = 0.18;
 
 @visibleForTesting
 double lyricEmphasisForIndex({
@@ -36,13 +38,13 @@ double lyricEmphasisForIndex({
     if (position.index == index) {
       final proximity = lyricKineticEmphasis(position);
       if (isActive) {
-        // Active line follows scroll center — no hard jump to 1.0 (Apple Music style).
-        return proximity.clamp(0.75, 1.0);
+        // Only the centered playback line should read as fully active.
+        return proximity.clamp(0.92, 1.0);
       }
-      return proximity;
+      return (proximity * 0.55).clamp(_kMinEmphasis, 0.72);
     }
   }
-  return isActive ? 0.85 : 0.22;
+  return isActive ? 0.92 : _kMinEmphasis;
 }
 
 class PlayerLyricView extends StatefulWidget {
@@ -219,8 +221,11 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
                         ),
                         child: LyricLine(
                           subtitle: subtitle,
-                          secondaryText:
-                              _viewModel.originalSubtitleTextAt(subtitle.index),
+                          secondaryText: isActive &&
+                                  _viewModel.showDualSubtitles
+                              ? _viewModel
+                                  .originalSubtitleTextAt(subtitle.index)
+                              : null,
                           emphasis: emphasis,
                           onTap: () async {
                             if (widget.lockParentViewSwitch) {

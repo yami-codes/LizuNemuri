@@ -73,6 +73,8 @@ class _SearchCommandFieldState extends State<SearchCommandField> {
       draft: draft,
       cursor: cursor < 0 ? draft.length : cursor,
       tagNames: widget.tagNames,
+      tagCatalog: widget.tagCatalog,
+      appLanguage: _settings.appLanguage,
     );
     if (!mounted) return;
     setState(() => _suggestions = next);
@@ -200,14 +202,18 @@ class _SearchCommandFieldState extends State<SearchCommandField> {
                           label: Text(
                             _chipLabel(raw),
                             style: TextStyle(
-                              color: exclude ? cs.error : cs.onPrimary,
+                              color: exclude
+                                  ? cs.onErrorContainer
+                                  : cs.onPrimaryContainer,
                               fontSize: 12,
                             ),
                           ),
-                          backgroundColor:
-                              exclude ? cs.errorContainer : cs.onSurface,
-                          deleteIconColor:
-                              exclude ? cs.onErrorContainer : cs.surface,
+                          backgroundColor: exclude
+                              ? cs.errorContainer
+                              : cs.primaryContainer,
+                          deleteIconColor: exclude
+                              ? cs.onErrorContainer
+                              : cs.onPrimaryContainer,
                           onDeleted: () => _removeToken(entry.key),
                           materialTapTargetSize:
                               MaterialTapTargetSize.shrinkWrap,

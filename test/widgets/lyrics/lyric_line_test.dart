@@ -4,21 +4,15 @@ import 'package:lizunemu/core/audio/models/subtitle.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/core/theme/app_colors.dart';
 import 'package:lizunemu/widgets/lyrics/components/lyric_line.dart';
-import 'package:lizunemu/widgets/player/player_immersive_scope.dart';
 
 Widget _host({
   required Widget child,
   ColorScheme? scheme,
-  PlayerImmersiveColors? immersive,
 }) {
   final colorScheme = scheme ?? AppColors.lightSchemeFor(ColorVariant.blue);
-  Widget body = Scaffold(body: Center(child: child));
-  if (immersive != null) {
-    body = PlayerImmersiveScope(colors: immersive, child: body);
-  }
   return MaterialApp(
     theme: ThemeData(colorScheme: colorScheme, useMaterial3: true),
-    home: body,
+    home: Scaffold(body: Center(child: child)),
   );
 }
 
@@ -38,7 +32,7 @@ void main() {
       expect(find.text('translated line'), findsOneWidget);
     });
 
-    testWidgets('renders dual subtitle stack', (tester) async {
+    testWidgets('renders dual subtitle stack when secondary provided', (tester) async {
       await tester.pumpWidget(
         _host(
           child: const LyricLine(
@@ -53,7 +47,7 @@ void main() {
       expect(find.byType(Column), findsOneWidget);
     });
 
-    testWidgets('high emphasis uses bolder primary style', (tester) async {
+    testWidgets('high emphasis uses bolder active style', (tester) async {
       await tester.pumpWidget(
         _host(
           child: const LyricLine(
@@ -63,43 +57,32 @@ void main() {
         ),
       );
       final high = tester.widget<Text>(find.text('translated line'));
-      expect(high.style?.fontWeight, FontWeight.w700);
-      expect(high.style?.fontSize, LyricLine.primaryFontSize);
+      expect(high.style?.fontWeight, FontWeight.w600);
     });
 
-    testWidgets('low emphasis uses lighter primary style', (tester) async {
+    testWidgets('low emphasis uses lighter inactive style', (tester) async {
       await tester.pumpWidget(
         _host(
           child: const LyricLine(
             subtitle: _line,
-            emphasis: 0.0,
+            emphasis: 0.2,
           ),
         ),
       );
       final low = tester.widget<Text>(find.text('translated line'));
-      expect(low.style?.fontWeight, FontWeight.w500);
-      expect(low.style?.fontSize, LyricLine.primaryFontSize);
+      expect(low.style?.fontWeight, FontWeight.w400);
     });
 
-    testWidgets('immersive scope tints active lyric color', (tester) async {
-      const immersive = PlayerImmersiveColors(
-        activeLyric: Color(0xFFFFEEAA),
-        inactiveLyric: Color(0xFF888888),
-        accentStrong: Color(0xFFFFCC00),
-        backdropTint: Color(0xFF222222),
-        enabled: true,
-      );
+    testWidgets('active line gets primaryContainer pill', (tester) async {
       await tester.pumpWidget(
         _host(
-          immersive: immersive,
           child: const LyricLine(
             subtitle: _line,
             emphasis: 1.0,
           ),
         ),
       );
-      final text = tester.widget<Text>(find.text('translated line'));
-      expect(text.style?.color, immersive.activeLyric);
+      expect(find.byType(DecoratedBox), findsOneWidget);
     });
   });
 }

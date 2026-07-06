@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
-import 'package:lizunemu/data/models/tags/tag_item.dart';
 import 'package:lizunemu/data/models/works/i18n.dart';
 import 'package:lizunemu/data/models/works/work.dart';
 import 'package:lizunemu/data/models/works/pagination.dart';
@@ -24,9 +24,15 @@ import 'package:lizunemu/presentation/viewmodels/base/work_list_translation_mixi
 
 class SearchViewModel extends ChangeNotifier with WorkListTranslationMixin {
   static const String _filterStateKey = 'search_filter_state';
+  static const String _keywordKey = 'search_last_keyword';
+  static const Duration _debounceDuration = Duration(milliseconds: 450);
 
   final _apiService = GetIt.I<ApiService>();
   final _settings = GetIt.I<AppSettingsService>();
+
+  Timer? _debounceTimer;
+  bool _initialized = false;
+  bool get initialized => _initialized;
 
   List<Work> _works = [];
   List<Work> get works => _works;
@@ -65,9 +71,44 @@ class SearchViewModel extends ChangeNotifier with WorkListTranslationMixin {
   FilterState _filterState = const FilterState();
   FilterState get filterState => _filterState;
 
-  SearchViewModel() {
-    _loadFilterState();
-    loadTagCatalog();
+  SearchViewModel({this.initialKeyword}) {
+    _bootstrap();
+  }
+
+  final String? initialKeyword;
+
+  Future<void> _bootstrap() async {
+    await _loadFilterState();
+    await loadTagCatalog();
+    if (initialKeyword != null && initialKeyword!.isNotEmpty) {
+      loadInitialKeyword(initialKeyword);
+    } else {
+      await _loadKeyword();
+    }
+    _initialized = true;
+    notifyListeners();
+    if (_canSearch) {
+      await search(_keyword);
+    }
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  void scheduleDebouncedSearch(String draft) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(_debounceDuration, () {
+      final trimmed = draft.trim();
+      if (trimmed.isEmpty &&
+          _commandTokens.isEmpty &&
+          !_filterState.hasTagOrAgeFilter) {
+        return;
+      }
+      search(_keyword, draft: draft);
+    });
   }
 
   Future<void> loadTagCatalog() async {
@@ -87,6 +128,28 @@ class SearchViewModel extends ChangeNotifier with WorkListTranslationMixin {
       notifyListeners();
     } catch (e) {
       AppLogger.error(LogStrings.logLoadTagsFailed, e);
+    }
+  }
+
+  Future<void> _loadKeyword() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _keyword = prefs.getString(_keywordKey) ?? '';
+    } catch (e) {
+      AppLogger.error(LogStrings.logLoadFilterStateFailed, e);
+    }
+  }
+
+  Future<void> _saveKeyword() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (_keyword.isEmpty) {
+        await prefs.remove(_keywordKey);
+      } else {
+        await prefs.setString(_keywordKey, _keyword);
+      }
+    } catch (e) {
+      AppLogger.error(LogStrings.logSaveFilterStateFailed, e);
     }
   }
 
@@ -259,6 +322,7 @@ class SearchViewModel extends ChangeNotifier with WorkListTranslationMixin {
       _works = response.works;
       _pagination = response.pagination;
       _currentPage = page;
+      await _saveKeyword();
       AppLogger.info(
         LogStrings.logSearchSucceededResponseWorks55719(response.works.length),
       );
@@ -278,6 +342,7 @@ class SearchViewModel extends ChangeNotifier with WorkListTranslationMixin {
   }
 
   void clear() {
+    _debounceTimer?.cancel();
     _works = [];
     _keyword = '';
     _commandTokens = [];
@@ -291,6 +356,7 @@ class SearchViewModel extends ChangeNotifier with WorkListTranslationMixin {
     _currentPage = 1;
     clearTranslatedWorkTitles();
     _saveFilterState();
+    _saveKeyword();
     notifyListeners();
   }
 
