@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/core/theme/app_radius.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
+import 'package:lizunemu/data/models/works/i18n.dart';
 import 'package:lizunemu/presentation/models/age_rating_filter.dart';
 import 'package:lizunemu/presentation/models/filter_state.dart';
 import 'package:lizunemu/presentation/models/work_list_filter_preset.dart';
+import 'package:lizunemu/utils/tag_display_name.dart';
 import 'package:lizunemu/widgets/filter/tag_picker_sheet.dart';
 
 /// Eara-style horizontal filter chips: subtitle, tags, age, sort presets + more.
@@ -19,6 +23,7 @@ class AdvancedFilterBar extends StatelessWidget {
   final ValueChanged<AgeRatingFilter>? onAgeRatingChanged;
   final bool showSortOptions;
   final bool showTagAndAgeFilters;
+  final Map<String, I18n> tagCatalog;
 
   const AdvancedFilterBar({
     super.key,
@@ -32,7 +37,16 @@ class AdvancedFilterBar extends StatelessWidget {
     this.onAgeRatingChanged,
     this.showSortOptions = true,
     this.showTagAndAgeFilters = true,
+    this.tagCatalog = const {},
   });
+
+  AppSettingsService get _settings => GetIt.I<AppSettingsService>();
+
+  String _tagLabel(String apiName) => TagDisplayName.forApiName(
+        apiName: apiName,
+        catalog: tagCatalog,
+        appLanguage: _settings.appLanguage,
+      );
 
   Future<void> _openTagPicker(BuildContext context) async {
     if (onIncludeTagsChanged == null) return;
@@ -190,7 +204,7 @@ class AdvancedFilterBar extends StatelessWidget {
                     padding: const EdgeInsets.only(left: AppSpacing.space8),
                     child: InputChip(
                       label: Text(
-                        tag,
+                        _tagLabel(tag),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -209,7 +223,7 @@ class AdvancedFilterBar extends StatelessWidget {
                       padding: const EdgeInsets.only(left: AppSpacing.space8),
                       child: InputChip(
                         label: Text(
-                          '−$tag',
+                          '−${_tagLabel(tag)}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),

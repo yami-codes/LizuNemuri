@@ -27,7 +27,7 @@ class SearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => SearchViewModel(),
+      create: (_) => SearchViewModel(initialKeyword: initialKeyword),
       child: SearchScreenContent(initialKeyword: initialKeyword),
     );
   }
@@ -49,29 +49,37 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
   late final TextEditingController _draftController;
   final _layoutStrategy = const WorkLayoutStrategy();
   final _scrollController = ScrollController();
-  bool _initialized = false;
+  bool _draftSynced = false;
 
   @override
   void initState() {
     super.initState();
     _draftController = TextEditingController();
+    _draftController.addListener(_onDraftChanged);
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_initialized) return;
-    _initialized = true;
-    final vm = context.read<SearchViewModel>();
-    vm.loadInitialKeyword(widget.initialKeyword);
-    _draftController.text = vm.keyword;
-    if (widget.initialKeyword?.isNotEmpty == true) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _onSearch());
+  void _onDraftChanged() {
+    if (!mounted) return;
+    context.read<SearchViewModel>().scheduleDebouncedSearch(
+          _draftController.text,
+        );
+  }
+
+  void _syncDraftFromViewModel(SearchViewModel vm) {
+    if (_draftSynced) return;
+    if (!vm.initialized) return;
+    _draftSynced = true;
+    final text = vm.keyword;
+    if (_draftController.text != text) {
+      _draftController.removeListener(_onDraftChanged);
+      _draftController.text = text;
+      _draftController.addListener(_onDraftChanged);
     }
   }
 
   @override
   void dispose() {
+    _draftController.removeListener(_onDraftChanged);
     _draftController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -130,14 +138,19 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
               0,
             ),
             child: Consumer<SearchViewModel>(
-              builder: (context, vm, _) => SearchCommandField(
-                tokens: vm.commandTokens,
-                onTokensChanged: vm.setCommandTokens,
-                draftController: _draftController,
-                hintText: Strings.searchCommandHint,
-                tagNames: vm.tagNames,
-                tagCatalog: vm.tagCatalog,
-                onSubmitted: (_) => _onSearch(),
+              builder: (context, vm, _) {
+                _syncDraftFromViewModel(vm);
+                return SearchCommandField(
+                  tokens: vm.commandTokens,
+                  onTokensChanged: (tokens) {
+                    vm.setCommandTokens(tokens);
+                    vm.scheduleDebouncedSearch(_draftController.text);
+                  },
+                  draftController: _draftController,
+                  hintText: Strings.searchCommandHint,
+                  tagNames: vm.tagNames,
+                  tagCatalog: vm.tagCatalog,
+                  onSubmitted: (_) => _onSearch(),
                 suffixIcon: vm.commandTokens.isNotEmpty ||
                         _draftController.text.isNotEmpty
                     ? IconButton(
@@ -149,13 +162,15 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                         },
                       )
                     : null,
-              ),
+                );
+              },
             ),
           ),
           Consumer<SearchViewModel>(
             builder: (context, vm, _) => AdvancedFilterBar(
               hasSubtitle: vm.hasSubtitle,
               filterState: vm.filterState,
+              tagCatalog: vm.tagCatalog,
               onSubtitleChanged: (_) => vm.toggleSubtitle(),
               onPresetSelected: vm.updatePreset,
               onSortDirectionChanged: vm.updateSortDirection,

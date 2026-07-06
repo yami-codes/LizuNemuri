@@ -1,4 +1,8 @@
+import 'package:lizunemu/core/settings/app_language.dart';
+import 'package:lizunemu/data/models/works/i18n.dart';
 import 'package:lizunemu/presentation/models/search_command_parser.dart';
+import 'package:lizunemu/utils/i18n_name_resolver.dart';
+import 'package:lizunemu/utils/tag_display_name.dart';
 
 /// One autocomplete row in the search command dropdown.
 class SearchCommandSuggestion {
@@ -35,6 +39,18 @@ class SearchCommandContext {
   final String commandKey;
   final String partialValue;
   final bool hasColon;
+}
+
+class _TagSuggestEntry {
+  const _TagSuggestEntry({
+    required this.apiName,
+    required this.displayLabel,
+    required this.searchHaystack,
+  });
+
+  final String apiName;
+  final String displayLabel;
+  final List<String> searchHaystack;
 }
 
 class SearchCommandSuggestor {
@@ -85,6 +101,32 @@ class SearchCommandSuggestor {
     ('-lang', 'Exclude language'),
   ];
 
+  static List<_TagSuggestEntry> _tagEntries({
+    required List<String> tagNames,
+    required Map<String, I18n> tagCatalog,
+    required AppLanguage appLanguage,
+  }) {
+    return tagNames.map((apiName) {
+      final i18n = tagCatalog[apiName];
+      final display = TagDisplayName.forTag(
+        apiName: apiName,
+        i18n: i18n,
+        appLanguage: appLanguage,
+      );
+      final haystack = <String>{
+        apiName.toLowerCase(),
+        display.toLowerCase(),
+        ...I18nNameResolver.searchableNames(i18n)
+            .map((name) => name.toLowerCase()),
+      }.toList();
+      return _TagSuggestEntry(
+        apiName: apiName,
+        displayLabel: display,
+        searchHaystack: haystack,
+      );
+    }).toList();
+  }
+
   static SearchCommandContext? contextAt(String text, int cursor) {
     if (cursor < 0) return null;
     final safeCursor = cursor.clamp(0, text.length);
@@ -121,6 +163,8 @@ class SearchCommandSuggestor {
     required String draft,
     required int cursor,
     List<String> tagNames = const [],
+    Map<String, I18n> tagCatalog = const {},
+    AppLanguage appLanguage = AppLanguage.en,
   }) {
     final ctx = contextAt(draft, cursor);
     if (ctx == null) return const [];
@@ -143,14 +187,21 @@ class SearchCommandSuggestor {
     final partial = ctx.partialValue.toLowerCase();
 
     if (key == 'tag' || key == '-tag' || key == 'tagw' || key == '-tagw') {
-      return tagNames
-          .where((t) => t.toLowerCase().contains(partial))
+      final entries = _tagEntries(
+        tagNames: tagNames,
+        tagCatalog: tagCatalog,
+        appLanguage: appLanguage,
+      );
+      return entries
+          .where(
+            (entry) => entry.searchHaystack.any((h) => h.contains(partial)),
+          )
           .take(40)
           .map(
-            (name) => SearchCommandSuggestion(
-              insertText: '\$$key:$name\$',
-              title: '\$$key:$name\$',
-              subtitle: key.startsWith('-') ? 'Exclude tag' : 'Include tag',
+            (entry) => SearchCommandSuggestion(
+              insertText: '\$$key:${entry.apiName}\$',
+              title: entry.displayLabel,
+              subtitle: '\$$key:${entry.apiName}\$',
               completeToken: true,
             ),
           )

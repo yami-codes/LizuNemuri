@@ -1,15 +1,13 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:lizunemu/core/audio/models/subtitle.dart';
 import 'package:lizunemu/core/theme/app_animations.dart';
-import 'package:lizunemu/widgets/player/player_immersive_scope.dart';
+import 'package:lizunemu/core/theme/app_radius.dart';
 
-/// Apple Music kinetic lyric line — fixed typography; opacity/blur/scale only.
+/// Material 3 lyric row — one primary line; optional original only while active.
 class LyricLine extends StatelessWidget {
   final Subtitle subtitle;
   final String? secondaryText;
-  /// 0–1 kinetic emphasis (viewport proximity).
+  /// 0–1 emphasis (viewport proximity × playback active).
   final double emphasis;
   final VoidCallback? onTap;
 
@@ -20,9 +18,6 @@ class LyricLine extends StatelessWidget {
     this.emphasis = 0.35,
     this.onTap,
   });
-
-  static const double primaryFontSize = 22;
-  static const double secondaryFontSize = 17;
 
   @override
   Widget build(BuildContext context) {
@@ -55,59 +50,25 @@ class _LyricLineBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final immersive = PlayerImmersiveScope.maybeOf(context);
     final cs = Theme.of(context).colorScheme;
-    final activeColor = immersive?.enabled == true
-        ? immersive!.activeLyric
-        : cs.primary;
-    final inactiveColor = immersive?.enabled == true
-        ? immersive!.inactiveLyric
-        : cs.onSurface.withValues(alpha: 0.7);
+    final textTheme = Theme.of(context).textTheme;
+    final isActive = emphasis > 0.88;
+    final opacity = 0.35 + 0.65 * emphasis;
 
-    final shadow = immersive?.enabled == true
-        ? [
-            Shadow(
-              color: Colors.black.withValues(alpha: 0.35),
-              blurRadius: 8,
-            ),
-          ]
-        : null;
+    final primaryStyle = (isActive
+            ? textTheme.titleLarge
+            : textTheme.bodyLarge)
+        ?.copyWith(
+      height: 1.35,
+      color: isActive ? cs.onSurface : cs.onSurfaceVariant,
+      fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+    );
 
-    final t = emphasis;
-    final opacity = 0.28 + 0.72 * t;
-    final scale = 0.92 + 0.10 * t;
-    final blurSigma = (1.0 - t) * 2.0;
-    final isActive = t > 0.82;
-
-    final primaryStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
-          fontSize: LyricLine.primaryFontSize,
-          height: 1.35,
-          letterSpacing: isActive ? 0.35 : 0.15,
-          color: Color.lerp(inactiveColor, activeColor, t),
-          fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-          shadows: isActive
-              ? [
-                  ...(shadow ?? []),
-                  Shadow(
-                    color: activeColor.withValues(alpha: 0.35),
-                    blurRadius: 12,
-                  ),
-                ]
-              : shadow,
-        );
-
-    final secondaryStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
-          fontSize: LyricLine.secondaryFontSize,
-          height: 1.25,
-          letterSpacing: 0.1,
-          color: Color.lerp(
-            inactiveColor.withValues(alpha: 0.45),
-            activeColor.withValues(alpha: 0.75),
-            t,
-          ),
-          fontWeight: FontWeight.w500,
-          shadows: shadow,
-        );
+    final secondaryStyle = textTheme.bodySmall?.copyWith(
+      height: 1.25,
+      color: cs.onSurfaceVariant.withValues(alpha: 0.85),
+      fontWeight: FontWeight.w400,
+    );
 
     Widget textContent = secondaryText == null
         ? Text(
@@ -132,14 +93,16 @@ class _LyricLineBody extends StatelessWidget {
             ],
           );
 
-    if (blurSigma > 0.25) {
-      textContent = ImageFiltered(
-        imageFilter: ImageFilter.blur(
-          sigmaX: blurSigma,
-          sigmaY: blurSigma,
-          tileMode: TileMode.clamp,
+    if (isActive) {
+      textContent = DecoratedBox(
+        decoration: BoxDecoration(
+          color: cs.primaryContainer.withValues(alpha: 0.35),
+          borderRadius: AppRadius.mdAll,
         ),
-        child: textContent,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: textContent,
+        ),
       );
     }
 
@@ -147,16 +110,12 @@ class _LyricLineBody extends StatelessWidget {
       child: Center(
         child: Opacity(
           opacity: opacity,
-          child: Transform.scale(
-            scale: scale,
-            alignment: Alignment.center,
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: onTap,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                child: textContent,
-              ),
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+              child: textContent,
             ),
           ),
         ),
