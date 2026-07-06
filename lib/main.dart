@@ -8,6 +8,8 @@ import 'package:lizunemu/core/cache/cache_lifecycle_manager.dart';
 import 'package:lizunemu/core/platform/background_play_controller.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:lizunemu/utils/platform_capabilities.dart';
+import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 import 'core/di/service_locator.dart';
 import 'package:provider/provider.dart';
 import 'screens/main_screen.dart';
@@ -21,6 +23,13 @@ import 'screens/search_screen.dart';
 void main() async {
   final startupStopwatch = kDebugMode ? (Stopwatch()..start()) : null;
   WidgetsFlutterBinding.ensureInitialized();
+
+  if (PlatformCapabilities.isLinux) {
+    JustAudioMediaKit.ensureInitialized(
+      linux: true,
+      windows: false,
+    );
+  }
 
   await bootstrapDatabaseFactory();
 

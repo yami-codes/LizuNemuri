@@ -5,6 +5,7 @@ import 'package:lizunemu/data/models/files/child.dart';
 import 'package:lizunemu/core/audio/cache/audio_cache_manager.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
+import 'package:lizunemu/utils/platform_capabilities.dart';
 
 class PlaylistBuilder {
   /// Build audio sources with per-item error handling.
@@ -102,6 +103,7 @@ class PlaylistBuilder {
       playlist,
       initialIndex: remappedIndex,
       initialPosition: initialPosition,
+      preload: !PlatformCapabilities.isDesktop,
     );
 
     return loadedFiles;

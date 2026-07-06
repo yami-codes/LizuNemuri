@@ -1,10 +1,12 @@
 import 'package:universal_io/io.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:just_audio/just_audio.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
+import 'package:lizunemu/utils/platform_capabilities.dart';
 
 /// Audio cache manager.
 /// Manages audio file caching and hides the concrete cache implementation from callers.
@@ -12,9 +14,22 @@ class AudioCacheManager {
   static const int _maxCacheSize = 1024 * 1024 * 1024; // Total cache limit: 1024 MB
   static const Duration _cacheExpiration = Duration(days: 30);
 
+  /// Desktop backends stream presigned URLs directly; mobile uses lock-cache.
+  @visibleForTesting
+  static bool shouldUseDirectStreaming({required bool isDesktop}) => isDesktop;
+
   /// Creates an audio source.
   /// Handles caching internally and returns only an [AudioSource] to callers.
+  ///
+  /// Desktop backends (`just_audio_windows`, Linux media_kit) handle
+  /// [LockCachingAudioSource] byte-stream proxies poorly — use direct progressive
+  /// URL streaming there. Mobile keeps lock-caching for LRU disk cache.
   static Future<AudioSource> createAudioSource(String url, {String? hash}) async {
+    if (shouldUseDirectStreaming(isDesktop: PlatformCapabilities.isDesktop)) {
+      AppLogger.debug(LogStrings.logCreateaudioUrlUrlCachefil14d8a(url, 'desktop-progressive'));
+      return ProgressiveAudioSource(Uri.parse(url));
+    }
+
     try {
       final cacheFile = await _getCacheFile(url, hash: hash);
       final fileName = _generateFileName(url, hash: hash);

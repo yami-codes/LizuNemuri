@@ -235,9 +235,10 @@ Future<void> setupServiceLocator() async {
 
 void setupSubtitleServices() {
   getIt.registerLazySingleton<SubtitleLoader>(() {
+    // Presigned mediaDownloadUrl must not carry AuthInterceptor — CDN rejects
+    // extra Authorization headers (403) while Android streaming stays tokenless.
     final dio = Dio();
     dio.interceptors.add(RetryInterceptor(dio: dio));
-    dio.interceptors.add(AuthInterceptor());
     return SubtitleLoader(dio: dio);
   });
   if (PlatformCapabilities.isAndroid) {
