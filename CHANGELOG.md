@@ -8,6 +8,15 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.13 — 2026-07-06
+
+### Fixed
+- **Playback / subtitle preview**: refresh expired presigned `mediaDownloadUrl` from `/tracks/{id}` before play or preview.
+- **CDN fetches**: browser-like `User-Agent` on audio streaming and subtitle HTTP loads.
+- **Track name translation**: chunk Google Translate batches (many Chinese titles no longer blow URL limits); LLM provider auto-falls back to Google when API key missing or LLM fails.
+
+---
+
 ## v2.0.0-rc.12 — 2026-07-06
 
 ### Fixed
