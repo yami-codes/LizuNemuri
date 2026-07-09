@@ -18,6 +18,7 @@ import 'package:lizunemu/common/constants/log_strings.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/core/settings/playback_speed_presets.dart';
 import 'package:lizunemu/core/audio/effects/audio_effects_controller.dart';
+import 'package:lizunemu/core/media/work_media_url_refresher.dart';
 import 'package:lizunemu/utils/platform_capabilities.dart';
 
 class AudioPlayerService implements IAudioPlayerService {
@@ -319,10 +320,29 @@ class AudioPlayerService implements IAudioPlayerService {
 
       AppLogger.debug(LogStrings.logLoadedSavedStateWorkidStateW175f5(state.work.id));
 
+      var files = state.files;
+      var currentFile = state.currentFile;
+      final workId = state.work.id?.toString();
+      if (workId != null && GetIt.I.isRegistered<WorkMediaUrlRefresher>()) {
+        try {
+          final refresher = GetIt.I<WorkMediaUrlRefresher>();
+          currentFile = await refresher.refreshFile(
+            workId: workId,
+            file: currentFile,
+            patchInto: files,
+            onTreePatched: (patched) => files = patched,
+          );
+        } catch (e) {
+          AppLogger.warning(
+            'Playback restore URL refresh failed; using saved URLs: $e',
+          );
+        }
+      }
+
       final context = PlaybackContext(
         work: state.work,
-        files: state.files,
-        currentFile: state.currentFile,
+        files: files,
+        currentFile: currentFile,
         playMode: state.playMode,
       );
 

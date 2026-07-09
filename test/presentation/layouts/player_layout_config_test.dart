@@ -10,14 +10,14 @@ void main() {
     });
 
     test('cover size capped on wide screens', () {
-      expect(PlayerLayoutConfig.coverSizeForWidth(1920), 240);
-      expect(PlayerLayoutConfig.coverSizeForWidth(900), 240);
+      expect(PlayerLayoutConfig.coverSizeForWidth(1920), 280);
+      expect(PlayerLayoutConfig.coverSizeForWidth(900), 280);
     });
 
     test('cover size scales on narrow screens', () {
       final phone = PlayerLayoutConfig.coverSizeForWidth(400);
-      expect(phone, greaterThanOrEqualTo(180));
-      expect(phone, lessThanOrEqualTo(280));
+      expect(phone, greaterThanOrEqualTo(240));
+      expect(phone, lessThanOrEqualTo(340));
     });
   });
 }

@@ -28,14 +28,6 @@ class _PlaylistsContentState extends State<PlaylistsContent> with AutomaticKeepA
     });
   }
 
-  Future<bool> _onWillPop() async {
-    if (_selectedPlaylist != null) {
-      _handleBack();
-      return false;
-    }
-    return true;
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
