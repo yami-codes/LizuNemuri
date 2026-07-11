@@ -36,6 +36,7 @@ class _LlmTranslationSettingsScreenState
   late final TextEditingController _systemPromptCtrl;
   late final TextEditingController _jailbreakPromptCtrl;
   late final TextEditingController _manualBatchSizeCtrl;
+  late final TextEditingController _retryCountCtrl;
   final _catalog = GetIt.I<LlmModelCatalogService>();
   bool _obscureKey = true;
   bool _saving = false;
@@ -55,6 +56,9 @@ class _LlmTranslationSettingsScreenState
         TextEditingController(text: widget.settings.llmJailbreakPrompt);
     _manualBatchSizeCtrl = TextEditingController(
       text: widget.settings.llmManualBatchSize.toString(),
+    );
+    _retryCountCtrl = TextEditingController(
+      text: widget.settings.llmTranslateRetryCount.toString(),
     );
     _provider = LlmEndpointUtils.detect(_endpointCtrl.text);
     _endpointCtrl.addListener(_onEndpointChanged);
@@ -86,6 +90,7 @@ class _LlmTranslationSettingsScreenState
     _systemPromptCtrl.dispose();
     _jailbreakPromptCtrl.dispose();
     _manualBatchSizeCtrl.dispose();
+    _retryCountCtrl.dispose();
     super.dispose();
   }
 
@@ -114,6 +119,10 @@ class _LlmTranslationSettingsScreenState
       final batchSize = int.tryParse(_manualBatchSizeCtrl.text.trim());
       if (batchSize != null) {
         await widget.settings.setLlmManualBatchSize(batchSize);
+      }
+      final retryCount = int.tryParse(_retryCountCtrl.text.trim());
+      if (retryCount != null) {
+        await widget.settings.setLlmTranslateRetryCount(retryCount);
       }
       final key = _apiKeyCtrl.text.trim();
       final repo = GetIt.I<LlmApiKeyRepository>();
@@ -360,6 +369,21 @@ class _LlmTranslationSettingsScreenState
                         ),
                       ),
                     ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: TextField(
+                      controller: _retryCountCtrl,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: Strings.llmTranslateRetryCount,
+                        helperText: Strings.llmTranslateRetryCountDesc,
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

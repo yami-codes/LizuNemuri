@@ -48,6 +48,7 @@ class AppSettingsService extends ChangeNotifier {
   static const String _llmJailbreakAutoKey = 'llm_jailbreak_auto';
   static const String _llmBatchSplitModeKey = 'llm_batch_split_mode';
   static const String _llmManualBatchSizeKey = 'llm_manual_batch_size';
+  static const String _llmTranslateRetryCountKey = 'llm_translate_retry_count';
   static const String _llmStreamingEnabledKey = 'llm_streaming_enabled';
   static const String _llmSubtitleDisplayModeKey = 'llm_subtitle_display_mode';
   static const String _playbackVolumeKey = 'playback_volume';
@@ -59,8 +60,19 @@ class AppSettingsService extends ChangeNotifier {
   static const String _lyricAutoScrollResumeSecKey = 'lyric_auto_scroll_resume_sec';
   static const String _playerBackdropClarityKey = 'player_backdrop_clarity';
   static const String _logCaptureMinLevelKey = 'log_capture_min_level';
+  static const String _loreLanguageCodeKey = 'lore_language_code';
+  static const String _maxLoreTracksPerGenerateKey =
+      'max_lore_tracks_per_generate';
 
   static const String defaultServerUrl = 'https://api.asmr.one/api';
+  /// Empty string = follow app/UI language.
+  static const String defaultLoreLanguageCode = '';
+  static const int defaultMaxLoreTracksPerGenerate = 20;
+  static const int minMaxLoreTracksPerGenerate = 1;
+  static const int maxMaxLoreTracksPerGenerate = 100;
+  static const int defaultLlmTranslateRetryCount = 10;
+  static const int minLlmTranslateRetryCount = 0;
+  static const int maxLlmTranslateRetryCount = 50;
   static const String defaultLlmApiEndpoint = 'https://api.openai.com/v1';
   static const String defaultOpenRouterEndpoint = 'https://openrouter.ai/api/v1';
   static const String defaultGeminiEndpoint =
@@ -124,6 +136,7 @@ class AppSettingsService extends ChangeNotifier {
   late bool _llmJailbreakAuto;
   late LlmBatchSplitMode _llmBatchSplitMode;
   late int _llmManualBatchSize;
+  late int _llmTranslateRetryCount;
   late bool _llmStreamingEnabled;
   late LlmSubtitleDisplayMode _llmSubtitleDisplayMode;
   late double _playbackVolume;
@@ -135,6 +148,8 @@ class AppSettingsService extends ChangeNotifier {
   late int _lyricAutoScrollResumeSec;
   late double _playerBackdropClarity;
   late AppLogLevel _logCaptureMinLevel;
+  late String _loreLanguageCode;
+  late int _maxLoreTracksPerGenerate;
 
   AppSettingsService(this._prefs) {
     _serverUrl = _prefs.getString(_serverUrlKey) ?? defaultServerUrl;
@@ -190,6 +205,9 @@ class AppSettingsService extends ChangeNotifier {
     _llmManualBatchSize =
         _prefs.getInt(_llmManualBatchSizeKey) ??
             LlmBatchPlanner.defaultManualBatchSize;
+    _llmTranslateRetryCount = (_prefs.getInt(_llmTranslateRetryCountKey) ??
+            defaultLlmTranslateRetryCount)
+        .clamp(minLlmTranslateRetryCount, maxLlmTranslateRetryCount);
     _llmStreamingEnabled = _prefs.getBool(_llmStreamingEnabledKey) ?? true;
     final savedDisplayMode = _prefs.getString(_llmSubtitleDisplayModeKey);
     _llmSubtitleDisplayMode = LlmSubtitleDisplayMode.values.firstWhere(
@@ -219,6 +237,11 @@ class AppSettingsService extends ChangeNotifier {
       _prefs.getString(_logCaptureMinLevelKey),
       fallback: defaultLogCaptureMinLevel,
     );
+    _loreLanguageCode =
+        _prefs.getString(_loreLanguageCodeKey) ?? defaultLoreLanguageCode;
+    _maxLoreTracksPerGenerate = (_prefs.getInt(_maxLoreTracksPerGenerateKey) ??
+            defaultMaxLoreTracksPerGenerate)
+        .clamp(minMaxLoreTracksPerGenerate, maxMaxLoreTracksPerGenerate);
   }
 
   // === UI Language ===
@@ -471,6 +494,18 @@ class AppSettingsService extends ChangeNotifier {
     await _prefs.setInt(_llmManualBatchSizeKey, clamped);
   }
 
+  /// Auto-retries per track in the background translation queue (0 = no retry).
+  int get llmTranslateRetryCount => _llmTranslateRetryCount;
+
+  Future<void> setLlmTranslateRetryCount(int count) async {
+    final clamped =
+        count.clamp(minLlmTranslateRetryCount, maxLlmTranslateRetryCount);
+    if (_llmTranslateRetryCount == clamped) return;
+    _llmTranslateRetryCount = clamped;
+    notifyListeners();
+    await _prefs.setInt(_llmTranslateRetryCountKey, clamped);
+  }
+
   bool get llmStreamingEnabled => _llmStreamingEnabled;
 
   Future<void> setLlmStreamingEnabled(bool enabled) async {
@@ -579,5 +614,47 @@ class AppSettingsService extends ChangeNotifier {
     _logCaptureMinLevel = level;
     notifyListeners();
     await _prefs.setString(_logCaptureMinLevelKey, level.name);
+  }
+
+  // === Work Lore ===
+  /// Empty = follow app language. Otherwise `zh` / `en` / `th`.
+  String get loreLanguageCode => _loreLanguageCode;
+
+  Future<void> setLoreLanguageCode(String code) async {
+    final trimmed = code.trim();
+    if (_loreLanguageCode == trimmed) return;
+    _loreLanguageCode = trimmed;
+    notifyListeners();
+    await _prefs.setString(_loreLanguageCodeKey, trimmed);
+  }
+
+  /// Resolved BCP-47-ish language code for lore LLM prompts.
+  String get resolvedLoreLanguageCode {
+    if (_loreLanguageCode.isNotEmpty) return _loreLanguageCode;
+    switch (_appLanguage) {
+      case AppLanguage.zh:
+        return 'zh';
+      case AppLanguage.en:
+        return 'en';
+      case AppLanguage.th:
+        return 'th';
+      case AppLanguage.system:
+        final code =
+            PlatformDispatcher.instance.locale.languageCode.toLowerCase();
+        if (code.startsWith('zh')) return 'zh';
+        if (code.startsWith('th')) return 'th';
+        return 'en';
+    }
+  }
+
+  int get maxLoreTracksPerGenerate => _maxLoreTracksPerGenerate;
+
+  Future<void> setMaxLoreTracksPerGenerate(int value) async {
+    final clamped =
+        value.clamp(minMaxLoreTracksPerGenerate, maxMaxLoreTracksPerGenerate);
+    if (_maxLoreTracksPerGenerate == clamped) return;
+    _maxLoreTracksPerGenerate = clamped;
+    notifyListeners();
+    await _prefs.setInt(_maxLoreTracksPerGenerateKey, clamped);
   }
 }

@@ -1,3 +1,9 @@
+import 'package:lizunemu/core/lore/ccv2_export_service.dart';
+import 'package:lizunemu/core/lore/global_character_service.dart';
+import 'package:lizunemu/core/lore/storage/ccv2_card_cache_repository.dart';
+import 'package:lizunemu/core/lore/storage/global_character_repository.dart';
+import 'package:lizunemu/core/lore/storage/work_lore_repository.dart';
+import 'package:lizunemu/core/lore/work_lore_service.dart';
 import 'package:lizunemu/utils/platform_capabilities.dart';
 import 'package:dio/dio.dart';
 import 'package:lizunemu/data/services/interceptors/retry_interceptor.dart';
@@ -40,6 +46,9 @@ import 'package:lizunemu/data/repositories/llm_usage_repository.dart';
 import 'package:lizunemu/data/services/llm_client.dart';
 import 'package:lizunemu/data/services/llm_model_catalog_service.dart';
 import 'package:lizunemu/core/llm/subtitle_translation_service.dart';
+import 'package:lizunemu/core/llm/llm_request_gate.dart';
+import 'package:lizunemu/core/llm/translation_queue_service.dart';
+import 'package:lizunemu/core/llm/translation_queue_store.dart';
 import 'package:lizunemu/core/llm/work_title_translation_service.dart';
 import 'package:lizunemu/core/translation/metadata_translation_service.dart';
 import 'package:lizunemu/data/services/google_translate_client.dart';
@@ -172,12 +181,47 @@ Future<void> setupServiceLocator() async {
     () => LlmClient(getIt<AppSettingsService>(), getIt<LlmApiKeyRepository>()),
   );
 
+  getIt.registerLazySingleton<WorkLoreRepository>(
+    () => WorkLoreRepository(getIt<DatabaseService>()),
+  );
+  getIt.registerLazySingleton<GlobalCharacterRepository>(
+    () => GlobalCharacterRepository(getIt<DatabaseService>()),
+  );
+  getIt.registerLazySingleton<Ccv2CardCacheRepository>(
+    () => Ccv2CardCacheRepository(getIt<DatabaseService>()),
+  );
+  getIt.registerLazySingleton<WorkLoreService>(
+    () => WorkLoreService(
+      llm: getIt<LlmClient>(),
+      settings: getIt<AppSettingsService>(),
+      repo: getIt<WorkLoreRepository>(),
+      ccv2Cache: getIt<Ccv2CardCacheRepository>(),
+    ),
+  );
+  getIt.registerLazySingleton<Ccv2ExportService>(
+    () => Ccv2ExportService(
+      llm: getIt<LlmClient>(),
+      cache: getIt<Ccv2CardCacheRepository>(),
+    ),
+  );
+  getIt.registerLazySingleton<GlobalCharacterService>(
+    () => GlobalCharacterService(
+      repo: getIt<GlobalCharacterRepository>(),
+      loreService: getIt<WorkLoreService>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<LlmRequestGate>(
+    () => LlmRequestGate(maxConcurrent: 2),
+  );
+
   getIt.registerLazySingleton<SubtitleTranslationService>(
     () => SubtitleTranslationService(
       settings: getIt<AppSettingsService>(),
       client: getIt<LlmClient>(),
       apiKeyRepo: getIt<LlmApiKeyRepository>(),
       usageRepo: getIt<LlmUsageRepository>(),
+      gate: getIt<LlmRequestGate>(),
     ),
   );
 
@@ -243,6 +287,20 @@ Future<void> setupServiceLocator() async {
 
   setupSubtitleServices();
 
+  getIt.registerLazySingleton<TranslationQueueStore>(
+    () => TranslationQueueStore(prefs),
+  );
+  getIt.registerLazySingleton<TranslationQueueService>(
+    () => TranslationQueueService(
+      settings: getIt<AppSettingsService>(),
+      translation: getIt<SubtitleTranslationService>(),
+      download: getIt<DownloadService>(),
+      subtitleLoader: getIt<SubtitleLoader>(),
+      importService: getIt<SubtitleImportService>(),
+      store: getIt<TranslationQueueStore>(),
+    ),
+  );
+
   // Register theme controller
   getIt.registerLazySingleton<ThemeController>(
     () => ThemeController(prefs),
@@ -297,4 +355,5 @@ void setupSubtitleServices() {
 /// interactive frame; floating lyrics are not needed until playback and user opt-in — defer until after first paint.
 Future<void> initDeferredStartupServices() async {
   await getIt<LyricOverlayManager>().initialize();
+  await getIt<TranslationQueueService>().initialize();
 }

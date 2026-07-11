@@ -21,6 +21,7 @@ import 'package:lizunemu/screens/settings/widgets/settings_group.dart';
 import 'package:lizunemu/screens/settings/widgets/settings_tile.dart';
 import 'package:lizunemu/screens/settings/widgets/settings_theme.dart';
 import 'package:lizunemu/screens/settings/llm_translation_settings_screen.dart';
+import 'package:lizunemu/screens/lore/global_character_library_screen.dart';
 import 'package:lizunemu/utils/platform_capabilities.dart';
 import 'package:lizunemu/widgets/player/player_equalizer_sheet.dart';
 
@@ -58,6 +59,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: AppSpacing.space24),
             _llmTranslationSection(context),
             _metadataTranslationSection(context),
+            const SizedBox(height: AppSpacing.space24),
+            _loreSection(context),
             const SizedBox(height: AppSpacing.space24),
             if (PlatformCapabilities.supportsFloatingLyrics) ...[
               _lyricOverlaySection(),
@@ -339,6 +342,111 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _loreSection(BuildContext context) {
+    final settings = GetIt.I<AppSettingsService>();
+    return ListenableBuilder(
+      listenable: settings,
+      builder: (context, _) {
+        final lang = settings.loreLanguageCode;
+        final langLabel = lang.isEmpty
+            ? Strings.loreLanguageFollowApp
+            : lang;
+        return SettingsGroup(
+          header: Strings.loreSettingsTitle,
+          children: [
+            SettingsTile.navigation(
+              title: Strings.loreLanguage,
+              subtitle: Strings.loreLanguageDesc,
+              leading: Icons.language_outlined,
+              value: langLabel,
+              onTap: () async {
+                final picked = await showDialog<String>(
+                  context: context,
+                  builder: (ctx) => SimpleDialog(
+                    title: Text(Strings.loreLanguage),
+                    children: [
+                      SimpleDialogOption(
+                        onPressed: () => Navigator.pop(ctx, ''),
+                        child: Text(Strings.loreLanguageFollowApp),
+                      ),
+                      SimpleDialogOption(
+                        onPressed: () => Navigator.pop(ctx, 'zh'),
+                        child: const Text('中文'),
+                      ),
+                      SimpleDialogOption(
+                        onPressed: () => Navigator.pop(ctx, 'en'),
+                        child: const Text('English'),
+                      ),
+                      SimpleDialogOption(
+                        onPressed: () => Navigator.pop(ctx, 'th'),
+                        child: const Text('ไทย'),
+                      ),
+                    ],
+                  ),
+                );
+                if (picked != null) {
+                  await settings.setLoreLanguageCode(picked);
+                }
+              },
+            ),
+            SettingsTile.navigation(
+              title: Strings.loreMaxTracks,
+              subtitle: Strings.loreMaxTracksDesc,
+              leading: Icons.queue_music_outlined,
+              value: '${settings.maxLoreTracksPerGenerate}',
+              onTap: () async {
+                final controller = TextEditingController(
+                  text: '${settings.maxLoreTracksPerGenerate}',
+                );
+                final ok = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Text(Strings.loreMaxTracks),
+                    content: TextField(
+                      controller: controller,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: Text(Strings.loreCancel),
+                      ),
+                      FilledButton(
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: Text(Strings.loreSaved),
+                      ),
+                    ],
+                  ),
+                );
+                if (ok == true) {
+                  final n = int.tryParse(controller.text.trim());
+                  if (n != null) {
+                    await settings.setMaxLoreTracksPerGenerate(n);
+                  }
+                }
+              },
+            ),
+            SettingsTile.navigation(
+              title: Strings.loreGlobalLibrary,
+              subtitle: Strings.loreGlobalLibraryDesc,
+              leading: Icons.menu_book_outlined,
+              value: '',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const GlobalCharacterLibraryScreen(),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

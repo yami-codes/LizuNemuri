@@ -1,6 +1,7 @@
 import 'package:lizunemu/core/theme/app_animations.dart';
 import 'package:flutter/material.dart';
 import 'package:lizunemu/widgets/mini_player/mini_player.dart';
+import 'package:lizunemu/widgets/translation_queue/translation_queue_mini_indicator.dart';
 import 'package:lizunemu/widgets/sidebar/sidebar_menu.dart';
 import 'package:lizunemu/screens/contents/favorites_tab_content.dart';
 import 'package:lizunemu/screens/contents/home_tab_content.dart';
@@ -147,6 +148,7 @@ class _MainScreenState extends State<MainScreen> {
             bottomNavigationBar: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                const TranslationQueueMiniIndicator(),
                 const MiniPlayer(),
                 NavigationBar(
                   height: 60,

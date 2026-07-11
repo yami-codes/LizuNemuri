@@ -5,7 +5,7 @@ import 'package:lizunemu/common/constants/log_strings.dart';
 
 class DatabaseService {
   static const _databaseName = 'lizunemu.db';
-  static const _databaseVersion = 3;
+  static const _databaseVersion = 4;
 
   // Schema DDL in one place shared by `_onCreate` (fresh install) and `_migrations` (upgrades).
   static const _createUserSubtitlesTable = '''
@@ -61,6 +61,33 @@ class DatabaseService {
       )
     ''';
 
+  static const _createWorkLorePacksTable = '''
+      CREATE TABLE work_lore_packs (
+        work_id     TEXT    PRIMARY KEY NOT NULL,
+        pack_json   TEXT    NOT NULL,
+        lore_hash   TEXT    NOT NULL,
+        updated_at  INTEGER NOT NULL
+      )
+    ''';
+
+  static const _createGlobalCharactersTable = '''
+      CREATE TABLE global_characters (
+        id          TEXT    PRIMARY KEY NOT NULL,
+        name        TEXT    NOT NULL,
+        sheet_json  TEXT    NOT NULL,
+        updated_at  INTEGER NOT NULL
+      )
+    ''';
+
+  static const _createCcv2CardCacheTable = '''
+      CREATE TABLE ccv2_card_cache (
+        cache_key   TEXT    PRIMARY KEY NOT NULL,
+        lore_hash   TEXT    NOT NULL,
+        card_json   TEXT    NOT NULL,
+        updated_at  INTEGER NOT NULL
+      )
+    ''';
+
   // Cache Future<Database>, not Database: concurrent first access shares one in-flight _open().
   Future<Database>? _databaseFuture;
 
@@ -96,6 +123,9 @@ class DatabaseService {
     await db.execute(_createDownloadsTable);
     await db.execute(_createLocalAlbumsTable);
     await db.execute(_createLocalTracksTable);
+    await db.execute(_createWorkLorePacksTable);
+    await db.execute(_createGlobalCharactersTable);
+    await db.execute(_createCcv2CardCacheTable);
     AppLogger.debug(LogStrings.logDatabaseTablesCreatedVVersiofa44c(version));
   }
 
@@ -110,6 +140,11 @@ class DatabaseService {
     3: (db) async {
       await db.execute(_createLocalAlbumsTable);
       await db.execute(_createLocalTracksTable);
+    },
+    4: (db) async {
+      await db.execute(_createWorkLorePacksTable);
+      await db.execute(_createGlobalCharactersTable);
+      await db.execute(_createCcv2CardCacheTable);
     },
   };
 

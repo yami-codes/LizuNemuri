@@ -115,6 +115,26 @@ void main() {
       );
       expect(batches.length, greaterThan(1));
     });
+
+    test('provider mode does not hard-cap at 120 on large context', () {
+      final longSubs = List.generate(
+        400,
+        (i) => Subtitle(
+          start: Duration(seconds: i),
+          end: Duration(seconds: i + 1),
+          text: 'line $i',
+          index: i,
+        ),
+      );
+      final batches = LlmBatchPlanner.planBatches(
+        subtitles: longSubs,
+        mode: LlmBatchSplitMode.provider,
+        manualBatchSize: 25,
+        providerContextTokens: 128000,
+      );
+      expect(batches, hasLength(1));
+      expect(batches.first, hasLength(400));
+    });
   });
 
   group('LlmUsage', () {

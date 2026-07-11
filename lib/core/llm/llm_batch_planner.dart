@@ -46,7 +46,9 @@ class LlmBatchPlanner {
     // Input + expected translated output ≈ 2× line text.
     final tokensPerLine = ((avgChars * 2) / _charsPerToken).ceil().clamp(8, 200);
     final batch = (tokenBudget / tokensPerLine).floor();
-    return batch.clamp(5, 120);
+    // No hard 120-line ceiling — only split when the estimate says one
+    // request won't fit the usable context window.
+    return batch.clamp(5, subtitles.length);
   }
 
   static List<List<Subtitle>> _chunk(List<Subtitle> items, int size) {

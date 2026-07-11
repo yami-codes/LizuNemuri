@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:lizunemu/core/audio/models/playback_context.dart';
 import 'package:lizunemu/core/audio/models/subtitle.dart';
 import 'package:lizunemu/core/llm/llm_batch_planner.dart';
+import 'package:lizunemu/core/llm/llm_request_gate.dart';
 import 'package:lizunemu/core/llm/llm_translation_context_builder.dart';
 import 'package:lizunemu/core/llm/llm_usage.dart';
 import 'package:lizunemu/core/llm/streaming_translation_parser.dart';
@@ -39,6 +40,7 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
   final LlmApiKeyRepository _apiKeyRepo;
   final SubtitleTranslationCache _cache;
   final LlmUsageRepository? _usageRepo;
+  final LlmRequestGate? _gate;
 
   final Map<String, Map<int, String>> _memoryCache = {};
 
@@ -48,11 +50,13 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     required LlmApiKeyRepository apiKeyRepo,
     SubtitleTranslationCache? cache,
     LlmUsageRepository? usageRepo,
+    LlmRequestGate? gate,
   })  : _settings = settings,
         _client = client,
         _apiKeyRepo = apiKeyRepo,
         _cache = cache ?? SubtitleTranslationCache(),
-        _usageRepo = usageRepo;
+        _usageRepo = usageRepo,
+        _gate = gate;
 
   bool get isEnabled => _settings.llmTranslationEnabled;
 
@@ -112,6 +116,37 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
       );
 
   Future<SubtitleTranslationResult> translate({
+    required SubtitleList source,
+    required PlaybackContext? context,
+    bool requireEnabled = false,
+    bool forceRefresh = false,
+    SubtitleTranslationProgressCallback? onProgress,
+    SubtitlePartialTranslationCallback? onPartial,
+  }) {
+    final gate = _gate;
+    if (gate == null) {
+      return _translateBody(
+        source: source,
+        context: context,
+        requireEnabled: requireEnabled,
+        forceRefresh: forceRefresh,
+        onProgress: onProgress,
+        onPartial: onPartial,
+      );
+    }
+    return gate.run(
+      () => _translateBody(
+        source: source,
+        context: context,
+        requireEnabled: requireEnabled,
+        forceRefresh: forceRefresh,
+        onProgress: onProgress,
+        onPartial: onPartial,
+      ),
+    );
+  }
+
+  Future<SubtitleTranslationResult> _translateBody({
     required SubtitleList source,
     required PlaybackContext? context,
     bool requireEnabled = false,

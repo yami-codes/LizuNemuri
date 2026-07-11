@@ -490,6 +490,42 @@ class Strings {
   static String get llmBatchSplitProvider => _l10n.llmBatchSplitProvider;
   static String get llmBatchSplitManual => _l10n.llmBatchSplitManual;
   static String get llmManualBatchSize => _l10n.llmManualBatchSize;
+  static String get llmTranslateRetryCount => _l10n.llmTranslateRetryCount;
+  static String get llmTranslateRetryCountDesc =>
+      _l10n.llmTranslateRetryCountDesc;
+  static String get translationQueueTitle => _l10n.translationQueueTitle;
+  static String get translationQueueEmpty => _l10n.translationQueueEmpty;
+  static String translationQueueEnqueued(int count) =>
+      _l10n.translationQueueEnqueued(count);
+  static String translationQueueMiniProgress(
+          int done, int total, String name) =>
+      _l10n.translationQueueMiniProgress(done, total, name);
+  static String translationQueueMiniIdle(int done, int total) =>
+      _l10n.translationQueueMiniIdle(done, total);
+  static String get translationQueueNotificationTitle =>
+      _l10n.translationQueueNotificationTitle;
+  static String translationQueueNotificationBody(
+          int done, int total, String name) =>
+      _l10n.translationQueueNotificationBody(done, total, name);
+  static String translationQueueNotificationIdle(int done, int total) =>
+      _l10n.translationQueueNotificationIdle(done, total);
+  static String get translationQueueRetryFailed =>
+      _l10n.translationQueueRetryFailed;
+  static String get translationQueueCancelAll =>
+      _l10n.translationQueueCancelAll;
+  static String get translationQueueClearFinished =>
+      _l10n.translationQueueClearFinished;
+  static String get translationQueueRetry => _l10n.translationQueueRetry;
+  static String get translationQueueStatusPending =>
+      _l10n.translationQueueStatusPending;
+  static String get translationQueueStatusDone =>
+      _l10n.translationQueueStatusDone;
+  static String get translationQueueStatusFailed =>
+      _l10n.translationQueueStatusFailed;
+  static String get translationQueueStatusCancelled =>
+      _l10n.translationQueueStatusCancelled;
+  static String translationQueueAttempts(int count) =>
+      _l10n.translationQueueAttempts(count);
   static String get llmStreamingEnabled => _l10n.llmStreamingEnabled;
   static String get llmStreamingEnabledDesc => _l10n.llmStreamingEnabledDesc;
   static String get llmUsageHistory => _l10n.llmUsageHistory;
@@ -589,6 +625,73 @@ class Strings {
   }
   static String get playerViewCover => _l10n.playerViewCover;
   static String get playerViewSubtitles => _l10n.playerViewSubtitles;
+
+  static String get loreTab => _l10n.loreTab;
+  static String get loreGenerate => _l10n.loreGenerate;
+  static String get loreGenerating => _l10n.loreGenerating;
+  static String get loreGenerateNeedApiKey => _l10n.loreGenerateNeedApiKey;
+  static String get loreEmptyHint => _l10n.loreEmptyHint;
+  static String get loreSynopsis => _l10n.loreSynopsis;
+  static String get loreCharacters => _l10n.loreCharacters;
+  static String get loreTrackSummaries => _l10n.loreTrackSummaries;
+  static String get loreTimeline => _l10n.loreTimeline;
+  static String get loreSeedNotes => _l10n.loreSeedNotes;
+  static String get loreSeedNotesHint => _l10n.loreSeedNotesHint;
+  static String get loreAddSeedNote => _l10n.loreAddSeedNote;
+  static String get loreRegenerateWork => _l10n.loreRegenerateWork;
+  static String get loreRegenerateTrack => _l10n.loreRegenerateTrack;
+  static String get loreRegenerateCharacter => _l10n.loreRegenerateCharacter;
+  static String get loreGenerateSecrets => _l10n.loreGenerateSecrets;
+  static String get loreGenerateSecretsDesc => _l10n.loreGenerateSecretsDesc;
+  static String get loreRevealExplicit => _l10n.loreRevealExplicit;
+  static String get loreHideExplicit => _l10n.loreHideExplicit;
+  static String get loreFocusCharacter => _l10n.loreFocusCharacter;
+  static String get loreHudPins => _l10n.loreHudPins;
+  static String get loreHudPinsDesc => _l10n.loreHudPinsDesc;
+  static String get loreEditCharacter => _l10n.loreEditCharacter;
+  static String get loreConfirmVaLink => _l10n.loreConfirmVaLink;
+  static String get loreRejectVaLink => _l10n.loreRejectVaLink;
+  static String get loreVaProposed => _l10n.loreVaProposed;
+  static String get loreExportPack => _l10n.loreExportPack;
+  static String get loreImportPack => _l10n.loreImportPack;
+  static String get loreExportCcv2 => _l10n.loreExportCcv2;
+  static String get loreExportCcv2Batch => _l10n.loreExportCcv2Batch;
+  static String get loreIncludeSpeculative => _l10n.loreIncludeSpeculative;
+  static String get lorePromoteGlobal => _l10n.lorePromoteGlobal;
+  static String get loreLinkGlobal => _l10n.loreLinkGlobal;
+  static String get loreDelete => _l10n.loreDelete;
+  static String get loreDeleteConfirm => _l10n.loreDeleteConfirm;
+  static String get loreProgressCast => _l10n.loreProgressCast;
+  static String get loreProgressTrack => _l10n.loreProgressTrack;
+  static String get loreProgressReconcile => _l10n.loreProgressReconcile;
+  static String get loreProgressDone => _l10n.loreProgressDone;
+  static String get loreLowConfidence => _l10n.loreLowConfidence;
+  static String get loreContentLevel => _l10n.loreContentLevel;
+  static String get loreContentSfw => _l10n.loreContentSfw;
+  static String get loreContentSuggestive => _l10n.loreContentSuggestive;
+  static String get loreContentExplicit => _l10n.loreContentExplicit;
+  static String get lorePlayerHud => _l10n.lorePlayerHud;
+  static String get lorePlayerTimeline => _l10n.lorePlayerTimeline;
+  static String get loreNoEventsYet => _l10n.loreNoEventsYet;
+  static String get loreSettingsTitle => _l10n.loreSettingsTitle;
+  static String get loreLanguage => _l10n.loreLanguage;
+  static String get loreLanguageDesc => _l10n.loreLanguageDesc;
+  static String get loreLanguageFollowApp => _l10n.loreLanguageFollowApp;
+  static String get loreMaxTracks => _l10n.loreMaxTracks;
+  static String get loreMaxTracksDesc => _l10n.loreMaxTracksDesc;
+  static String get loreGlobalLibrary => _l10n.loreGlobalLibrary;
+  static String get loreGlobalLibraryDesc => _l10n.loreGlobalLibraryDesc;
+  static String get loreGlobalEmpty => _l10n.loreGlobalEmpty;
+  static String get loreMergeTitle => _l10n.loreMergeTitle;
+  static String get loreMergePreferLocal => _l10n.loreMergePreferLocal;
+  static String get loreMergePreferGlobal => _l10n.loreMergePreferGlobal;
+  static String get loreSaved => _l10n.loreSaved;
+  static String get loreExported => _l10n.loreExported;
+  static String get loreImported => _l10n.loreImported;
+  static String get loreFailed => _l10n.loreFailed;
+  static String get loreSpeculativeBadge => _l10n.loreSpeculativeBadge;
+  static String get loreFilesTab => _l10n.loreFilesTab;
+  static String get loreCancel => _l10n.loreCancel;
 
   static String playlistToggleResult(bool added, String name) =>
       added ? _l10n.playlistToggleResultAdded(name) : _l10n.playlistToggleResultRemoved(name);

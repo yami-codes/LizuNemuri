@@ -281,23 +281,51 @@ Do not wrap in markdown fences. Do not return a JSON array wrapper.''';
         AppLogger.warning(
           'Google metadata batch chunk failed, falling back sequential: $e',
         );
-        for (final item in chunk) {
-          try {
-            final text = await _google.translate(
-              text: item.source,
-              targetLang: _targetLang,
-            );
-            if (text.trim().isNotEmpty) {
-              result[item.id] = text.trim();
-              onPartial?.call(item.id, text.trim());
-            }
-          } catch (inner) {
-            AppLogger.warning('Google metadata single failed: $inner');
-          }
-        }
+        await _translateGoogleSequential(
+          chunk,
+          result: result,
+          onPartial: onPartial,
+        );
+      }
+
+      // Defense in depth: empty/partial chunk (e.g. legacy multi-q parse) →
+      // retry missing ids one-by-one.
+      final missing = chunk.where((item) => !result.containsKey(item.id)).toList();
+      if (missing.isNotEmpty) {
+        AppLogger.warning(
+          'Google metadata chunk incomplete '
+          '(${chunk.length - missing.length}/${chunk.length}), '
+          'retrying ${missing.length} sequentially',
+        );
+        await _translateGoogleSequential(
+          missing,
+          result: result,
+          onPartial: onPartial,
+        );
       }
     }
     return result;
+  }
+
+  Future<void> _translateGoogleSequential(
+    List<_PendingItem> items, {
+    required Map<String, String> result,
+    MetadataPartialCallback? onPartial,
+  }) async {
+    for (final item in items) {
+      try {
+        final text = await _google.translate(
+          text: item.source,
+          targetLang: _targetLang,
+        );
+        if (text.trim().isNotEmpty) {
+          result[item.id] = text.trim();
+          onPartial?.call(item.id, text.trim());
+        }
+      } catch (inner) {
+        AppLogger.warning('Google metadata single failed: $inner');
+      }
+    }
   }
 
   Future<Map<String, String>> _translateBatchLlm(

@@ -14,6 +14,8 @@ import 'package:lizunemu/screens/browse/tags_screen.dart';
 import 'package:lizunemu/screens/browse/voice_actors_screen.dart';
 import 'package:lizunemu/screens/about_screen.dart';
 import 'package:lizunemu/screens/downloads_screen.dart';
+import 'package:lizunemu/screens/translation_queue_screen.dart';
+import 'package:lizunemu/screens/lore/global_character_library_screen.dart';
 import 'package:lizunemu/screens/playlists_screen.dart';
 import 'package:lizunemu/screens/search_screen.dart';
 import 'package:lizunemu/screens/contents/library_tab_content.dart';
@@ -170,6 +172,22 @@ class SidebarMenu extends StatelessWidget {
                               title: Strings.downloadsTitle,
                               onTap: () =>
                                   _navigate(context, const DownloadsScreen()),
+                            ),
+                            SidebarTile(
+                              icon: Icons.translate,
+                              title: Strings.translationQueueTitle,
+                              onTap: () => _navigate(
+                                context,
+                                const TranslationQueueScreen(),
+                              ),
+                            ),
+                            SidebarTile(
+                              icon: Icons.menu_book_outlined,
+                              title: Strings.loreGlobalLibrary,
+                              onTap: () => _navigate(
+                                context,
+                                const GlobalCharacterLibraryScreen(),
+                              ),
                             ),
                             SidebarTile(
                               icon: CupertinoIcons.clock,

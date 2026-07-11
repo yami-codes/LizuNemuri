@@ -67,9 +67,10 @@ Clean Architecture with three layers, using **Provider (ChangeNotifier)** for st
   - `platform/` - Platform-specific: `ILyricOverlayController` (Android floating lyric window, dummy on other platforms), WakeLockController
   - `theme/` - ThemeController with light/dark mode, AppTheme definitions
   - `cache/` - RecommendationCacheManager
-  - `database/` - `database_service.dart` (local persistence)
+  - `database/` - `database_service.dart` (local persistence; DB v4 adds work lore / global characters / CCv2 cache)
   - `image/cache/` - Image cache layer used by network image widgets
-  - `settings/` - `app_settings_service.dart` (user preferences persistence)
+  - `settings/` - `app_settings_service.dart` (user preferences persistence; includes lore language + max tracks)
+  - `lore/` - Work Lore: LLM packs, projector, CCv2 rewrite export, global character promote (see CLAUDE.md invariants)
 
 - **`lib/data/`** - Data layer
   - `models/` - Freezed immutable data classes (auto-generated `.freezed.dart` + `.g.dart` files)

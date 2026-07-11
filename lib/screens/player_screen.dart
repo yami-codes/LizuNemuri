@@ -11,6 +11,7 @@ import 'package:lizunemu/widgets/player/volume_control.dart';
 import 'package:lizunemu/widgets/player/player_speed_button.dart';
 import 'package:lizunemu/widgets/player/sleep_mode_dim_overlay.dart';
 import 'package:lizunemu/widgets/player/player_surface_transition.dart';
+import 'package:lizunemu/widgets/lore/player_lore_hud.dart';
 import 'package:lizunemu/presentation/layouts/player_layout_config.dart';
 import 'package:lizunemu/screens/detail_screen.dart';
 import 'package:lizunemu/widgets/lyrics/components/player_lyric_view.dart';
@@ -23,6 +24,9 @@ import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/screens/settings/llm_translation_settings_screen.dart';
 import 'package:lizunemu/core/subtitle/subtitle_import_service.dart';
 import 'package:lizunemu/widgets/player/player_equalizer_sheet.dart';
+import 'package:lizunemu/core/lore/lore_json_utils.dart';
+import 'package:lizunemu/core/lore/models/work_lore_pack.dart';
+import 'package:lizunemu/core/lore/work_lore_service.dart';
 
 class PlayerScreen extends StatefulWidget {
   const PlayerScreen({super.key});
@@ -102,12 +106,15 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _showLyrics = false;
   bool _canSwitchView = true;
   late final PlayerViewModel _viewModel;
+  WorkLorePack? _lorePack;
+  String? _loreWorkId;
 
   @override
   void initState() {
     super.initState();
     _viewModel = GetIt.I<PlayerViewModel>();
     _viewModel.addListener(_onViewModelUpdate);
+    _syncLoreForCurrentWork();
   }
 
   @override
@@ -117,6 +124,54 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   void _onViewModelUpdate() {
+    _syncLoreForCurrentWork();
+    _showTranslationFeedbackIfAny();
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  void _syncLoreForCurrentWork() {
+    final ctx = _viewModel.currentContext;
+    final workId = ctx?.work.id?.toString() ?? ctx?.work.sourceId;
+    if (workId == null || workId.isEmpty) {
+      if (_lorePack != null || _loreWorkId != null) {
+        _lorePack = null;
+        _loreWorkId = null;
+      }
+      return;
+    }
+    if (workId == _loreWorkId) return;
+    _loreWorkId = workId;
+    _loadLore(workId);
+  }
+
+  Future<void> _loadLore(String workId) async {
+    try {
+      final pack = await GetIt.I<WorkLoreService>().load(workId);
+      if (!mounted || _loreWorkId != workId) return;
+      setState(() => _lorePack = pack?.hasLore == true ? pack : null);
+    } catch (_) {
+      if (!mounted || _loreWorkId != workId) return;
+      setState(() => _lorePack = null);
+    }
+  }
+
+  String? _currentTrackKey() {
+    final ctx = _viewModel.currentContext;
+    if (ctx == null) return null;
+    final file = ctx.currentFile;
+    final index = ctx.playlist.indexWhere(
+      (c) => identical(c, file) || c.hash == file.hash,
+    );
+    return LoreJsonUtils.trackKeyFor(
+      index: index < 0 ? 0 : index,
+      hash: file.hash,
+      mediaDownloadUrl: file.mediaDownloadUrl,
+      title: file.title,
+    );
+  }
+
+  void _showTranslationFeedbackIfAny() {
     final feedback = _viewModel.takeTranslationFeedback();
     if (feedback == null || !mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -538,6 +593,17 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   },
                 ),
               ),
+              if (_lorePack != null)
+                Positioned(
+                  top: MediaQuery.paddingOf(context).top + AppSpacing.space64,
+                  right: AppSpacing.space12,
+                  width: 168,
+                  child: PlayerLoreHud(
+                    pack: _lorePack!,
+                    player: _viewModel,
+                    trackKey: _currentTrackKey(),
+                  ),
+                ),
               SleepModeDimOverlay(controller: sleepTimer),
             ],
           ),

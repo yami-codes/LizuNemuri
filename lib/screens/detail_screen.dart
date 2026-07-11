@@ -10,13 +10,21 @@ import 'package:lizunemu/widgets/detail/work_info.dart';
 import 'package:lizunemu/widgets/detail/work_files_list.dart';
 import 'package:lizunemu/widgets/detail/work_files_skeleton.dart';
 import 'package:lizunemu/presentation/viewmodels/detail_viewmodel.dart';
+import 'package:lizunemu/presentation/viewmodels/work_lore_viewmodel.dart';
 import 'package:lizunemu/presentation/layouts/detail_layout_config.dart';
 import 'package:lizunemu/widgets/detail/work_action_buttons.dart';
 import 'package:lizunemu/widgets/detail/media_download_dialog.dart';
 import 'package:lizunemu/widgets/detail/batch_download_dialog.dart';
-import 'package:lizunemu/widgets/detail/batch_translate_dialog.dart';
 import 'package:lizunemu/widgets/detail/batch_translate_selection_dialog.dart';
+import 'package:lizunemu/widgets/lore/work_lore_panel.dart';
 import 'package:lizunemu/core/download/download_service.dart';
+import 'package:lizunemu/core/llm/translation_queue_service.dart';
+import 'package:lizunemu/screens/translation_queue_screen.dart';
+import 'package:lizunemu/core/lore/ccv2_export_service.dart';
+import 'package:lizunemu/core/lore/global_character_service.dart';
+import 'package:lizunemu/core/lore/work_lore_service.dart';
+import 'package:lizunemu/core/subtitle/subtitle_loader.dart';
+import 'package:lizunemu/data/repositories/llm_api_key_repository.dart';
 import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/utils/user_facing_error.dart';
 import 'package:lizunemu/screens/similar_works_screen.dart';
@@ -41,10 +49,22 @@ class DetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => DetailViewModel(
-        work: work,
-      )..loadInitialData(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => DetailViewModel(work: work)..loadInitialData(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => WorkLoreViewModel(
+            work: work,
+            lore: GetIt.instance<WorkLoreService>(),
+            ccv2: GetIt.instance<Ccv2ExportService>(),
+            global: GetIt.instance<GlobalCharacterService>(),
+            subtitleLoader: GetIt.instance<SubtitleLoader>(),
+            apiKeyRepo: GetIt.instance<LlmApiKeyRepository>(),
+          )..load(),
+        ),
+      ],
       child: Scaffold(
         appBar: PoppableAppBar(
           title: work.sourceId ?? '',
@@ -131,13 +151,21 @@ class _WideDetailLayout extends StatelessWidget {
   }
 }
 
-class _DetailMainContent extends StatelessWidget {
+class _DetailMainContent extends StatefulWidget {
   const _DetailMainContent({required this.work});
 
   final Work work;
 
   @override
+  State<_DetailMainContent> createState() => _DetailMainContentState();
+}
+
+class _DetailMainContentState extends State<_DetailMainContent> {
+  int _tab = 0;
+
+  @override
   Widget build(BuildContext context) {
+    final work = widget.work;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -197,7 +225,31 @@ class _DetailMainContent extends StatelessWidget {
             loadingMark: viewModel.loadingMark,
           ),
         ),
-        _DetailFilesSection(work: work),
+        const SizedBox(height: AppSpacing.space12),
+        SegmentedButton<int>(
+          segments: [
+            ButtonSegment(value: 0, label: Text(Strings.loreFilesTab)),
+            ButtonSegment(value: 1, label: Text(Strings.loreTab)),
+          ],
+          selected: {_tab},
+          onSelectionChanged: (s) => setState(() => _tab = s.first),
+        ),
+        const SizedBox(height: AppSpacing.space12),
+        if (_tab == 0)
+          _DetailFilesSection(work: work)
+        else
+          Consumer<DetailViewModel>(
+            builder: (context, detail, _) {
+              final pairs = DetailViewModel.collectAudioWithSubtitles(
+                detail.files?.children,
+              );
+              final audio = pairs.map((p) => p.audio).toList();
+              return WorkLorePanel(
+                audioTracks: audio,
+                files: detail.files,
+              );
+            },
+          ),
       ],
     );
   }
@@ -333,30 +385,27 @@ class _DetailFilesSection extends StatelessWidget {
             return;
           }
 
-          final outcome = await showDialog<BatchTranslateOutcome>(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => BatchTranslateDialog(
-              trackCount: selection.pairs.length,
-              skipConfirm: true,
-              translate: (ct, onP) => viewModel.translatePairs(
-                items: selection.pairs,
-                onProgress: onP,
-                cancelToken: ct,
+          final files = viewModel.files;
+          if (files == null) return;
+          final pairs = selection.pairs
+              .where((p) => p.subtitle != null)
+              .map((p) => (audio: p.audio, subtitle: p.subtitle!))
+              .toList();
+          final queued = await GetIt.I<TranslationQueueService>().enqueue(
+            work: work,
+            files: files,
+            pairs: pairs,
+          );
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(Strings.translationQueueEnqueued(queued)),
+              action: SnackBarAction(
+                label: Strings.translationQueueTitle,
+                onPressed: () => openTranslationQueueScreen(context),
               ),
             ),
           );
-          if (outcome == null || !context.mounted) return;
-          final messenger = ScaffoldMessenger.of(context);
-          messenger.showSnackBar(SnackBar(
-            content: Text(outcome.cancelled
-                ? Strings.batchTranslateCancelled
-                : Strings.batchTranslateSummary(
-                    outcome.translated,
-                    outcome.cached,
-                    outcome.failed,
-                  )),
-          ));
         }
 
         final metadataSettings = GetIt.I<AppSettingsService>();

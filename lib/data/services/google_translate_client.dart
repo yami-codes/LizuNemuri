@@ -5,6 +5,11 @@ import 'package:lizunemu/utils/logger.dart';
 ///
 /// Uses `translate.googleapis.com/translate_a/single?client=gtx` — the same
 /// endpoint used by Google Translate web/extension clients.
+///
+/// **Batching:** `client=gtx` only honors a single `q` per request. Multi-`q`
+/// URLs still return a one-text JSON blob; parsing that with
+/// `expectedCount > 1` yields empty strings. [translateBatch] therefore issues
+/// one GET per input text.
 class GoogleTranslateClient {
   static const _baseUrl = 'https://translate.googleapis.com';
 
@@ -39,7 +44,7 @@ class GoogleTranslateClient {
     return results.isNotEmpty ? results.first : trimmed;
   }
 
-  /// Translate multiple strings in one request (multiple `q` params).
+  /// Translate multiple strings — one `q` request each (gtx does not batch).
   Future<List<String>> translateBatch({
     required List<String> texts,
     required String targetLang,
@@ -48,29 +53,39 @@ class GoogleTranslateClient {
     final inputs = texts.map((t) => t.trim()).toList();
     if (inputs.isEmpty) return const [];
 
-    try {
-      final response = await _dio.get<dynamic>(
-        '/translate_a/single',
-        queryParameters: {
-          'client': 'gtx',
-          'sl': sourceLang,
-          'tl': targetLang,
-          'dt': 't',
-          'q': inputs,
-        },
-        options: Options(listFormat: ListFormat.multi),
-      );
-      return parseBatchResponse(response.data, expectedCount: inputs.length);
-    } on DioException catch (e) {
-      AppLogger.warning('GoogleTranslateClient batch failed: ${e.message}');
-      rethrow;
+    final results = <String>[];
+    for (final input in inputs) {
+      if (input.isEmpty) {
+        results.add('');
+        continue;
+      }
+      try {
+        final response = await _dio.get<dynamic>(
+          '/translate_a/single',
+          queryParameters: {
+            'client': 'gtx',
+            'sl': sourceLang,
+            'tl': targetLang,
+            'dt': 't',
+            'q': input,
+          },
+        );
+        final parsed = parseBatchResponse(response.data, expectedCount: 1);
+        results.add(parsed.isNotEmpty ? parsed.first : '');
+      } on DioException catch (e) {
+        AppLogger.warning(
+          'GoogleTranslateClient single failed: ${e.message}',
+        );
+        rethrow;
+      }
     }
+    return results;
   }
 
   /// Parse Google `translate_a/single` JSON into translated strings.
   ///
   /// Single-text response shape: `[[["translated","original",...],...],null,"ja"]`
-  /// Multi-text responses append one inner array per `q` parameter.
+  /// Callers should pass [expectedCount] `1` per request (see [translateBatch]).
   static List<String> parseBatchResponse(
     dynamic data, {
     required int expectedCount,
@@ -84,24 +99,17 @@ class GoogleTranslateClient {
       throw const FormatException('invalid google translate segments');
     }
 
-    if (expectedCount <= 1) {
-      return [_joinSegment(segments)];
-    }
+    // Always join as a single input: multi-chunk long text is one translation.
+    // expectedCount > 1 on a single-text blob used to mis-parse flat rows into
+    // empty strings — callers must not rely on multi-q responses anymore.
+    final joined = _joinSegment(segments);
+    if (expectedCount <= 1) return [joined];
 
-    final results = <String>[];
-    for (final segment in segments) {
-      if (segment is List) {
-        results.add(_joinSegment(segment));
-      }
-    }
-
+    final results = <String>[joined];
     while (results.length < expectedCount) {
       results.add('');
     }
-    if (results.length > expectedCount) {
-      return results.sublist(0, expectedCount);
-    }
-    return results;
+    return results.sublist(0, expectedCount);
   }
 
   static String _joinSegment(List<dynamic> segment) {
