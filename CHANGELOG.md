@@ -8,6 +8,19 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.21 — 2026-07-11
+
+### Added
+- **Background translation queue**: bulk LLM subtitle translate enqueues instead of blocking; mini indicator, sidebar queue menu, mobile progress notifications; persists across kills with line-level resume.
+- **Translation retry setting**: auto-retry failed tracks (default 10) from Settings → LLM.
+- **Work Lore**: LLM-generated per-work character/timeline packs, player HUD, global character library, CCv2 export.
+
+### Fixed
+- **Provider batch split**: auto/context mode no longer hard-caps at 120 lines — only splits when the estimate won't fit.
+- **Google track-name translate**: gtx client sends one `q` per request so multi-track batches no longer return empty strings.
+
+---
+
 ## v2.0.0-rc.20 — 2026-07-11
 
 ### Added

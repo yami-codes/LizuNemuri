@@ -83,5 +83,5 @@ Replace the blocking bulk-translate dialog with a persisted, multi-work backgrou
 - Completed at: 2026-07-11 11:20
 - Command run: `/init` (manual CLAUDE.md `llm/` queue invariants)
 - CLAUDE.md update summary: added `lib/core/llm/` entry — background TranslationQueueService, LlmRequestGate concurrency 2, provider split no 120-cap, retry setting, mini/queue/notification surfaces.
-- Related commit: (uncommitted)
+- Related commit: 52ed8f5
 
