@@ -27,8 +27,8 @@
 - [x] `ImageCacheManager` uses header-aware file service with `zh-CN` Accept-Language
 - [x] `WorkMediaUtils.mediaFetchHeaders` reuses shared CDN header map
 - [x] Unit test passes
-- [ ] `fvm flutter analyze` passes with no new warnings
-- [ ] Relevant unit tests pass
+- [x] `fvm flutter analyze` passes with no new warnings
+- [x] Relevant unit tests pass
 
 ## 4. Steps
 

@@ -8,10 +8,20 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.19 — 2026-07-11
+
+### Changed
+- **Accept-Language**: all asmr.one API and CDN traffic now sends fixed Chinese `Accept-Language` (`zh-CN`) regardless of UI language — mirrors only accept Chinese; removed locale-aware Thai mapping.
+
+### Fixed
+- **Cover images**: `ImageCacheManager` injects CDN headers via `AsmrHttpFileService` so work thumbnails and player art load instead of red error placeholders.
+
+---
+
 ## v2.0.0-rc.18 — 2026-07-11
 
 ### Added
-- **Accept-Language**: all asmr.one API and CDN clients send fixed Chinese `Accept-Language` (`zh-CN`) — mirrors require it; UI language does not change the header; **`en` is never sent**.
+- **Accept-Language bypass**: asmr.one API/CDN clients send locale-aware `Accept-Language` headers so Thai/English UI users can reach mirrors without VPN. English UI (and English system locale) uses Thai header; Chinese uses zh-CN; **`en` is never sent** (blocked by mirrors).
 
 ### Changed
 - **Material You player**: flat M3 surface replaces blurred Apple Music backdrop; segmented cover/lyrics toggle; single-line kinetic lyrics; translation-only subtitle default.
