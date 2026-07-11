@@ -37,6 +37,12 @@ class WorkFilesList extends StatelessWidget {
     this.isTranslatingTrackNames = false,
   });
 
+  bool get _hasHeaderActions =>
+      (onFolderDownload != null &&
+          PlatformCapabilities.supportsLocalDownloads) ||
+      onFolderTranslate != null ||
+      onTranslateTrackNames != null;
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -46,42 +52,56 @@ class WorkFilesList extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(
-                  child: Text(
-                    Strings.fileList,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
+                Text(
+                  Strings.fileList,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
-                if (onFolderDownload != null &&
-                    PlatformCapabilities.supportsLocalDownloads)
-                  TextButton.icon(
-                    onPressed: () => onFolderDownload!.call(null),
-                    icon: const Icon(Icons.download_for_offline_outlined,
-                        size: 18),
-                    label: Text(Strings.downloadAllTooltip),
-                  ),
-                if (onFolderTranslate != null)
-                  TextButton.icon(
-                    onPressed: () => onFolderTranslate!.call(null),
-                    icon: const Icon(Icons.translate, size: 18),
-                    label: Text(Strings.batchTranslateTooltip),
-                  ),
-                if (onTranslateTrackNames != null)
-                  TextButton.icon(
-                    onPressed:
-                        isTranslatingTrackNames ? null : onTranslateTrackNames,
-                    icon: isTranslatingTrackNames
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.subtitles_outlined, size: 18),
-                    label: Text(Strings.metadataTranslateTracks),
+                if (_hasHeaderActions)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Wrap(
+                      spacing: 4,
+                      runSpacing: 0,
+                      alignment: WrapAlignment.end,
+                      children: [
+                        if (onFolderDownload != null &&
+                            PlatformCapabilities.supportsLocalDownloads)
+                          TextButton.icon(
+                            onPressed: () => onFolderDownload!.call(null),
+                            icon: const Icon(
+                                Icons.download_for_offline_outlined,
+                                size: 18),
+                            label: Text(Strings.downloadAllTooltip),
+                          ),
+                        if (onFolderTranslate != null)
+                          TextButton.icon(
+                            onPressed: () => onFolderTranslate!.call(null),
+                            icon: const Icon(Icons.translate, size: 18),
+                            label: Text(Strings.batchTranslateTooltip),
+                          ),
+                        if (onTranslateTrackNames != null)
+                          TextButton.icon(
+                            onPressed: isTranslatingTrackNames
+                                ? null
+                                : onTranslateTrackNames,
+                            icon: isTranslatingTrackNames
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2),
+                                  )
+                                : const Icon(Icons.subtitles_outlined,
+                                    size: 18),
+                            label: Text(Strings.metadataTranslateTracks),
+                          ),
+                      ],
+                    ),
                   ),
               ],
             ),

@@ -12,6 +12,7 @@ import 'package:lizunemu/widgets/player/player_speed_button.dart';
 import 'package:lizunemu/widgets/player/sleep_mode_dim_overlay.dart';
 import 'package:lizunemu/widgets/player/player_surface_transition.dart';
 import 'package:lizunemu/widgets/lore/player_lore_hud.dart';
+import 'package:lizunemu/widgets/lore/player_lore_panel.dart';
 import 'package:lizunemu/presentation/layouts/player_layout_config.dart';
 import 'package:lizunemu/screens/detail_screen.dart';
 import 'package:lizunemu/widgets/lyrics/components/player_lyric_view.dart';
@@ -103,9 +104,10 @@ class _LyricOverlayActionState extends State<_LyricOverlayAction> {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
-  bool _showLyrics = false;
+  PlayerViewMode _viewMode = PlayerViewMode.cover;
   bool _canSwitchView = true;
   late final PlayerViewModel _viewModel;
+  late final AppSettingsService _settings;
   WorkLorePack? _lorePack;
   String? _loreWorkId;
 
@@ -113,6 +115,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   void initState() {
     super.initState();
     _viewModel = GetIt.I<PlayerViewModel>();
+    _settings = GetIt.I<AppSettingsService>();
     _viewModel.addListener(_onViewModelUpdate);
     _syncLoreForCurrentWork();
   }
@@ -171,6 +174,19 @@ class _PlayerScreenState extends State<PlayerScreen> {
     );
   }
 
+  String? _currentTrackTitle() =>
+      _viewModel.currentContext?.currentFile.title;
+
+  int? _currentTrackIndex() {
+    final ctx = _viewModel.currentContext;
+    if (ctx == null) return null;
+    final file = ctx.currentFile;
+    final index = ctx.playlist.indexWhere(
+      (c) => identical(c, file) || c.hash == file.hash,
+    );
+    return index < 0 ? null : index;
+  }
+
   void _showTranslationFeedbackIfAny() {
     final feedback = _viewModel.takeTranslationFeedback();
     if (feedback == null || !mounted) return;
@@ -181,6 +197,29 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   Widget _buildViewModeToggle({required bool isWide}) {
     if (isWide) return const SizedBox.shrink();
+    final hasLore = _lorePack?.hasLore == true;
+    final segments = <ButtonSegment<PlayerViewMode>>[
+      ButtonSegment<PlayerViewMode>(
+        value: PlayerViewMode.cover,
+        icon: const Icon(Icons.album_outlined, size: 18),
+        label: Text(Strings.playerViewCover),
+      ),
+      ButtonSegment<PlayerViewMode>(
+        value: PlayerViewMode.lyrics,
+        icon: const Icon(Icons.lyrics_outlined, size: 18),
+        label: Text(Strings.playerViewSubtitles),
+      ),
+      if (hasLore)
+        ButtonSegment<PlayerViewMode>(
+          value: PlayerViewMode.lore,
+          icon: const Icon(Icons.auto_stories_outlined, size: 18),
+          label: Text(Strings.playerViewLore),
+        ),
+    ];
+    var selected = _viewMode;
+    if (!hasLore && selected == PlayerViewMode.lore) {
+      selected = PlayerViewMode.cover;
+    }
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.space16,
@@ -189,22 +228,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
         AppSpacing.space4,
       ),
       child: Center(
-        child: SegmentedButton<bool>(
-          segments: [
-            ButtonSegment<bool>(
-              value: false,
-              icon: const Icon(Icons.album_outlined, size: 18),
-              label: Text(Strings.playerViewCover),
-            ),
-            ButtonSegment<bool>(
-              value: true,
-              icon: const Icon(Icons.lyrics_outlined, size: 18),
-              label: Text(Strings.playerViewSubtitles),
-            ),
-          ],
-          selected: {_showLyrics},
-          onSelectionChanged: (selected) {
-            setState(() => _showLyrics = selected.first);
+        child: SegmentedButton<PlayerViewMode>(
+          segments: segments,
+          selected: {selected},
+          onSelectionChanged: (next) {
+            setState(() => _viewMode = next.first);
           },
         ),
       ),
@@ -213,7 +241,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   Widget _buildNarrowContent(double coverSize) {
     return PlayerSurfaceSwitcher(
-      showLyrics: _showLyrics,
+      mode: _viewMode,
       coverChild: Center(
         child: PlayerArtPanel(
           viewModel: _viewModel,
@@ -225,11 +253,24 @@ class _PlayerScreenState extends State<PlayerScreen> {
           setState(() => _canSwitchView = canSwitch);
         },
       ),
+      loreChild: _lorePack == null
+          ? null
+          : PlayerLorePanel(
+              pack: _lorePack!,
+              player: _viewModel,
+              trackKey: _currentTrackKey(),
+              trackTitle: _currentTrackTitle(),
+              trackIndex: _currentTrackIndex(),
+            ),
     );
   }
 
   Widget _buildWideContent(double coverSize) {
     final cs = Theme.of(context).colorScheme;
+    final hasLore = _lorePack?.hasLore == true;
+    final sideMode = _viewMode == PlayerViewMode.cover
+        ? (hasLore ? PlayerViewMode.lyrics : PlayerViewMode.lyrics)
+        : _viewMode;
     return Row(
       children: [
         Expanded(
@@ -250,26 +291,64 @@ class _PlayerScreenState extends State<PlayerScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.space16,
-                  AppSpacing.space12,
-                  AppSpacing.space16,
-                  AppSpacing.space8,
-                ),
-                child: Text(
-                  Strings.playerViewSubtitles,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: cs.onSurfaceVariant,
+              if (hasLore)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.space16,
+                    AppSpacing.space8,
+                    AppSpacing.space16,
+                    0,
+                  ),
+                  child: SegmentedButton<PlayerViewMode>(
+                    segments: [
+                      ButtonSegment(
+                        value: PlayerViewMode.lyrics,
+                        label: Text(Strings.playerViewSubtitles),
                       ),
+                      ButtonSegment(
+                        value: PlayerViewMode.lore,
+                        label: Text(Strings.playerViewLore),
+                      ),
+                    ],
+                    selected: {
+                      sideMode == PlayerViewMode.lore
+                          ? PlayerViewMode.lore
+                          : PlayerViewMode.lyrics,
+                    },
+                    onSelectionChanged: (next) {
+                      setState(() => _viewMode = next.first);
+                    },
+                  ),
+                )
+              else
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.space16,
+                    AppSpacing.space12,
+                    AppSpacing.space16,
+                    AppSpacing.space8,
+                  ),
+                  child: Text(
+                    Strings.playerViewSubtitles,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                  ),
                 ),
-              ),
               Expanded(
-                child: PlayerLyricView(
-                  lockParentViewSwitch: false,
-                  compact: true,
-                  onScrollStateChanged: (_) {},
-                ),
+                child: sideMode == PlayerViewMode.lore && _lorePack != null
+                    ? PlayerLorePanel(
+                        pack: _lorePack!,
+                        player: _viewModel,
+                        trackKey: _currentTrackKey(),
+                        trackTitle: _currentTrackTitle(),
+                        trackIndex: _currentTrackIndex(),
+                      )
+                    : PlayerLyricView(
+                        lockParentViewSwitch: false,
+                        compact: true,
+                        onScrollStateChanged: (_) {},
+                      ),
               ),
             ],
           ),
@@ -571,16 +650,38 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                     final vy =
                                         details.primaryVelocity ?? 0;
                                     if (vy < -280) {
-                                      setState(() => _showLyrics = true);
+                                      setState(() {
+                                        if (_viewMode ==
+                                            PlayerViewMode.cover) {
+                                          _viewMode = PlayerViewMode.lyrics;
+                                        } else if (_viewMode ==
+                                                PlayerViewMode.lyrics &&
+                                            _lorePack?.hasLore == true) {
+                                          _viewMode = PlayerViewMode.lore;
+                                        }
+                                      });
                                     } else if (vy > 280) {
-                                      setState(() => _showLyrics = false);
+                                      setState(() {
+                                        if (_viewMode ==
+                                            PlayerViewMode.lore) {
+                                          _viewMode = PlayerViewMode.lyrics;
+                                        } else if (_viewMode ==
+                                            PlayerViewMode.lyrics) {
+                                          _viewMode = PlayerViewMode.cover;
+                                        }
+                                      });
                                     }
                                   },
                                   onTap: () {
-                                    if (_canSwitchView) {
-                                      setState(
-                                          () => _showLyrics = !_showLyrics);
-                                    }
+                                    if (!_canSwitchView) return;
+                                    setState(() {
+                                      if (_viewMode ==
+                                          PlayerViewMode.cover) {
+                                        _viewMode = PlayerViewMode.lyrics;
+                                      } else {
+                                        _viewMode = PlayerViewMode.cover;
+                                      }
+                                    });
                                   },
                                   behavior: HitTestBehavior.opaque,
                                   child: _buildNarrowContent(coverSize),
@@ -593,7 +694,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   },
                 ),
               ),
-              if (_lorePack != null)
+              if (_lorePack != null && _viewMode != PlayerViewMode.lore)
                 Positioned(
                   top: MediaQuery.paddingOf(context).top + AppSpacing.space64,
                   right: AppSpacing.space12,
@@ -601,7 +702,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   child: PlayerLoreHud(
                     pack: _lorePack!,
                     player: _viewModel,
+                    settings: _settings,
                     trackKey: _currentTrackKey(),
+                    trackTitle: _currentTrackTitle(),
+                    trackIndex: _currentTrackIndex(),
+                    onOpenFullLore: () {
+                      setState(() => _viewMode = PlayerViewMode.lore);
+                    },
                   ),
                 ),
               SleepModeDimOverlay(controller: sleepTimer),

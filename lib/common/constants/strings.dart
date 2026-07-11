@@ -625,6 +625,7 @@ class Strings {
   }
   static String get playerViewCover => _l10n.playerViewCover;
   static String get playerViewSubtitles => _l10n.playerViewSubtitles;
+  static String get playerViewLore => _l10n.playerViewLore;
 
   static String get loreTab => _l10n.loreTab;
   static String get loreGenerate => _l10n.loreGenerate;
@@ -663,6 +664,7 @@ class Strings {
   static String get loreDeleteConfirm => _l10n.loreDeleteConfirm;
   static String get loreProgressCast => _l10n.loreProgressCast;
   static String get loreProgressTrack => _l10n.loreProgressTrack;
+  static String get loreProgressSecrets => _l10n.loreProgressSecrets;
   static String get loreProgressReconcile => _l10n.loreProgressReconcile;
   static String get loreProgressDone => _l10n.loreProgressDone;
   static String get loreLowConfidence => _l10n.loreLowConfidence;
@@ -672,6 +674,15 @@ class Strings {
   static String get loreContentExplicit => _l10n.loreContentExplicit;
   static String get lorePlayerHud => _l10n.lorePlayerHud;
   static String get lorePlayerTimeline => _l10n.lorePlayerTimeline;
+  static String get lorePlayerHudVisible => _l10n.lorePlayerHudVisible;
+  static String get lorePlayerHudVisibleDesc => _l10n.lorePlayerHudVisibleDesc;
+  static String get lorePlayerHudHide => _l10n.lorePlayerHudHide;
+  static String get lorePlayerHudShow => _l10n.lorePlayerHudShow;
+  static String get lorePlayerParamsTitle => _l10n.lorePlayerParamsTitle;
+  static String get loreParamBaseline => _l10n.loreParamBaseline;
+  static String get loreParamChangesByTrack => _l10n.loreParamChangesByTrack;
+  static String get loreParamChangesByTrackDesc =>
+      _l10n.loreParamChangesByTrackDesc;
   static String get loreNoEventsYet => _l10n.loreNoEventsYet;
   static String get loreSettingsTitle => _l10n.loreSettingsTitle;
   static String get loreLanguage => _l10n.loreLanguage;

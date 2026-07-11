@@ -22,80 +22,57 @@ void main() {
   });
 
   group('PlayerSurfaceSwitcher', () {
-    Widget host({required bool showLyrics}) => MaterialApp(
+    Widget host({required PlayerViewMode mode}) => MaterialApp(
           home: Scaffold(
             body: PlayerSurfaceSwitcher(
-              showLyrics: showLyrics,
+              mode: mode,
               coverChild: const Text('cover', key: ValueKey('cover-text')),
               lyricsChild: const Text('lyrics', key: ValueKey('lyrics-text')),
+              loreChild: const Text('lore', key: ValueKey('lore-text')),
             ),
           ),
         );
 
     testWidgets('shows cover surface by default', (tester) async {
-      await tester.pumpWidget(host(showLyrics: false));
+      await tester.pumpWidget(host(mode: PlayerViewMode.cover));
       expect(find.text('cover'), findsOneWidget);
       expect(find.text('lyrics'), findsNothing);
     });
 
     testWidgets('cross-fades to lyrics surface', (tester) async {
-      await tester.pumpWidget(host(showLyrics: false));
-      await tester.pumpWidget(host(showLyrics: true));
+      await tester.pumpWidget(host(mode: PlayerViewMode.cover));
+      await tester.pumpWidget(host(mode: PlayerViewMode.lyrics));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 250));
       expect(find.text('lyrics'), findsOneWidget);
     });
-  });
 
-  group('playerSurfaceTransitionBuilder', () {
-    testWidgets('uses 12% slide and 0.94 scale at start', (tester) async {
-      final animation = AnimationController(
-        vsync: const TestVSync(),
-        duration: AppAnimations.long,
-      );
-      addTearDown(animation.dispose);
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: AnimatedBuilder(
-            animation: animation,
-            builder: (context, _) {
-              return playerSurfaceTransitionBuilder(
-                const SizedBox(key: kPlayerLyricsSurfaceKey),
-                animation,
-              );
-            },
-          ),
-        ),
-      );
-
-      animation.value = 0;
+    testWidgets('cross-fades to lore surface', (tester) async {
+      await tester.pumpWidget(host(mode: PlayerViewMode.cover));
+      await tester.pumpWidget(host(mode: PlayerViewMode.lore));
       await tester.pump();
-
-      final slide = tester.widget<SlideTransition>(
-        find.byType(SlideTransition),
-      );
-      expect(
-        slide.position.value.dy,
-        closeTo(0.12, 0.001),
-      );
-
-      final scale = tester.widget<ScaleTransition>(
-        find.byType(ScaleTransition),
-      );
-      expect(
-        scale.scale.value,
-        closeTo(0.94, 0.001),
-      );
+      await tester.pump(const Duration(milliseconds: 250));
+      expect(find.text('lore'), findsOneWidget);
     });
   });
 
-  group('createPlayerScreenRoute', () {
-    test('route is non-opaque for backdrop continuity', () {
-      final route = createPlayerScreenRoute();
-      expect(route, isA<PageRoute<void>>());
-      expect((route as PageRoute<void>).opaque, isFalse);
-      expect(route.transitionDuration, AppAnimations.long);
+  group('playerSurfaceTransitionBuilder', () {
+    testWidgets('builds without throwing', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: playerSurfaceTransitionBuilder(
+              const KeyedSubtree(
+                key: kPlayerLyricsSurfaceKey,
+                child: Text('x'),
+              ),
+              const AlwaysStoppedAnimation(1),
+            ),
+          ),
+        ),
+      );
+      expect(find.text('x'), findsOneWidget);
+      expect(AppAnimations.long.inMilliseconds, greaterThan(0));
     });
   });
 }

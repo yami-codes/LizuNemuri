@@ -3,24 +3,33 @@ import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/core/lore/lore_state_projector.dart';
 import 'package:lizunemu/core/lore/models/lore_param.dart';
 import 'package:lizunemu/core/lore/models/work_lore_pack.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/core/theme/app_radius.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 import 'package:lizunemu/core/theme/app_text_styles.dart';
 import 'package:lizunemu/presentation/viewmodels/player_viewmodel.dart';
 
-/// Compact playback-synced lore HUD. Hidden when [pack] has no lore.
+/// Compact playback-synced lore HUD. Hidden when [pack] has no lore or overlay off.
 class PlayerLoreHud extends StatelessWidget {
   final WorkLorePack pack;
   final PlayerViewModel player;
+  final AppSettingsService settings;
   final String? trackKey;
+  final String? trackTitle;
+  final int? trackIndex;
   final String? focusOverrideId;
+  final VoidCallback? onOpenFullLore;
 
   const PlayerLoreHud({
     super.key,
     required this.pack,
     required this.player,
+    required this.settings,
     this.trackKey,
+    this.trackTitle,
+    this.trackIndex,
     this.focusOverrideId,
+    this.onOpenFullLore,
   });
 
   @override
@@ -28,12 +37,32 @@ class PlayerLoreHud extends StatelessWidget {
     if (!pack.hasLore) return const SizedBox.shrink();
 
     return ListenableBuilder(
-      listenable: player,
+      listenable: Listenable.merge([player, settings]),
       builder: (context, _) {
+        if (!settings.lorePlayerHudVisible) {
+          return Align(
+            alignment: Alignment.topRight,
+            child: Material(
+              color: Theme.of(context)
+                  .colorScheme
+                  .surface
+                  .withValues(alpha: 0.72),
+              borderRadius: AppRadius.mdAll,
+              child: IconButton(
+                tooltip: Strings.lorePlayerHudShow,
+                icon: const Icon(Icons.visibility_outlined, size: 18),
+                onPressed: () => settings.setLorePlayerHudVisible(true),
+              ),
+            ),
+          );
+        }
+
         final positionMs = player.position?.inMilliseconds ?? 0;
         final snapshot = LoreStateProjector.project(
           pack: pack,
           trackKey: trackKey,
+          trackTitle: trackTitle,
+          trackIndex: trackIndex,
           positionMs: positionMs,
           focusCharacterId: focusOverrideId,
         );
@@ -54,7 +83,7 @@ class PlayerLoreHud extends StatelessWidget {
           borderRadius: AppRadius.mdAll,
           child: InkWell(
             borderRadius: AppRadius.mdAll,
-            onTap: () => _openTimeline(context, snapshot),
+            onTap: onOpenFullLore ?? () => _openTimeline(context, snapshot),
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.space8),
               child: Column(
@@ -63,22 +92,41 @@ class PlayerLoreHud extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        snapshot.focusCharacter?.name ?? Strings.lorePlayerHud,
-                        style: AppTextStyles.labelMedium.copyWith(
-                          color: scheme.onSurface,
+                      Expanded(
+                        child: Text(
+                          snapshot.focusCharacter?.name ??
+                              Strings.lorePlayerHud,
+                          style: AppTextStyles.labelMedium.copyWith(
+                            color: scheme.onSurface,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const Spacer(),
-                      Icon(
-                        Icons.timeline,
-                        size: 16,
-                        color: scheme.onSurfaceVariant,
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 28,
+                          minHeight: 28,
+                        ),
+                        tooltip: Strings.lorePlayerHudHide,
+                        icon: Icon(
+                          Icons.visibility_off_outlined,
+                          size: 16,
+                          color: scheme.onSurfaceVariant,
+                        ),
+                        onPressed: () =>
+                            settings.setLorePlayerHudVisible(false),
                       ),
                     ],
                   ),
-                  const SizedBox(height: AppSpacing.space8),
-                  ...pins.map((p) => _GaugeRow(param: p)),
+                  const SizedBox(height: AppSpacing.space4),
+                  ...pins.map((p) => _GaugeRow(
+                        param: p,
+                        active: snapshot.activeSpans
+                            .any((s) => s.key == p.key),
+                      )),
                   if (snapshot.currentEvent != null) ...[
                     const SizedBox(height: AppSpacing.space4),
                     Text(
@@ -146,7 +194,8 @@ class PlayerLoreHud extends StatelessWidget {
 
 class _GaugeRow extends StatelessWidget {
   final LoreParam param;
-  const _GaugeRow({required this.param});
+  final bool active;
+  const _GaugeRow({required this.param, this.active = false});
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +221,7 @@ class _GaugeRow extends StatelessWidget {
                 child: Text(
                   param.label,
                   style: AppTextStyles.caption.copyWith(
-                    color: scheme.onSurface,
+                    color: active ? scheme.primary : scheme.onSurface,
                   ),
                 ),
               ),

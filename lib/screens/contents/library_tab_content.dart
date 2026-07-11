@@ -24,6 +24,7 @@ class _LibraryTabContentState extends State<LibraryTabContent>
   _LibrarySegment _segment = _LibrarySegment.local;
   late final DownloadsViewModel _downloadsViewModel;
   late final LocalLibraryViewModel _localLibraryViewModel;
+  late final HomeViewModel _homeViewModel;
 
   @override
   bool get wantKeepAlive => true;
@@ -33,6 +34,9 @@ class _LibraryTabContentState extends State<LibraryTabContent>
     super.initState();
     _downloadsViewModel = DownloadsViewModel();
     _localLibraryViewModel = LocalLibraryViewModel();
+    // Sidebar route is outside MainScreen's MultiProvider — Browse/HomeContent
+    // needs its own HomeViewModel (cannot reuse the bottom-tab instance).
+    _homeViewModel = HomeViewModel();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _downloadsViewModel.load();
       _localLibraryViewModel.load();
@@ -43,6 +47,7 @@ class _LibraryTabContentState extends State<LibraryTabContent>
   void dispose() {
     _downloadsViewModel.dispose();
     _localLibraryViewModel.dispose();
+    _homeViewModel.dispose();
     super.dispose();
   }
 
@@ -76,6 +81,7 @@ class _LibraryTabContentState extends State<LibraryTabContent>
       providers: [
         ChangeNotifierProvider.value(value: _downloadsViewModel),
         ChangeNotifierProvider.value(value: _localLibraryViewModel),
+        ChangeNotifierProvider.value(value: _homeViewModel),
       ],
       // Providers are scoped to [child]; AppBar title must read them from a
       // descendant context, not the outer build context (ProviderNotFound).

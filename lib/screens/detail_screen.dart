@@ -23,6 +23,8 @@ import 'package:lizunemu/screens/translation_queue_screen.dart';
 import 'package:lizunemu/core/lore/ccv2_export_service.dart';
 import 'package:lizunemu/core/lore/global_character_service.dart';
 import 'package:lizunemu/core/lore/work_lore_service.dart';
+import 'package:lizunemu/core/media/work_media_url_refresher.dart';
+import 'package:lizunemu/core/subtitle/subtitle_import_service.dart';
 import 'package:lizunemu/core/subtitle/subtitle_loader.dart';
 import 'package:lizunemu/data/repositories/llm_api_key_repository.dart';
 import 'package:lizunemu/common/constants/strings.dart';
@@ -55,12 +57,15 @@ class DetailScreen extends StatelessWidget {
           create: (_) => DetailViewModel(work: work)..loadInitialData(),
         ),
         ChangeNotifierProvider(
-          create: (_) => WorkLoreViewModel(
+          create: (_) => WorkLoreViewModel.create(
             work: work,
             lore: GetIt.instance<WorkLoreService>(),
             ccv2: GetIt.instance<Ccv2ExportService>(),
             global: GetIt.instance<GlobalCharacterService>(),
             subtitleLoader: GetIt.instance<SubtitleLoader>(),
+            downloads: GetIt.instance<DownloadService>(),
+            urlRefresher: GetIt.instance<WorkMediaUrlRefresher>(),
+            imports: GetIt.instance<SubtitleImportService>(),
             apiKeyRepo: GetIt.instance<LlmApiKeyRepository>(),
           )..load(),
         ),
@@ -243,9 +248,8 @@ class _DetailMainContentState extends State<_DetailMainContent> {
               final pairs = DetailViewModel.collectAudioWithSubtitles(
                 detail.files?.children,
               );
-              final audio = pairs.map((p) => p.audio).toList();
               return WorkLorePanel(
-                audioTracks: audio,
+                pairs: pairs,
                 files: detail.files,
               );
             },

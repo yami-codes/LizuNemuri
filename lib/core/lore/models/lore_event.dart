@@ -88,12 +88,27 @@ class LoreParamDelta {
         from: json['from'],
         to: json['to'],
       );
+
+  /// True when both ends are numeric — eligible for span lerp.
+  bool get isNumeric {
+    return asNum(from) != null && asNum(to) != null;
+  }
+
+  static double? asNum(dynamic v) {
+    if (v is num) return v.toDouble();
+    if (v is String) return double.tryParse(v);
+    return null;
+  }
 }
 
 class LoreTimelineEvent {
   final String id;
   final String trackKey;
+  /// Span start (inclusive). Point events still use this as the cue time.
   final int? atMs;
+  /// Span end (exclusive for mid-lerp; value settles to [LoreParamDelta.to] at/after).
+  /// When null, projector derives a short ramp from evidence / next event.
+  final int? endMs;
   final LoreEventKind kind;
   final String title;
   final String detail;
@@ -109,6 +124,7 @@ class LoreTimelineEvent {
     required this.id,
     required this.trackKey,
     this.atMs,
+    this.endMs,
     required this.kind,
     required this.title,
     this.detail = '',
@@ -125,6 +141,7 @@ class LoreTimelineEvent {
     String? id,
     String? trackKey,
     int? atMs,
+    int? endMs,
     LoreEventKind? kind,
     String? title,
     String? detail,
@@ -140,6 +157,7 @@ class LoreTimelineEvent {
       id: id ?? this.id,
       trackKey: trackKey ?? this.trackKey,
       atMs: atMs ?? this.atMs,
+      endMs: endMs ?? this.endMs,
       kind: kind ?? this.kind,
       title: title ?? this.title,
       detail: detail ?? this.detail,
@@ -157,6 +175,7 @@ class LoreTimelineEvent {
         'id': id,
         'trackKey': trackKey,
         if (atMs != null) 'atMs': atMs,
+        if (endMs != null) 'endMs': endMs,
         'kind': kind.name,
         'title': title,
         'detail': detail,
@@ -174,6 +193,7 @@ class LoreTimelineEvent {
       id: json['id'] as String? ?? '',
       trackKey: json['trackKey'] as String? ?? '',
       atMs: json['atMs'] as int?,
+      endMs: json['endMs'] as int?,
       kind: LoreEventKindX.parse(json['kind'] as String?),
       title: json['title'] as String? ?? '',
       detail: json['detail'] as String? ?? '',

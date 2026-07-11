@@ -265,48 +265,99 @@ class LlmClient {
   }) async {
     final headers = await _authHeaders(modelSlot: modelSlot);
     final model = _resolveModel(modelSlot).trim();
+    const maxAttempts = 5;
 
-    try {
-      final response = await _dio.post<Map<String, dynamic>>(
-        '/chat/completions',
-        data: {
-          'model': model,
-          'temperature': temperature,
-          'stream': stream,
-          'messages': messages,
-        },
-        options: Options(headers: headers),
-      );
+    for (var attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        final response = await _dio.post<Map<String, dynamic>>(
+          '/chat/completions',
+          data: {
+            'model': model,
+            'temperature': temperature,
+            'stream': stream,
+            'messages': messages,
+          },
+          options: Options(headers: headers),
+        );
 
-      final data = response.data;
-      final content = data?['choices']?[0]?['message']?['content'];
-      if (content is! String || content.trim().isEmpty) {
-        throw const LlmTranslationException(
-          LlmTranslationErrorType.invalidResponse,
-          'empty content',
+        final data = response.data;
+        final content = data?['choices']?[0]?['message']?['content'];
+        if (content is! String || content.trim().isEmpty) {
+          throw const LlmTranslationException(
+            LlmTranslationErrorType.invalidResponse,
+            'empty content',
+          );
+        }
+
+        final usageMap = data?['usage'];
+        LlmUsage? usage;
+        if (usageMap is Map) {
+          usage = LlmUsage.fromJson(
+            usageMap.map((k, v) => MapEntry(k.toString(), v)),
+          );
+        }
+
+        return LlmChatResult(content: content.trim(), usage: usage);
+      } on LlmTranslationException {
+        rethrow;
+      } on DioException catch (e) {
+        final mapped = LlmTranslationException.fromDioException(e);
+        if (mapped.type == LlmTranslationErrorType.rateLimited &&
+            attempt < maxAttempts - 1) {
+          final delay = _rateLimitBackoff(e, attempt);
+          AppLogger.warning(
+            'LlmClient 429 rate limited — retry ${attempt + 1}/$maxAttempts '
+            'in ${delay.inMilliseconds}ms',
+          );
+          await Future.delayed(delay);
+          continue;
+        }
+        AppLogger.warning('LlmClient request failed: ${e.message}');
+        throw mapped;
+      } catch (e) {
+        throw LlmTranslationException(
+          LlmTranslationErrorType.unknown,
+          e.toString(),
         );
       }
-
-      final usageMap = data?['usage'];
-      LlmUsage? usage;
-      if (usageMap is Map) {
-        usage = LlmUsage.fromJson(
-          usageMap.map((k, v) => MapEntry(k.toString(), v)),
-        );
-      }
-
-      return LlmChatResult(content: content.trim(), usage: usage);
-    } on LlmTranslationException {
-      rethrow;
-    } on DioException catch (e) {
-      AppLogger.warning('LlmClient request failed: ${e.message}');
-      throw LlmTranslationException.fromDioException(e);
-    } catch (e) {
-      throw LlmTranslationException(
-        LlmTranslationErrorType.unknown,
-        e.toString(),
-      );
     }
+
+    throw const LlmTranslationException(
+      LlmTranslationErrorType.rateLimited,
+      'rate limit retries exhausted',
+    );
+  }
+
+  /// Test seam for [_rateLimitBackoff].
+  static Duration rateLimitBackoffForTest(DioException e, int attempt) =>
+      _rateLimitBackoff(e, attempt);
+
+  /// Prefer `Retry-After` / OpenRouter reset headers; else exponential backoff.
+  static Duration _rateLimitBackoff(DioException e, int attempt) {
+    final headers = e.response?.headers;
+    final retryAfter = headers?.value('retry-after');
+    if (retryAfter != null) {
+      final secs = int.tryParse(retryAfter.trim());
+      if (secs != null && secs > 0) {
+        return Duration(seconds: secs.clamp(1, 120));
+      }
+    }
+    final reset = headers?.value('x-ratelimit-reset');
+    if (reset != null) {
+      final resetAt = int.tryParse(reset.trim());
+      if (resetAt != null) {
+        // Unix seconds or ms — treat large values as ms.
+        final nowMs = DateTime.now().millisecondsSinceEpoch;
+        final resetMs = resetAt > 1e12 ? resetAt : resetAt * 1000;
+        final wait = resetMs - nowMs;
+        if (wait > 0) {
+          return Duration(milliseconds: wait.clamp(1000, 120000).toInt());
+        }
+      }
+    }
+    // 2s, 4s, 8s, 16s…
+    final seconds = (2 << attempt).clamp(2, 60);
+    return Duration(seconds: seconds);
   }
 
   /// Context window for the configured main model (OpenRouter `/models` lookup).

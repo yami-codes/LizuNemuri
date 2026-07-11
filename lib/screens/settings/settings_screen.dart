@@ -432,6 +432,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 }
               },
             ),
+            SettingsTile.toggle(
+              title: Strings.lorePlayerHudVisible,
+              subtitle: Strings.lorePlayerHudVisibleDesc,
+              leading: Icons.dashboard_outlined,
+              value: settings.lorePlayerHudVisible,
+              onChanged: settings.setLorePlayerHudVisible,
+            ),
             SettingsTile.navigation(
               title: Strings.loreGlobalLibrary,
               subtitle: Strings.loreGlobalLibraryDesc,

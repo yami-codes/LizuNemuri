@@ -63,6 +63,7 @@ class AppSettingsService extends ChangeNotifier {
   static const String _loreLanguageCodeKey = 'lore_language_code';
   static const String _maxLoreTracksPerGenerateKey =
       'max_lore_tracks_per_generate';
+  static const String _lorePlayerHudVisibleKey = 'lore_player_hud_visible';
 
   static const String defaultServerUrl = 'https://api.asmr.one/api';
   /// Empty string = follow app/UI language.
@@ -150,6 +151,7 @@ class AppSettingsService extends ChangeNotifier {
   late AppLogLevel _logCaptureMinLevel;
   late String _loreLanguageCode;
   late int _maxLoreTracksPerGenerate;
+  late bool _lorePlayerHudVisible;
 
   AppSettingsService(this._prefs) {
     _serverUrl = _prefs.getString(_serverUrlKey) ?? defaultServerUrl;
@@ -242,6 +244,7 @@ class AppSettingsService extends ChangeNotifier {
     _maxLoreTracksPerGenerate = (_prefs.getInt(_maxLoreTracksPerGenerateKey) ??
             defaultMaxLoreTracksPerGenerate)
         .clamp(minMaxLoreTracksPerGenerate, maxMaxLoreTracksPerGenerate);
+    _lorePlayerHudVisible = _prefs.getBool(_lorePlayerHudVisibleKey) ?? true;
   }
 
   // === UI Language ===
@@ -656,5 +659,15 @@ class AppSettingsService extends ChangeNotifier {
     _maxLoreTracksPerGenerate = clamped;
     notifyListeners();
     await _prefs.setInt(_maxLoreTracksPerGenerateKey, clamped);
+  }
+
+  /// Compact player lore overlay. Default on; hide from HUD or Settings.
+  bool get lorePlayerHudVisible => _lorePlayerHudVisible;
+
+  Future<void> setLorePlayerHudVisible(bool visible) async {
+    if (_lorePlayerHudVisible == visible) return;
+    _lorePlayerHudVisible = visible;
+    notifyListeners();
+    await _prefs.setBool(_lorePlayerHudVisibleKey, visible);
   }
 }

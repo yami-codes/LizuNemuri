@@ -4,7 +4,7 @@ import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
 class SubtitleMatcher {
-  static const supportedFormats = ['.vtt', '.lrc'];
+  static const supportedFormats = ['.vtt', '.lrc', '.srt', '.txt'];
   static const double _similarityThreshold = 0.6;
 
   static bool isSubtitleFile(String? fileName) {
