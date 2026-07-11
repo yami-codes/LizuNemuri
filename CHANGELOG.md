@@ -8,6 +8,22 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.22 — 2026-07-11
+
+### Added
+- **Player Lore tab**: Cover | Lyrics | Lore with timeline blocks, playhead auto-follow, desktop scroll, and current subtitle banner.
+- **Lore secrets timeline**: one-button generate seeds speculative params and per-track secret events; regenerate-secrets-only remains available.
+- **Lore param arcs**: detail character cards show baseline + per-track from→to changes.
+
+### Fixed
+- **LLM 429**: chat completions retry with Retry-After / exponential backoff; track lore pass surfaces rate-limit errors instead of empty tracks.
+- **Lore projection**: cross-track param carry + no-SFX track key resolve so HUD/params no longer stick at 0.
+- **Library Browse provider**: sidebar Library route provides its own `HomeViewModel` (no ProviderNotFound).
+- **Files header overflow**: long localized download/translate labels wrap instead of overflowing.
+- **Lore param chips**: revealed secrets show all projected params (not only pinned/active ≤8).
+
+---
+
 ## v2.0.0-rc.21 — 2026-07-11
 
 ### Added
