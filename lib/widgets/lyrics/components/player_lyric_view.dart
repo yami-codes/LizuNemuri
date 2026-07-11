@@ -1,14 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:get_it/get_it.dart';
-import 'package:lizunemu/core/settings/app_settings_service.dart';
-import 'package:lizunemu/core/theme/app_animations.dart';
 import 'package:lizunemu/common/constants/strings.dart';
-import 'package:lizunemu/presentation/viewmodels/player_viewmodel.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:lizunemu/core/subtitle/i_subtitle_service.dart';
 import 'package:lizunemu/core/audio/models/subtitle.dart';
+import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/core/subtitle/i_subtitle_service.dart';
+import 'package:lizunemu/core/theme/app_animations.dart';
+import 'package:lizunemu/presentation/viewmodels/player_viewmodel.dart';
+import 'package:lizunemu/widgets/common/accent_pill.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'lyric_line.dart';
 
 /// Proximity-based emphasis for kinetic centered lyrics (0 = dim, 1 = center).
@@ -38,13 +40,29 @@ double lyricEmphasisForIndex({
     if (position.index == index) {
       final proximity = lyricKineticEmphasis(position);
       if (isActive) {
-        // Only the centered playback line should read as fully active.
         return proximity.clamp(0.92, 1.0);
       }
       return (proximity * 0.55).clamp(_kMinEmphasis, 0.72);
     }
   }
   return isActive ? 0.92 : _kMinEmphasis;
+}
+
+/// Whether the active cue sits near the viewport center (visible + centered).
+@visibleForTesting
+bool lyricActiveLineIsCentered({
+  required int? activeIndex,
+  required Iterable<ItemPosition> positions,
+  double centerTolerance = 0.15,
+}) {
+  if (activeIndex == null) return true;
+  for (final position in positions) {
+    if (position.index != activeIndex) continue;
+    final itemCenter =
+        (position.itemLeadingEdge + position.itemTrailingEdge) / 2;
+    return (itemCenter - 0.5).abs() <= centerTolerance;
+  }
+  return false;
 }
 
 class PlayerLyricView extends StatefulWidget {
@@ -75,11 +93,10 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
 
   bool _isFirstBuild = true;
   int? _lastScrolledSubtitleIndex;
+  bool _allowAutoScroll = true;
 
   Timer? _scrollDebounceTimer;
-  bool _allowAutoScroll = true;
   Timer? _autoScrollDebounceTimer;
-
   StreamSubscription? _subtitleSubscription;
 
   @override
@@ -105,6 +122,36 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
     _scrollDebounceTimer?.cancel();
     _autoScrollDebounceTimer?.cancel();
     super.dispose();
+  }
+
+  void _enterManualScrollMode() {
+    _allowAutoScroll = false;
+    _scrollDebounceTimer?.cancel();
+    _autoScrollDebounceTimer?.cancel();
+  }
+
+  void _scheduleAutoScrollResume() {
+    _autoScrollDebounceTimer?.cancel();
+    final seconds = _settings.lyricAutoScrollResumeSec;
+    _autoScrollDebounceTimer = Timer(Duration(seconds: seconds), () {
+      if (!mounted) return;
+      _resumeAutoScroll();
+    });
+  }
+
+  void _resumeAutoScroll({bool forceScroll = true}) {
+    _allowAutoScroll = true;
+    _lastScrolledSubtitleIndex = null;
+    if (!forceScroll) return;
+    final current = _subtitleService.currentSubtitleWithState;
+    if (current != null) {
+      _scrollToCurrentLyric(current);
+    }
+  }
+
+  void _jumpToCurrentLine() {
+    _autoScrollDebounceTimer?.cancel();
+    _resumeAutoScroll();
   }
 
   void _scrollToCurrentLyric(SubtitleWithState current) {
@@ -134,6 +181,33 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
     );
   }
 
+  bool _handleScrollNotification(ScrollNotification notification) {
+    if (notification is UserScrollNotification &&
+        notification.direction != ScrollDirection.idle) {
+      if (widget.lockParentViewSwitch) {
+        widget.onScrollStateChanged(false);
+      }
+      _enterManualScrollMode();
+    } else if (notification is ScrollStartNotification &&
+        notification.dragDetails != null) {
+      if (widget.lockParentViewSwitch) {
+        widget.onScrollStateChanged(false);
+      }
+      _enterManualScrollMode();
+    } else if (notification is ScrollEndNotification) {
+      if (widget.lockParentViewSwitch) {
+        _scrollDebounceTimer?.cancel();
+        _scrollDebounceTimer = Timer(const Duration(milliseconds: 1000), () {
+          if (mounted) {
+            widget.onScrollStateChanged(true);
+          }
+        });
+      }
+      _scheduleAutoScrollResume();
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -155,100 +229,91 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
               );
             }
 
+            final activeIndex = currentSubtitle?.subtitle.index;
+
             return NotificationListener<ScrollNotification>(
-              onNotification: (notification) {
-                if (notification is ScrollStartNotification &&
-                    notification.dragDetails != null) {
-                  if (widget.lockParentViewSwitch) {
-                    widget.onScrollStateChanged(false);
-                  }
-
-                  _allowAutoScroll = false;
-                  _scrollDebounceTimer?.cancel();
-                  _autoScrollDebounceTimer?.cancel();
-                } else if (notification is ScrollEndNotification) {
-                  if (widget.lockParentViewSwitch) {
-                    _scrollDebounceTimer?.cancel();
-                    _scrollDebounceTimer =
-                        Timer(const Duration(milliseconds: 1000), () {
-                      if (mounted) {
-                        widget.onScrollStateChanged(true);
-                      }
-                    });
-                  }
-
-                  _autoScrollDebounceTimer?.cancel();
-                  _autoScrollDebounceTimer =
-                      Timer(const Duration(milliseconds: 3000), () {
-                    if (mounted) {
-                      _allowAutoScroll = true;
-                      _lastScrolledSubtitleIndex = null;
-                      final current =
-                          _subtitleService.currentSubtitleWithState;
-                      if (current != null) {
-                        _scrollToCurrentLyric(current);
-                      }
-                    }
-                  });
-                }
-                return false;
-              },
+              onNotification: _handleScrollNotification,
               child: ValueListenableBuilder<Iterable<ItemPosition>>(
                 valueListenable: _itemPositionsListener.itemPositions,
                 builder: (context, positions, _) {
-                  return ScrollablePositionedList.builder(
-                    itemCount: subtitleList.subtitles.length,
-                    itemScrollController: _itemScrollController,
-                    itemPositionsListener: _itemPositionsListener,
-                    padding: EdgeInsets.symmetric(
-                      vertical: widget.compact
-                          ? screenHeight * 0.1
-                          : screenHeight * 0.34,
-                      horizontal: baseUnit * 1.0,
-                    ),
-                    itemBuilder: (context, index) {
-                      final subtitle = subtitleList.subtitles[index];
-                      final isActive =
-                          currentSubtitle?.subtitle.index == subtitle.index;
-                      final emphasis = lyricEmphasisForIndex(
-                        index: index,
-                        isActive: isActive,
-                        positions: positions,
-                      );
+                  final showJumpChip = !lyricActiveLineIsCentered(
+                    activeIndex: activeIndex,
+                    positions: positions,
+                  );
 
-                      return Padding(
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      ScrollablePositionedList.builder(
+                        itemCount: subtitleList.subtitles.length,
+                        itemScrollController: _itemScrollController,
+                        itemPositionsListener: _itemPositionsListener,
                         padding: EdgeInsets.symmetric(
-                          vertical: baseUnit * 0.5,
+                          vertical: widget.compact
+                              ? screenHeight * 0.1
+                              : screenHeight * 0.34,
+                          horizontal: baseUnit * 1.0,
                         ),
-                        child: LyricLine(
-                          subtitle: subtitle,
-                          secondaryText: isActive &&
-                                  _viewModel.showDualSubtitles
-                              ? _viewModel
-                                  .originalSubtitleTextAt(subtitle.index)
-                              : null,
-                          emphasis: emphasis,
-                          onTap: () async {
-                            if (widget.lockParentViewSwitch) {
-                              widget.onScrollStateChanged(false);
-                            }
+                        itemBuilder: (context, index) {
+                          final subtitle = subtitleList.subtitles[index];
+                          final isActive = activeIndex == subtitle.index;
+                          final emphasis = lyricEmphasisForIndex(
+                            index: index,
+                            isActive: isActive,
+                            positions: positions,
+                          );
 
-                            await _viewModel.seek(subtitle.start);
+                          return Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: baseUnit * 0.5,
+                            ),
+                            child: LyricLine(
+                              subtitle: subtitle,
+                              secondaryText: isActive &&
+                                      _viewModel.showDualSubtitles
+                                  ? _viewModel
+                                      .originalSubtitleTextAt(subtitle.index)
+                                  : null,
+                              emphasis: emphasis,
+                              onTap: () async {
+                                _enterManualScrollMode();
+                                if (widget.lockParentViewSwitch) {
+                                  widget.onScrollStateChanged(false);
+                                }
 
-                            if (widget.lockParentViewSwitch) {
-                              Future.delayed(
-                                const Duration(milliseconds: 500),
-                                () {
-                                  if (mounted) {
-                                    widget.onScrollStateChanged(true);
-                                  }
-                                },
-                              );
-                            }
-                          },
+                                await _viewModel.seek(subtitle.start);
+
+                                if (widget.lockParentViewSwitch) {
+                                  Future.delayed(
+                                    const Duration(milliseconds: 500),
+                                    () {
+                                      if (mounted) {
+                                        widget.onScrollStateChanged(true);
+                                      }
+                                    },
+                                  );
+                                }
+                                _scheduleAutoScrollResume();
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                      if (showJumpChip)
+                        Positioned(
+                          bottom: widget.compact ? 8 : 16,
+                          left: 0,
+                          right: 0,
+                          child: Center(
+                            child: AccentPill(
+                              label: Strings.lyricJumpToCurrent,
+                              icon: Icons.my_location_outlined,
+                              dense: true,
+                              onTap: _jumpToCurrentLine,
+                            ),
+                          ),
                         ),
-                      );
-                    },
+                    ],
                   );
                 },
               ),

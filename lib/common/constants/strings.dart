@@ -290,6 +290,11 @@ class Strings {
   static String get playbackFadeDuration => _l10n.playbackFadeDuration;
   static String get playbackFadeDurationDesc => _l10n.playbackFadeDurationDesc;
   static String playbackFadeDurationMs(int ms) => _l10n.playbackFadeDurationMs(ms);
+  static String get lyricAutoScrollResume => _l10n.lyricAutoScrollResume;
+  static String get lyricAutoScrollResumeDesc => _l10n.lyricAutoScrollResumeDesc;
+  static String lyricAutoScrollResumeSec(int seconds) =>
+      _l10n.lyricAutoScrollResumeSec(seconds);
+  static String get lyricJumpToCurrent => _l10n.lyricJumpToCurrent;
   static String sleepTimerActiveSummary(int preset, Duration remaining) =>
       _l10n.sleepTimerActiveSummary(
         preset,

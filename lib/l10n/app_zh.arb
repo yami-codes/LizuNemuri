@@ -376,6 +376,15 @@
       "ms": { "type": "int" }
     }
   },
+  "lyricAutoScrollResume": "歌词自动跟随延迟",
+  "lyricAutoScrollResumeDesc": "手动滚动歌词后，等待多少秒再自动回到当前播放行。",
+  "lyricAutoScrollResumeSec": "{seconds} 秒",
+  "@lyricAutoScrollResumeSec": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "lyricJumpToCurrent": "回到当前行",
   "sleepTimerActiveSummary": "{preset} 分钟 · 剩余 {minutes}:{seconds}",
   "@sleepTimerActiveSummary": {
     "placeholders": {

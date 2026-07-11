@@ -282,6 +282,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             if (settings.playbackFadeEnabled)
               _PlaybackFadeDurationSlider(settings: settings),
+            _LyricAutoScrollResumeSlider(settings: settings),
             if (PlatformCapabilities.supportsAndroidEqualizer)
               SettingsTile.navigation(
                 title: Strings.equalizerTitle,
@@ -518,6 +519,82 @@ class _PlaybackFadeDurationSlider extends StatelessWidget {
               max: max,
               divisions: ((max - min) / 50).round(),
               onChanged: (v) => settings.setPlaybackFadeMs(v.round()),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LyricAutoScrollResumeSlider extends StatelessWidget {
+  const _LyricAutoScrollResumeSlider({required this.settings});
+
+  final AppSettingsService settings;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final sec = settings.lyricAutoScrollResumeSec;
+    final min = AppSettingsService.minLyricAutoScrollResumeSec.toDouble();
+    final max = AppSettingsService.maxLyricAutoScrollResumeSec.toDouble();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.space16,
+        vertical: AppSpacing.space12,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              SizedBox(
+                width: AppSpacing.space40,
+                height: AppSpacing.space40,
+                child: Icon(
+                  Icons.lyrics_outlined,
+                  size: 20,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.space12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      Strings.lyricAutoScrollResume,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    Text(
+                      Strings.lyricAutoScrollResumeDesc,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.space8),
+              Text(
+                Strings.lyricAutoScrollResumeSec(sec),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+              left: AppSpacing.space40 + AppSpacing.space12,
+            ),
+            child: Slider(
+              value: sec.toDouble(),
+              min: min,
+              max: max,
+              divisions: (max - min).round(),
+              onChanged: (v) => settings.setLyricAutoScrollResumeSec(v.round()),
             ),
           ),
         ],

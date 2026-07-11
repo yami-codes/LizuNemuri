@@ -87,4 +87,41 @@ void main() {
       );
     });
   });
+
+  group('lyricActiveLineIsCentered', () {
+    test('true when active index is near viewport center', () {
+      const positions = [
+        ItemPosition(
+          index: 2,
+          itemLeadingEdge: 0.45,
+          itemTrailingEdge: 0.55,
+        ),
+      ];
+      expect(
+        lyricActiveLineIsCentered(activeIndex: 2, positions: positions),
+        isTrue,
+      );
+    });
+
+    test('false when active index is off-screen', () {
+      expect(
+        lyricActiveLineIsCentered(activeIndex: 2, positions: const []),
+        isFalse,
+      );
+    });
+
+    test('false when active index is visible but far from center', () {
+      const positions = [
+        ItemPosition(
+          index: 2,
+          itemLeadingEdge: 0.05,
+          itemTrailingEdge: 0.12,
+        ),
+      ];
+      expect(
+        lyricActiveLineIsCentered(activeIndex: 2, positions: positions),
+        isFalse,
+      );
+    });
+  });
 }

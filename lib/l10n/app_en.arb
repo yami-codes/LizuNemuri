@@ -376,6 +376,15 @@
       "ms": { "type": "int" }
     }
   },
+  "lyricAutoScrollResume": "Lyric auto-follow delay",
+  "lyricAutoScrollResumeDesc": "Seconds after you stop scrolling lyrics before the view follows the current line again.",
+  "lyricAutoScrollResumeSec": "{seconds} s",
+  "@lyricAutoScrollResumeSec": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "lyricJumpToCurrent": "To current line",
   "sleepTimerActiveSummary": "{preset} min · {minutes}:{seconds} left",
   "@sleepTimerActiveSummary": {
     "placeholders": {

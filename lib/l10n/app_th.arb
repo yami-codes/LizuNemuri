@@ -376,6 +376,15 @@
       "ms": { "type": "int" }
     }
   },
+  "lyricAutoScrollResume": "หน่วงเวลาตามบรรทัดเนื้อเพลง",
+  "lyricAutoScrollResumeDesc": "จำนวนวินาทีหลังเลื่อนเนื้อเพลงด้วยตนเอง ก่อนให้มุมมองกลับไปตามบรรทัดที่กำลังเล่น",
+  "lyricAutoScrollResumeSec": "{seconds} วินาที",
+  "@lyricAutoScrollResumeSec": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "lyricJumpToCurrent": "ไปบรรทัดปัจจุบัน",
   "sleepTimerActiveSummary": "{preset} นาที · เหลือ {minutes}:{seconds}",
   "@sleepTimerActiveSummary": {
     "placeholders": {

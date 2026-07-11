@@ -56,6 +56,7 @@ class AppSettingsService extends ChangeNotifier {
   static const String _sleepTimerDimScreenKey = 'sleep_timer_dim_screen';
   static const String _playbackFadeEnabledKey = 'playback_fade_enabled';
   static const String _playbackFadeMsKey = 'playback_fade_ms';
+  static const String _lyricAutoScrollResumeSecKey = 'lyric_auto_scroll_resume_sec';
   static const String _playerBackdropClarityKey = 'player_backdrop_clarity';
   static const String _logCaptureMinLevelKey = 'log_capture_min_level';
 
@@ -88,6 +89,9 @@ class AppSettingsService extends ChangeNotifier {
   static const int defaultPlaybackFadeMs = 300;
   static const int minPlaybackFadeMs = 100;
   static const int maxPlaybackFadeMs = 1000;
+  static const int defaultLyricAutoScrollResumeSec = 3;
+  static const int minLyricAutoScrollResumeSec = 1;
+  static const int maxLyricAutoScrollResumeSec = 30;
 
   /// Available API nodes (labels via [Strings.serverMain] etc. at UI layer).
   static const List<String> serverUrls = [
@@ -128,6 +132,7 @@ class AppSettingsService extends ChangeNotifier {
   late bool _sleepTimerDimScreenEnabled;
   late bool _playbackFadeEnabled;
   late int _playbackFadeMs;
+  late int _lyricAutoScrollResumeSec;
   late double _playerBackdropClarity;
   late AppLogLevel _logCaptureMinLevel;
 
@@ -204,6 +209,9 @@ class AppSettingsService extends ChangeNotifier {
     _playbackFadeMs = (_prefs.getInt(_playbackFadeMsKey) ??
             defaultPlaybackFadeMs)
         .clamp(minPlaybackFadeMs, maxPlaybackFadeMs);
+    _lyricAutoScrollResumeSec = (_prefs.getInt(_lyricAutoScrollResumeSecKey) ??
+            defaultLyricAutoScrollResumeSec)
+        .clamp(minLyricAutoScrollResumeSec, maxLyricAutoScrollResumeSec);
     _playerBackdropClarity = (_prefs.getDouble(_playerBackdropClarityKey) ??
             defaultPlayerBackdropClarity)
         .clamp(0.0, 1.0);
@@ -537,6 +545,19 @@ class AppSettingsService extends ChangeNotifier {
     _playbackFadeMs = clamped;
     notifyListeners();
     await _prefs.setInt(_playbackFadeMsKey, clamped);
+  }
+
+  int get lyricAutoScrollResumeSec => _lyricAutoScrollResumeSec;
+
+  Future<void> setLyricAutoScrollResumeSec(int seconds) async {
+    final clamped = seconds.clamp(
+      minLyricAutoScrollResumeSec,
+      maxLyricAutoScrollResumeSec,
+    );
+    if (_lyricAutoScrollResumeSec == clamped) return;
+    _lyricAutoScrollResumeSec = clamped;
+    notifyListeners();
+    await _prefs.setInt(_lyricAutoScrollResumeSecKey, clamped);
   }
 
   // === Player cover backdrop clarity (0.0–1.0) ===
