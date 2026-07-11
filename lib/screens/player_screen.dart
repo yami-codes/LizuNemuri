@@ -52,7 +52,7 @@ class _LyricOverlayActionState extends State<_LyricOverlayAction> {
       messenger.showSnackBar(
         SnackBar(
           content: Text(Strings.lyricOverlayEnterFirstHint),
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
       return;
@@ -285,8 +285,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
+      child: const Padding(
+        padding: EdgeInsets.fromLTRB(
           AppSpacing.space12,
           AppSpacing.space12,
           AppSpacing.space12,
@@ -294,7 +294,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: const [
+          children: [
             PlayerScrubber(),
             SizedBox(height: AppSpacing.space4),
             PlayerControls(),

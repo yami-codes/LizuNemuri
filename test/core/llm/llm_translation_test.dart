@@ -132,15 +132,15 @@ void main() {
 
   group('SubtitleTranslationCompleteness', () {
     final source = SubtitleList([
-      Subtitle(
+      const Subtitle(
         start: Duration.zero,
-        end: const Duration(seconds: 1),
+        end: Duration(seconds: 1),
         text: 'A',
         index: 0,
       ),
-      Subtitle(
-        start: const Duration(seconds: 1),
-        end: const Duration(seconds: 2),
+      const Subtitle(
+        start: Duration(seconds: 1),
+        end: Duration(seconds: 2),
         text: 'B',
         index: 1,
       ),

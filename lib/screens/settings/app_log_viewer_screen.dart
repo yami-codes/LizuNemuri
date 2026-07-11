@@ -194,7 +194,7 @@ class _AppLogViewerScreenState extends State<AppLogViewerScreen> {
                           hintText: Strings.logViewerSearchHint,
                           prefixIcon: const Icon(Icons.search),
                           isDense: true,
-                          border: OutlineInputBorder(
+                          border: const OutlineInputBorder(
                             borderRadius: AppRadius.mdAll,
                           ),
                         ),
@@ -209,7 +209,7 @@ class _AppLogViewerScreenState extends State<AppLogViewerScreen> {
                               decoration: InputDecoration(
                                 labelText: Strings.logViewerFilterLevel,
                                 isDense: true,
-                                border: OutlineInputBorder(
+                                border: const OutlineInputBorder(
                                   borderRadius: AppRadius.mdAll,
                                 ),
                               ),

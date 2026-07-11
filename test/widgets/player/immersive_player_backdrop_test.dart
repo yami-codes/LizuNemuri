@@ -101,7 +101,7 @@ void main() {
     testWidgets('rebuilds when clarity setting changes', (tester) async {
       final settings = getIt<AppSettingsService>();
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: CoverArtworkBackground(
               coverUrl: null,

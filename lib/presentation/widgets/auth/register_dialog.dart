@@ -89,7 +89,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
         SnackBar(
           content: Text(Strings.registerSuccess),
           behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
     } else {

@@ -56,6 +56,6 @@ void main() {
     final builder = tester.widget<TweenAnimationBuilder<double>>(
       find.byType(TweenAnimationBuilder<double>),
     );
-    expect((builder.tween as Tween<double>).end, 0.92);
+    expect((builder.tween).end, 0.92);
   });
 }

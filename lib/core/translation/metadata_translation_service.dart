@@ -410,7 +410,7 @@ Do not wrap in markdown fences. Do not return a JSON array wrapper.''';
     }
 
     if (result.isEmpty) {
-      throw LlmTranslationException(
+      throw const LlmTranslationException(
         LlmTranslationErrorType.invalidResponse,
         'empty metadata LLM response',
       );

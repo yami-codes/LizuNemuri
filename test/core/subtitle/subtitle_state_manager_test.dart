@@ -10,9 +10,9 @@ SubtitleList _listWithText(String text) {
       text: text,
       index: 0,
     ),
-    Subtitle(
-      start: const Duration(seconds: 5),
-      end: const Duration(seconds: 10),
+    const Subtitle(
+      start: Duration(seconds: 5),
+      end: Duration(seconds: 10),
       text: 'line two',
       index: 1,
     ),

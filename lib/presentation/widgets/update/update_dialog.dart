@@ -32,12 +32,12 @@ class _UpdateDialogBody extends StatelessWidget {
             content: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Text(Strings.updateChecking),
               ],
             ),

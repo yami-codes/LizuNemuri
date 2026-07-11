@@ -125,7 +125,7 @@ class _LocalLibraryContentState extends State<LocalLibraryContent> {
             color: cs.surfaceContainerHighest.withValues(alpha: 0.45),
             borderRadius: AppRadius.mdAll,
             child: ListTile(
-              shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
+              shape: const RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
               leading: CircleAvatar(
                 backgroundColor: cs.primaryContainer,
                 child: Icon(Icons.album_outlined, color: cs.onPrimaryContainer),

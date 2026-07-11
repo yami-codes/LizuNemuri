@@ -138,7 +138,7 @@ void _clampPrimaryHslForMode(List<double> hsl, bool isDark) {
     };
     hsl[2] = hsl[2].clamp(minL, maxL);
   } else {
-    final minL = 0.18;
+    const minL = 0.18;
     final maxL = switch (hue) {
       >= 38 && < 85 => hsl[1] >= 0.45 ? 0.38 : 0.42,
       >= 85 && < 170 => hsl[1] >= 0.45 ? 0.40 : 0.44,

@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/foundation.dart';
 import 'package:lizunemu/core/translation/metadata_translation_service.dart';
 import 'package:lizunemu/data/services/google_translate_client.dart';
 

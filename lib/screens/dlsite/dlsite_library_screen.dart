@@ -159,7 +159,7 @@ class _DlsiteLibraryBodyState extends State<_DlsiteLibraryBody> {
             color: cs.surfaceContainerHighest.withValues(alpha: 0.45),
             borderRadius: AppRadius.mdAll,
             child: ListTile(
-              shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
+              shape: const RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
               leading: ClipRRect(
                 borderRadius: AppRadius.smAll,
                 child: album.coverUrl != null && album.coverUrl!.isNotEmpty
