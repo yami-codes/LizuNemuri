@@ -1,5 +1,6 @@
 import 'package:lizunemu/data/models/files/child.dart';
 import 'package:lizunemu/data/models/files/files.dart';
+import 'package:lizunemu/data/services/asmr_api_headers.dart';
 
 /// Shared helpers for work file trees and CDN media fetches.
 class WorkMediaUtils {
@@ -10,6 +11,7 @@ class WorkMediaUtils {
     'User-Agent':
         'Mozilla/5.0 (compatible; Lizunemu/2.0; +https://github.com/yami-codes/LizuNemu)',
     'Accept': '*/*',
+    'Accept-Language': AsmrApiHeaders.acceptLanguage,
   };
 
   /// Finds the same leaf in a fresh `/tracks/{id}` tree (hash preferred, then title).

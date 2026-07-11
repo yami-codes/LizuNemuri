@@ -1,7 +1,7 @@
 import 'package:lizunemu/utils/platform_capabilities.dart';
 import 'package:dio/dio.dart';
 import 'package:lizunemu/data/services/interceptors/retry_interceptor.dart';
-import 'package:lizunemu/data/services/interceptors/auth_interceptor.dart';
+import 'package:lizunemu/data/services/interceptors/accept_language_interceptor.dart';
 import 'package:lizunemu/core/platform/dummy_lyric_overlay_controller.dart';
 import 'package:get_it/get_it.dart';
 import '../audio/i_audio_player_service.dart';
@@ -89,9 +89,11 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<IDownloadRepository>(
     () => DownloadRepository(getIt<DatabaseService>()),
   );
-  getIt.registerLazySingleton<DownloadService>(
-    () => DownloadService(repository: getIt<IDownloadRepository>()),
-  );
+  getIt.registerLazySingleton<DownloadService>(() {
+    final dio = Dio();
+    dio.interceptors.add(const AcceptLanguageInterceptor());
+    return DownloadService(repository: getIt<IDownloadRepository>(), dio: dio);
+  });
 
   // Register PlaybackStateRepository
   getIt.registerLazySingleton<IPlaybackStateRepository>(
@@ -271,6 +273,7 @@ void setupSubtitleServices() {
     // Presigned mediaDownloadUrl must not carry AuthInterceptor — CDN rejects
     // extra Authorization headers (403) while Android streaming stays tokenless.
     final dio = Dio();
+    dio.interceptors.add(const AcceptLanguageInterceptor());
     dio.interceptors.add(RetryInterceptor(dio: dio));
     return SubtitleLoader(dio: dio);
   });
