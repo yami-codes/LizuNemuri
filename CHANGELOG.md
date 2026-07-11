@@ -8,6 +8,18 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.20 — 2026-07-11
+
+### Added
+- **Lyric auto-follow delay**: Settings → Playback slider (1–30s, default 3) before lyrics re-center on the current line after manual scroll.
+- **Jump to current line**: chip appears when the active cue is off-center; tap to recenter.
+
+### Fixed
+- **Streaming translation flicker**: partial subtitle updates no longer clear current cue; active line tracked by index.
+- **Lyric scroll**: manual exploration (including fling) no longer gets yanked when the playback line advances.
+
+---
+
 ## v2.0.0-rc.19 — 2026-07-11
 
 ### Changed
