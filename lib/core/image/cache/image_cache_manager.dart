@@ -1,6 +1,7 @@
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
+import 'package:lizunemu/core/image/cache/asmr_http_file_service.dart';
+import 'package:lizunemu/utils/logger.dart';
 
 /// Image cache manager — unified image caching policy.
 class ImageCacheManager {
@@ -12,7 +13,7 @@ class ImageCacheManager {
       stalePeriod: const Duration(days: 30),
       maxNrOfCacheObjects: 500,
       repo: JsonCacheInfoRepository(databaseName: key),
-      fileService: HttpFileService(),
+      fileService: AsmrHttpFileService(),
     ),
   );
 

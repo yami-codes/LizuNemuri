@@ -44,4 +44,18 @@ abstract final class AsmrApiHeaders {
     }
     return zhAcceptLanguage;
   }
+
+  /// Accept-Language for asmr CDN (covers, presigned media). Mirrors gate on
+  /// Chinese — always zh regardless of UI language.
+  static const cdnAcceptLanguage = zhAcceptLanguage;
+
+  static const _userAgent =
+      'Mozilla/5.0 (compatible; Lizunemu/2.0; +https://github.com/yami-codes/LizuNemu)';
+
+  /// Browser-like headers for presigned CDN URLs (no auth token).
+  static Map<String, String> get cdnFetchHeaders => {
+        'User-Agent': _userAgent,
+        'Accept': '*/*',
+        'Accept-Language': cdnAcceptLanguage,
+      };
 }

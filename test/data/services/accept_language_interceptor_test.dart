@@ -120,4 +120,15 @@ void main() {
       );
     });
   });
+
+  test('cdnFetchHeaders always use zh Accept-Language', () {
+    expect(
+      AsmrApiHeaders.cdnFetchHeaders['Accept-Language'],
+      AsmrApiHeaders.zhAcceptLanguage,
+    );
+    expect(
+      AsmrApiHeaders.cdnFetchHeaders['Accept-Language'],
+      isNot(contains('en')),
+    );
+  });
 }
