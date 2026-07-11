@@ -7,6 +7,7 @@ import 'package:lizunemu/data/models/works/work.dart';
 import 'package:lizunemu/data/models/works/pagination.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/data/services/interceptors/auth_interceptor.dart';
+import 'package:lizunemu/data/services/interceptors/accept_language_interceptor.dart';
 import 'package:lizunemu/data/services/interceptors/retry_interceptor.dart';
 import 'package:lizunemu/data/services/exceptions/network_exception.dart';
 import 'package:lizunemu/data/models/playlists_with_exist_statu/playlist.dart';
@@ -40,6 +41,7 @@ class ApiService {
           receiveTimeout: const Duration(seconds: 30),
           sendTimeout: const Duration(seconds: 15),
         )) {
+    _dio.interceptors.add(const AcceptLanguageInterceptor());
     _dio.interceptors.add(RetryInterceptor(dio: _dio));
     _dio.interceptors.add(AuthInterceptor());
     // Listen for server URL changes

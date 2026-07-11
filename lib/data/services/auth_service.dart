@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
+import 'package:lizunemu/data/services/interceptors/accept_language_interceptor.dart';
 import 'package:lizunemu/data/models/auth/auth_resp/auth_resp.dart';
 import 'package:lizunemu/data/services/exceptions/network_exception.dart';
 import '../../utils/logger.dart';
@@ -31,6 +32,7 @@ class AuthService {
             sendTimeout: const Duration(seconds: 15),
           ),
         ) {
+    _dio.interceptors.add(const AcceptLanguageInterceptor());
     _settings.addListener(_onSettingsChanged);
   }
 
