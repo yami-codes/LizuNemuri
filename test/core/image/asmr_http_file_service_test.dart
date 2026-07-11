@@ -51,7 +51,7 @@ void main() {
     expect(capturing.lastUrl, 'https://media.asmr.one/cover.jpg');
     expect(
       capturing.lastHeaders?['Accept-Language'],
-      AsmrApiHeaders.cdnAcceptLanguage,
+      AsmrApiHeaders.acceptLanguage,
     );
     expect(capturing.lastHeaders?['User-Agent'], isNotEmpty);
     expect(capturing.lastHeaders?['Accept'], '*/*');
@@ -71,7 +71,7 @@ void main() {
     expect(capturing.lastHeaders?['If-None-Match'], 'etag-1');
     expect(
       capturing.lastHeaders?['Accept-Language'],
-      AsmrApiHeaders.cdnAcceptLanguage,
+      AsmrApiHeaders.acceptLanguage,
     );
   });
 }

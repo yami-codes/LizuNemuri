@@ -44,4 +44,4 @@
 
 ## 6. Notes / Decision Log
 
-- CDN/image traffic always sends `zhAcceptLanguage` — mirrors appear to require Chinese regardless of UI language; API Dio clients keep locale-aware mapping from PR #30.
+- CDN/image traffic always sends `zhAcceptLanguage` — mirrors require Chinese regardless of UI language; API Dio clients now use the same fixed header (no locale-aware mapping).
