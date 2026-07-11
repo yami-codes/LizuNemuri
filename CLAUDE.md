@@ -55,7 +55,7 @@ fvm flutter build apk --release
 fvm flutter build ios --no-codesign
 ```
 
-**Environment:** Dart SDK >=3.2.3 <4.0.0, Flutter 3.27.0 (FVM-pinned), Android min SDK 21 / target 33, Java 17.
+**Environment:** Dart SDK >=3.2.3 <4.0.0, Flutter 3.27.0 (FVM-pinned), Android min SDK 21 / target from Flutter tooling / **compileSdk 36**, Java 17. Android app Gradle enables **core library desugaring** (`desugar_jdk_libs` + `multiDexEnabled`) required by `flutter_local_notifications`.
 
 **Renderer (Android):** Impeller is **disabled** via `io.flutter.embedding.android.EnableImpeller=false` in `android/app/src/main/AndroidManifest.xml` — Android builds use the Skia backend. Reason: real-device `Vulkan: ErrorDeviceLost` → `SIGSEGV in libvulkan.so::CmdEndRenderPass+4` long-session crashes on Xiaomi HyperOS 3 / Android 16 + Adreno (driver-level GPU fault, zero Dart frames). Don't re-enable Impeller without first upgrading the Flutter SDK (3.29+ has many Adreno fixes) and re-running a 30+ min real-device session — see `docs/todos/active/20260515-upgrade-flutter-sdk.md`. iOS continues to use Impeller (default and stable there).
 

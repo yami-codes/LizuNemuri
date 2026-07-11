@@ -8,6 +8,13 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.23 — 2026-07-11
+
+### Fixed
+- **Android release CI**: enable core library desugaring for `flutter_local_notifications` and bump `compileSdk` to 36 (media_kit).
+
+---
+
 ## v2.0.0-rc.22 — 2026-07-11
 
 ### Added

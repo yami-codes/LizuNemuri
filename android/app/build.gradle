@@ -13,10 +13,13 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "moe.lizu.nemu"
-    compileSdk = flutter.compileSdkVersion
+    // media_kit_libs_android_video + flutter_local_notifications require SDK 36.
+    compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     compileOptions {
+        // Required by flutter_local_notifications (scheduled notification APIs).
+        coreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -34,6 +37,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        multiDexEnabled = true
     }
 
     signingConfigs {
@@ -64,4 +68,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
 }
