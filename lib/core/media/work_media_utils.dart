@@ -7,12 +7,12 @@ class WorkMediaUtils {
   WorkMediaUtils._();
 
   /// Browser-like headers for presigned CDN URLs (no auth token).
-  static const Map<String, String> mediaFetchHeaders = {
-    'User-Agent':
-        'Mozilla/5.0 (compatible; Lizunemu/2.0; +https://github.com/yami-codes/LizuNemu)',
-    'Accept': '*/*',
-    'Accept-Language': AsmrApiHeaders.acceptLanguage,
-  };
+  static Map<String, String> get mediaFetchHeaders => {
+        'User-Agent':
+            'Mozilla/5.0 (compatible; Lizunemu/2.0; +https://github.com/yami-codes/LizuNemu)',
+        'Accept': '*/*',
+        'Accept-Language': AsmrApiHeaders.currentAcceptLanguage(),
+      };
 
   /// Finds the same leaf in a fresh `/tracks/{id}` tree (hash preferred, then title).
   static Child? findMatchingFile(List<Child>? nodes, Child target) {

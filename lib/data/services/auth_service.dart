@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
-import 'package:lizunemu/data/services/asmr_api_headers.dart';
 import 'package:lizunemu/data/services/interceptors/accept_language_interceptor.dart';
 import 'package:lizunemu/data/models/auth/auth_resp/auth_resp.dart';
 import 'package:lizunemu/data/services/exceptions/network_exception.dart';
@@ -31,7 +30,6 @@ class AuthService {
             connectTimeout: const Duration(seconds: 15),
             receiveTimeout: const Duration(seconds: 30),
             sendTimeout: const Duration(seconds: 15),
-            headers: AsmrApiHeaders.defaultHeaders,
           ),
         ) {
     _dio.interceptors.add(const AcceptLanguageInterceptor());

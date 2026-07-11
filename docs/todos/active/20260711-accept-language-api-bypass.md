@@ -5,7 +5,7 @@
 
 ## Goal
 
-asmr.one mirrors gate traffic on browser `Accept-Language` only. Send zh-heavy header on all asmr API/media clients so Thai/EN UI users reach the API without VPN.
+Inject locale-aware `Accept-Language` on asmr API/media clients. **English is banned** on mirrors — English UI (or EN system locale) sends Thai header; Chinese UI sends zh; never includes `en` in the chain.
 
 ## Plan
 

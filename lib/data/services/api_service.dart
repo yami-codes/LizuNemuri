@@ -17,7 +17,6 @@ import 'package:lizunemu/data/models/circles/circle_item.dart';
 import 'package:lizunemu/data/models/vas/voice_actor.dart';
 import 'package:lizunemu/data/models/works/work_info.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
-import 'package:lizunemu/data/services/asmr_api_headers.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
 
 
@@ -41,7 +40,6 @@ class ApiService {
           connectTimeout: const Duration(seconds: 15),
           receiveTimeout: const Duration(seconds: 30),
           sendTimeout: const Duration(seconds: 15),
-          headers: AsmrApiHeaders.defaultHeaders,
         )) {
     _dio.interceptors.add(const AcceptLanguageInterceptor());
     _dio.interceptors.add(RetryInterceptor(dio: _dio));
