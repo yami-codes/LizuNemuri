@@ -15,3 +15,9 @@ Replace Apple Music player chrome with Material 3, fix subtitle dual-line/kineti
 - [x] Tag chip contrast + EN `$tag:` autocomplete — `search_command_field.dart`, `search_command_suggestions.dart`, `advanced_filter_bar.dart`, `work_tags_panel.dart` (already readable)
 - [x] Translation partial success — `detail_viewmodel.dart`
 - [x] Tests — lyric + search suggestion tests updated/added
+
+## ✅ Done
+
+- Moved during 2026-07-09 system audit (shipped or superseded by M3 player).
+- /init: skipped (batch housekeeping)
+- Timestamp: 2026-07-09

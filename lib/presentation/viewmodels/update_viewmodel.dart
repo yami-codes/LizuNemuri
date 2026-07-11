@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:lizunemu/utils/platform_capabilities.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
-
-import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/data/models/update_info.dart';

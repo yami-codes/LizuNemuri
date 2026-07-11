@@ -6,7 +6,6 @@ import '../utils/playlist_builder.dart';
 import '../utils/audio_error_handler.dart';
 import '../events/playback_event_hub.dart';
 import '../events/playback_event.dart';
-import '../models/play_mode.dart';
 import 'package:lizunemu/data/models/files/child.dart';
 import 'package:lizunemu/data/models/works/work.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';

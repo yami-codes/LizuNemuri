@@ -194,10 +194,4 @@ class PlaybackContext {
       file.type?.toLowerCase() != 'vtt'
     ).toList();
   }
-
-  // Helper: file base name without extension
-  String? _getBaseName(String? filename) {
-    if (filename == null) return null;
-    return filename.replaceAll(RegExp(r'\.[^.]+$'), '');
-  }
 } 

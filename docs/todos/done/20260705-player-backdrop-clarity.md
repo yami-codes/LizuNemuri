@@ -54,3 +54,9 @@ Let users adjust player cover background clarity (0–100%) in Settings, persist
 ## 6. Notes
 
 - Default 0.35 matches `kPlayerCoverBackdropClarity`; existing users see no visual jump on upgrade.
+
+## ✅ Done
+
+- Moved during 2026-07-09 system audit (shipped or superseded by M3 player).
+- /init: skipped (batch housekeeping)
+- Timestamp: 2026-07-09

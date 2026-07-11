@@ -13,3 +13,9 @@ Stop `Cannot modify an unmodifiable list` when refreshing presigned URLs on Free
 - [x] `onTreePatched` callback in `WorkMediaUrlRefresher.refreshFile`
 - [x] Wire `DetailViewModel._freshFile` to replace `_files`
 - [x] Unit tests for immutable patch path
+
+## ✅ Done
+
+- Moved during 2026-07-09 system audit (shipped or superseded by M3 player).
+- /init: skipped (batch housekeeping)
+- Timestamp: 2026-07-09

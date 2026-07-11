@@ -31,6 +31,7 @@ class SearchViewModel extends ChangeNotifier with WorkListTranslationMixin {
   final _settings = GetIt.I<AppSettingsService>();
 
   Timer? _debounceTimer;
+  int _searchGeneration = 0;
   bool _initialized = false;
   bool get initialized => _initialized;
 
@@ -292,6 +293,7 @@ class SearchViewModel extends ChangeNotifier with WorkListTranslationMixin {
   }
 
   Future<void> search(String keyword, {int page = 1, String draft = ''}) async {
+    _debounceTimer?.cancel();
     final extracted = SearchCommandSuggestor.extractCompleteTokens(
       tokens: _commandTokens,
       draft: draft.isNotEmpty ? draft : keyword,
@@ -303,6 +305,7 @@ class SearchViewModel extends ChangeNotifier with WorkListTranslationMixin {
     final composed = _composedKeyword(draft: _keyword);
     if (composed.isEmpty) return;
     if (page == 1) clearTranslatedWorkTitles();
+    final generation = ++_searchGeneration;
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -318,6 +321,7 @@ class SearchViewModel extends ChangeNotifier with WorkListTranslationMixin {
         sort: _filterState.sortValue,
         hasSubtitle: hasSubtitle,
       );
+      if (generation != _searchGeneration) return;
 
       _works = response.works;
       _pagination = response.pagination;
@@ -328,11 +332,14 @@ class SearchViewModel extends ChangeNotifier with WorkListTranslationMixin {
       );
       await maybeAutoTranslateWorks(_works);
     } catch (e) {
+      if (generation != _searchGeneration) return;
       AppLogger.error(LogStrings.logSearchFailed, e);
       _error = userFacingError(e);
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      if (generation == _searchGeneration) {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
   }
 

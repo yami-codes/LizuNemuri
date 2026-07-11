@@ -414,6 +414,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       } else if (value == 'llm_translate') {
                         final err = await _viewModel.translateSubtitlesNow();
                         if (!context.mounted) return;
+                        // Empty string = superseded/cancelled mid-flight.
+                        if (err != null && err.isEmpty) return;
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(

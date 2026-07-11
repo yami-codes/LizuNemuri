@@ -18,6 +18,7 @@ import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/core/settings/llm_subtitle_display_mode.dart';
 import 'package:lizunemu/core/settings/playback_speed_presets.dart';
 import 'package:lizunemu/core/subtitle/subtitle_import_service.dart';
+import 'package:lizunemu/core/media/work_media_url_refresher.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:lizunemu/utils/logger.dart';
 import 'package:lizunemu/common/constants/log_strings.dart';
@@ -30,6 +31,7 @@ class PlayerViewModel extends ChangeNotifier {
   final _importService = GetIt.I<SubtitleImportService>();
   final _downloadService = GetIt.I<DownloadService>();
   final _translationService = GetIt.I<SubtitleTranslationService>();
+  final _mediaUrlRefresher = GetIt.I<WorkMediaUrlRefresher>();
   final _settings = GetIt.I<AppSettingsService>();
 
   bool _isPlaying = false;
@@ -504,7 +506,8 @@ class PlayerViewModel extends ChangeNotifier {
             onPartial: onPartial,
           );
 
-    if (isStale()) return null;
+    // Track changed / newer translate started — silent (empty = no snackbar).
+    if (isStale()) return '';
 
     _isTranslating = false;
     _translationStatus = null;
@@ -573,7 +576,7 @@ class PlayerViewModel extends ChangeNotifier {
 
     // 2. Auto-match. Priority: downloaded local subtitle (offline) > online URL.
     _isUserImportedSubtitle = false;
-    final subtitleFile = _subtitleLoader.findSubtitleFile(
+    var subtitleFile = _subtitleLoader.findSubtitleFile(
       context.currentFile,
       context.files,
     );
@@ -599,7 +602,15 @@ class PlayerViewModel extends ChangeNotifier {
       }
     }
 
-    // 2b. Online URL (requires network).
+    // 2b. Online URL — refresh presigned URL first (tree may be stale).
+    if (workId != null) {
+      subtitleFile = await _mediaUrlRefresher.refreshFile(
+        workId: workId,
+        file: subtitleFile,
+      );
+      if (_loadVersion != version) return;
+    }
+
     if (subtitleFile.mediaDownloadUrl != null) {
       final list =
           await _subtitleLoader.loadSubtitleContent(subtitleFile.mediaDownloadUrl!);

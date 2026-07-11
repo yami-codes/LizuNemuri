@@ -297,7 +297,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               value: settings.backgroundPlayEnabled,
               onChanged: (v) => settings.setBackgroundPlayEnabled(v),
             ),
-            _PlayerBackdropClaritySlider(settings: settings),
             SettingsTile.toggle(
               title: Strings.screenKeepAwake,
               subtitle: Strings.screenKeepAwakeDesc,
@@ -527,78 +526,3 @@ class _PlaybackFadeDurationSlider extends StatelessWidget {
   }
 }
 
-class _PlayerBackdropClaritySlider extends StatelessWidget {
-  const _PlayerBackdropClaritySlider({required this.settings});
-
-  final AppSettingsService settings;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final clarity = settings.playerBackdropClarity;
-    final percentLabel = '${(clarity * 100).round()}%';
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.space16,
-        vertical: AppSpacing.space12,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              SizedBox(
-                width: AppSpacing.space40,
-                height: AppSpacing.space40,
-                child: Icon(
-                  Icons.blur_on_outlined,
-                  size: 20,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.space12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      Strings.playerBackdropClarity,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      Strings.playerBackdropClarityDesc,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: AppSpacing.space8),
-              Text(
-                percentLabel,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              left: AppSpacing.space40 + AppSpacing.space12,
-            ),
-            child: Slider(
-              value: clarity,
-              onChanged: settings.setPlayerBackdropClarity,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

@@ -1,7 +1,6 @@
 import 'package:lizunemu/utils/platform_capabilities.dart';
 import 'package:dio/dio.dart';
 import 'package:lizunemu/data/services/interceptors/retry_interceptor.dart';
-import 'package:lizunemu/data/services/interceptors/auth_interceptor.dart';
 import 'package:lizunemu/core/platform/dummy_lyric_overlay_controller.dart';
 import 'package:get_it/get_it.dart';
 import '../audio/i_audio_player_service.dart';

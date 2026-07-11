@@ -29,3 +29,9 @@
 
 - [x] **Step 1**: Wire clarity in `PlayerImmersiveColors.resolve` call
 - [x] **Step 2**: Run `immersive_player_backdrop_test.dart`
+
+## ✅ Done
+
+- Moved during 2026-07-09 system audit (shipped or superseded by M3 player).
+- /init: skipped (batch housekeeping)
+- Timestamp: 2026-07-09

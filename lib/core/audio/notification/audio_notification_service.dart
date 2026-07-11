@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:lizunemu/core/audio/events/playback_event_hub.dart';
 import 'package:lizunemu/core/subtitle/i_subtitle_service.dart';
 import 'package:permission_handler/permission_handler.dart';
