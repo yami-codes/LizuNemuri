@@ -74,7 +74,7 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
       ItemPositionsListener.create();
 
   bool _isFirstBuild = true;
-  Subtitle? _lastScrolledSubtitle;
+  int? _lastScrolledSubtitleIndex;
 
   Timer? _scrollDebounceTimer;
   bool _allowAutoScroll = true;
@@ -111,8 +111,8 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
     if (!_itemScrollController.isAttached) return;
     if (!_allowAutoScroll) return;
 
-    if (_lastScrolledSubtitle == current.subtitle) return;
-    _lastScrolledSubtitle = current.subtitle;
+    if (_lastScrolledSubtitleIndex == current.subtitle.index) return;
+    _lastScrolledSubtitleIndex = current.subtitle.index;
 
     final index = current.subtitle.index;
     const alignment = 0.5;
@@ -182,7 +182,7 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
                       Timer(const Duration(milliseconds: 3000), () {
                     if (mounted) {
                       _allowAutoScroll = true;
-                      _lastScrolledSubtitle = null;
+                      _lastScrolledSubtitleIndex = null;
                       final current =
                           _subtitleService.currentSubtitleWithState;
                       if (current != null) {
@@ -208,7 +208,8 @@ class _PlayerLyricViewState extends State<PlayerLyricView> {
                     ),
                     itemBuilder: (context, index) {
                       final subtitle = subtitleList.subtitles[index];
-                      final isActive = currentSubtitle?.subtitle == subtitle;
+                      final isActive =
+                          currentSubtitle?.subtitle.index == subtitle.index;
                       final emphasis = lyricEmphasisForIndex(
                         index: index,
                         isActive: isActive,
