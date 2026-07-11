@@ -8,6 +8,24 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.18 — 2026-07-11
+
+### Added
+- **Accept-Language bypass**: asmr.one API/CDN clients send locale-aware `Accept-Language` headers so Thai/English UI users can reach mirrors without VPN. English UI (and English system locale) uses Thai header; Chinese uses zh-CN; **`en` is never sent** (blocked by mirrors).
+
+### Changed
+- **Material You player**: flat M3 surface replaces blurred Apple Music backdrop; segmented cover/lyrics toggle; single-line kinetic lyrics; translation-only subtitle default.
+- **Search**: keyword persists across sessions; 450ms debounced auto-search; English tag autocomplete for `$tag:…$` tokens; readable tag chip colors.
+
+### Fixed
+- **Search races**: generation guard + debounce cancel prevents stale results overwriting newer grids.
+- **URL refresh**: immutable `patchInFiles` for Freezed trees; subtitle URL refresh in player; playback restore refreshes presigned URLs.
+- **Settings**: removed dead player backdrop clarity slider (no backdrop in M3 player).
+- **LLM translate**: superseded mid-flight translate no longer shows false “translation complete”.
+- **Layout tests**: `PlayerLayoutConfig` cover size expectations aligned with current sizing.
+
+---
+
 ## v2.0.0-rc.16 — 2026-07-06
 
 ### Added
