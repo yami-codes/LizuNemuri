@@ -2,12 +2,10 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:lizunemu/core/download/download_service.dart';
 import 'package:lizunemu/core/lore/ccv2_export_service.dart';
 import 'package:lizunemu/core/lore/global_character_service.dart';
-import 'package:lizunemu/core/lore/lore_json_utils.dart';
 import 'package:lizunemu/core/lore/lore_pack_io.dart';
-import 'package:lizunemu/core/lore/lore_subtitle_resolver.dart';
+import 'package:lizunemu/core/lore/lore_track_input_builder.dart';
 import 'package:lizunemu/core/lore/models/global_character.dart';
 import 'package:lizunemu/core/lore/models/lore_character.dart';
 import 'package:lizunemu/core/lore/models/lore_content_level.dart';
@@ -15,9 +13,6 @@ import 'package:lizunemu/core/lore/models/lore_ontology.dart';
 import 'package:lizunemu/core/lore/models/lore_param.dart';
 import 'package:lizunemu/core/lore/models/work_lore_pack.dart';
 import 'package:lizunemu/core/lore/work_lore_service.dart';
-import 'package:lizunemu/core/media/work_media_url_refresher.dart';
-import 'package:lizunemu/core/subtitle/subtitle_import_service.dart';
-import 'package:lizunemu/core/subtitle/subtitle_loader.dart';
 import 'package:lizunemu/data/models/files/files.dart';
 import 'package:lizunemu/data/models/works/work.dart';
 import 'package:lizunemu/data/repositories/llm_api_key_repository.dart';
@@ -31,7 +26,7 @@ class WorkLoreViewModel extends ChangeNotifier {
   final WorkLoreService _lore;
   final Ccv2ExportService _ccv2;
   final GlobalCharacterService _global;
-  final LoreSubtitleResolver _subtitleResolver;
+  final LoreTrackInputBuilder _trackBuilder;
   final LlmApiKeyRepository _apiKeyRepo;
 
   WorkLorePack? _pack;
@@ -47,12 +42,12 @@ class WorkLoreViewModel extends ChangeNotifier {
     required WorkLoreService lore,
     required Ccv2ExportService ccv2,
     required GlobalCharacterService global,
-    required LoreSubtitleResolver subtitleResolver,
+    required LoreTrackInputBuilder trackBuilder,
     required LlmApiKeyRepository apiKeyRepo,
   })  : _lore = lore,
         _ccv2 = ccv2,
         _global = global,
-        _subtitleResolver = subtitleResolver,
+        _trackBuilder = trackBuilder,
         _apiKeyRepo = apiKeyRepo;
 
   /// Convenience constructor wiring GetIt-style deps used by DetailScreen.
@@ -61,10 +56,7 @@ class WorkLoreViewModel extends ChangeNotifier {
     required WorkLoreService lore,
     required Ccv2ExportService ccv2,
     required GlobalCharacterService global,
-    required SubtitleLoader subtitleLoader,
-    required DownloadService downloads,
-    required WorkMediaUrlRefresher urlRefresher,
-    required SubtitleImportService imports,
+    required LoreTrackInputBuilder trackBuilder,
     required LlmApiKeyRepository apiKeyRepo,
   }) {
     return WorkLoreViewModel(
@@ -72,12 +64,7 @@ class WorkLoreViewModel extends ChangeNotifier {
       lore: lore,
       ccv2: ccv2,
       global: global,
-      subtitleResolver: LoreSubtitleResolver(
-        loader: subtitleLoader,
-        downloads: downloads,
-        urlRefresher: urlRefresher,
-        imports: imports,
-      ),
+      trackBuilder: trackBuilder,
       apiKeyRepo: apiKeyRepo,
     );
   }
@@ -126,36 +113,20 @@ class WorkLoreViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final workId = '${work.id ?? work.sourceId ?? ''}';
-      final withSubs = <LoreTrackInput>[];
-      for (var i = 0; i < pairs.length; i++) {
-        final pair = pairs[i];
-        final audio = pair.audio;
-        final trackKey = LoreJsonUtils.trackKeyFor(
-          index: i,
-          hash: audio.hash,
-          mediaDownloadUrl: audio.mediaDownloadUrl,
-          title: audio.title,
-        );
-        final text = await _subtitleResolver.resolveText(
-          workId: workId,
-          audio: audio,
-          matchedSubtitle: pair.subtitle,
-          files: files,
-        );
-        withSubs.add(
-          LoreTrackInput(
-            trackKey: trackKey,
-            title: audio.title ?? 'Track ${i + 1}',
-            index: i,
-            subtitleText: text,
-          ),
-        );
-      }
+      _progressStage = 'subs';
+      _progress = 0.02;
+      notifyListeners();
+      final withSubs = await _trackBuilder.build(
+        work: work,
+        workId: workId,
+        pairs: pairs,
+        files: files,
+      );
 
       final withText = withSubs.where((t) => t.hasSubtitles).length;
       AppLogger.debug(
-        'Lore generate: $withText/${withSubs.length} tracks have subtitle text'
+        'Lore generate: $withText/${withSubs.length} logical tracks '
+        '(from ${pairs.length} audio files)'
         '${includeSecrets ? ' (+secrets)' : ''}',
       );
 
@@ -203,36 +174,15 @@ class WorkLoreViewModel extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      final workId = '${work.id ?? work.sourceId ?? ''}';
-      final enriched = <LoreTrackInput>[];
-      for (var i = 0; i < pairs.length; i++) {
-        final pair = pairs[i];
-        final audio = pair.audio;
-        final key = LoreJsonUtils.trackKeyFor(
-          index: i,
-          hash: audio.hash,
-          mediaDownloadUrl: audio.mediaDownloadUrl,
-          title: audio.title,
-        );
-        String? text;
-        if (section == LoreRegenSection.track &&
-            (trackKey == null || trackKey == key)) {
-          text = await _subtitleResolver.resolveText(
-            workId: workId,
-            audio: audio,
-            matchedSubtitle: pair.subtitle,
-            files: files,
-          );
-        }
-        enriched.add(
-          LoreTrackInput(
-            trackKey: key,
-            title: audio.title ?? 'Track ${i + 1}',
-            index: i,
-            subtitleText: text,
-          ),
-        );
-      }
+      final enriched = section == LoreRegenSection.track
+          ? await _trackBuilder.build(
+              work: work,
+              workId: workId,
+              pairs: pairs,
+              files: files,
+              alignToPack: _pack,
+            )
+          : <LoreTrackInput>[];
 
       _pack = await _lore.regenerateSection(
         work: work,
@@ -270,32 +220,15 @@ class WorkLoreViewModel extends ChangeNotifier {
     _cancelToken = CancelToken();
     notifyListeners();
     try {
-      final workId = '${work.id ?? work.sourceId ?? ''}';
-      final enriched = <LoreTrackInput>[];
-      for (var i = 0; i < pairs.length; i++) {
-        final pair = pairs[i];
-        final audio = pair.audio;
-        final trackKey = LoreJsonUtils.trackKeyFor(
-          index: i,
-          hash: audio.hash,
-          mediaDownloadUrl: audio.mediaDownloadUrl,
-          title: audio.title,
-        );
-        final text = await _subtitleResolver.resolveText(
-          workId: workId,
-          audio: audio,
-          matchedSubtitle: pair.subtitle,
-          files: files,
-        );
-        enriched.add(
-          LoreTrackInput(
-            trackKey: trackKey,
-            title: audio.title ?? 'Track ${i + 1}',
-            index: i,
-            subtitleText: text,
-          ),
-        );
-      }
+      _progressStage = 'subs';
+      notifyListeners();
+      final enriched = await _trackBuilder.build(
+        work: work,
+        workId: workId,
+        pairs: pairs,
+        files: files,
+        alignToPack: _pack,
+      );
 
       _pack = await _lore.generateSecrets(
         _pack!,

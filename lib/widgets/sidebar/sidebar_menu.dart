@@ -15,6 +15,7 @@ import 'package:lizunemu/screens/browse/voice_actors_screen.dart';
 import 'package:lizunemu/screens/about_screen.dart';
 import 'package:lizunemu/screens/downloads_screen.dart';
 import 'package:lizunemu/screens/translation_queue_screen.dart';
+import 'package:lizunemu/screens/lore_generate_queue_screen.dart';
 import 'package:lizunemu/screens/lore/global_character_library_screen.dart';
 import 'package:lizunemu/screens/playlists_screen.dart';
 import 'package:lizunemu/screens/search_screen.dart';
@@ -179,6 +180,14 @@ class SidebarMenu extends StatelessWidget {
                               onTap: () => _navigate(
                                 context,
                                 const TranslationQueueScreen(),
+                              ),
+                            ),
+                            SidebarTile(
+                              icon: Icons.auto_awesome,
+                              title: Strings.loreQueueTitle,
+                              onTap: () => _navigate(
+                                context,
+                                const LoreGenerateQueueScreen(),
                               ),
                             ),
                             SidebarTile(

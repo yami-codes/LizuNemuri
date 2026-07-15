@@ -2720,6 +2720,51 @@
   "loreLanguageFollowApp": "跟随应用语言",
   "loreMaxTracks": "每次生成最大轨数",
   "loreMaxTracksDesc": "限制长专辑的 LLM 费用",
+  "loreLlmPaceMs": "设定 LLM 间隔（毫秒）",
+  "loreLlmPaceMsDesc": "0 = 音轨间无故意等待（推荐）。仅在频繁触发限流时再设置。",
+  "loreQueueTitle": "设定队列",
+  "loreQueueEmpty": "暂无设定任务",
+  "loreQueueEnqueued": "设定生成已加入队列",
+  "loreQueueAlreadyQueued": "该作品已在设定队列中",
+  "loreQueueRetryFailed": "重试失败项",
+  "loreQueueCancelAll": "全部取消",
+  "loreQueueClearFinished": "清除已完成",
+  "loreQueueStatusPending": "等待中",
+  "loreQueueStatusRunning": "进行中",
+  "loreQueueStatusDone": "完成",
+  "loreQueueStatusFailed": "失败",
+  "loreQueueStatusCancelled": "已取消",
+  "loreQueueMiniProgress": "设定 {done}/{total}：{name}",
+  "@loreQueueMiniProgress": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" },
+      "name": { "type": "String" }
+    }
+  },
+  "loreQueueMiniIdle": "设定队列 {done}/{total}",
+  "@loreQueueMiniIdle": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "loreQueueNotificationTitle": "正在生成设定",
+  "loreQueueNotificationBody": "设定 {done}/{total}：{name}",
+  "@loreQueueNotificationBody": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" },
+      "name": { "type": "String" }
+    }
+  },
+  "loreQueueNotificationIdle": "设定队列 {done}/{total}",
+  "@loreQueueNotificationIdle": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
   "loreGlobalLibrary": "角色圣经",
   "loreGlobalLibraryDesc": "跨作品提升的角色",
   "loreGlobalEmpty": "还没有全局角色。从作品设定页提升一个吧。",

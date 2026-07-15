@@ -69,6 +69,8 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
   Future<bool> isCached({
     required SubtitleList source,
     required PlaybackContext? context,
+    /// When set (e.g. lore language), overrides Settings → LLM target language.
+    String? targetLanguageCode,
   }) async {
     if (source.subtitles.isEmpty) return false;
     final workId = context?.work.id?.toString() ?? 'unknown';
@@ -77,7 +79,7 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     final cached = await _loadCached(
       workId: workId,
       fileName: fileName,
-      targetLang: _targetLang,
+      targetLang: targetLanguageCode ?? _targetLang,
       hash: hash,
     );
     if (cached == null) return false;
@@ -103,6 +105,7 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     required SubtitleList source,
     required PlaybackContext? context,
     bool forceRefresh = false,
+    String? targetLanguageCode,
     SubtitleTranslationProgressCallback? onProgress,
     SubtitlePartialTranslationCallback? onPartial,
   }) =>
@@ -111,6 +114,7 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
         context: context,
         requireEnabled: false,
         forceRefresh: forceRefresh,
+        targetLanguageCode: targetLanguageCode,
         onProgress: onProgress,
         onPartial: onPartial,
       );
@@ -120,6 +124,7 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     required PlaybackContext? context,
     bool requireEnabled = false,
     bool forceRefresh = false,
+    String? targetLanguageCode,
     SubtitleTranslationProgressCallback? onProgress,
     SubtitlePartialTranslationCallback? onPartial,
   }) {
@@ -130,6 +135,7 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
         context: context,
         requireEnabled: requireEnabled,
         forceRefresh: forceRefresh,
+        targetLanguageCode: targetLanguageCode,
         onProgress: onProgress,
         onPartial: onPartial,
       );
@@ -140,6 +146,7 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
         context: context,
         requireEnabled: requireEnabled,
         forceRefresh: forceRefresh,
+        targetLanguageCode: targetLanguageCode,
         onProgress: onProgress,
         onPartial: onPartial,
       ),
@@ -151,6 +158,7 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     required PlaybackContext? context,
     bool requireEnabled = false,
     bool forceRefresh = false,
+    String? targetLanguageCode,
     SubtitleTranslationProgressCallback? onProgress,
     SubtitlePartialTranslationCallback? onPartial,
   }) async {
@@ -189,7 +197,10 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
       );
     }
 
-    final targetLang = _targetLang;
+    final targetLang = (targetLanguageCode != null &&
+            targetLanguageCode.trim().isNotEmpty)
+        ? targetLanguageCode.trim()
+        : _targetLang;
     final workId = context?.work.id?.toString() ?? 'unknown';
     final fileName = context?.currentFile.title ?? 'track';
     final hash = _cache.sourceHash(source);
@@ -555,7 +566,8 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     required String targetLang,
     required String hash,
   }) async {
-    final memKey = '$workId|$fileName|$targetLang|$hash';
+    // Hash-primary: remaster audio titles share one in-memory entry.
+    final memKey = '$workId|$targetLang|$hash';
     final mem = _memoryCache[memKey];
     if (mem != null) return mem;
 
@@ -579,7 +591,7 @@ Maintain explicit meaning where present; prioritize accuracy and listener compre
     required String hash,
     required Map<int, String> lines,
   }) async {
-    final memKey = '$workId|$fileName|$targetLang|$hash';
+    final memKey = '$workId|$targetLang|$hash';
     _memoryCache[memKey] = lines;
     if (kIsWeb) return;
     await _cache.save(

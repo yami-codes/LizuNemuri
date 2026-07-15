@@ -70,7 +70,7 @@ Clean Architecture with three layers, using **Provider (ChangeNotifier)** for st
   - `database/` - `database_service.dart` (local persistence; DB v4 adds work lore / global characters / CCv2 cache)
   - `image/cache/` - Image cache layer used by network image widgets
   - `settings/` - `app_settings_service.dart` (user preferences persistence; includes lore language + max tracks)
-  - `lore/` - Work Lore: LLM packs, projector, CCv2 rewrite export, global character promote (see CLAUDE.md invariants)
+  - `lore/` - Work Lore: LLM packs via `LoreGenerateQueueService` + merged track/secrets generate, projector, CCv2, global promote (see CLAUDE.md invariants)
 
 - **`lib/data/`** - Data layer
   - `models/` - Freezed immutable data classes (auto-generated `.freezed.dart` + `.g.dart` files)

@@ -2720,6 +2720,51 @@
   "loreLanguageFollowApp": "Follow app language",
   "loreMaxTracks": "Max tracks per generate",
   "loreMaxTracksDesc": "Limits LLM cost on long albums",
+  "loreLlmPaceMs": "Lore LLM pace (ms)",
+  "loreLlmPaceMsDesc": "0 = no delay between tracks (recommended). Set only if you hit rate limits.",
+  "loreQueueTitle": "Lore queue",
+  "loreQueueEmpty": "No lore jobs yet",
+  "loreQueueEnqueued": "Lore generation queued",
+  "loreQueueAlreadyQueued": "This work is already in the lore queue",
+  "loreQueueRetryFailed": "Retry failed",
+  "loreQueueCancelAll": "Cancel all",
+  "loreQueueClearFinished": "Clear finished",
+  "loreQueueStatusPending": "Pending",
+  "loreQueueStatusRunning": "Running",
+  "loreQueueStatusDone": "Done",
+  "loreQueueStatusFailed": "Failed",
+  "loreQueueStatusCancelled": "Cancelled",
+  "loreQueueMiniProgress": "Lore {done}/{total}: {name}",
+  "@loreQueueMiniProgress": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" },
+      "name": { "type": "String" }
+    }
+  },
+  "loreQueueMiniIdle": "Lore queue {done}/{total}",
+  "@loreQueueMiniIdle": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "loreQueueNotificationTitle": "Generating lore",
+  "loreQueueNotificationBody": "Lore {done}/{total}: {name}",
+  "@loreQueueNotificationBody": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" },
+      "name": { "type": "String" }
+    }
+  },
+  "loreQueueNotificationIdle": "Lore queue {done}/{total}",
+  "@loreQueueNotificationIdle": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
   "loreGlobalLibrary": "Character bible",
   "loreGlobalLibraryDesc": "Promoted characters across works",
   "loreGlobalEmpty": "No global characters yet. Promote one from a work's Lore tab.",

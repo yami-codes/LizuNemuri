@@ -11,6 +11,7 @@ import 'package:lizunemu/core/llm/subtitle_translation_service.dart';
 import 'package:lizunemu/core/llm/translation_queue_models.dart';
 import 'package:lizunemu/core/llm/translation_queue_notification.dart';
 import 'package:lizunemu/core/llm/translation_queue_store.dart';
+import 'package:lizunemu/core/media/logical_track_dedupe.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/core/subtitle/subtitle_import_service.dart';
 import 'package:lizunemu/core/subtitle/subtitle_loader.dart';
@@ -136,27 +137,65 @@ class TranslationQueueService extends ChangeNotifier {
   }
 
   /// Enqueue selected audio+subtitle pairs for [work]. Returns track count added.
+  ///
+  /// Remaster twins (no-SFX / format variants with same normalized title)
+  /// collapse to one queue row via [LogicalTrackDedupe].
   Future<int> enqueue({
     required Work work,
     required Files files,
     required List<({Child audio, Child subtitle})> pairs,
   }) async {
     if (pairs.isEmpty) return 0;
+    final candidates = <LogicalTrackCandidate>[
+      for (var i = 0; i < pairs.length; i++)
+        LogicalTrackCandidate(
+          audio: pairs[i].audio,
+          matchedSubtitle: pairs[i].subtitle,
+          index: i,
+        ),
+    ];
+    final groups = LogicalTrackDedupe.group(candidates);
+    if (groups.isEmpty) return 0;
+
+    final workId = '${work.id ?? work.sourceId ?? ''}';
+    final pendingAudioKeys = <String>{};
+    for (final job in _jobs) {
+      if ('${job.work.id ?? job.work.sourceId ?? ''}' != workId) continue;
+      for (final t in job.tracks) {
+        if (t.status == TranslationQueueTrackStatus.pending ||
+            t.status == TranslationQueueTrackStatus.running) {
+          final k = t.audio.hash ?? t.audio.title ?? t.id;
+          pendingAudioKeys.add(k);
+        }
+      }
+    }
+
     final jobId =
         '${work.id ?? 'w'}_${DateTime.now().millisecondsSinceEpoch}';
     final tracks = <TranslationQueueTrack>[];
-    for (var i = 0; i < pairs.length; i++) {
-      final p = pairs[i];
-      final base =
-          '${jobId}_${p.audio.hash ?? p.audio.title ?? 't'}_$i';
+    for (var i = 0; i < groups.length; i++) {
+      final g = groups[i];
+      final audio = g.canonical.audio;
+      final sub = g.canonical.matchedSubtitle;
+      if (sub == null) continue;
+      final audioKey = audio.hash ?? audio.title ?? 't$i';
+      if (pendingAudioKeys.contains(audioKey)) continue;
+      // Also skip if any alias is already pending.
+      final aliasPending = g.aliases.any((a) {
+        final k = a.audio.hash ?? a.audio.title;
+        return k != null && pendingAudioKeys.contains(k);
+      });
+      if (aliasPending) continue;
+
       tracks.add(
         TranslationQueueTrack(
-          id: base,
-          audio: p.audio,
-          subtitle: p.subtitle,
+          id: '${jobId}_${audioKey}_$i',
+          audio: audio,
+          subtitle: sub,
         ),
       );
     }
+    if (tracks.isEmpty) return 0;
 
     _jobs.add(
       TranslationQueueJob(

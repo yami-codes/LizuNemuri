@@ -3,7 +3,9 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:lizunemu/core/lore/lore_json_utils.dart';
+import 'package:lizunemu/core/lore/lore_llm_pacer.dart';
 import 'package:lizunemu/core/lore/lore_state_projector.dart';
+import 'package:lizunemu/core/lore/lore_track_context_brief.dart';
 import 'package:lizunemu/core/lore/models/lore_character.dart';
 import 'package:lizunemu/core/lore/models/lore_content_level.dart';
 import 'package:lizunemu/core/lore/models/lore_event.dart';
@@ -119,17 +121,20 @@ class WorkLoreService {
     final lang = _settings.resolvedLoreLanguageCode;
     final maxTracks = _settings.maxLoreTracksPerGenerate;
     final limited = tracks.take(maxTracks).toList();
-
-    // Progress budget: lore ~0–0.55, secrets ~0.55–0.95 when enabled.
-    final loreEnd = includeSecrets ? 0.55 : 0.95;
+    final pacer = LoreLlmPacer(paceMs: _settings.loreLlmPaceMs);
 
     onProgress?.call('cast', 0.05);
-    final cast = await _generateCastAndSynopsis(
-      work: work,
-      tracks: limited,
-      seedNotes: seedNotes,
-      languageCode: lang,
-      cancelToken: cancelToken,
+    await pacer.beforeNextCall();
+    final cast = await _chatWithPacer(
+      pacer: pacer,
+      run: () => _generateCastAndSynopsis(
+        work: work,
+        tracks: limited,
+        seedNotes: seedNotes,
+        languageCode: lang,
+        cancelToken: cancelToken,
+        slimOntology: includeSecrets,
+      ),
     );
 
     var characters = cast.characters;
@@ -138,33 +143,68 @@ class WorkLoreService {
     final focusId = cast.focusCharacterId ??
         (characters.isNotEmpty ? characters.first.id : null);
 
+    // Seed secret baselines locally before the merged track+secrets pass.
+    if (includeSecrets) {
+      characters = _seedSpeculativeBaselines(characters);
+      if (contentLevel.index < LoreContentLevel.explicit.index) {
+        contentLevel = LoreContentLevel.explicit;
+      }
+    }
+
     final summaries = <LoreTrackSummary>[];
     final events = <LoreTimelineEvent>[];
-    final carry = <String, Map<String, dynamic>>{
+    var carry = <String, Map<String, dynamic>>{
       for (final c in characters)
         c.id: {
           for (final p in c.params)
             if (p.value != null) p.key: p.value,
         },
     };
+    final baselines = {
+      for (final e in carry.entries) e.key: Map<String, dynamic>.from(e.value),
+    };
 
     for (var i = 0; i < limited.length; i++) {
       _throwIfCancelled(cancelToken);
-      // Pace free-tier / OpenRouter rate limits between track LLM calls.
-      if (i > 0) {
-        await Future.delayed(const Duration(milliseconds: 1500));
-      }
-      final progress = 0.08 + ((loreEnd - 0.15) * (i / max(1, limited.length)));
+      final progress = 0.08 + (0.75 * (i / max(1, limited.length)));
       onProgress?.call('track:${limited[i].trackKey}', progress);
 
-      final trackResult = await _generateTrackPass(
-        work: work,
-        track: limited[i],
-        characters: characters,
+      if (i > 0) {
+        final priorKeys = {
+          for (final s in summaries) s.trackKey,
+        };
+        carry = LoreTrackContextBrief.settleCarryFromEvents(
+          baselines: baselines,
+          events: events,
+          priorTrackKeys: priorKeys,
+        );
+      }
+
+      final priorBrief = LoreTrackContextBrief.build(
+        synopsis: synopsis,
+        completedSummaries: summaries,
+        completedEvents: events,
         carryState: carry,
-        seedNotes: seedNotes,
-        languageCode: lang,
-        cancelToken: cancelToken,
+        slimCarry: i > 0,
+      );
+
+      await pacer.beforeNextCall();
+      final trackResult = await _chatWithPacer(
+        pacer: pacer,
+        run: () => _generateTrackPass(
+          work: work,
+          track: limited[i],
+          characters: characters,
+          carryState: i == 0
+              ? carry
+              : LoreTrackContextBrief.slimCarryMap(carry),
+          seedNotes: i == 0 ? seedNotes : const [],
+          languageCode: lang,
+          cancelToken: cancelToken,
+          includeSecrets: includeSecrets,
+          priorContextBrief: priorBrief,
+          isFirstTrack: i == 0,
+        ),
       );
       summaries.add(trackResult.summary);
       events.addAll(trackResult.events);
@@ -176,22 +216,45 @@ class WorkLoreService {
       }
     }
 
-    onProgress?.call('reconcile', loreEnd);
-    final reconciled = await _reconcile(
-      work: work,
-      synopsis: synopsis,
-      characters: characters,
+    final doReconcile = LoreTrackContextBrief.shouldReconcile(
+      characterCount: characters.length,
       summaries: summaries,
-      events: events,
-      languageCode: lang,
-      cancelToken: cancelToken,
+      seedNotes: seedNotes,
     );
-    synopsis = reconciled.synopsis.isNotEmpty ? reconciled.synopsis : synopsis;
-    if (reconciled.characters.isNotEmpty) {
-      characters = reconciled.characters;
+    if (doReconcile) {
+      onProgress?.call('reconcile', 0.88);
+      await pacer.beforeNextCall();
+      final reconciled = await _chatWithPacer(
+        pacer: pacer,
+        run: () => _reconcile(
+          work: work,
+          synopsis: synopsis,
+          characters: characters,
+          summaries: summaries,
+          events: events,
+          languageCode: lang,
+          cancelToken: cancelToken,
+        ),
+      );
+      synopsis =
+          reconciled.synopsis.isNotEmpty ? reconciled.synopsis : synopsis;
+      if (reconciled.characters.isNotEmpty) {
+        characters = reconciled.characters;
+        if (includeSecrets) {
+          characters = _seedSpeculativeBaselines(characters);
+        }
+      }
     }
 
-    var pack = WorkLorePack(
+    if (includeSecrets) {
+      characters = _applyCarryToParams(
+        characters,
+        carry,
+        speculativeOnly: true,
+      );
+    }
+
+    final pack = WorkLorePack(
       workId: workId,
       sourceId: work.sourceId,
       workTitle: work.title,
@@ -205,25 +268,33 @@ class WorkLoreService {
       updatedAt: DateTime.now().toUtc(),
       loreHash: '',
       languageCode: lang,
+      explicitRevealed: includeSecrets,
     ).withRecomputedHash();
 
-    if (includeSecrets) {
-      pack = await _applySecretsTimeline(
-        pack: pack,
-        work: work,
-        tracks: limited,
-        onProgress: (stage, p) {
-          // Map secrets 0–1 into 0.55–0.95
-          onProgress?.call(stage, 0.55 + (p.clamp(0.0, 1.0) * 0.4));
-        },
-        cancelToken: cancelToken,
-        persist: false,
-      );
-    }
-
+    // Secrets are merged into the track pass — no second N× secrets loop.
     await save(pack);
     onProgress?.call('done', 1.0);
     return pack;
+  }
+
+  Future<T> _chatWithPacer<T>({
+    required LoreLlmPacer pacer,
+    required Future<T> Function() run,
+  }) async {
+    try {
+      final result = await run();
+      pacer.markCallEnded();
+      return result;
+    } on LlmTranslationException catch (e) {
+      pacer.markCallEnded();
+      if (e.type == LlmTranslationErrorType.rateLimited) {
+        pacer.noteRateLimited(seconds: 8);
+      }
+      rethrow;
+    } catch (e) {
+      pacer.markCallEnded();
+      rethrow;
+    }
   }
 
   Future<WorkLorePack> regenerateSection({
@@ -292,22 +363,52 @@ class WorkLoreService {
         if (track == null) {
           throw StateError('track not found: $trackKey');
         }
+        final resolvedTrack = track;
         onProgress?.call('track:$trackKey', 0.4);
-        final carry = <String, Map<String, dynamic>>{
+        final baselines = <String, Map<String, dynamic>>{
           for (final c in pack.characters)
             c.id: {
               for (final p in c.params)
                 if (p.value != null) p.key: p.value,
             },
         };
-        final result = await _generateTrackPass(
-          work: work,
-          track: track,
-          characters: pack.characters,
+        final primary = LoreStateProjector.primaryTrackKeys(pack);
+        final ord = primary.indexOf(trackKey);
+        final priorKeys = ord <= 0
+            ? <String>{}
+            : primary.sublist(0, ord).toSet();
+        final carry = LoreTrackContextBrief.settleCarryFromEvents(
+          baselines: baselines,
+          events: pack.events,
+          priorTrackKeys: priorKeys,
+        );
+        final priorSummaries = pack.trackSummaries
+            .where((s) => priorKeys.contains(s.trackKey))
+            .toList();
+        final brief = LoreTrackContextBrief.build(
+          synopsis: pack.synopsis,
+          completedSummaries: priorSummaries,
+          completedEvents:
+              pack.events.where((e) => priorKeys.contains(e.trackKey)).toList(),
           carryState: carry,
-          seedNotes: pack.seedNotes,
-          languageCode: pack.languageCode ?? _settings.resolvedLoreLanguageCode,
-          cancelToken: cancelToken,
+        );
+        final pacer = LoreLlmPacer(paceMs: _settings.loreLlmPaceMs);
+        await pacer.beforeNextCall();
+        final result = await _chatWithPacer(
+          pacer: pacer,
+          run: () => _generateTrackPass(
+            work: work,
+            track: resolvedTrack,
+            characters: pack.characters,
+            carryState: LoreTrackContextBrief.slimCarryMap(carry),
+            seedNotes: pack.seedNotes,
+            languageCode:
+                pack.languageCode ?? _settings.resolvedLoreLanguageCode,
+            cancelToken: cancelToken,
+            includeSecrets: pack.explicitRevealed,
+            priorContextBrief: brief,
+            isFirstTrack: priorKeys.isEmpty,
+          ),
         );
         final summaries = pack.trackSummaries
             .where((s) => s.trackKey != trackKey)
@@ -385,34 +486,62 @@ class WorkLoreService {
 
     final kept = pack.events.where((e) => !e.speculative).toList();
     final newSecretEvents = <LoreTimelineEvent>[];
+    final pacer = LoreLlmPacer(paceMs: _settings.loreLlmPaceMs);
 
-    final carry = <String, Map<String, dynamic>>{
+    var carry = <String, Map<String, dynamic>>{
       for (final c in characters)
         c.id: {
           for (final p in c.params)
             if (p.value != null) p.key: p.value,
         },
     };
+    final baselines = {
+      for (final e in carry.entries) e.key: Map<String, dynamic>.from(e.value),
+    };
+    final completedKeys = <String>{};
 
     for (var i = 0; i < limited.length; i++) {
       _throwIfCancelled(cancelToken);
-      if (i > 0) {
-        await Future.delayed(const Duration(milliseconds: 1500));
-      }
       final track = limited[i];
       final progress = 0.1 + (0.8 * (i / max(1, limited.length)));
       onProgress?.call('secrets:${track.trackKey}', progress);
 
-      final pass = await _generateSecretsTrackPass(
-        work: work,
-        track: track,
-        characters: characters,
+      if (i > 0) {
+        carry = LoreTrackContextBrief.settleCarryFromEvents(
+          baselines: baselines,
+          events: [...kept, ...newSecretEvents],
+          priorTrackKeys: completedKeys,
+        );
+      }
+
+      final brief = LoreTrackContextBrief.build(
+        synopsis: pack.synopsis,
+        completedSummaries: pack.trackSummaries
+            .where((s) => completedKeys.contains(s.trackKey))
+            .toList(),
+        completedEvents: [...kept, ...newSecretEvents],
         carryState: carry,
-        existingTrackEvents: kept.where((e) => e.trackKey == track.trackKey),
-        languageCode: lang,
-        cancelToken: cancelToken,
+        slimCarry: i > 0,
+      );
+
+      await pacer.beforeNextCall();
+      final pass = await _chatWithPacer(
+        pacer: pacer,
+        run: () => _generateSecretsTrackPass(
+          work: work,
+          track: track,
+          characters: characters,
+          carryState: i == 0
+              ? carry
+              : LoreTrackContextBrief.slimCarryMap(carry),
+          existingTrackEvents: kept.where((e) => e.trackKey == track.trackKey),
+          languageCode: lang,
+          cancelToken: cancelToken,
+          priorContextBrief: brief,
+        ),
       );
       newSecretEvents.addAll(pass.events);
+      completedKeys.add(track.trackKey);
       for (final entry in pass.carryUpdates.entries) {
         carry[entry.key] = {
           ...?carry[entry.key],
@@ -561,13 +690,10 @@ class WorkLoreService {
     required Iterable<LoreTimelineEvent> existingTrackEvents,
     required String languageCode,
     CancelToken? cancelToken,
+    String priorContextBrief = '',
   }) async {
     _throwIfCancelled(cancelToken);
     final hasSubs = track.hasSubtitles;
-    final secretKeys = LoreOntology.starterParams(includeExplicit: true)
-        .where((p) => LoreOntology.explicitModules.contains(p.module))
-        .map((p) => '${p.key}(${p.module})')
-        .join(', ');
     final existingBrief = existingTrackEvents
         .take(12)
         .map((e) => {
@@ -576,11 +702,16 @@ class WorkLoreService {
               'deltas': e.deltas.map((d) => d.key).toList(),
             })
         .toList();
+    final priorBlock = priorContextBrief.isEmpty
+        ? ''
+        : 'Prior context:\n$priorContextBrief\n';
 
     final user = '''
 Fill SPECULATIVE secret NSFW param changes for ONE track as timeline events.
 These are inferred / fantasy fills — every event MUST have speculative=true.
-Do NOT rewrite synopsis or non-secret story beats. Prefer secret ontology keys.
+Do NOT rewrite synopsis or non-secret story beats.
+Modules (emit only changed keys): body, fluids, fertility, risk, toys, kink.
+Baselines already seeded — do not dump the full key catalog.
 Return JSON ONLY:
 {
   "events": [
@@ -596,10 +727,10 @@ Return JSON ONLY:
 }
 Rules:
 - 2–8 events spanning the track; use endMs for ramps (numeric lerp).
-- Keys from: $secretKeys
 - Align roughly with existing story cues when present: ${jsonEncode(existingBrief)}
+$priorBlock
 - Carry-in: ${jsonEncode(carryState)}
-- Characters: ${jsonEncode(characters.map((c) => {'id': c.id, 'name': c.name}).toList())}
+- Characters: ${jsonEncode(characters.map((c) => {'id': c.id, 'name': c.name, 'role': c.role}).toList())}
 - Work: ${work.title} (${work.sourceId})
 - Track: ${track.title}
 - Subtitles: ${hasSubs ? _clip(track.subtitleText!, 8000) : '(none — invent sparse speculative beats from title/summary)'}
@@ -693,6 +824,9 @@ You are a careful ASMR work-lore analyst for Lizunemu.
 Output ONLY valid JSON (no markdown). Write prose fields in language code "$lang".
 Prefer evidence from subtitles when present. Sparse params: omit unknown values.
 Never invent VA links as confirmed — set vaLinkProposed true and vaLinkConfirmed false.
+Subtitle cue text provided in prompts is ALREADY in language "$lang".
+evidenceQuote MUST be copied from those provided subtitle lines (same language).
+Do NOT quote Japanese/Chinese/original-language lines, and do not invent bilingual quotes.
 ''';
 
   Future<_CastPassResult> _generateCastAndSynopsis({
@@ -702,18 +836,37 @@ Never invent VA links as confirmed — set vaLinkProposed true and vaLinkConfirm
     required String languageCode,
     CancelToken? cancelToken,
     List<LoreCharacter>? existingCharacters,
+    bool slimOntology = false,
   }) async {
     _throwIfCancelled(cancelToken);
+    final richMeta = (work.tags?.length ?? 0) >= 3 || (work.vas?.isNotEmpty ?? false);
+    final sampleTake = richMeta ? 2 : 3;
+    final sampleChars = richMeta ? 1500 : 2500;
     final sampleSubs = tracks
         .where((t) => t.hasSubtitles)
-        .take(3)
+        .take(sampleTake)
         .map((t) => {
               'track': t.title,
-              'excerpt': _clip(t.subtitleText!, 2500),
+              'excerpt': _clip(t.subtitleText!, sampleChars),
             })
         .toList();
 
     final vas = _vaSummaries(work.vas);
+    final ontologyHint = slimOntology
+        ? 'Use sparse non-explicit starter params only (arousal/affection/clothing/location…). '
+            'Secret body/fluids/fertility/risk/toys baselines are seeded locally afterward.'
+        : 'Use ontology starter keys when evidence supports them (sparse — omit unknowns). '
+            'Modules: ${LoreOntology.allModules.join(', ')}. '
+            'Starter keys: ${LoreOntology.starterParams(includeExplicit: false).map((p) => '${p.key}(${p.module})').join(', ')}.';
+
+    final existingSlim = existingCharacters
+        ?.map((c) => {
+              'id': c.id,
+              'name': c.name,
+              'role': c.role,
+              'isFocusDefault': c.isFocusDefault,
+            })
+        .toList();
 
     final user = '''
 Build work-level lore cast + synopsis.
@@ -742,9 +895,8 @@ Return JSON:
     }
   ]
 }
-Pin HUD defaults on arousal/horny/pleasure/affection/corruption/wetness/pregnancy_chance/clothing_state/panties/location when relevant.
-Use ontology starter keys when evidence supports them (sparse — omit unknowns). Modules: ${LoreOntology.allModules.join(', ')}.
-Ontology starter keys: ${LoreOntology.starterParams().map((p) => '${p.key}(${p.module})').join(', ')}.
+Pin HUD defaults on arousal/horny/pleasure/affection/corruption/clothing_state/location when relevant.
+$ontologyHint
 
 Work metadata:
 ${jsonEncode({
@@ -759,7 +911,7 @@ ${jsonEncode({
 Track list: ${jsonEncode(tracks.map((t) => {'key': t.trackKey, 'title': t.title, 'hasSubs': t.hasSubtitles}).toList())}
 Seed notes: ${jsonEncode(seedNotes.map((e) => e.toJson()).toList())}
 Subtitle samples: ${jsonEncode(sampleSubs)}
-${existingCharacters != null ? 'Existing characters to refine: ${jsonEncode(existingCharacters.map((e) => e.toJson()).toList())}' : ''}
+${existingSlim != null ? 'Existing characters to refine: ${jsonEncode(existingSlim)}' : ''}
 ''';
 
     final raw = await _llm.chatCompletion(
@@ -828,9 +980,35 @@ ${existingCharacters != null ? 'Existing characters to refine: ${jsonEncode(exis
     required List<LoreSeedNote> seedNotes,
     required String languageCode,
     CancelToken? cancelToken,
+    bool includeSecrets = false,
+    String priorContextBrief = '',
+    bool isFirstTrack = true,
   }) async {
     _throwIfCancelled(cancelToken);
     final hasSubs = track.hasSubtitles;
+    final secretsBlock = includeSecrets
+        ? '''
+Also emit speculative=true events for secret modules (body, fluids, fertility, risk, toys, kink) when the scene implies them.
+- Evidence-grounded story beats → speculative:false + evidenceQuote from subtitles.
+- Inferred secret fills → speculative:true (quote optional).
+- Do NOT dump every ontology key — only emit deltas you change. Baselines already seeded.
+- 2–8 secret/story events total for this track is enough.
+'''
+        : '''
+You MAY emit speculative=true events for body/fluids/fertility/risk/toys when clearly implied.
+''';
+    final charsSlim = characters
+        .map((c) => {'id': c.id, 'name': c.name, 'role': c.role})
+        .toList();
+    final seedBlock = isFirstTrack && seedNotes.isNotEmpty
+        ? 'Seed notes: ${jsonEncode(seedNotes.map((e) => e.toJson()).toList())}\n'
+        : '';
+    final priorBlock = priorContextBrief.isEmpty
+        ? ''
+        : 'Prior context:\n$priorContextBrief\n'
+            'Continue state; do not reset clothing/relationship/body unless this track changes them. '
+            'carryUpdates = end-of-this-track only.\n';
+
     final user = '''
 Analyze ONE track. Return JSON:
 {
@@ -847,14 +1025,16 @@ Analyze ONE track. Return JSON:
   "carryUpdates": {"c1": {"arousal": 40, "clothing_state": "..."}}
 }
 Use endMs so numeric gauges ramp from→to across the span (video-editor clip). Status/enum/text deltas hold from until endMs then snap to to.
-You MAY also emit speculative=true events for body/fluids/fertility/risk/toys secret params when the scene implies them (even without a quote).
+$secretsBlock
 If no subtitles, write a thin metadata-based summary, lowConfidence true, few or no events.
+evidenceQuote must copy from the Subtitles block below (already in "$languageCode") — never original JP/CN script.
+$priorBlock
 Carry-in state: ${jsonEncode(carryState)}
-Characters: ${jsonEncode(characters.map((c) => {'id': c.id, 'name': c.name}).toList())}
-Seed notes: ${jsonEncode(seedNotes.map((e) => e.toJson()).toList())}
+Characters: ${jsonEncode(charsSlim)}
+$seedBlock
 Work: ${work.title} (${work.sourceId})
 Track: ${track.title}
-Subtitles:
+Subtitles (language $languageCode):
 ${hasSubs ? _clip(track.subtitleText!, 12000) : '(none)'}
 ''';
 
@@ -961,12 +1141,34 @@ ${hasSubs ? _clip(track.subtitleText!, 12000) : '(none)'}
     CancelToken? cancelToken,
   }) async {
     _throwIfCancelled(cancelToken);
+    final charsSlim = characters
+        .map((c) => {
+              'id': c.id,
+              'name': c.name,
+              'role': c.role,
+              'isFocusDefault': c.isFocusDefault,
+              'params': c.params
+                  .where((p) => p.hudPinned || p.value != null)
+                  .take(12)
+                  .map((p) => {
+                        'key': p.key,
+                        'value': p.value,
+                        'hudPinned': p.hudPinned,
+                      })
+                  .toList(),
+            })
+        .toList();
     final user = '''
 Reconcile lore consistency. Fix name drift, ensure focus character exists, polish synopsis.
-Return JSON: {"synopsis":"...","characters":[...same schema...]}
+Return JSON: {"synopsis":"...","characters":[...same schema as cast, keep ids...]}
 Current synopsis: $synopsis
-Characters: ${jsonEncode(characters.map((e) => e.toJson()).toList())}
-Track summaries: ${jsonEncode(summaries.map((e) => e.toJson()).toList())}
+Characters (slim): ${jsonEncode(charsSlim)}
+Track summaries: ${jsonEncode(summaries.map((e) => {
+          'trackKey': e.trackKey,
+          'title': e.trackTitle,
+          'summary': LoreTrackContextBrief.clip(e.summary, 300),
+          'lowConfidence': e.lowConfidence,
+        }).toList())}
 Event count: ${events.length}
 Work: ${work.title}
 ''';

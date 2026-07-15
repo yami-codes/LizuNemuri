@@ -1,5 +1,10 @@
 import 'package:lizunemu/core/lore/ccv2_export_service.dart';
 import 'package:lizunemu/core/lore/global_character_service.dart';
+import 'package:lizunemu/core/lore/lore_generate_queue_service.dart';
+import 'package:lizunemu/core/lore/lore_generate_queue_store.dart';
+import 'package:lizunemu/core/lore/lore_subtitle_language_pipeline.dart';
+import 'package:lizunemu/core/lore/lore_subtitle_resolver.dart';
+import 'package:lizunemu/core/lore/lore_track_input_builder.dart';
 import 'package:lizunemu/core/lore/storage/ccv2_card_cache_repository.dart';
 import 'package:lizunemu/core/lore/storage/global_character_repository.dart';
 import 'package:lizunemu/core/lore/storage/work_lore_repository.dart';
@@ -301,6 +306,39 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
+  getIt.registerLazySingleton<LoreSubtitleResolver>(
+    () => LoreSubtitleResolver(
+      loader: getIt<SubtitleLoader>(),
+      downloads: getIt<DownloadService>(),
+      urlRefresher: getIt<WorkMediaUrlRefresher>(),
+      imports: getIt<SubtitleImportService>(),
+    ),
+  );
+  getIt.registerLazySingleton<LoreSubtitleLanguagePipeline>(
+    () => LoreSubtitleLanguagePipeline(
+      loader: getIt<SubtitleLoader>(),
+      translation: getIt<SubtitleTranslationService>(),
+      settings: getIt<AppSettingsService>(),
+    ),
+  );
+  getIt.registerLazySingleton<LoreTrackInputBuilder>(
+    () => LoreTrackInputBuilder(
+      resolver: getIt<LoreSubtitleResolver>(),
+      languagePipeline: getIt<LoreSubtitleLanguagePipeline>(),
+    ),
+  );
+  getIt.registerLazySingleton<LoreGenerateQueueStore>(
+    () => LoreGenerateQueueStore(prefs),
+  );
+  getIt.registerLazySingleton<LoreGenerateQueueService>(
+    () => LoreGenerateQueueService(
+      settings: getIt<AppSettingsService>(),
+      lore: getIt<WorkLoreService>(),
+      trackBuilder: getIt<LoreTrackInputBuilder>(),
+      store: getIt<LoreGenerateQueueStore>(),
+    ),
+  );
+
   // Register theme controller
   getIt.registerLazySingleton<ThemeController>(
     () => ThemeController(prefs),
@@ -356,4 +394,5 @@ void setupSubtitleServices() {
 Future<void> initDeferredStartupServices() async {
   await getIt<LyricOverlayManager>().initialize();
   await getIt<TranslationQueueService>().initialize();
+  await getIt<LoreGenerateQueueService>().initialize();
 }

@@ -63,6 +63,7 @@ class AppSettingsService extends ChangeNotifier {
   static const String _loreLanguageCodeKey = 'lore_language_code';
   static const String _maxLoreTracksPerGenerateKey =
       'max_lore_tracks_per_generate';
+  static const String _loreLlmPaceMsKey = 'lore_llm_pace_ms';
   static const String _lorePlayerHudVisibleKey = 'lore_player_hud_visible';
 
   static const String defaultServerUrl = 'https://api.asmr.one/api';
@@ -71,6 +72,10 @@ class AppSettingsService extends ChangeNotifier {
   static const int defaultMaxLoreTracksPerGenerate = 20;
   static const int minMaxLoreTracksPerGenerate = 1;
   static const int maxMaxLoreTracksPerGenerate = 100;
+  /// 0 = no deliberate gap (recommended for premium/BYOK).
+  static const int defaultLoreLlmPaceMs = 0;
+  static const int minLoreLlmPaceMs = 0;
+  static const int maxLoreLlmPaceMs = 5000;
   static const int defaultLlmTranslateRetryCount = 10;
   static const int minLlmTranslateRetryCount = 0;
   static const int maxLlmTranslateRetryCount = 50;
@@ -151,6 +156,7 @@ class AppSettingsService extends ChangeNotifier {
   late AppLogLevel _logCaptureMinLevel;
   late String _loreLanguageCode;
   late int _maxLoreTracksPerGenerate;
+  late int _loreLlmPaceMs;
   late bool _lorePlayerHudVisible;
 
   AppSettingsService(this._prefs) {
@@ -244,6 +250,8 @@ class AppSettingsService extends ChangeNotifier {
     _maxLoreTracksPerGenerate = (_prefs.getInt(_maxLoreTracksPerGenerateKey) ??
             defaultMaxLoreTracksPerGenerate)
         .clamp(minMaxLoreTracksPerGenerate, maxMaxLoreTracksPerGenerate);
+    _loreLlmPaceMs = (_prefs.getInt(_loreLlmPaceMsKey) ?? defaultLoreLlmPaceMs)
+        .clamp(minLoreLlmPaceMs, maxLoreLlmPaceMs);
     _lorePlayerHudVisible = _prefs.getBool(_lorePlayerHudVisibleKey) ?? true;
   }
 
@@ -659,6 +667,17 @@ class AppSettingsService extends ChangeNotifier {
     _maxLoreTracksPerGenerate = clamped;
     notifyListeners();
     await _prefs.setInt(_maxLoreTracksPerGenerateKey, clamped);
+  }
+
+  /// Inter-track lore LLM pace in ms. **0 = no deliberate gap** (default).
+  int get loreLlmPaceMs => _loreLlmPaceMs;
+
+  Future<void> setLoreLlmPaceMs(int value) async {
+    final clamped = value.clamp(minLoreLlmPaceMs, maxLoreLlmPaceMs);
+    if (_loreLlmPaceMs == clamped) return;
+    _loreLlmPaceMs = clamped;
+    notifyListeners();
+    await _prefs.setInt(_loreLlmPaceMsKey, clamped);
   }
 
   /// Compact player lore overlay. Default on; hide from HUD or Settings.

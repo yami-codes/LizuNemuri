@@ -432,6 +432,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 }
               },
             ),
+            SettingsTile.navigation(
+              title: Strings.loreLlmPaceMs,
+              subtitle: Strings.loreLlmPaceMsDesc,
+              leading: Icons.timer_outlined,
+              value: '${settings.loreLlmPaceMs}',
+              onTap: () async {
+                final controller = TextEditingController(
+                  text: '${settings.loreLlmPaceMs}',
+                );
+                final ok = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Text(Strings.loreLlmPaceMs),
+                    content: TextField(
+                      controller: controller,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        helperText: '0–5000',
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: Text(Strings.loreCancel),
+                      ),
+                      FilledButton(
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: Text(Strings.loreSaved),
+                      ),
+                    ],
+                  ),
+                );
+                if (ok == true) {
+                  final n = int.tryParse(controller.text.trim());
+                  if (n != null) {
+                    await settings.setLoreLlmPaceMs(n);
+                  }
+                }
+              },
+            ),
             SettingsTile.toggle(
               title: Strings.lorePlayerHudVisible,
               subtitle: Strings.lorePlayerHudVisibleDesc,

@@ -1,17 +1,20 @@
+import 'package:get_it/get_it.dart';
 import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/lore/lore_generate_queue_models.dart';
+import 'package:lizunemu/core/lore/lore_generate_queue_service.dart';
 import 'package:lizunemu/core/lore/lore_state_projector.dart';
 import 'package:lizunemu/core/lore/models/lore_character.dart';
 import 'package:lizunemu/core/lore/models/lore_content_level.dart';
 import 'package:lizunemu/core/lore/models/lore_event.dart';
 import 'package:lizunemu/core/lore/models/lore_param.dart';
 import 'package:lizunemu/core/lore/models/work_lore_pack.dart';
-import 'package:lizunemu/core/lore/work_lore_service.dart';
 import 'package:lizunemu/core/theme/app_radius.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 import 'package:lizunemu/core/theme/app_text_styles.dart';
 import 'package:lizunemu/data/models/files/files.dart';
 import 'package:lizunemu/presentation/viewmodels/detail_viewmodel.dart';
 import 'package:lizunemu/presentation/viewmodels/work_lore_viewmodel.dart';
+import 'package:lizunemu/screens/lore_generate_queue_screen.dart';
 import 'package:lizunemu/widgets/lore/lore_character_editor_sheet.dart';
 import 'package:lizunemu/widgets/lore/lore_hud_pins_sheet.dart';
 import 'package:lizunemu/widgets/lore/lore_merge_sheet.dart';
@@ -33,79 +36,168 @@ class WorkLorePanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<WorkLoreViewModel>(
-      builder: (context, vm, _) {
-        if (vm.loading && vm.pack == null) {
-          return const Padding(
-            padding: EdgeInsets.all(AppSpacing.space24),
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        if (vm.generating) {
-          return _GeneratingCard(vm: vm);
-        }
-
-        if (!vm.hasLore) {
-          return _EmptyLore(vm: vm, pairs: pairs, files: files);
-        }
-
-        final pack = vm.pack!;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (vm.error != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.space8),
-                child: Text(
-                  vm.error!,
-                  style: AppTextStyles.caption.copyWith(
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ),
-              ),
-            _ActionBar(vm: vm, pairs: pairs, files: files),
-            const SizedBox(height: AppSpacing.space16),
-            _SynopsisCard(pack: pack),
-            const SizedBox(height: AppSpacing.space16),
-            _CharactersSection(vm: vm, pack: pack),
-            const SizedBox(height: AppSpacing.space16),
-            _TrackSummariesSection(
+    final queue = GetIt.I<LoreGenerateQueueService>();
+    return ListenableBuilder(
+      listenable: queue,
+      builder: (context, _) {
+        return Consumer<WorkLoreViewModel>(
+          builder: (context, vm, _) {
+            return _QueueAwareLoreBody(
+              queue: queue,
               vm: vm,
-              pack: pack,
               pairs: pairs,
               files: files,
-            ),
-            const SizedBox(height: AppSpacing.space16),
-            _TimelineSection(pack: pack),
-            const SizedBox(height: AppSpacing.space16),
-            _SeedNotesSection(vm: vm, pack: pack),
-            const SizedBox(height: AppSpacing.space24),
-          ],
+            );
+          },
         );
       },
     );
   }
 }
 
-class _GeneratingCard extends StatelessWidget {
+class _QueueAwareLoreBody extends StatefulWidget {
+  final LoreGenerateQueueService queue;
   final WorkLoreViewModel vm;
-  const _GeneratingCard({required this.vm});
+  final List<DownloadPair> pairs;
+  final Files? files;
+
+  const _QueueAwareLoreBody({
+    required this.queue,
+    required this.vm,
+    required this.pairs,
+    this.files,
+  });
+
+  @override
+  State<_QueueAwareLoreBody> createState() => _QueueAwareLoreBodyState();
+}
+
+class _QueueAwareLoreBodyState extends State<_QueueAwareLoreBody> {
+  bool _wasQueued = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _wasQueued =
+        widget.queue.activeJobForWork(widget.vm.workId) != null;
+  }
+
+  @override
+  void didUpdateWidget(covariant _QueueAwareLoreBody oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final job = widget.queue.activeJobForWork(widget.vm.workId);
+    if (_wasQueued && job == null) {
+      widget.vm.load();
+    }
+    _wasQueued = job != null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final vm = widget.vm;
+    final queue = widget.queue;
+    final job = queue.activeJobForWork(vm.workId);
+
+    if (vm.loading && vm.pack == null) {
+      return const Padding(
+        padding: EdgeInsets.all(AppSpacing.space24),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (job != null || vm.generating) {
+      return _GeneratingCard(
+        progressStage: job?.progressStage ?? vm.progressStage,
+        progress: job?.progress ?? vm.progress,
+        onCancel: () {
+          if (job != null) {
+            queue.cancelJob(job.id);
+          } else {
+            vm.cancelGenerate();
+          }
+        },
+        onOpenQueue: () => openLoreGenerateQueueScreen(context),
+      );
+    }
+
+    if (!vm.hasLore) {
+      return _EmptyLore(
+        vm: vm,
+        pairs: widget.pairs,
+        files: widget.files,
+      );
+    }
+
+    final pack = vm.pack!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (vm.error != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.space8),
+            child: Text(
+              vm.error!,
+              style: AppTextStyles.caption.copyWith(
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+          ),
+        _ActionBar(vm: vm, pairs: widget.pairs, files: widget.files),
+        const SizedBox(height: AppSpacing.space16),
+        _SynopsisCard(pack: pack),
+        const SizedBox(height: AppSpacing.space16),
+        _CharactersSection(
+          vm: vm,
+          pack: pack,
+          pairs: widget.pairs,
+          files: widget.files,
+        ),
+        const SizedBox(height: AppSpacing.space16),
+        _TrackSummariesSection(
+          vm: vm,
+          pack: pack,
+          pairs: widget.pairs,
+          files: widget.files,
+        ),
+        const SizedBox(height: AppSpacing.space16),
+        _TimelineSection(pack: pack),
+        const SizedBox(height: AppSpacing.space16),
+        _SeedNotesSection(vm: vm, pack: pack),
+        const SizedBox(height: AppSpacing.space24),
+      ],
+    );
+  }
+}
+
+class _GeneratingCard extends StatelessWidget {
+  final String progressStage;
+  final double progress;
+  final VoidCallback onCancel;
+  final VoidCallback onOpenQueue;
+
+  const _GeneratingCard({
+    required this.progressStage,
+    required this.progress,
+    required this.onCancel,
+    required this.onOpenQueue,
+  });
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     String stageLabel = Strings.loreGenerating;
-    if (vm.progressStage.startsWith('cast')) {
+    if (progressStage.startsWith('cast')) {
       stageLabel = Strings.loreProgressCast;
-    } else if (vm.progressStage.startsWith('secrets')) {
+    } else if (progressStage.startsWith('secrets')) {
       stageLabel = Strings.loreProgressSecrets;
-    } else if (vm.progressStage.startsWith('track')) {
+    } else if (progressStage.startsWith('track')) {
       stageLabel = Strings.loreProgressTrack;
-    } else if (vm.progressStage.startsWith('reconcile')) {
+    } else if (progressStage.startsWith('reconcile')) {
       stageLabel = Strings.loreProgressReconcile;
-    } else if (vm.progressStage == 'done') {
+    } else if (progressStage == 'done') {
       stageLabel = Strings.loreProgressDone;
+    } else if (progressStage == 'subs') {
+      stageLabel = Strings.loreProgressTrack;
     }
 
     return Card(
@@ -117,14 +209,23 @@ class _GeneratingCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.space8),
             Text(stageLabel, style: AppTextStyles.caption),
             const SizedBox(height: AppSpacing.space12),
-            LinearProgressIndicator(value: vm.progress.clamp(0.05, 1.0)),
+            LinearProgressIndicator(value: progress.clamp(0.05, 1.0)),
             const SizedBox(height: AppSpacing.space12),
-            TextButton(
-              onPressed: vm.cancelGenerate,
-              child: Text(Strings.loreCancel),
+            Wrap(
+              spacing: AppSpacing.space8,
+              children: [
+                TextButton(
+                  onPressed: onCancel,
+                  child: Text(Strings.loreCancel),
+                ),
+                TextButton(
+                  onPressed: onOpenQueue,
+                  child: Text(Strings.loreQueueTitle),
+                ),
+              ],
             ),
             Text(
-              '${(vm.progress * 100).round()}%',
+              '${(progress * 100).round()}%',
               style: AppTextStyles.caption.copyWith(
                 color: scheme.onSurfaceVariant,
               ),
@@ -181,7 +282,24 @@ Future<void> _onGenerate(
   WorkLoreViewModel vm,
   List<DownloadPair> pairs,
   Files? files,
-) async {
+) =>
+    _enqueueKind(
+      context,
+      vm,
+      pairs,
+      files,
+      LoreGenerateKind.fullGenerate,
+    );
+
+Future<void> _enqueueKind(
+  BuildContext context,
+  WorkLoreViewModel vm,
+  List<DownloadPair> pairs,
+  Files? files,
+  LoreGenerateKind kind, {
+  String? trackKey,
+  String? characterId,
+}) async {
   if (!await vm.hasApiKey()) {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -189,13 +307,46 @@ Future<void> _onGenerate(
     );
     return;
   }
-  await vm.generate(pairs: pairs, files: files);
-  if (!context.mounted) return;
-  if (vm.error != null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(Strings.loreFailed)),
-    );
+  final queue = GetIt.I<LoreGenerateQueueService>();
+  final int added;
+  switch (kind) {
+    case LoreGenerateKind.fullGenerate:
+      added = await queue.enqueueGenerate(
+        work: vm.work,
+        files: files,
+        pairs: pairs,
+        includeSecrets: true,
+      );
+    case LoreGenerateKind.secretsOnly:
+      added = await queue.enqueueSecrets(
+        work: vm.work,
+        files: files,
+        pairs: pairs,
+      );
+    case LoreGenerateKind.regenerateWork:
+    case LoreGenerateKind.regenerateTrack:
+    case LoreGenerateKind.regenerateCharacter:
+      added = await queue.enqueueRegenerate(
+        work: vm.work,
+        files: files,
+        pairs: pairs,
+        kind: kind,
+        trackKey: trackKey,
+        characterId: characterId,
+      );
   }
+  if (!context.mounted) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        added > 0 ? Strings.loreQueueEnqueued : Strings.loreQueueAlreadyQueued,
+      ),
+      action: SnackBarAction(
+        label: Strings.loreQueueTitle,
+        onPressed: () => openLoreGenerateQueueScreen(context),
+      ),
+    ),
+  );
 }
 
 class _ActionBar extends StatelessWidget {
@@ -217,15 +368,23 @@ class _ActionBar extends StatelessWidget {
       runSpacing: AppSpacing.space8,
       children: [
         OutlinedButton(
-          onPressed: () => vm.regenerate(
-            section: LoreRegenSection.work,
-            pairs: pairs,
-            files: files,
+          onPressed: () => _enqueueKind(
+            context,
+            vm,
+            pairs,
+            files,
+            LoreGenerateKind.regenerateWork,
           ),
           child: Text(Strings.loreRegenerateWork),
         ),
         OutlinedButton(
-          onPressed: () => vm.generateSecrets(pairs: pairs, files: files),
+          onPressed: () => _enqueueKind(
+            context,
+            vm,
+            pairs,
+            files,
+            LoreGenerateKind.secretsOnly,
+          ),
           child: Text(Strings.loreGenerateSecrets),
         ),
         OutlinedButton(
@@ -374,8 +533,15 @@ class _SynopsisCard extends StatelessWidget {
 class _CharactersSection extends StatelessWidget {
   final WorkLoreViewModel vm;
   final WorkLorePack pack;
+  final List<DownloadPair> pairs;
+  final Files? files;
 
-  const _CharactersSection({required this.vm, required this.pack});
+  const _CharactersSection({
+    required this.vm,
+    required this.pack,
+    required this.pairs,
+    this.files,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -384,7 +550,15 @@ class _CharactersSection extends StatelessWidget {
       children: [
         Text(Strings.loreCharacters, style: AppTextStyles.titleMedium),
         const SizedBox(height: AppSpacing.space8),
-        ...pack.characters.map((c) => _CharacterTile(vm: vm, pack: pack, character: c)),
+        ...pack.characters.map(
+          (c) => _CharacterTile(
+            vm: vm,
+            pack: pack,
+            character: c,
+            pairs: pairs,
+            files: files,
+          ),
+        ),
       ],
     );
   }
@@ -394,11 +568,15 @@ class _CharacterTile extends StatelessWidget {
   final WorkLoreViewModel vm;
   final WorkLorePack pack;
   final LoreCharacter character;
+  final List<DownloadPair> pairs;
+  final Files? files;
 
   const _CharacterTile({
     required this.vm,
     required this.pack,
     required this.character,
+    required this.pairs,
+    this.files,
   });
 
   @override
@@ -496,8 +674,12 @@ class _CharacterTile extends StatelessWidget {
                   child: Text(Strings.loreEditCharacter),
                 ),
                 TextButton(
-                  onPressed: () => vm.regenerate(
-                    section: LoreRegenSection.character,
+                  onPressed: () => _enqueueKind(
+                    context,
+                    vm,
+                    pairs,
+                    files,
+                    LoreGenerateKind.regenerateCharacter,
                     characterId: character.id,
                   ),
                   child: Text(Strings.loreRegenerateCharacter),
@@ -704,11 +886,13 @@ class _TrackSummariesSection extends StatelessWidget {
                     trailing: IconButton(
                       tooltip: Strings.loreRegenerateTrack,
                       icon: const Icon(Icons.refresh),
-                      onPressed: () => vm.regenerate(
-                        section: LoreRegenSection.track,
+                      onPressed: () => _enqueueKind(
+                        context,
+                        vm,
+                        pairs,
+                        files,
+                        LoreGenerateKind.regenerateTrack,
                         trackKey: t.trackKey,
-                        pairs: pairs,
-                        files: files,
                       ),
                     ),
                   ),

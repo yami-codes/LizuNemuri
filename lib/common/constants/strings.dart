@@ -690,6 +690,30 @@ class Strings {
   static String get loreLanguageFollowApp => _l10n.loreLanguageFollowApp;
   static String get loreMaxTracks => _l10n.loreMaxTracks;
   static String get loreMaxTracksDesc => _l10n.loreMaxTracksDesc;
+  static String get loreLlmPaceMs => _l10n.loreLlmPaceMs;
+  static String get loreLlmPaceMsDesc => _l10n.loreLlmPaceMsDesc;
+  static String get loreQueueTitle => _l10n.loreQueueTitle;
+  static String get loreQueueEmpty => _l10n.loreQueueEmpty;
+  static String get loreQueueEnqueued => _l10n.loreQueueEnqueued;
+  static String get loreQueueAlreadyQueued => _l10n.loreQueueAlreadyQueued;
+  static String get loreQueueRetryFailed => _l10n.loreQueueRetryFailed;
+  static String get loreQueueCancelAll => _l10n.loreQueueCancelAll;
+  static String get loreQueueClearFinished => _l10n.loreQueueClearFinished;
+  static String get loreQueueStatusPending => _l10n.loreQueueStatusPending;
+  static String get loreQueueStatusRunning => _l10n.loreQueueStatusRunning;
+  static String get loreQueueStatusDone => _l10n.loreQueueStatusDone;
+  static String get loreQueueStatusFailed => _l10n.loreQueueStatusFailed;
+  static String get loreQueueStatusCancelled => _l10n.loreQueueStatusCancelled;
+  static String loreQueueMiniProgress(int done, int total, String name) =>
+      _l10n.loreQueueMiniProgress(done, total, name);
+  static String loreQueueMiniIdle(int done, int total) =>
+      _l10n.loreQueueMiniIdle(done, total);
+  static String get loreQueueNotificationTitle =>
+      _l10n.loreQueueNotificationTitle;
+  static String loreQueueNotificationBody(int done, int total, String name) =>
+      _l10n.loreQueueNotificationBody(done, total, name);
+  static String loreQueueNotificationIdle(int done, int total) =>
+      _l10n.loreQueueNotificationIdle(done, total);
   static String get loreGlobalLibrary => _l10n.loreGlobalLibrary;
   static String get loreGlobalLibraryDesc => _l10n.loreGlobalLibraryDesc;
   static String get loreGlobalEmpty => _l10n.loreGlobalEmpty;

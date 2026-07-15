@@ -2720,6 +2720,51 @@
   "loreLanguageFollowApp": "ตามภาษาแอป",
   "loreMaxTracks": "แทร็กสูงสุดต่อการสร้าง",
   "loreMaxTracksDesc": "จำกัดค่าใช้จ่าย LLM ในอัลบั้มยาว",
+  "loreLlmPaceMs": "จังหวะ LLM lore (ms)",
+  "loreLlmPaceMsDesc": "0 = ไม่หน่วงระหว่างแทร็ก (แนะนำ) ตั้งค่าเมื่อเจอ rate limit บ่อย",
+  "loreQueueTitle": "คิว lore",
+  "loreQueueEmpty": "ยังไม่มีงาน lore",
+  "loreQueueEnqueued": "จัดคิวสร้าง lore แล้ว",
+  "loreQueueAlreadyQueued": "งานนี้อยู่ในคิว lore แล้ว",
+  "loreQueueRetryFailed": "ลองใหม่ที่ล้มเหลว",
+  "loreQueueCancelAll": "ยกเลิกทั้งหมด",
+  "loreQueueClearFinished": "ล้างที่เสร็จแล้ว",
+  "loreQueueStatusPending": "รอ",
+  "loreQueueStatusRunning": "กำลังทำ",
+  "loreQueueStatusDone": "เสร็จ",
+  "loreQueueStatusFailed": "ล้มเหลว",
+  "loreQueueStatusCancelled": "ยกเลิก",
+  "loreQueueMiniProgress": "Lore {done}/{total}: {name}",
+  "@loreQueueMiniProgress": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" },
+      "name": { "type": "String" }
+    }
+  },
+  "loreQueueMiniIdle": "คิว lore {done}/{total}",
+  "@loreQueueMiniIdle": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "loreQueueNotificationTitle": "กำลังสร้าง lore",
+  "loreQueueNotificationBody": "Lore {done}/{total}: {name}",
+  "@loreQueueNotificationBody": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" },
+      "name": { "type": "String" }
+    }
+  },
+  "loreQueueNotificationIdle": "คิว lore {done}/{total}",
+  "@loreQueueNotificationIdle": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
   "loreGlobalLibrary": "คัมภีร์ตัวละคร",
   "loreGlobalLibraryDesc": "ตัวละครที่โปรโมตข้ามงาน",
   "loreGlobalEmpty": "ยังไม่มีตัวละครโกลบอล โปรโมตจากแท็บ Lore ของงาน",
