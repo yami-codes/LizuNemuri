@@ -8,6 +8,13 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.25 — 2026-07-15
+
+### Fixed
+- **Release CI**: publish APK/AAB/IPA/web/Windows straight to the GitHub Release via `gh release upload` — no Actions artifact storage (avoids quota failures on `build-web`).
+
+---
+
 ## v2.0.0-rc.24 — 2026-07-15
 
 ### Added

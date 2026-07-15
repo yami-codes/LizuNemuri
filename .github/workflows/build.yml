@@ -30,17 +30,108 @@ concurrency:
 env:
   FLUTTER_VERSION: '3.27.0'
 
+# Packages attach straight to the GitHub Release (gh release upload).
+# No actions/upload-artifact — Actions artifact storage quota is avoided.
+
 jobs:
-  build-android:
-    if: github.event_name == 'push' || inputs.build_android
+  # Create/update the prerelease shell + changelog before assets attach.
+  prepare-release:
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 获取完整的 git 历史
+          fetch-depth: 0
+
+      - name: Prepare scripts
+        run: chmod +x .github/scripts/process_commits.sh
+
+      - name: Get Previous tag
+        id: previoustag
+        run: |
+          CURRENT_TAG=${GITHUB_REF#refs/tags/}
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 "${CURRENT_TAG}^" 2>/dev/null || echo "")
+          if [ -z "$PREVIOUS_TAG" ]; then
+            echo "tag=" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${PREVIOUS_TAG}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate commit messages
+        id: commits
+        run: |
+          CURRENT_TAG=${GITHUB_REF#refs/tags/}
+          PREV_TAG=${{ steps.previoustag.outputs.tag }}
+          DELIMITER="$(openssl rand -hex 16)"
+          if [ -z "$PREV_TAG" ]; then
+            COMMITS=$(git log "${CURRENT_TAG}" --pretty=format:"%s%n%b" | .github/scripts/process_commits.sh)
+          else
+            COMMITS=$(git log "${PREV_TAG}..${CURRENT_TAG}" --pretty=format:"%s%n%b" | .github/scripts/process_commits.sh)
+          fi
+          echo "commits<<${DELIMITER}" >> $GITHUB_OUTPUT
+          echo "$COMMITS" >> $GITHUB_OUTPUT
+          echo "${DELIMITER}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
+          draft: false
+          make_latest: false
+          allow_updates: true
+          omit_body: false
+          body: |
+            ## 🚧 Pre-release Version
+
+            ### 📋 Release Information
+            **Version:** ${{ github.ref_name }}
+            **Previous Version:** ${{ steps.previoustag.outputs.tag }}
+            **Build Environment:** Flutter ${{ env.FLUTTER_VERSION }}
+
+            ### 📝 Changelog
+            ${{ steps.commits.outputs.commits }}
+
+            ### 📦 Distribution
+            | File | Description | Purpose |
+            |------|-------------|----------|
+            | `.apk` | Android Package | Direct installation for testing |
+            | `.aab` | Android App Bundle | Google Play Store deployment |
+            | `.ipa` | iOS App Archive | iOS device installation |
+            | `lizunemu-web.zip` | Web build | Self-host or static hosting |
+            | `lizunemu-windows.zip` | Windows desktop | Extract and run `lizunemu.exe` |
+
+            ### 🔍 Additional Notes
+            - This is a pre-release build intended for testing purposes
+            - Features and functionality may not be fully stable
+            - Not recommended for production use
+
+            ### 📱 Compatibility
+            - Minimum Android SDK: 21 (Android 5.0)
+            - Target Android SDK: 33 (Android 13)
+            - Web: modern Chromium / Firefox / Safari (self-host `lizunemu-web.zip`)
+            - Windows: Windows 10+ x64 desktop (`lizunemu.exe` in `lizunemu-windows.zip`)
+
+            > **Note:** Please report any issues or bugs through the GitHub issue tracker.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-android:
+    needs: [prepare-release]
+    if: |
+      always() && !cancelled() &&
+      (needs.prepare-release.result == 'success' || needs.prepare-release.result == 'skipped') &&
+      (github.event_name == 'push' || inputs.build_android)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -158,24 +249,30 @@ jobs:
       - name: Build App Bundle
         run: flutter build appbundle --release
 
-      - name: Upload Android artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-build
-          path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app-release.aab
+      - name: Attach Android packages to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${GITHUB_REF_NAME}" \
+            build/app/outputs/flutter-apk/app-release.apk \
+            build/app/outputs/bundle/release/app-release.aab \
+            --clobber
 
   build-ios:
-    if: github.event_name == 'push' || inputs.build_ios
+    needs: [prepare-release]
+    if: |
+      always() && !cancelled() &&
+      (needs.prepare-release.result == 'success' || needs.prepare-release.result == 'skipped') &&
+      (github.event_name == 'push' || inputs.build_ios)
     runs-on: macos-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 获取完整的 git 历史
+          fetch-depth: 0
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -215,17 +312,24 @@ jobs:
           cp -r Runner.app Payload/
           zip -qq -r -9 app-release.ipa Payload
 
-      - name: Upload iOS artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-build
-          path: build/ios/iphoneos/app-release.ipa
+      - name: Attach iOS package to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${GITHUB_REF_NAME}" \
+            build/ios/iphoneos/app-release.ipa \
+            --clobber
 
   build-web:
-    if: github.event_name == 'push' || inputs.build_web
+    needs: [prepare-release]
+    if: |
+      always() && !cancelled() &&
+      (needs.prepare-release.result == 'success' || needs.prepare-release.result == 'skipped') &&
+      (github.event_name == 'push' || inputs.build_web)
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -260,17 +364,22 @@ jobs:
           cd build
           zip -r -9 ../lizunemu-web.zip web
 
-      - name: Upload Web artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-build
-          path: lizunemu-web.zip
+      - name: Attach Web package to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${GITHUB_REF_NAME}" lizunemu-web.zip --clobber
 
   build-windows:
-    if: github.event_name == 'push' || inputs.build_windows
+    needs: [prepare-release]
+    if: |
+      always() && !cancelled() &&
+      (needs.prepare-release.result == 'success' || needs.prepare-release.result == 'skipped') &&
+      (github.event_name == 'push' || inputs.build_windows)
     runs-on: windows-2022
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -314,140 +423,10 @@ jobs:
           Compress-Archive -Path build/windows/x64/runner/Release/* `
             -DestinationPath lizunemu-windows.zip -Force
 
-      - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-build
-          path: lizunemu-windows.zip
-
-  upload:
-    runs-on: ubuntu-latest
-    needs: [ build-android, build-ios, build-web, build-windows ]
-    if: ${{ always() && !cancelled() && (needs.build-web.result == 'success' || needs.build-ios.result == 'success' || needs.build-windows.result == 'success' || needs.build-android.result == 'success') }}
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # 获取完整的 git 历史
-
-      - name: Download Android artifacts
-        if: needs.build-android.result == 'success'
-        uses: actions/download-artifact@v4
-        with:
-          name: android-build
-          path: ./dist/
-
-      - name: Download iOS artifacts
-        if: needs.build-ios.result == 'success'
-        uses: actions/download-artifact@v4
-        with:
-          name: ios-build
-          path: ./dist/
-
-      - name: Download Web artifacts
-        if: needs.build-web.result == 'success'
-        uses: actions/download-artifact@v4
-        with:
-          name: web-build
-          path: ./dist/
-
-      - name: Download Windows artifacts
-        if: needs.build-windows.result == 'success'
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-build
-          path: ./dist/
-
-      - name: List files
-        run: tree dist
-
-      - name: Prepare scripts
-        run: chmod +x .github/scripts/process_commits.sh
-
-      - name: Get Previous tag
-        id: previoustag
-        run: |
-          CURRENT_TAG=${GITHUB_REF#refs/tags/}
-          PREVIOUS_TAG=$(git describe --tags --abbrev=0 "${CURRENT_TAG}^" 2>/dev/null || echo "")
-          if [ -z "$PREVIOUS_TAG" ]; then
-            echo "tag=" >> $GITHUB_OUTPUT
-            echo "is_first=true" >> $GITHUB_OUTPUT
-          else
-            echo "tag=${PREVIOUS_TAG}" >> $GITHUB_OUTPUT
-            echo "is_first=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Generate commit messages
-        id: commits
-        run: |
-          CURRENT_TAG=${GITHUB_REF#refs/tags/}
-          PREV_TAG=${{ steps.previoustag.outputs.tag }}
-          DELIMITER="$(openssl rand -hex 16)"
-          if [ -z "$PREV_TAG" ]; then
-            COMMITS=$(git log "${CURRENT_TAG}" --pretty=format:"%s%n%b" | .github/scripts/process_commits.sh)
-          else
-            COMMITS=$(git log "${PREV_TAG}..${CURRENT_TAG}" --pretty=format:"%s%n%b" | .github/scripts/process_commits.sh)
-          fi
-          echo "commits<<${DELIMITER}" >> $GITHUB_OUTPUT
-          echo "$COMMITS" >> $GITHUB_OUTPUT
-          echo "${DELIMITER}" >> $GITHUB_OUTPUT
-
-      - name: Create Release
+      - name: Attach Windows package to GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          prerelease: true
-          draft: false
-          make_latest: false
-          allow_updates: true
-          omit_body: false
-          body: |
-            ## 🚧 Pre-release Version
-
-            ### 📋 Release Information
-            **Version:** ${{ github.ref_name }}
-            **Previous Version:** ${{ steps.previoustag.outputs.tag }}
-            **Build Environment:** Flutter ${{ env.FLUTTER_VERSION }}
-
-            ### 📝 Changelog
-            ${{ steps.commits.outputs.commits }}
-
-            ### 📦 Distribution
-            | File | Description | Purpose |
-            |------|-------------|----------|
-            | `.apk` | Android Package | Direct installation for testing |
-            | `.aab` | Android App Bundle | Google Play Store deployment |
-            | `.ipa` | iOS App Archive | iOS device installation |
-            | `lizunemu-web.zip` | Web build | Self-host or static hosting |
-            | `lizunemu-windows.zip` | Windows desktop | Extract and run `lizunemu.exe` |
-
-            ### 🔍 Additional Notes
-            - This is a pre-release build intended for testing purposes
-            - Features and functionality may not be fully stable
-            - Not recommended for production use
-
-            ### 📱 Compatibility
-            - Minimum Android SDK: 21 (Android 5.0)
-            - Target Android SDK: 33 (Android 13)
-            - Web: modern Chromium / Firefox / Safari (self-host `lizunemu-web.zip`)
-            - Windows: Windows 10+ x64 desktop (`lizunemu.exe` in `lizunemu-windows.zip`)
-
-            > **Note:** Please report any issues or bugs through the GitHub issue tracker.
-          files: |
-            dist/flutter-apk/app-release.apk
-            dist/bundle/release/app-release.aab
-            dist/app-release.ipa
-            dist/lizunemu-web.zip
-            dist/lizunemu-windows.zip
-          fail_on_unmatched_files: false
+        shell: pwsh
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload artifacts if not release
-        if: startsWith(github.ref, 'refs/tags/') == false
-        uses: actions/upload-artifact@v4
-        with:
-          name: everything
-          path: dist/
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload $env:GITHUB_REF_NAME lizunemu-windows.zip --clobber
