@@ -8,6 +8,19 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.24 — 2026-07-15
+
+### Added
+- **Lore generate queue**: background work-level jobs with mini indicator, sidebar screen, and mobile notification; Detail Generate / regen / secrets enqueue and survive navigation.
+- **Settings → Lore LLM pace**: optional inter-track delay (`0` = no deliberate gap, recommended for premium/BYOK).
+
+### Changed
+- **Faster full lore+secrets**: merge speculative secrets into the per-track pass (~half the LLM round-trips); skip reconcile on simple mono-cast works; rolling EP context + projector-aligned carry; reactive 429 cooloff instead of blind sleeps.
+- **Logical-track dedupe**: collapse no-SFX / format remasters before lore LLM; lore evidence uses subtitles already translated to the lore language.
+- **Subtitle translate cache**: hash-primary disk keys so remaster twins share one translation; queue enqueue dedupes by normalized title.
+
+---
+
 ## v2.0.0-rc.23 — 2026-07-11
 
 ### Fixed
