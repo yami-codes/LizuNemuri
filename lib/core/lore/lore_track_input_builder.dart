@@ -27,12 +27,18 @@ class LoreTrackInputBuilder {
     required List<({Child audio, Child? subtitle})> pairs,
     Files? files,
     WorkLorePack? alignToPack,
+    LoreProgressCallback? onProgress,
   }) async {
+    final total = pairs.length;
     final resolved = <LogicalTrackCandidate>[];
     const batch = 6;
     for (var start = 0; start < pairs.length; start += batch) {
       final end = (start + batch).clamp(0, pairs.length);
       final slice = pairs.sublist(start, end);
+      onProgress?.call(
+        'subs:resolve:$end/$total',
+        total == 0 ? 0.02 : 0.01 + 0.04 * (end / total),
+      );
       final chunk = await Future.wait(
         List.generate(slice.length, (j) async {
           final i = start + j;
@@ -56,9 +62,14 @@ class LoreTrackInputBuilder {
 
     final groups = LogicalTrackDedupe.group(resolved);
     final out = <LoreTrackInput>[];
+    final gTotal = groups.length;
     for (var gi = 0; gi < groups.length; gi++) {
       final g = groups[gi];
       final c = g.canonical;
+      onProgress?.call(
+        'subs:translate:${gi + 1}/$gTotal',
+        gTotal == 0 ? 0.05 : 0.05 + 0.03 * ((gi + 1) / gTotal),
+      );
       final translated = await _languagePipeline.ensureForLore(
         raw: c.subtitleText,
         work: work,

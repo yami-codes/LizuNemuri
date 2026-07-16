@@ -664,9 +664,17 @@ class Strings {
   static String get loreDeleteConfirm => _l10n.loreDeleteConfirm;
   static String get loreProgressCast => _l10n.loreProgressCast;
   static String get loreProgressTrack => _l10n.loreProgressTrack;
+  static String loreProgressTrackN(int current, int total) =>
+      _l10n.loreProgressTrackN(current, total);
   static String get loreProgressSecrets => _l10n.loreProgressSecrets;
   static String get loreProgressReconcile => _l10n.loreProgressReconcile;
   static String get loreProgressDone => _l10n.loreProgressDone;
+  static String get loreProgressSubsResolve => _l10n.loreProgressSubsResolve;
+  static String get loreProgressSubsTranslate =>
+      _l10n.loreProgressSubsTranslate;
+  static String get loreProgressWaitingLlm => _l10n.loreProgressWaitingLlm;
+  static String loreProgressElapsed(int seconds) =>
+      _l10n.loreProgressElapsed(seconds);
   static String get loreLowConfidence => _l10n.loreLowConfidence;
   static String get loreContentLevel => _l10n.loreContentLevel;
   static String get loreContentSfw => _l10n.loreContentSfw;
@@ -704,6 +712,8 @@ class Strings {
   static String get loreQueueStatusDone => _l10n.loreQueueStatusDone;
   static String get loreQueueStatusFailed => _l10n.loreQueueStatusFailed;
   static String get loreQueueStatusCancelled => _l10n.loreQueueStatusCancelled;
+  static String loreQueuePartialSummary(int done, int failed) =>
+      _l10n.loreQueuePartialSummary(done, failed);
   static String loreQueueMiniProgress(int done, int total, String name) =>
       _l10n.loreQueueMiniProgress(done, total, name);
   static String loreQueueMiniIdle(int done, int total) =>

@@ -42,6 +42,22 @@ class LoreTrackInput {
 }
 
 typedef LoreProgressCallback = void Function(String stage, double progress);
+typedef LoreWaitingCallback = void Function(bool waiting);
+
+bool loreIsHardLlmError(LlmTranslationException e) =>
+    e.type == LlmTranslationErrorType.rateLimited ||
+    e.type == LlmTranslationErrorType.authError ||
+    e.type == LlmTranslationErrorType.missingApiKey ||
+    e.type == LlmTranslationErrorType.invalidConfig;
+
+/// Soft-retry delay: exponential base with jitter (BullMQ-style).
+Duration loreSoftRetryDelay(int attempt, {Random? random}) {
+  final a = attempt.clamp(1, 8);
+  final baseMs = (500 * (1 << (a - 1))).clamp(500, 8000);
+  final jitter = (random ?? Random()).nextInt(max(1, baseMs ~/ 2));
+  return Duration(milliseconds: baseMs + jitter);
+}
+
 
 /// Multi-pass LLM lore generation + persistence.
 class WorkLoreService {
@@ -114,6 +130,7 @@ class WorkLoreService {
     List<LoreSeedNote> seedNotes = const [],
     bool includeSecrets = true,
     LoreProgressCallback? onProgress,
+    LoreWaitingCallback? onWaiting,
     CancelToken? cancelToken,
   }) async {
     _throwIfCancelled(cancelToken);
@@ -127,6 +144,7 @@ class WorkLoreService {
     await pacer.beforeNextCall();
     final cast = await _chatWithPacer(
       pacer: pacer,
+      onWaiting: onWaiting,
       run: () => _generateCastAndSynopsis(
         work: work,
         tracks: limited,
@@ -167,7 +185,10 @@ class WorkLoreService {
     for (var i = 0; i < limited.length; i++) {
       _throwIfCancelled(cancelToken);
       final progress = 0.08 + (0.75 * (i / max(1, limited.length)));
-      onProgress?.call('track:${limited[i].trackKey}', progress);
+      onProgress?.call(
+        'track:${i + 1}/${limited.length}:${limited[i].title}',
+        progress,
+      );
 
       if (i > 0) {
         final priorKeys = {
@@ -191,6 +212,7 @@ class WorkLoreService {
       await pacer.beforeNextCall();
       final trackResult = await _chatWithPacer(
         pacer: pacer,
+        onWaiting: onWaiting,
         run: () => _generateTrackPass(
           work: work,
           track: limited[i],
@@ -214,6 +236,13 @@ class WorkLoreService {
           ...entry.value,
         };
       }
+      // Nudge the bar after each finished track so it doesn't look stuck
+      // until the next call starts.
+      final after = 0.08 + (0.75 * ((i + 1) / max(1, limited.length)));
+      onProgress?.call(
+        'track:${i + 1}/${limited.length}:${limited[i].title}',
+        after.clamp(0.0, 0.87),
+      );
     }
 
     final doReconcile = LoreTrackContextBrief.shouldReconcile(
@@ -226,6 +255,7 @@ class WorkLoreService {
       await pacer.beforeNextCall();
       final reconciled = await _chatWithPacer(
         pacer: pacer,
+        onWaiting: onWaiting,
         run: () => _reconcile(
           work: work,
           synopsis: synopsis,
@@ -280,7 +310,9 @@ class WorkLoreService {
   Future<T> _chatWithPacer<T>({
     required LoreLlmPacer pacer,
     required Future<T> Function() run,
+    LoreWaitingCallback? onWaiting,
   }) async {
+    onWaiting?.call(true);
     try {
       final result = await run();
       pacer.markCallEnded();
@@ -294,6 +326,8 @@ class WorkLoreService {
     } catch (e) {
       pacer.markCallEnded();
       rethrow;
+    } finally {
+      onWaiting?.call(false);
     }
   }
 
@@ -305,29 +339,37 @@ class WorkLoreService {
     String? characterId,
     List<LoreTrackInput> tracks = const [],
     LoreProgressCallback? onProgress,
+    LoreWaitingCallback? onWaiting,
     CancelToken? cancelToken,
   }) async {
     switch (section) {
       case LoreRegenSection.work:
         onProgress?.call('cast', 0.2);
-        final cast = await _generateCastAndSynopsis(
-          work: work,
-          tracks: tracks.isEmpty
-              ? pack.trackSummaries
-                  .map(
-                    (t) => LoreTrackInput(
-                      trackKey: t.trackKey,
-                      title: t.trackTitle,
-                      index: t.trackIndex,
-                    ),
-                  )
-                  .toList()
-              : tracks,
-          seedNotes: pack.seedNotes,
-          languageCode: pack.languageCode ?? _settings.resolvedLoreLanguageCode,
-          cancelToken: cancelToken,
-          existingCharacters: pack.characters,
-        );
+        onWaiting?.call(true);
+        late final _CastPassResult cast;
+        try {
+          cast = await _generateCastAndSynopsis(
+            work: work,
+            tracks: tracks.isEmpty
+                ? pack.trackSummaries
+                    .map(
+                      (t) => LoreTrackInput(
+                        trackKey: t.trackKey,
+                        title: t.trackTitle,
+                        index: t.trackIndex,
+                      ),
+                    )
+                    .toList()
+                : tracks,
+            seedNotes: pack.seedNotes,
+            languageCode:
+                pack.languageCode ?? _settings.resolvedLoreLanguageCode,
+            cancelToken: cancelToken,
+            existingCharacters: pack.characters,
+          );
+        } finally {
+          onWaiting?.call(false);
+        }
         final next = pack.copyWith(
           synopsis: cast.synopsis.isNotEmpty ? cast.synopsis : pack.synopsis,
           characters:
@@ -396,6 +438,7 @@ class WorkLoreService {
         await pacer.beforeNextCall();
         final result = await _chatWithPacer(
           pacer: pacer,
+          onWaiting: onWaiting,
           run: () => _generateTrackPass(
             work: work,
             track: resolvedTrack,
@@ -429,12 +472,18 @@ class WorkLoreService {
           throw ArgumentError('characterId required for character regen');
         }
         onProgress?.call('character:$characterId', 0.4);
-        final refreshed = await _regenerateCharacter(
-          work: work,
-          pack: pack,
-          characterId: characterId,
-          cancelToken: cancelToken,
-        );
+        onWaiting?.call(true);
+        late final LoreCharacter refreshed;
+        try {
+          refreshed = await _regenerateCharacter(
+            work: work,
+            pack: pack,
+            characterId: characterId,
+            cancelToken: cancelToken,
+          );
+        } finally {
+          onWaiting?.call(false);
+        }
         final chars = pack.characters
             .map((c) => c.id == characterId ? refreshed : c)
             .toList();
@@ -452,6 +501,7 @@ class WorkLoreService {
     required Work work,
     List<LoreTrackInput> tracks = const [],
     LoreProgressCallback? onProgress,
+    LoreWaitingCallback? onWaiting,
     CancelToken? cancelToken,
   }) async {
     return _applySecretsTimeline(
@@ -459,6 +509,7 @@ class WorkLoreService {
       work: work,
       tracks: tracks,
       onProgress: onProgress,
+      onWaiting: onWaiting,
       cancelToken: cancelToken,
       persist: true,
     );
@@ -471,6 +522,7 @@ class WorkLoreService {
     required Work work,
     List<LoreTrackInput> tracks = const [],
     LoreProgressCallback? onProgress,
+    LoreWaitingCallback? onWaiting,
     CancelToken? cancelToken,
     required bool persist,
   }) async {
@@ -527,6 +579,7 @@ class WorkLoreService {
       await pacer.beforeNextCall();
       final pass = await _chatWithPacer(
         pacer: pacer,
+        onWaiting: onWaiting,
         run: () => _generateSecretsTrackPass(
           work: work,
           track: track,
@@ -736,59 +789,54 @@ $priorBlock
 - Subtitles: ${hasSubs ? _clip(track.subtitleText!, 8000) : '(none — invent sparse speculative beats from title/summary)'}
 ''';
 
-    try {
-      final raw = await _llm.chatCompletion(
-        messages: [
-          {'role': 'system', 'content': _systemPrompt(languageCode)},
-          {'role': 'user', 'content': user},
-        ],
-        temperature: 0.45,
-        modelSlot: LlmModelSlot.lite,
-      );
-      final map = LoreJsonUtils.parseObject(raw) ?? {};
-      final events = (map['events'] as List?)
-              ?.whereType<Map>()
-              .map((e) {
-                final m = Map<String, dynamic>.from(e);
-                m['trackKey'] = track.trackKey;
-                m['id'] = m['id'] ?? _newId('s');
-                m['speculative'] = true;
-                return LoreTimelineEvent.fromJson(m);
-              })
-              .toList() ??
-          const <LoreTimelineEvent>[];
+    return _withSoftTrackRetries(
+      trackKey: track.trackKey,
+      run: () async {
+        final raw = await _llm.chatCompletion(
+          messages: [
+            {'role': 'system', 'content': _systemPrompt(languageCode)},
+            {'role': 'user', 'content': user},
+          ],
+          temperature: 0.45,
+          modelSlot: LlmModelSlot.lite,
+        );
+        final map = LoreJsonUtils.parseObject(raw) ?? {};
+        final events = (map['events'] as List?)
+                ?.whereType<Map>()
+                .map((e) {
+                  final m = Map<String, dynamic>.from(e);
+                  m['trackKey'] = track.trackKey;
+                  m['id'] = m['id'] ?? _newId('s');
+                  m['speculative'] = true;
+                  return LoreTimelineEvent.fromJson(m);
+                })
+                .toList() ??
+            const <LoreTimelineEvent>[];
 
-      final carryUpdates = <String, Map<String, dynamic>>{};
-      final carryRaw = map['carryUpdates'];
-      if (carryRaw is Map) {
-        for (final entry in carryRaw.entries) {
-          if (entry.value is Map) {
-            carryUpdates[entry.key.toString()] =
-                Map<String, dynamic>.from(entry.value as Map);
+        final carryUpdates = <String, Map<String, dynamic>>{};
+        final carryRaw = map['carryUpdates'];
+        if (carryRaw is Map) {
+          for (final entry in carryRaw.entries) {
+            if (entry.value is Map) {
+              carryUpdates[entry.key.toString()] =
+                  Map<String, dynamic>.from(entry.value as Map);
+            }
           }
         }
-      }
 
-      return _TrackPassResult(
-        summary: LoreTrackSummary(
-          trackKey: track.trackKey,
-          trackTitle: track.title,
-          trackIndex: track.index,
-          summary: '',
-          hasSubtitles: hasSubs,
-        ),
-        events: events,
-        carryUpdates: carryUpdates,
-      );
-    } on LlmTranslationException catch (e) {
-      if (e.type == LlmTranslationErrorType.rateLimited ||
-          e.type == LlmTranslationErrorType.authError ||
-          e.type == LlmTranslationErrorType.missingApiKey ||
-          e.type == LlmTranslationErrorType.invalidConfig) {
-        rethrow;
-      }
-      AppLogger.error('Lore secrets track failed: ${track.trackKey}', e);
-      return _TrackPassResult(
+        return _TrackPassResult(
+          summary: LoreTrackSummary(
+            trackKey: track.trackKey,
+            trackTitle: track.title,
+            trackIndex: track.index,
+            summary: '',
+            hasSubtitles: hasSubs,
+          ),
+          events: events,
+          carryUpdates: carryUpdates,
+        );
+      },
+      onExhausted: () => _TrackPassResult(
         summary: LoreTrackSummary(
           trackKey: track.trackKey,
           trackTitle: track.title,
@@ -799,22 +847,8 @@ $priorBlock
         ),
         events: const [],
         carryUpdates: const {},
-      );
-    } catch (e, st) {
-      AppLogger.error('Lore secrets track failed: ${track.trackKey}', e, st);
-      return _TrackPassResult(
-        summary: LoreTrackSummary(
-          trackKey: track.trackKey,
-          trackTitle: track.title,
-          trackIndex: track.index,
-          summary: '',
-          lowConfidence: true,
-          hasSubtitles: hasSubs,
-        ),
-        events: const [],
-        carryUpdates: const {},
-      );
-    }
+      ),
+    );
   }
 
   // --- pipeline internals ---
@@ -1038,97 +1072,109 @@ Subtitles (language $languageCode):
 ${hasSubs ? _clip(track.subtitleText!, 12000) : '(none)'}
 ''';
 
-    try {
-      final raw = await _llm.chatCompletion(
-        messages: [
-          {'role': 'system', 'content': _systemPrompt(languageCode)},
-          {'role': 'user', 'content': user},
-        ],
-        temperature: 0.3,
-        modelSlot: LlmModelSlot.lite,
-      );
-      final map = LoreJsonUtils.parseObject(raw) ?? {};
-      final summaryJson = map['summary'];
-      final summary = summaryJson is Map
-          ? LoreTrackSummary.fromJson(Map<String, dynamic>.from(summaryJson))
-          : LoreTrackSummary(
-              trackKey: track.trackKey,
-              trackTitle: track.title,
-              trackIndex: track.index,
-              summary: hasSubs ? '' : 'No subtitles; thin lore.',
-              lowConfidence: !hasSubs,
-              hasSubtitles: hasSubs,
-            );
+    return _withSoftTrackRetries(
+      trackKey: track.trackKey,
+      run: () async {
+        final raw = await _llm.chatCompletion(
+          messages: [
+            {'role': 'system', 'content': _systemPrompt(languageCode)},
+            {'role': 'user', 'content': user},
+          ],
+          temperature: 0.3,
+          modelSlot: LlmModelSlot.lite,
+        );
+        final map = LoreJsonUtils.parseObject(raw) ?? {};
+        final summaryJson = map['summary'];
+        final summary = summaryJson is Map
+            ? LoreTrackSummary.fromJson(
+                Map<String, dynamic>.from(summaryJson),
+              )
+            : LoreTrackSummary(
+                trackKey: track.trackKey,
+                trackTitle: track.title,
+                trackIndex: track.index,
+                summary: hasSubs ? '' : 'No subtitles; thin lore.',
+                lowConfidence: !hasSubs,
+                hasSubtitles: hasSubs,
+              );
 
-      final events = (map['events'] as List?)
-              ?.whereType<Map>()
-              .map((e) {
-                final m = Map<String, dynamic>.from(e);
-                m['trackKey'] = m['trackKey'] ?? track.trackKey;
-                m['id'] = m['id'] ?? _newId('e');
-                return LoreTimelineEvent.fromJson(m);
-              })
-              .toList() ??
-          const <LoreTimelineEvent>[];
+        final events = (map['events'] as List?)
+                ?.whereType<Map>()
+                .map((e) {
+                  final m = Map<String, dynamic>.from(e);
+                  m['trackKey'] = m['trackKey'] ?? track.trackKey;
+                  m['id'] = m['id'] ?? _newId('e');
+                  return LoreTimelineEvent.fromJson(m);
+                })
+                .toList() ??
+            const <LoreTimelineEvent>[];
 
-      final carryUpdates = <String, Map<String, dynamic>>{};
-      final carryRaw = map['carryUpdates'];
-      if (carryRaw is Map) {
-        for (final entry in carryRaw.entries) {
-          if (entry.value is Map) {
-            carryUpdates[entry.key.toString()] =
-                Map<String, dynamic>.from(entry.value as Map);
+        final carryUpdates = <String, Map<String, dynamic>>{};
+        final carryRaw = map['carryUpdates'];
+        if (carryRaw is Map) {
+          for (final entry in carryRaw.entries) {
+            if (entry.value is Map) {
+              carryUpdates[entry.key.toString()] =
+                  Map<String, dynamic>.from(entry.value as Map);
+            }
           }
         }
-      }
 
-      return _TrackPassResult(
-        summary: summary.copyWith(
+        return _TrackPassResult(
+          summary: summary.copyWith(
+            trackKey: track.trackKey,
+            trackTitle: track.title,
+            trackIndex: track.index,
+            hasSubtitles: hasSubs,
+            lowConfidence: summary.lowConfidence || !hasSubs,
+          ),
+          events: events,
+          carryUpdates: carryUpdates,
+        );
+      },
+      onExhausted: () => _TrackPassResult(
+        summary: LoreTrackSummary(
           trackKey: track.trackKey,
           trackTitle: track.title,
           trackIndex: track.index,
+          summary: '',
+          lowConfidence: true,
           hasSubtitles: hasSubs,
-          lowConfidence: summary.lowConfidence || !hasSubs,
         ),
-        events: events,
-        carryUpdates: carryUpdates,
-      );
-    } on LlmTranslationException catch (e) {
-      // Rate limits / auth must surface to the UI — don't fake an empty track.
-      if (e.type == LlmTranslationErrorType.rateLimited ||
-          e.type == LlmTranslationErrorType.authError ||
-          e.type == LlmTranslationErrorType.missingApiKey ||
-          e.type == LlmTranslationErrorType.invalidConfig) {
-        rethrow;
+        events: const [],
+        carryUpdates: const {},
+      ),
+    );
+  }
+
+  Future<T> _withSoftTrackRetries<T>({
+    required String trackKey,
+    required Future<T> Function() run,
+    required T Function() onExhausted,
+  }) async {
+    final maxAttempts = max(1, _settings.llmTranslateRetryCount);
+    for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        return await run();
+      } on LlmTranslationException catch (e) {
+        if (loreIsHardLlmError(e)) rethrow;
+        AppLogger.warning(
+          'Lore soft fail $trackKey attempt $attempt/$maxAttempts: ${e.type}',
+        );
+        if (attempt >= maxAttempts) break;
+        await Future<void>.delayed(loreSoftRetryDelay(attempt));
+      } catch (e, st) {
+        AppLogger.error(
+          'Lore soft fail $trackKey attempt $attempt/$maxAttempts',
+          e,
+          st,
+        );
+        if (attempt >= maxAttempts) break;
+        await Future<void>.delayed(loreSoftRetryDelay(attempt));
       }
-      AppLogger.error('Lore track pass failed: ${track.trackKey}', e);
-      return _TrackPassResult(
-        summary: LoreTrackSummary(
-          trackKey: track.trackKey,
-          trackTitle: track.title,
-          trackIndex: track.index,
-          summary: '',
-          lowConfidence: true,
-          hasSubtitles: hasSubs,
-        ),
-        events: const [],
-        carryUpdates: const {},
-      );
-    } catch (e, st) {
-      AppLogger.error('Lore track pass failed: ${track.trackKey}', e, st);
-      return _TrackPassResult(
-        summary: LoreTrackSummary(
-          trackKey: track.trackKey,
-          trackTitle: track.title,
-          trackIndex: track.index,
-          summary: '',
-          lowConfidence: true,
-          hasSubtitles: hasSubs,
-        ),
-        events: const [],
-        carryUpdates: const {},
-      );
     }
+    AppLogger.error('Lore track exhausted soft retries: $trackKey');
+    return onExhausted();
   }
 
   Future<_ReconcileResult> _reconcile({

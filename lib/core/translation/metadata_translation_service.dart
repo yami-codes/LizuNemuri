@@ -27,6 +27,7 @@ class MetadataTranslationService {
 You are a professional translator for ASMR audio catalog metadata.
 Translate each item naturally into the target language.
 Preserve catalog numbers (RJ codes), episode/chapter numbers, and file extensions.
+Translate folder names and all file titles in the work tree.
 Return ONLY a JSON array with one object per input item in the same order:
 {"id":"<id>","text":"translated text"}
 Do not wrap in markdown fences.''';
@@ -35,6 +36,7 @@ Do not wrap in markdown fences.''';
 You are a professional translator for ASMR audio catalog metadata.
 Translate each item naturally into the target language.
 Preserve catalog numbers (RJ codes), episode/chapter numbers, and file extensions.
+Translate folder names and all file titles in the work tree.
 Return one JSON object per line (NDJSON), each on its own line:
 {"id":"<id>","text":"translated text"}
 Do not wrap in markdown fences. Do not return a JSON array wrapper.''';
@@ -202,7 +204,7 @@ Do not wrap in markdown fences. Do not return a JSON array wrapper.''';
       scope: _trackNameScope,
       entityIdFor: (fileKey) => '$workId|$fileKey',
       pending: pending,
-      userHint: 'ASMR audio track / file names',
+      userHint: 'ASMR work tree labels (folders and file names)',
       onPartial: (fileKey, text) {
         result[fileKey] = text;
         onPartial?.call(fileKey, text);

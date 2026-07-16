@@ -2369,9 +2369,9 @@
   "metadataTranslationModeManual": "手动",
   "metadataTranslationModeManualDesc": "仅在你点击翻译时翻译",
   "metadataTranslatePage": "翻译本页",
-  "metadataTranslateTracks": "翻译曲目名称",
-  "metadataTrackTranslationDone": "曲目名称已翻译",
-  "metadataTrackTranslationFailed": "曲目名称翻译失败",
+  "metadataTranslateTracks": "翻译文件与文件夹名",
+  "metadataTrackTranslationDone": "文件与文件夹名已翻译",
+  "metadataTrackTranslationFailed": "文件与文件夹名翻译失败",
   "llmTargetLanguage": "翻译目标语言",
   "llmSystemPrompt": "系统提示词（覆盖）",
   "llmSystemPromptHint": "留空使用内置默认提示词",
@@ -2695,9 +2695,25 @@
   "loreDeleteConfirm": "删除本作品的全部设定？",
   "loreProgressCast": "角色与概要",
   "loreProgressTrack": "分轨分析",
+  "loreProgressTrackN": "曲目 {current}/{total}",
+  "@loreProgressTrackN": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
   "loreProgressSecrets": "秘密参数（按曲目）",
   "loreProgressReconcile": "一致性整理",
   "loreProgressDone": "完成",
+  "loreProgressSubsResolve": "正在解析字幕…",
+  "loreProgressSubsTranslate": "正在翻译字幕…",
+  "loreProgressWaitingLlm": "等待模型回复…",
+  "loreProgressElapsed": "{seconds} 秒",
+  "@loreProgressElapsed": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
   "loreLowConfidence": "低置信度（无字幕）",
   "loreContentLevel": "内容等级",
   "loreContentSfw": "全年龄",
@@ -2734,6 +2750,13 @@
   "loreQueueStatusDone": "完成",
   "loreQueueStatusFailed": "失败",
   "loreQueueStatusCancelled": "已取消",
+  "loreQueuePartialSummary": "{done} 成功 · {failed} 失败",
+  "@loreQueuePartialSummary": {
+    "placeholders": {
+      "done": {"type": "int"},
+      "failed": {"type": "int"}
+    }
+  },
   "loreQueueMiniProgress": "设定 {done}/{total}：{name}",
   "@loreQueueMiniProgress": {
     "placeholders": {

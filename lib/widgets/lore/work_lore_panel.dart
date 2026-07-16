@@ -18,6 +18,7 @@ import 'package:lizunemu/screens/lore_generate_queue_screen.dart';
 import 'package:lizunemu/widgets/lore/lore_character_editor_sheet.dart';
 import 'package:lizunemu/widgets/lore/lore_hud_pins_sheet.dart';
 import 'package:lizunemu/widgets/lore/lore_merge_sheet.dart';
+import 'package:lizunemu/widgets/lore/lore_progress_labels.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -109,6 +110,8 @@ class _QueueAwareLoreBodyState extends State<_QueueAwareLoreBody> {
       return _GeneratingCard(
         progressStage: job?.progressStage ?? vm.progressStage,
         progress: job?.progress ?? vm.progress,
+        waitingOnLlm: job?.waitingOnLlm ?? false,
+        stageStartedAt: job?.stageStartedAt,
         onCancel: () {
           if (job != null) {
             queue.cancelJob(job.id);
@@ -172,12 +175,16 @@ class _QueueAwareLoreBodyState extends State<_QueueAwareLoreBody> {
 class _GeneratingCard extends StatelessWidget {
   final String progressStage;
   final double progress;
+  final bool waitingOnLlm;
+  final DateTime? stageStartedAt;
   final VoidCallback onCancel;
   final VoidCallback onOpenQueue;
 
   const _GeneratingCard({
     required this.progressStage,
     required this.progress,
+    required this.waitingOnLlm,
+    required this.stageStartedAt,
     required this.onCancel,
     required this.onOpenQueue,
   });
@@ -185,20 +192,20 @@ class _GeneratingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    String stageLabel = Strings.loreGenerating;
-    if (progressStage.startsWith('cast')) {
-      stageLabel = Strings.loreProgressCast;
-    } else if (progressStage.startsWith('secrets')) {
-      stageLabel = Strings.loreProgressSecrets;
-    } else if (progressStage.startsWith('track')) {
-      stageLabel = Strings.loreProgressTrack;
-    } else if (progressStage.startsWith('reconcile')) {
-      stageLabel = Strings.loreProgressReconcile;
-    } else if (progressStage == 'done') {
-      stageLabel = Strings.loreProgressDone;
-    } else if (progressStage == 'subs') {
-      stageLabel = Strings.loreProgressTrack;
-    }
+    final stageLabel = LoreProgressLabels.forStage(progressStage);
+    final elapsed = stageStartedAt == null
+        ? null
+        : DateTime.now().difference(stageStartedAt!).inSeconds;
+    final statusLine = waitingOnLlm
+        ? [
+            Strings.loreProgressWaitingLlm,
+            if (elapsed != null) Strings.loreProgressElapsed(elapsed),
+          ].join(' · ')
+        : [
+            stageLabel,
+            if (elapsed != null && elapsed > 0)
+              Strings.loreProgressElapsed(elapsed),
+          ].join(' · ');
 
     return Card(
       child: Padding(
@@ -207,9 +214,16 @@ class _GeneratingCard extends StatelessWidget {
           children: [
             Text(Strings.loreGenerating, style: AppTextStyles.titleMedium),
             const SizedBox(height: AppSpacing.space8),
-            Text(stageLabel, style: AppTextStyles.caption),
+            Text(
+              statusLine,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.caption,
+            ),
             const SizedBox(height: AppSpacing.space12),
-            LinearProgressIndicator(value: progress.clamp(0.05, 1.0)),
+            LinearProgressIndicator(
+              // null = indeterminate pulse while the model thinks
+              value: waitingOnLlm ? null : progress.clamp(0.02, 1.0),
+            ),
             const SizedBox(height: AppSpacing.space12),
             Wrap(
               spacing: AppSpacing.space8,
@@ -224,12 +238,13 @@ class _GeneratingCard extends StatelessWidget {
                 ),
               ],
             ),
-            Text(
-              '${(progress * 100).round()}%',
-              style: AppTextStyles.caption.copyWith(
-                color: scheme.onSurfaceVariant,
+            if (!waitingOnLlm)
+              Text(
+                '${(progress * 100).round()}%',
+                style: AppTextStyles.caption.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
               ),
-            ),
           ],
         ),
       ),

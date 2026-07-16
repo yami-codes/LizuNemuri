@@ -12,11 +12,12 @@ import 'package:lizunemu/utils/platform_capabilities.dart';
 class WorkFolderItem extends StatelessWidget {
   final Child folder;
   final double indentation;
+  final String pathPrefix;
   final Function(Child file)? onFileTap;
   final Function(Child file)? onFileDownload;
   final void Function(Child? folderNode)? onFolderDownload;
   final void Function(Child? folderNode)? onFolderTranslate;
-  final String Function(Child file)? trackTitleFor;
+  final String Function(Child node, {String pathPrefix})? titleFor;
 
   // Supported audio formats by priority
   static List<String> get _audioFormats {
@@ -39,11 +40,12 @@ class WorkFolderItem extends StatelessWidget {
     super.key,
     required this.folder,
     required this.indentation,
+    this.pathPrefix = '',
     this.onFileTap,
     this.onFileDownload,
     this.onFolderDownload,
     this.onFolderTranslate,
-    this.trackTitleFor,
+    this.titleFor,
   });
 
   bool _shouldExpandFolder(Child folder) {
@@ -85,7 +87,9 @@ class WorkFolderItem extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  folder.title ?? '',
+                  titleFor?.call(folder, pathPrefix: pathPrefix) ??
+                      folder.title ??
+                      '',
                   style: TextStyle(
                     color: colorScheme.onSurface,
                   ),
@@ -117,18 +121,19 @@ class WorkFolderItem extends StatelessWidget {
                       ? WorkFolderItem(
                           folder: child,
                           indentation: indentation + 16.0,
+                          pathPrefix: '$pathPrefix/${folder.title ?? ''}',
                           onFileTap: onFileTap,
                           onFileDownload: onFileDownload,
                           onFolderDownload: onFolderDownload,
                           onFolderTranslate: onFolderTranslate,
-                          trackTitleFor: trackTitleFor,
+                          titleFor: titleFor,
                         )
                       : WorkFileItem(
                           file: child,
                           indentation: indentation + 16.0,
                           onFileTap: onFileTap,
                           onFileDownload: onFileDownload,
-                          displayTitle: trackTitleFor?.call(child),
+                          displayTitle: titleFor?.call(child),
                         ))
                   .toList() ??
               [],

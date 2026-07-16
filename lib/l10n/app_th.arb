@@ -2369,9 +2369,9 @@
   "metadataTranslationModeManual": "ด้วยตนเอง",
   "metadataTranslationModeManualDesc": "แปลเมื่อแตะปุ่มแปลเท่านั้น",
   "metadataTranslatePage": "แปลหน้านี้",
-  "metadataTranslateTracks": "แปลชื่อแทร็ก",
-  "metadataTrackTranslationDone": "แปลชื่อแทร็กแล้ว",
-  "metadataTrackTranslationFailed": "แปลชื่อแทร็กไม่สำเร็จ",
+  "metadataTranslateTracks": "แปลชื่อไฟล์และโฟลเดอร์",
+  "metadataTrackTranslationDone": "แปลชื่อไฟล์และโฟลเดอร์แล้ว",
+  "metadataTrackTranslationFailed": "แปลชื่อไฟล์และโฟลเดอร์ไม่สำเร็จ",
   "llmTargetLanguage": "ภาษาเป้าหมาย",
   "llmSystemPrompt": "พรอมต์ระบบ (แทนที่)",
   "llmSystemPromptHint": "เว้นว่างเพื่อใช้ค่าเริ่มต้นในตัว",
@@ -2695,9 +2695,25 @@
   "loreDeleteConfirm": "ลบ lore ทั้งหมดของงานนี้?",
   "loreProgressCast": "นักแสดงและเรื่องย่อ",
   "loreProgressTrack": "วิเคราะห์แทร็ก",
+  "loreProgressTrackN": "แทร็ก {current}/{total}",
+  "@loreProgressTrackN": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
   "loreProgressSecrets": "พารามิเตอร์ลับ (รายแทร็ก)",
   "loreProgressReconcile": "ปรับความสอดคล้อง",
   "loreProgressDone": "เสร็จ",
+  "loreProgressSubsResolve": "กำลังดึงซับไตเติล…",
+  "loreProgressSubsTranslate": "กำลังแปลซับไตเติล…",
+  "loreProgressWaitingLlm": "รอโมเดลตอบ…",
+  "loreProgressElapsed": "{seconds} วินาที",
+  "@loreProgressElapsed": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
   "loreLowConfidence": "ความมั่นใจต่ำ (ไม่มีซับ)",
   "loreContentLevel": "ระดับเนื้อหา",
   "loreContentSfw": "SFW",
@@ -2734,6 +2750,13 @@
   "loreQueueStatusDone": "เสร็จ",
   "loreQueueStatusFailed": "ล้มเหลว",
   "loreQueueStatusCancelled": "ยกเลิก",
+  "loreQueuePartialSummary": "{done} สำเร็จ · {failed} ล้มเหลว",
+  "@loreQueuePartialSummary": {
+    "placeholders": {
+      "done": {"type": "int"},
+      "failed": {"type": "int"}
+    }
+  },
   "loreQueueMiniProgress": "Lore {done}/{total}: {name}",
   "@loreQueueMiniProgress": {
     "placeholders": {

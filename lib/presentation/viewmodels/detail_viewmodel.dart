@@ -150,8 +150,18 @@ class DetailViewModel extends ChangeNotifier {
 
   String displayTrackTitle(Child file) {
     if (_showOriginalTrackNames) return file.title ?? '';
-    final key = _trackKey(file);
+    final key = _labelKey(file);
     return _translatedTrackNames[key] ?? file.title ?? '';
+  }
+
+  /// Resolves translated label for any tree node (folder or leaf).
+  String displayTreeTitle(Child node, {String pathPrefix = ''}) {
+    if (_showOriginalTrackNames) return node.title ?? '';
+    if (node.type == 'folder') {
+      final key = _folderLabelKey(node, pathPrefix: pathPrefix);
+      return _translatedTrackNames[key] ?? node.title ?? '';
+    }
+    return _translatedTrackNames[_labelKey(node)] ?? node.title ?? '';
   }
 
   void showOriginalTrackNames() {
@@ -566,7 +576,7 @@ class DetailViewModel extends ChangeNotifier {
       return Strings.metadataTrackTranslationFailed;
     }
 
-    final titles = _collectTrackTitles(_files!.children);
+    final titles = _collectTreeLabels(_files!.children);
     if (titles.isEmpty) return Strings.metadataTrackTranslationFailed;
 
     _isTranslatingTracks = true;
@@ -616,26 +626,35 @@ class DetailViewModel extends ChangeNotifier {
     await translateTrackNames();
   }
 
-  static String _trackKey(Child file) => file.hash ?? file.title ?? '';
+  static String _labelKey(Child file) => file.hash ?? file.title ?? '';
 
-  Map<String, String> _collectTrackTitles(List<Child>? nodes) {
+  static String _folderLabelKey(Child folder, {String pathPrefix = ''}) {
+    final title = folder.title?.trim() ?? '';
+    return 'folder:$pathPrefix/$title';
+  }
+
+  /// Folder names + all leaf file titles (audio/video/subtitle/etc.).
+  Map<String, String> _collectTreeLabels(List<Child>? nodes) {
     final map = <String, String>{};
-    void walk(List<Child>? children) {
+    void walk(List<Child>? children, String pathPrefix) {
       if (children == null) return;
       for (final node in children) {
+        final title = node.title?.trim();
+        if (title == null || title.isEmpty) continue;
         if (node.type == 'folder') {
-          walk(node.children);
-        } else if (isAudioFile(node)) {
-          final key = _trackKey(node);
-          final title = node.title?.trim();
-          if (key.isNotEmpty && title != null && title.isNotEmpty) {
+          final key = _folderLabelKey(node, pathPrefix: pathPrefix);
+          map[key] = title;
+          walk(node.children, '$pathPrefix/$title');
+        } else {
+          final key = _labelKey(node);
+          if (key.isNotEmpty) {
             map[key] = title;
           }
         }
       }
     }
 
-    walk(nodes);
+    walk(nodes, '');
     return map;
   }
 

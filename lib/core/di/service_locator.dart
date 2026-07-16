@@ -37,6 +37,7 @@ import '../../core/platform/lyric_overlay_manager.dart';
 import '../../core/platform/wakelock_controller.dart';
 import '../../core/platform/sleep_timer_controller.dart';
 import '../../core/platform/background_play_controller.dart';
+import '../../core/platform/llm_background_keeper.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/core/database/database_service.dart';
 import 'package:lizunemu/core/subtitle/storage/i_user_subtitle_repository.dart';
@@ -295,6 +296,9 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<TranslationQueueStore>(
     () => TranslationQueueStore(prefs),
   );
+  getIt.registerLazySingleton<LlmBackgroundKeeper>(
+    () => LlmBackgroundKeeper(),
+  );
   getIt.registerLazySingleton<TranslationQueueService>(
     () => TranslationQueueService(
       settings: getIt<AppSettingsService>(),
@@ -303,6 +307,7 @@ Future<void> setupServiceLocator() async {
       subtitleLoader: getIt<SubtitleLoader>(),
       importService: getIt<SubtitleImportService>(),
       store: getIt<TranslationQueueStore>(),
+      keeper: getIt<LlmBackgroundKeeper>(),
     ),
   );
 
@@ -336,6 +341,7 @@ Future<void> setupServiceLocator() async {
       lore: getIt<WorkLoreService>(),
       trackBuilder: getIt<LoreTrackInputBuilder>(),
       store: getIt<LoreGenerateQueueStore>(),
+      keeper: getIt<LlmBackgroundKeeper>(),
     ),
   );
 
@@ -393,6 +399,7 @@ void setupSubtitleServices() {
 /// interactive frame; floating lyrics are not needed until playback and user opt-in — defer until after first paint.
 Future<void> initDeferredStartupServices() async {
   await getIt<LyricOverlayManager>().initialize();
+  await getIt<LlmBackgroundKeeper>().initialize();
   await getIt<TranslationQueueService>().initialize();
   await getIt<LoreGenerateQueueService>().initialize();
 }

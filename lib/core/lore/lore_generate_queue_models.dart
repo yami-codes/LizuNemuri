@@ -18,6 +18,61 @@ enum LoreGenerateKind {
   regenerateCharacter,
 }
 
+enum LoreGenerateTrackStatus {
+  pending,
+  running,
+  done,
+  failed,
+  skipped,
+  cancelled,
+}
+
+class LoreGenerateTrackProgress {
+  final String trackKey;
+  final String title;
+  final int index;
+  LoreGenerateTrackStatus status;
+  int attempts;
+  String? error;
+
+  LoreGenerateTrackProgress({
+    required this.trackKey,
+    required this.title,
+    required this.index,
+    this.status = LoreGenerateTrackStatus.pending,
+    this.attempts = 0,
+    this.error,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'trackKey': trackKey,
+        'title': title,
+        'index': index,
+        'status': status.name,
+        'attempts': attempts,
+        if (error != null) 'error': error,
+      };
+
+  factory LoreGenerateTrackProgress.fromJson(Map<String, dynamic> json) {
+    final statusName = json['status'] as String? ?? 'pending';
+    var status = LoreGenerateTrackStatus.values.firstWhere(
+      (v) => v.name == statusName,
+      orElse: () => LoreGenerateTrackStatus.pending,
+    );
+    if (status == LoreGenerateTrackStatus.running) {
+      status = LoreGenerateTrackStatus.pending;
+    }
+    return LoreGenerateTrackProgress(
+      trackKey: json['trackKey'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      index: json['index'] as int? ?? 0,
+      status: status,
+      attempts: json['attempts'] as int? ?? 0,
+      error: json['error'] as String?,
+    );
+  }
+}
+
 class LoreGenerateQueueJob {
   final String id;
   final Work work;
@@ -33,6 +88,13 @@ class LoreGenerateQueueJob {
   int attempts;
   String? lastError;
   final DateTime createdAt;
+  final List<LoreGenerateTrackProgress> tracks;
+
+  /// True while an LLM HTTP call is in flight (UI shows indeterminate pulse).
+  bool waitingOnLlm;
+
+  /// When the current stage / wait started (for elapsed seconds).
+  DateTime? stageStartedAt;
 
   LoreGenerateQueueJob({
     required this.id,
@@ -48,11 +110,20 @@ class LoreGenerateQueueJob {
     this.progress = 0,
     this.attempts = 0,
     this.lastError,
+    this.waitingOnLlm = false,
+    this.stageStartedAt,
+    List<LoreGenerateTrackProgress>? tracks,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+  })  : tracks = tracks ?? [],
+        createdAt = createdAt ?? DateTime.now();
 
   String get workId => '${work.id ?? work.sourceId ?? 'unknown'}';
   String get workTitle => work.title ?? workId;
+
+  int get tracksDone =>
+      tracks.where((t) => t.status == LoreGenerateTrackStatus.done).length;
+  int get tracksFailed =>
+      tracks.where((t) => t.status == LoreGenerateTrackStatus.failed).length;
 
   bool get isActive =>
       status == LoreGenerateQueueJobStatus.pending ||
@@ -62,6 +133,9 @@ class LoreGenerateQueueJob {
       status == LoreGenerateQueueJobStatus.done ||
       status == LoreGenerateQueueJobStatus.failed ||
       status == LoreGenerateQueueJobStatus.cancelled;
+
+  bool get hasPartialFailures =>
+      status == LoreGenerateQueueJobStatus.done && tracksFailed > 0;
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -84,6 +158,7 @@ class LoreGenerateQueueJob {
         'attempts': attempts,
         'lastError': lastError,
         'createdAt': createdAt.toIso8601String(),
+        'tracks': [for (final t in tracks) t.toJson()],
       };
 
   factory LoreGenerateQueueJob.fromJson(Map<String, dynamic> json) {
@@ -92,7 +167,6 @@ class LoreGenerateQueueJob {
       (v) => v.name == statusName,
       orElse: () => LoreGenerateQueueJobStatus.pending,
     );
-    // Cold start: in-flight → pending (lore has no mid-job resume).
     if (status == LoreGenerateQueueJobStatus.running) {
       status = LoreGenerateQueueJobStatus.pending;
     }
@@ -116,6 +190,16 @@ class LoreGenerateQueueJob {
       pairs.add((audio: audio, subtitle: subtitle));
     }
 
+    final tracksRaw = json['tracks'] as List? ?? const [];
+    final tracks = <LoreGenerateTrackProgress>[];
+    for (final e in tracksRaw) {
+      if (e is Map) {
+        tracks.add(
+          LoreGenerateTrackProgress.fromJson(Map<String, dynamic>.from(e)),
+        );
+      }
+    }
+
     return LoreGenerateQueueJob(
       id: json['id'] as String,
       work: Work.fromJson(Map<String, dynamic>.from(json['work'] as Map)),
@@ -132,6 +216,7 @@ class LoreGenerateQueueJob {
       progress: (json['progress'] as num?)?.toDouble() ?? 0,
       attempts: json['attempts'] as int? ?? 0,
       lastError: json['lastError'] as String?,
+      tracks: tracks,
       createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ??
           DateTime.now(),
     );
@@ -147,6 +232,10 @@ class LoreGenerateQueueSnapshot {
   final String? currentWorkTitle;
   final String? progressStage;
   final double? progress;
+  final bool waitingOnLlm;
+  final DateTime? stageStartedAt;
+  final int? tracksDone;
+  final int? tracksTotal;
 
   const LoreGenerateQueueSnapshot({
     required this.totalJobs,
@@ -157,5 +246,9 @@ class LoreGenerateQueueSnapshot {
     this.currentWorkTitle,
     this.progressStage,
     this.progress,
+    this.waitingOnLlm = false,
+    this.stageStartedAt,
+    this.tracksDone,
+    this.tracksTotal,
   });
 }

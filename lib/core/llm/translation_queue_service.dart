@@ -12,12 +12,14 @@ import 'package:lizunemu/core/llm/translation_queue_models.dart';
 import 'package:lizunemu/core/llm/translation_queue_notification.dart';
 import 'package:lizunemu/core/llm/translation_queue_store.dart';
 import 'package:lizunemu/core/media/logical_track_dedupe.dart';
+import 'package:lizunemu/core/platform/llm_background_keeper.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
 import 'package:lizunemu/core/subtitle/subtitle_import_service.dart';
 import 'package:lizunemu/core/subtitle/subtitle_loader.dart';
 import 'package:lizunemu/data/models/files/child.dart';
 import 'package:lizunemu/data/models/files/files.dart';
 import 'package:lizunemu/data/models/works/work.dart';
+import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/utils/logger.dart';
 
 /// App-level background queue for bulk LLM subtitle translation.
@@ -26,6 +28,7 @@ import 'package:lizunemu/utils/logger.dart';
 /// resume unfinished tracks without re-burning completed lines.
 class TranslationQueueService extends ChangeNotifier {
   static const maxConcurrentTracks = 2;
+  static const _keeperOwner = 'translate';
 
   final AppSettingsService _settings;
   final SubtitleTranslationService _translation;
@@ -34,12 +37,14 @@ class TranslationQueueService extends ChangeNotifier {
   final SubtitleImportService _importService;
   final TranslationQueueStore _store;
   final TranslationQueueNotification _notification;
+  final LlmBackgroundKeeper? _keeper;
 
   final List<TranslationQueueJob> _jobs = [];
   final Map<String, CancelToken> _cancelTokens = {};
   final Set<String> _activeTrackIds = {};
   bool _filling = false;
   bool _initialized = false;
+  bool _keeperHeld = false;
   Timer? _persistDebounce;
   DateTime _lastNotifyAt = DateTime.fromMillisecondsSinceEpoch(0);
 
@@ -51,13 +56,15 @@ class TranslationQueueService extends ChangeNotifier {
     required SubtitleImportService importService,
     required TranslationQueueStore store,
     TranslationQueueNotification? notification,
+    LlmBackgroundKeeper? keeper,
   })  : _settings = settings,
         _translation = translation,
         _download = download,
         _subtitleLoader = subtitleLoader,
         _importService = importService,
         _store = store,
-        _notification = notification ?? TranslationQueueNotification();
+        _notification = notification ?? TranslationQueueNotification(),
+        _keeper = keeper;
 
   List<TranslationQueueJob> get jobs => List.unmodifiable(_jobs);
 
@@ -243,7 +250,12 @@ class TranslationQueueService extends ChangeNotifier {
     }
     await _persistNow();
     notifyListeners();
-    await _notification.clear();
+    if (_keeper != null && _keeperHeld) {
+      await _keeper.release(_keeperOwner);
+      _keeperHeld = false;
+    } else {
+      await _notification.clear();
+    }
   }
 
   Future<void> retryFailed() async {
@@ -457,7 +469,40 @@ class TranslationQueueService extends ChangeNotifier {
     }
   }
 
-  Future<void> _syncNotification() => _notification.update(snapshot);
+  Future<void> _syncNotification() async {
+    final snap = snapshot;
+    if (_keeper != null) {
+      if (snap.isActive) {
+        if (!_keeperHeld) {
+          await _keeper.acquire(_keeperOwner);
+          _keeperHeld = true;
+        }
+        final body = snap.currentTrackName != null
+            ? Strings.translationQueueNotificationBody(
+                snap.completedTracks,
+                snap.totalTracks,
+                snap.currentTrackName!,
+              )
+            : Strings.translationQueueNotificationIdle(
+                snap.completedTracks,
+                snap.totalTracks,
+              );
+        final progress = snap.totalTracks > 0
+            ? ((snap.completedTracks / snap.totalTracks) * 100).round()
+            : 0;
+        await _keeper.update(
+          title: Strings.translationQueueNotificationTitle,
+          body: body,
+          progress: progress,
+        );
+      } else if (_keeperHeld) {
+        await _keeper.release(_keeperOwner);
+        _keeperHeld = false;
+      }
+      return;
+    }
+    await _notification.update(snap);
+  }
 
   void _persistDebounced() {
     _persistDebounce?.cancel();

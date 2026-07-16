@@ -4,6 +4,7 @@ import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/core/lore/lore_generate_queue_service.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 import 'package:lizunemu/screens/lore_generate_queue_screen.dart';
+import 'package:lizunemu/widgets/lore/lore_progress_labels.dart';
 
 /// Compact bar above the mini player while lore generation queue is active.
 class LoreGenerateQueueMiniIndicator extends StatelessWidget {
@@ -21,12 +22,29 @@ class LoreGenerateQueueMiniIndicator extends StatelessWidget {
         if (!snap.isActive) return const SizedBox.shrink();
 
         final scheme = Theme.of(context).colorScheme;
+        final stage = snap.progressStage;
+        final stageBit = stage == null || stage.isEmpty
+            ? null
+            : LoreProgressLabels.forStage(stage);
+        final elapsed = snap.stageStartedAt == null
+            ? null
+            : DateTime.now().difference(snap.stageStartedAt!).inSeconds;
+        final waitBit = snap.waitingOnLlm
+            ? [
+                Strings.loreProgressWaitingLlm,
+                if (elapsed != null) Strings.loreProgressElapsed(elapsed),
+              ].join(' ')
+            : null;
+
         final label = snap.currentWorkTitle != null
-            ? Strings.loreQueueMiniProgress(
-                snap.completedJobs,
-                snap.totalJobs,
-                snap.currentWorkTitle!,
-              )
+            ? [
+                Strings.loreQueueMiniProgress(
+                  snap.completedJobs,
+                  snap.totalJobs,
+                  snap.currentWorkTitle!,
+                ),
+                if (waitBit != null) waitBit else if (stageBit != null) stageBit,
+              ].join(' · ')
             : Strings.loreQueueMiniIdle(
                 snap.completedJobs,
                 snap.totalJobs,
@@ -62,7 +80,7 @@ class LoreGenerateQueueMiniIndicator extends StatelessWidget {
                       SizedBox(
                         width: 72,
                         child: LinearProgressIndicator(
-                          value: snap.progress,
+                          value: snap.waitingOnLlm ? null : snap.progress,
                           minHeight: 4,
                         ),
                       ),

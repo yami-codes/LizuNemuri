@@ -1,6 +1,6 @@
 package moe.lizu.nemu
 
-import io.flutter.embedding.android.FlutterActivity
+import android.os.Build
 import com.ryanheise.audioservice.AudioServiceActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -14,5 +14,15 @@ class MainActivity: AudioServiceActivity() {
             flutterEngine.dartExecutor.binaryMessenger,
             "moe.lizu.nemu/lyric_overlay"
         ).setMethodCallHandler(LyricOverlayPlugin(applicationContext))
+
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            "moe.lizu.nemu/platform"
+        ).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "getSdkInt" -> result.success(Build.VERSION.SDK_INT)
+                else -> result.notImplemented()
+            }
+        }
     }
 }

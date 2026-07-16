@@ -17,10 +17,10 @@ class WorkFilesList extends StatelessWidget {
   /// Batch LLM pre-translate for whole work or folder subtree.
   final void Function(Child? folderNode)? onFolderTranslate;
 
-  /// Optional track title resolver (metadata translation).
-  final String Function(Child file)? trackTitleFor;
+  /// Optional tree title resolver (metadata translation). Folders pass [pathPrefix].
+  final String Function(Child node, {String pathPrefix})? titleFor;
 
-  /// Manual translate all track names in this tree.
+  /// Manual translate all labels in this tree.
   final VoidCallback? onTranslateTrackNames;
 
   final bool isTranslatingTrackNames;
@@ -32,7 +32,7 @@ class WorkFilesList extends StatelessWidget {
     this.onFileDownload,
     this.onFolderDownload,
     this.onFolderTranslate,
-    this.trackTitleFor,
+    this.titleFor,
     this.onTranslateTrackNames,
     this.isTranslatingTrackNames = false,
   });
@@ -115,18 +115,19 @@ class WorkFilesList extends StatelessWidget {
                       ? WorkFolderItem(
                           folder: child,
                           indentation: 0,
+                          pathPrefix: '',
                           onFileTap: onFileTap,
                           onFileDownload: onFileDownload,
                           onFolderDownload: onFolderDownload,
                           onFolderTranslate: onFolderTranslate,
-                          trackTitleFor: trackTitleFor,
+                          titleFor: titleFor,
                         )
                       : WorkFileItem(
                           file: child,
                           indentation: 0,
                           onFileTap: onFileTap,
                           onFileDownload: onFileDownload,
-                          displayTitle: trackTitleFor?.call(child),
+                          displayTitle: titleFor?.call(child),
                         ))
                   .toList() ??
               [],

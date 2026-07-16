@@ -417,7 +417,7 @@ class _DetailFilesSection extends StatelessWidget {
           files: viewModel.files!,
           onFolderDownload: runBatch,
           onFolderTranslate: runBulkTranslate,
-          trackTitleFor: viewModel.displayTrackTitle,
+          titleFor: viewModel.displayTreeTitle,
           isTranslatingTrackNames: viewModel.isTranslatingTracks,
           onTranslateTrackNames: showManualTrackTranslate
               ? () async {

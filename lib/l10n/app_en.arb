@@ -2369,9 +2369,9 @@
   "metadataTranslationModeManual": "Manual",
   "metadataTranslationModeManualDesc": "Only translate when you tap Translate",
   "metadataTranslatePage": "Translate this page",
-  "metadataTranslateTracks": "Translate track names",
-  "metadataTrackTranslationDone": "Track names translated",
-  "metadataTrackTranslationFailed": "Track name translation failed",
+  "metadataTranslateTracks": "Translate file & folder names",
+  "metadataTrackTranslationDone": "File & folder names translated",
+  "metadataTrackTranslationFailed": "File & folder name translation failed",
   "llmTargetLanguage": "Target language",
   "llmSystemPrompt": "System prompt (override)",
   "llmSystemPromptHint": "Leave empty to use the built-in default",
@@ -2695,9 +2695,25 @@
   "loreDeleteConfirm": "Delete all lore for this work?",
   "loreProgressCast": "Cast & synopsis",
   "loreProgressTrack": "Track analysis",
+  "loreProgressTrackN": "Track {current}/{total}",
+  "@loreProgressTrackN": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
   "loreProgressSecrets": "Secret params (per track)",
   "loreProgressReconcile": "Reconcile",
   "loreProgressDone": "Done",
+  "loreProgressSubsResolve": "Resolving subtitles…",
+  "loreProgressSubsTranslate": "Translating subtitles…",
+  "loreProgressWaitingLlm": "Waiting on model…",
+  "loreProgressElapsed": "{seconds}s",
+  "@loreProgressElapsed": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
   "loreLowConfidence": "Low confidence (no subtitles)",
   "loreContentLevel": "Content level",
   "loreContentSfw": "SFW",
@@ -2734,6 +2750,13 @@
   "loreQueueStatusDone": "Done",
   "loreQueueStatusFailed": "Failed",
   "loreQueueStatusCancelled": "Cancelled",
+  "loreQueuePartialSummary": "{done} ok · {failed} failed",
+  "@loreQueuePartialSummary": {
+    "placeholders": {
+      "done": {"type": "int"},
+      "failed": {"type": "int"}
+    }
+  },
   "loreQueueMiniProgress": "Lore {done}/{total}: {name}",
   "@loreQueueMiniProgress": {
     "placeholders": {
