@@ -8,6 +8,19 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.26 — 2026-07-17
+
+### Added
+- **LlmBackgroundKeeper**: Android 14+ `dataSync` foreground service keeps lore/translate LLM queues alive with the screen off; older Android falls back to an ongoing notification.
+- **Lore queue episode list**: work → per-track rows with status/attempts, partial-success summary, and retry failed / per-episode retry.
+- **Full-tree metadata translate**: folder names and all leaf file titles (not audio-only).
+
+### Fixed
+- **Blank lore EPs**: soft LLM/network failures retry the same track with backoff before writing an empty `lowConfidence` stub; hard auth/rate-limit errors still abort.
+- **Realtime lore progress**: subtitle prep stages, waiting-on-model pulse, and elapsed time while the queue thinks.
+
+---
+
 ## v2.0.0-rc.25 — 2026-07-15
 
 ### Fixed
