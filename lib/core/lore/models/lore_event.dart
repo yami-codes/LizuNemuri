@@ -198,16 +198,38 @@ class LoreTimelineEvent {
       title: json['title'] as String? ?? '',
       detail: json['detail'] as String? ?? '',
       characterId: json['characterId'] as String?,
-      deltas: (json['deltas'] as List?)
-              ?.whereType<Map>()
-              .map((e) => LoreParamDelta.fromJson(Map<String, dynamic>.from(e)))
-              .toList() ??
-          const [],
+      deltas: _deltasFromJson(json['deltas']),
       evidenceQuote: json['evidenceQuote'] as String?,
       evidenceStartMs: json['evidenceStartMs'] as int?,
       evidenceEndMs: json['evidenceEndMs'] as int?,
       speculative: json['speculative'] as bool? ?? false,
       confidence: (json['confidence'] as num?)?.toDouble(),
     );
+  }
+
+  /// LLM sometimes returns `deltas` as a map keyed by param name instead of a list.
+  static List<LoreParamDelta> _deltasFromJson(dynamic raw) {
+    if (raw is List) {
+      return raw
+          .whereType<Map>()
+          .map((e) => LoreParamDelta.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+    }
+    if (raw is Map) {
+      final out = <LoreParamDelta>[];
+      for (final entry in raw.entries) {
+        final key = entry.key.toString();
+        final value = entry.value;
+        if (value is Map) {
+          final m = Map<String, dynamic>.from(value);
+          m['key'] ??= key;
+          out.add(LoreParamDelta.fromJson(m));
+        } else if (value != null) {
+          out.add(LoreParamDelta(key: key, to: value));
+        }
+      }
+      return out;
+    }
+    return const [];
   }
 }

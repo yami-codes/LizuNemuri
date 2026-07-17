@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:lizunemu/core/lore/lore_json_utils.dart';
 import 'package:lizunemu/core/lore/lore_llm_pacer.dart';
+import 'package:lizunemu/core/lore/lore_resume.dart';
 import 'package:lizunemu/core/lore/lore_state_projector.dart';
 import 'package:lizunemu/core/lore/lore_track_context_brief.dart';
 import 'package:lizunemu/core/lore/models/lore_character.dart';
@@ -12,6 +13,7 @@ import 'package:lizunemu/core/lore/models/lore_event.dart';
 import 'package:lizunemu/core/lore/models/lore_ontology.dart';
 import 'package:lizunemu/core/lore/models/lore_param.dart';
 import 'package:lizunemu/core/lore/models/work_lore_pack.dart';
+import 'package:lizunemu/core/lore/streaming_lore_track_parser.dart';
 import 'package:lizunemu/core/lore/storage/ccv2_card_cache_repository.dart';
 import 'package:lizunemu/core/lore/storage/work_lore_repository.dart';
 import 'package:lizunemu/core/settings/app_settings_service.dart';
@@ -43,6 +45,21 @@ class LoreTrackInput {
 
 typedef LoreProgressCallback = void Function(String stage, double progress);
 typedef LoreWaitingCallback = void Function(bool waiting);
+
+/// Live NDJSON partials while a track LLM pass is streaming.
+class LoreTrackPartial {
+  final String? summary;
+  final int eventCount;
+  final String? lastEventTitle;
+
+  const LoreTrackPartial({
+    this.summary,
+    this.eventCount = 0,
+    this.lastEventTitle,
+  });
+}
+
+typedef LoreTrackPartialCallback = void Function(LoreTrackPartial partial);
 
 bool loreIsHardLlmError(LlmTranslationException e) =>
     e.type == LlmTranslationErrorType.rateLimited ||
@@ -129,8 +146,10 @@ class WorkLoreService {
     required List<LoreTrackInput> tracks,
     List<LoreSeedNote> seedNotes = const [],
     bool includeSecrets = true,
+    WorkLorePack? resumeFrom,
     LoreProgressCallback? onProgress,
     LoreWaitingCallback? onWaiting,
+    LoreTrackPartialCallback? onTrackPartial,
     CancelToken? cancelToken,
   }) async {
     _throwIfCancelled(cancelToken);
@@ -139,27 +158,43 @@ class WorkLoreService {
     final maxTracks = _settings.maxLoreTracksPerGenerate;
     final limited = tracks.take(maxTracks).toList();
     final pacer = LoreLlmPacer(paceMs: _settings.loreLlmPaceMs);
+    final orderedKeys = [for (final t in limited) t.trackKey];
 
-    onProgress?.call('cast', 0.05);
-    await pacer.beforeNextCall();
-    final cast = await _chatWithPacer(
-      pacer: pacer,
-      onWaiting: onWaiting,
-      run: () => _generateCastAndSynopsis(
-        work: work,
-        tracks: limited,
-        seedNotes: seedNotes,
-        languageCode: lang,
-        cancelToken: cancelToken,
-        slimOntology: includeSecrets,
-      ),
-    );
+    late List<LoreCharacter> characters;
+    late String synopsis;
+    late LoreContentLevel contentLevel;
+    late String? focusId;
 
-    var characters = cast.characters;
-    var synopsis = cast.synopsis;
-    var contentLevel = cast.contentLevel;
-    final focusId = cast.focusCharacterId ??
-        (characters.isNotEmpty ? characters.first.id : null);
+    final reuseCast = lorePackHasReusableCast(resumeFrom);
+    if (reuseCast) {
+      characters = List<LoreCharacter>.from(resumeFrom!.characters);
+      synopsis = resumeFrom.synopsis;
+      contentLevel = resumeFrom.contentLevel;
+      focusId = resumeFrom.focusCharacterId ??
+          (characters.isNotEmpty ? characters.first.id : null);
+      onProgress?.call('cast', 0.05);
+      AppLogger.debug('Lore resume: reuse cast (${characters.length} chars)');
+    } else {
+      onProgress?.call('cast', 0.05);
+      await pacer.beforeNextCall();
+      final cast = await _chatWithPacer(
+        pacer: pacer,
+        onWaiting: onWaiting,
+        run: () => _generateCastAndSynopsis(
+          work: work,
+          tracks: limited,
+          seedNotes: seedNotes,
+          languageCode: lang,
+          cancelToken: cancelToken,
+          slimOntology: includeSecrets,
+        ),
+      );
+      characters = cast.characters;
+      synopsis = cast.synopsis;
+      contentLevel = cast.contentLevel;
+      focusId = cast.focusCharacterId ??
+          (characters.isNotEmpty ? characters.first.id : null);
+    }
 
     // Seed secret baselines locally before the merged track+secrets pass.
     if (includeSecrets) {
@@ -169,8 +204,10 @@ class WorkLoreService {
       }
     }
 
-    final summaries = <LoreTrackSummary>[];
-    final events = <LoreTimelineEvent>[];
+    final skipKeys = loreResumeSkipTrackKeys(resumeFrom, orderedKeys).toSet();
+    final summaries = loreResumeSeedSummaries(resumeFrom, orderedKeys).toList();
+    final events = loreResumeSeedEvents(resumeFrom, skipKeys).toList();
+
     var carry = <String, Map<String, dynamic>>{
       for (final c in characters)
         c.id: {
@@ -182,18 +219,61 @@ class WorkLoreService {
       for (final e in carry.entries) e.key: Map<String, dynamic>.from(e.value),
     };
 
+    WorkLorePack checkpoint({
+      required List<LoreTrackSummary> trackSummaries,
+      required List<LoreTimelineEvent> trackEvents,
+    }) {
+      return WorkLorePack(
+        workId: workId,
+        sourceId: work.sourceId,
+        workTitle: work.title,
+        contentLevel: contentLevel,
+        synopsis: synopsis,
+        characters: characters,
+        trackSummaries: List<LoreTrackSummary>.from(trackSummaries)
+          ..sort((a, b) => a.trackIndex.compareTo(b.trackIndex)),
+        events: List<LoreTimelineEvent>.from(trackEvents),
+        seedNotes: seedNotes.isNotEmpty
+            ? seedNotes
+            : (resumeFrom?.seedNotes ?? const []),
+        focusCharacterId: focusId,
+        updatedAt: DateTime.now().toUtc(),
+        loreHash: '',
+        languageCode: lang,
+        explicitRevealed: includeSecrets,
+      ).withRecomputedHash();
+    }
+
+    // Persist cast (+ any resumed tracks) so a kill mid-loop keeps progress.
+    await save(
+      checkpoint(trackSummaries: summaries, trackEvents: events),
+    );
+
     for (var i = 0; i < limited.length; i++) {
       _throwIfCancelled(cancelToken);
+      final track = limited[i];
       final progress = 0.08 + (0.75 * (i / max(1, limited.length)));
       onProgress?.call(
-        'track:${i + 1}/${limited.length}:${limited[i].title}',
+        'track:${i + 1}/${limited.length}:${track.title}',
         progress,
       );
 
-      if (i > 0) {
-        final priorKeys = {
-          for (final s in summaries) s.trackKey,
-        };
+      if (skipKeys.contains(track.trackKey)) {
+        AppLogger.debug('Lore resume: skip track ${track.trackKey}');
+        final after = 0.08 + (0.75 * ((i + 1) / max(1, limited.length)));
+        onProgress?.call(
+          'track:${i + 1}/${limited.length}:${track.title}',
+          after.clamp(0.0, 0.87),
+        );
+        continue;
+      }
+
+      // Drop incomplete stub for this key if present (soft-empty redo).
+      summaries.removeWhere((s) => s.trackKey == track.trackKey);
+      events.removeWhere((e) => e.trackKey == track.trackKey);
+
+      if (summaries.isNotEmpty) {
+        final priorKeys = {for (final s in summaries) s.trackKey};
         carry = LoreTrackContextBrief.settleCarryFromEvents(
           baselines: baselines,
           events: events,
@@ -206,7 +286,7 @@ class WorkLoreService {
         completedSummaries: summaries,
         completedEvents: events,
         carryState: carry,
-        slimCarry: i > 0,
+        slimCarry: summaries.isNotEmpty,
       );
 
       await pacer.beforeNextCall();
@@ -215,17 +295,18 @@ class WorkLoreService {
         onWaiting: onWaiting,
         run: () => _generateTrackPass(
           work: work,
-          track: limited[i],
+          track: track,
           characters: characters,
-          carryState: i == 0
+          carryState: summaries.isEmpty
               ? carry
               : LoreTrackContextBrief.slimCarryMap(carry),
-          seedNotes: i == 0 ? seedNotes : const [],
+          seedNotes: summaries.isEmpty ? seedNotes : const [],
           languageCode: lang,
           cancelToken: cancelToken,
           includeSecrets: includeSecrets,
           priorContextBrief: priorBrief,
-          isFirstTrack: i == 0,
+          isFirstTrack: summaries.isEmpty,
+          onTrackPartial: onTrackPartial,
         ),
       );
       summaries.add(trackResult.summary);
@@ -236,12 +317,24 @@ class WorkLoreService {
           ...entry.value,
         };
       }
-      // Nudge the bar after each finished track so it doesn't look stuck
-      // until the next call starts.
+
+      await save(
+        checkpoint(trackSummaries: summaries, trackEvents: events),
+      );
+
       final after = 0.08 + (0.75 * ((i + 1) / max(1, limited.length)));
       onProgress?.call(
-        'track:${i + 1}/${limited.length}:${limited[i].title}',
+        'track:${i + 1}/${limited.length}:${track.title}',
         after.clamp(0.0, 0.87),
+      );
+    }
+
+    // Rebuild carry across all completed tracks before reconcile / params.
+    if (summaries.isNotEmpty) {
+      carry = LoreTrackContextBrief.settleCarryFromEvents(
+        baselines: baselines,
+        events: events,
+        priorTrackKeys: {for (final s in summaries) s.trackKey},
       );
     }
 
@@ -284,21 +377,13 @@ class WorkLoreService {
       );
     }
 
-    final pack = WorkLorePack(
-      workId: workId,
-      sourceId: work.sourceId,
-      workTitle: work.title,
-      contentLevel: contentLevel,
-      synopsis: synopsis,
-      characters: characters,
+    final pack = checkpoint(
       trackSummaries: summaries,
-      events: events,
-      seedNotes: seedNotes,
-      focusCharacterId: focusId,
+      trackEvents: events,
+    ).copyWith(
+      characters: characters,
+      synopsis: synopsis,
       updatedAt: DateTime.now().toUtc(),
-      loreHash: '',
-      languageCode: lang,
-      explicitRevealed: includeSecrets,
     ).withRecomputedHash();
 
     // Secrets are merged into the track pass — no second N× secrets loop.
@@ -340,6 +425,7 @@ class WorkLoreService {
     List<LoreTrackInput> tracks = const [],
     LoreProgressCallback? onProgress,
     LoreWaitingCallback? onWaiting,
+    LoreTrackPartialCallback? onTrackPartial,
     CancelToken? cancelToken,
   }) async {
     switch (section) {
@@ -451,6 +537,7 @@ class WorkLoreService {
             includeSecrets: pack.explicitRevealed,
             priorContextBrief: brief,
             isFirstTrack: priorKeys.isEmpty,
+            onTrackPartial: onTrackPartial,
           ),
         );
         final summaries = pack.trackSummaries
@@ -502,6 +589,7 @@ class WorkLoreService {
     List<LoreTrackInput> tracks = const [],
     LoreProgressCallback? onProgress,
     LoreWaitingCallback? onWaiting,
+    LoreTrackPartialCallback? onTrackPartial,
     CancelToken? cancelToken,
   }) async {
     return _applySecretsTimeline(
@@ -510,6 +598,7 @@ class WorkLoreService {
       tracks: tracks,
       onProgress: onProgress,
       onWaiting: onWaiting,
+      onTrackPartial: onTrackPartial,
       cancelToken: cancelToken,
       persist: true,
     );
@@ -523,6 +612,7 @@ class WorkLoreService {
     List<LoreTrackInput> tracks = const [],
     LoreProgressCallback? onProgress,
     LoreWaitingCallback? onWaiting,
+    LoreTrackPartialCallback? onTrackPartial,
     CancelToken? cancelToken,
     required bool persist,
   }) async {
@@ -591,6 +681,7 @@ class WorkLoreService {
           languageCode: lang,
           cancelToken: cancelToken,
           priorContextBrief: brief,
+          onTrackPartial: onTrackPartial,
         ),
       );
       newSecretEvents.addAll(pass.events);
@@ -744,6 +835,7 @@ class WorkLoreService {
     required String languageCode,
     CancelToken? cancelToken,
     String priorContextBrief = '',
+    LoreTrackPartialCallback? onTrackPartial,
   }) async {
     _throwIfCancelled(cancelToken);
     final hasSubs = track.hasSubtitles;
@@ -758,8 +850,29 @@ class WorkLoreService {
     final priorBlock = priorContextBrief.isEmpty
         ? ''
         : 'Prior context:\n$priorContextBrief\n';
+    final streaming = _settings.llmStreamingEnabled;
 
-    final user = '''
+    final user = streaming
+        ? '''
+Fill SPECULATIVE secret NSFW param changes for ONE track as timeline events.
+These are inferred / fantasy fills — every event MUST have speculative=true.
+Do NOT rewrite synopsis or non-secret story beats.
+Modules (emit only changed keys): body, fluids, fertility, risk, toys, kink.
+Baselines already seeded — do not dump the full key catalog.
+Emit NDJSON — one JSON object per line (no array, no markdown fences):
+{"type":"event","id":"s1","trackKey":"${track.trackKey}","atMs":30000,"endMs":45000,"kind":"body|fluids|clothing|paramChange|other","title":"...","detail":"...","characterId":"c1","deltas":[{"key":"wetness","from":0,"to":40}],"speculative":true,"confidence":0.4}
+{"type":"carry","carryUpdates":{"c1":{"wetness":40}}}
+Rules:
+- 2–8 event lines spanning the track; use endMs for ramps (numeric lerp).
+- Align roughly with existing story cues when present: ${jsonEncode(existingBrief)}
+$priorBlock
+- Carry-in: ${jsonEncode(carryState)}
+- Characters: ${jsonEncode(characters.map((c) => {'id': c.id, 'name': c.name, 'role': c.role}).toList())}
+- Work: ${work.title} (${work.sourceId})
+- Track: ${track.title}
+- Subtitles: ${hasSubs ? _clip(track.subtitleText!, 8000) : '(none — invent sparse speculative beats from title/summary)'}
+'''
+        : '''
 Fill SPECULATIVE secret NSFW param changes for ONE track as timeline events.
 These are inferred / fantasy fills — every event MUST have speculative=true.
 Do NOT rewrite synopsis or non-secret story beats.
@@ -792,11 +905,29 @@ $priorBlock
     return _withSoftTrackRetries(
       trackKey: track.trackKey,
       run: () async {
+        final messages = [
+          {
+            'role': 'system',
+            'content': _systemPrompt(languageCode, streamingNdjson: streaming),
+          },
+          {'role': 'user', 'content': user},
+        ];
+        if (streaming) {
+          return _collectStreamedTrackPass(
+            messages: messages,
+            temperature: 0.45,
+            track: track,
+            hasSubs: hasSubs,
+            cancelToken: cancelToken,
+            onTrackPartial: onTrackPartial,
+            forceSpeculative: true,
+            idPrefix: 's',
+            requireSummary: false,
+          );
+        }
+
         final raw = await _llm.chatCompletion(
-          messages: [
-            {'role': 'system', 'content': _systemPrompt(languageCode)},
-            {'role': 'user', 'content': user},
-          ],
+          messages: messages,
           temperature: 0.45,
           modelSlot: LlmModelSlot.lite,
         );
@@ -813,17 +944,6 @@ $priorBlock
                 .toList() ??
             const <LoreTimelineEvent>[];
 
-        final carryUpdates = <String, Map<String, dynamic>>{};
-        final carryRaw = map['carryUpdates'];
-        if (carryRaw is Map) {
-          for (final entry in carryRaw.entries) {
-            if (entry.value is Map) {
-              carryUpdates[entry.key.toString()] =
-                  Map<String, dynamic>.from(entry.value as Map);
-            }
-          }
-        }
-
         return _TrackPassResult(
           summary: LoreTrackSummary(
             trackKey: track.trackKey,
@@ -833,7 +953,7 @@ $priorBlock
             hasSubtitles: hasSubs,
           ),
           events: events,
-          carryUpdates: carryUpdates,
+          carryUpdates: _carryUpdatesFromRaw(map['carryUpdates']),
         );
       },
       onExhausted: () => _TrackPassResult(
@@ -853,16 +973,25 @@ $priorBlock
 
   // --- pipeline internals ---
 
-  String _systemPrompt(String lang) => '''
+  String _systemPrompt(String lang, {bool streamingNdjson = false}) {
+    final format = streamingNdjson
+        ? '''
+Emit NDJSON only: one complete JSON object per line. No markdown fences, no array wrapper.
+Each line must include "type": "summary" | "event" | "carry".
+Typical order: one summary line, then event lines, then optional carry line.
+'''
+        : 'Output ONLY valid JSON (no markdown).\n';
+    return '''
 You are a careful ASMR work-lore analyst for Lizunemu.
-Output ONLY valid JSON (no markdown). Write prose fields in language code "$lang".
+$format
+Write prose fields in language code "$lang".
 Prefer evidence from subtitles when present. Sparse params: omit unknown values.
 Never invent VA links as confirmed — set vaLinkProposed true and vaLinkConfirmed false.
 Subtitle cue text provided in prompts is ALREADY in language "$lang".
 evidenceQuote MUST be copied from those provided subtitle lines (same language).
 Do NOT quote Japanese/Chinese/original-language lines, and do not invent bilingual quotes.
 ''';
-
+  }
   Future<_CastPassResult> _generateCastAndSynopsis({
     required Work work,
     required List<LoreTrackInput> tracks,
@@ -1017,6 +1146,7 @@ ${existingSlim != null ? 'Existing characters to refine: ${jsonEncode(existingSl
     bool includeSecrets = false,
     String priorContextBrief = '',
     bool isFirstTrack = true,
+    LoreTrackPartialCallback? onTrackPartial,
   }) async {
     _throwIfCancelled(cancelToken);
     final hasSubs = track.hasSubtitles;
@@ -1042,8 +1172,28 @@ You MAY emit speculative=true events for body/fluids/fertility/risk/toys when cl
         : 'Prior context:\n$priorContextBrief\n'
             'Continue state; do not reset clothing/relationship/body unless this track changes them. '
             'carryUpdates = end-of-this-track only.\n';
+    final streaming = _settings.llmStreamingEnabled;
 
-    final user = '''
+    final user = streaming
+        ? '''
+Analyze ONE track. Emit NDJSON — one JSON object per line (no array, no markdown fences), in order:
+{"type":"summary","trackKey":"${track.trackKey}","trackTitle":"${track.title}","trackIndex":${track.index},"summary":"...","lowConfidence":${!hasSubs},"hasSubtitles":$hasSubs}
+{"type":"event","id":"e1","trackKey":"${track.trackKey}","atMs":12000,"endMs":18000,"kind":"paramChange|beat|clothing|body|relationship|location|addition|other","title":"...","detail":"...","characterId":"c1","deltas":[{"key":"arousal","from":10,"to":40}],"evidenceQuote":"...","evidenceStartMs":11000,"evidenceEndMs":15000,"speculative":false,"confidence":0.8}
+{"type":"carry","carryUpdates":{"c1":{"arousal":40,"clothing_state":"..."}}}
+Use endMs so numeric gauges ramp from→to across the span (video-editor clip). Status/enum/text deltas hold from until endMs then snap to to.
+$secretsBlock
+If no subtitles, write a thin metadata-based summary, lowConfidence true, few or no events.
+evidenceQuote must copy from the Subtitles block below (already in "$languageCode") — never original JP/CN script.
+$priorBlock
+Carry-in state: ${jsonEncode(carryState)}
+Characters: ${jsonEncode(charsSlim)}
+$seedBlock
+Work: ${work.title} (${work.sourceId})
+Track: ${track.title}
+Subtitles (language $languageCode):
+${hasSubs ? _clip(track.subtitleText!, 12000) : '(none)'}
+'''
+        : '''
 Analyze ONE track. Return JSON:
 {
   "summary": {"trackKey":"${track.trackKey}","trackTitle":"${track.title}","trackIndex":${track.index},"summary":"...","lowConfidence":${!hasSubs},"hasSubtitles":$hasSubs},
@@ -1075,11 +1225,29 @@ ${hasSubs ? _clip(track.subtitleText!, 12000) : '(none)'}
     return _withSoftTrackRetries(
       trackKey: track.trackKey,
       run: () async {
+        final messages = [
+          {
+            'role': 'system',
+            'content': _systemPrompt(languageCode, streamingNdjson: streaming),
+          },
+          {'role': 'user', 'content': user},
+        ];
+        if (streaming) {
+          return _collectStreamedTrackPass(
+            messages: messages,
+            temperature: 0.3,
+            track: track,
+            hasSubs: hasSubs,
+            cancelToken: cancelToken,
+            onTrackPartial: onTrackPartial,
+            forceSpeculative: false,
+            idPrefix: 'e',
+            requireSummary: true,
+          );
+        }
+
         final raw = await _llm.chatCompletion(
-          messages: [
-            {'role': 'system', 'content': _systemPrompt(languageCode)},
-            {'role': 'user', 'content': user},
-          ],
+          messages: messages,
           temperature: 0.3,
           modelSlot: LlmModelSlot.lite,
         );
@@ -1109,17 +1277,6 @@ ${hasSubs ? _clip(track.subtitleText!, 12000) : '(none)'}
                 .toList() ??
             const <LoreTimelineEvent>[];
 
-        final carryUpdates = <String, Map<String, dynamic>>{};
-        final carryRaw = map['carryUpdates'];
-        if (carryRaw is Map) {
-          for (final entry in carryRaw.entries) {
-            if (entry.value is Map) {
-              carryUpdates[entry.key.toString()] =
-                  Map<String, dynamic>.from(entry.value as Map);
-            }
-          }
-        }
-
         return _TrackPassResult(
           summary: summary.copyWith(
             trackKey: track.trackKey,
@@ -1129,7 +1286,7 @@ ${hasSubs ? _clip(track.subtitleText!, 12000) : '(none)'}
             lowConfidence: summary.lowConfidence || !hasSubs,
           ),
           events: events,
-          carryUpdates: carryUpdates,
+          carryUpdates: _carryUpdatesFromRaw(map['carryUpdates']),
         );
       },
       onExhausted: () => _TrackPassResult(
@@ -1145,6 +1302,126 @@ ${hasSubs ? _clip(track.subtitleText!, 12000) : '(none)'}
         carryUpdates: const {},
       ),
     );
+  }
+
+  Future<_TrackPassResult> _collectStreamedTrackPass({
+    required List<Map<String, String>> messages,
+    required double temperature,
+    required LoreTrackInput track,
+    required bool hasSubs,
+    required CancelToken? cancelToken,
+    required LoreTrackPartialCallback? onTrackPartial,
+    required bool forceSpeculative,
+    required String idPrefix,
+    required bool requireSummary,
+  }) async {
+    final parser = StreamingLoreTrackParser();
+    LoreTrackSummary? summary;
+    final events = <LoreTimelineEvent>[];
+    var carryUpdates = <String, Map<String, dynamic>>{};
+    String? lastEventTitle;
+
+    void emitPartial() {
+      onTrackPartial?.call(
+        LoreTrackPartial(
+          summary: summary?.summary,
+          eventCount: events.length,
+          lastEventTitle: lastEventTitle,
+        ),
+      );
+    }
+
+    void handleItems(List<LoreTrackStreamItem> items) {
+      for (final item in items) {
+        switch (item) {
+          case LoreTrackStreamSummary(:final json):
+            final merged = Map<String, dynamic>.from(json)
+              ..remove('type')
+              ..putIfAbsent('trackKey', () => track.trackKey)
+              ..putIfAbsent('trackTitle', () => track.title)
+              ..putIfAbsent('trackIndex', () => track.index)
+              ..putIfAbsent('hasSubtitles', () => hasSubs);
+            summary = LoreTrackSummary.fromJson(merged).copyWith(
+              trackKey: track.trackKey,
+              trackTitle: track.title,
+              trackIndex: track.index,
+              hasSubtitles: hasSubs,
+              lowConfidence:
+                  (merged['lowConfidence'] as bool? ?? false) || !hasSubs,
+            );
+            emitPartial();
+          case LoreTrackStreamEvent(:final json):
+            final event = loreEventFromStreamMap(
+              json,
+              trackKey: track.trackKey,
+              newId: () => _newId(idPrefix),
+              forceSpeculative: forceSpeculative,
+            );
+            events.add(event);
+            lastEventTitle = event.title;
+            emitPartial();
+          case LoreTrackStreamCarry(carryUpdates: final incoming):
+            final parsed = _carryUpdatesFromRaw(incoming);
+            for (final e in parsed.entries) {
+              carryUpdates[e.key] = {
+                ...?carryUpdates[e.key],
+                ...e.value,
+              };
+            }
+        }
+      }
+    }
+
+    await for (final chunk in _llm.chatCompletionStream(
+      messages: messages,
+      temperature: temperature,
+      modelSlot: LlmModelSlot.lite,
+    )) {
+      _throwIfCancelled(cancelToken);
+      handleItems(parser.feed(chunk));
+    }
+    handleItems(parser.flush());
+
+    if (requireSummary && summary == null && events.isEmpty) {
+      throw const LlmTranslationException(
+        LlmTranslationErrorType.invalidResponse,
+        'empty lore track stream',
+      );
+    }
+
+    return _TrackPassResult(
+      summary: (summary ??
+              LoreTrackSummary(
+                trackKey: track.trackKey,
+                trackTitle: track.title,
+                trackIndex: track.index,
+                summary: hasSubs ? '' : 'No subtitles; thin lore.',
+                lowConfidence: !hasSubs,
+                hasSubtitles: hasSubs,
+              ))
+          .copyWith(
+        trackKey: track.trackKey,
+        trackTitle: track.title,
+        trackIndex: track.index,
+        hasSubtitles: hasSubs,
+        lowConfidence: (summary?.lowConfidence ?? !hasSubs) || !hasSubs,
+      ),
+      events: events,
+      carryUpdates: carryUpdates,
+    );
+  }
+
+  Map<String, Map<String, dynamic>> _carryUpdatesFromRaw(dynamic carryRaw) {
+    final carryUpdates = <String, Map<String, dynamic>>{};
+    if (carryRaw is Map) {
+      for (final entry in carryRaw.entries) {
+        if (entry.value is Map) {
+          carryUpdates[entry.key.toString()] =
+              Map<String, dynamic>.from(entry.value as Map);
+        }
+      }
+    }
+    return carryUpdates;
   }
 
   Future<T> _withSoftTrackRetries<T>({

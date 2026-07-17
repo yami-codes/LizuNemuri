@@ -1,8 +1,20 @@
 import 'package:lizunemu/common/constants/strings.dart';
+import 'package:lizunemu/core/lore/lore_generate_queue_models.dart';
 
-/// Human labels for lore generate [progressStage] tokens.
+/// Human labels for lore generate progress stages and job kinds.
 class LoreProgressLabels {
   LoreProgressLabels._();
+
+  static String forKind(LoreGenerateKind kind) {
+    return switch (kind) {
+      LoreGenerateKind.fullGenerate => Strings.loreQueueKindFullGenerate,
+      LoreGenerateKind.secretsOnly => Strings.loreQueueKindSecretsOnly,
+      LoreGenerateKind.regenerateWork => Strings.loreQueueKindRegenerateWork,
+      LoreGenerateKind.regenerateTrack => Strings.loreQueueKindRegenerateTrack,
+      LoreGenerateKind.regenerateCharacter =>
+        Strings.loreQueueKindRegenerateCharacter,
+    };
+  }
 
   static String forStage(String progressStage) {
     if (progressStage.startsWith('cast')) {

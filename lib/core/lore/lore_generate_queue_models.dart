@@ -35,6 +35,11 @@ class LoreGenerateTrackProgress {
   int attempts;
   String? error;
 
+  /// Ephemeral NDJSON stream progress (not persisted).
+  int streamEventsSeen;
+  String? streamLastEventTitle;
+  bool streamGotSummary;
+
   LoreGenerateTrackProgress({
     required this.trackKey,
     required this.title,
@@ -42,7 +47,16 @@ class LoreGenerateTrackProgress {
     this.status = LoreGenerateTrackStatus.pending,
     this.attempts = 0,
     this.error,
+    this.streamEventsSeen = 0,
+    this.streamLastEventTitle,
+    this.streamGotSummary = false,
   });
+
+  void clearStreamProgress() {
+    streamEventsSeen = 0;
+    streamLastEventTitle = null;
+    streamGotSummary = false;
+  }
 
   Map<String, dynamic> toJson() => {
         'trackKey': trackKey,

@@ -6,6 +6,7 @@ import 'package:lizunemu/common/constants/strings.dart';
 import 'package:lizunemu/core/lore/lore_generate_queue_models.dart';
 import 'package:lizunemu/core/lore/lore_generate_queue_notification.dart';
 import 'package:lizunemu/core/lore/lore_generate_queue_store.dart';
+import 'package:lizunemu/core/lore/lore_resume.dart';
 import 'package:lizunemu/core/lore/lore_track_input_builder.dart';
 import 'package:lizunemu/core/lore/models/work_lore_pack.dart';
 import 'package:lizunemu/core/lore/work_lore_service.dart';
@@ -134,6 +135,16 @@ class LoreGenerateQueueService extends ChangeNotifier {
           j.isFinished &&
           j.status != LoreGenerateQueueJobStatus.failed,
     );
+    for (final job in _jobs) {
+      if (!job.isActive || job.tracks.isEmpty) continue;
+      try {
+        final pack = await _lore.load(job.workId);
+        if (pack != null) _hydrateTracksFromPack(job, pack);
+      } catch (e, st) {
+        AppLogger.warning('Lore queue cold hydrate failed: ${job.workId}');
+        AppLogger.error('Lore queue cold hydrate', e, st);
+      }
+    }
     await _notification.initialize();
     notifyListeners();
     unawaited(_fillSlots());
@@ -261,19 +272,32 @@ class LoreGenerateQueueService extends ChangeNotifier {
         job.lastError = null;
         job.progress = 0;
         job.progressStage = '';
+        // Keep done episodes; only re-pend failed / incomplete (not cancelled).
         for (final t in job.tracks) {
           if (t.status == LoreGenerateTrackStatus.cancelled) continue;
+          if (t.status == LoreGenerateTrackStatus.done ||
+              t.status == LoreGenerateTrackStatus.skipped) {
+            continue;
+          }
           t.status = LoreGenerateTrackStatus.pending;
           t.error = null;
           t.attempts = 0;
+          t.clearStreamProgress();
+          touched = true;
         }
-        touched = true;
+        if (!touched && job.tracks.isEmpty) {
+          touched = true; // job-level fail before tracks seeded
+        } else if (!touched) {
+          // All tracks already done — still re-queue so outcomes/reconcile can finish.
+          touched = true;
+        }
       } else {
         for (final t in job.tracks) {
           if (t.status != LoreGenerateTrackStatus.failed) continue;
           t.status = LoreGenerateTrackStatus.pending;
           t.error = null;
           t.attempts = 0;
+          t.clearStreamProgress();
           touched = true;
         }
         if (touched && job.isFinished) {
@@ -284,6 +308,10 @@ class LoreGenerateQueueService extends ChangeNotifier {
         }
       }
       if (!touched) continue;
+      try {
+        final pack = await _lore.load(job.workId);
+        if (pack != null) _hydrateTracksFromPack(job, pack);
+      } catch (_) {}
     }
     await _persistNow();
     notifyListeners();
@@ -369,42 +397,28 @@ class LoreGenerateQueueService extends ChangeNotifier {
           );
 
       void onWaiting(bool waiting) => _setWaiting(job, waiting);
+      void onTrackPartial(LoreTrackPartial partial) =>
+          _setTrackPartial(job, partial);
 
       switch (job.kind) {
         case LoreGenerateKind.fullGenerate:
           final tracks = await buildTracks();
           _seedTracks(job, tracks);
-          final pendingOnly = job.tracks.any(
-                (t) => t.status == LoreGenerateTrackStatus.done,
-              ) &&
-              job.tracks.any(
-                (t) =>
-                    t.status == LoreGenerateTrackStatus.pending ||
-                    t.status == LoreGenerateTrackStatus.failed,
-              );
-          if (pendingOnly) {
-            final retryPack = pack ?? await _lore.load(workId);
-            if (retryPack == null) {
-              throw StateError('no lore pack for partial retry');
-            }
-            await _runFailedTracksOnly(
-              job: job,
-              pack: retryPack,
-              allTracks: tracks,
-              onWaiting: onWaiting,
-              cancelToken: token,
-            );
-          } else {
-            await _lore.generate(
-              work: job.work,
-              tracks: tracks,
-              includeSecrets: job.includeSecrets,
-              seedNotes: pack?.seedNotes ?? const [],
-              onProgress: (stage, p) => _setProgress(job, stage, p),
-              onWaiting: onWaiting,
-              cancelToken: token,
-            );
+          final resumePack = pack ?? await _lore.load(workId);
+          if (resumePack != null) {
+            _hydrateTracksFromPack(job, resumePack);
           }
+          await _lore.generate(
+            work: job.work,
+            tracks: tracks,
+            includeSecrets: job.includeSecrets,
+            seedNotes: resumePack?.seedNotes ?? pack?.seedNotes ?? const [],
+            resumeFrom: resumePack,
+            onProgress: (stage, p) => _setProgress(job, stage, p),
+            onWaiting: onWaiting,
+            onTrackPartial: onTrackPartial,
+            cancelToken: token,
+          );
           await _applyOutcomesFromPack(job);
         case LoreGenerateKind.secretsOnly:
           if (pack == null) {
@@ -418,6 +432,7 @@ class LoreGenerateQueueService extends ChangeNotifier {
             tracks: tracks,
             onProgress: (stage, p) => _setProgress(job, stage, p),
             onWaiting: onWaiting,
+            onTrackPartial: onTrackPartial,
             cancelToken: token,
           );
           await _applyOutcomesFromPack(job);
@@ -448,6 +463,7 @@ class LoreGenerateQueueService extends ChangeNotifier {
             tracks: tracks,
             onProgress: (stage, p) => _setProgress(job, stage, p),
             onWaiting: onWaiting,
+            onTrackPartial: onTrackPartial,
             cancelToken: token,
           );
           await _applyOutcomesFromPack(job);
@@ -500,41 +516,23 @@ class LoreGenerateQueueService extends ChangeNotifier {
     }
   }
 
-  Future<void> _runFailedTracksOnly({
-    required LoreGenerateQueueJob job,
-    required WorkLorePack pack,
-    required List<LoreTrackInput> allTracks,
-    required LoreWaitingCallback onWaiting,
-    required CancelToken cancelToken,
-  }) async {
-    var current = pack;
-    final byKey = {for (final t in allTracks) t.trackKey: t};
-    for (final progress in job.tracks) {
-      if (progress.status == LoreGenerateTrackStatus.done ||
-          progress.status == LoreGenerateTrackStatus.skipped ||
-          progress.status == LoreGenerateTrackStatus.cancelled) {
+  void _hydrateTracksFromPack(
+    LoreGenerateQueueJob job,
+    WorkLorePack pack,
+  ) {
+    final byKey = {
+      for (final s in pack.trackSummaries) s.trackKey: s,
+    };
+    for (final t in job.tracks) {
+      if (t.status == LoreGenerateTrackStatus.cancelled ||
+          t.status == LoreGenerateTrackStatus.skipped) {
         continue;
       }
-      progress.status = LoreGenerateTrackStatus.running;
-      progress.attempts += 1;
-      _forceNotify();
-      final input = byKey[progress.trackKey];
-      if (input == null) {
-        progress.status = LoreGenerateTrackStatus.failed;
-        progress.error = 'track missing';
-        continue;
+      if (loreTrackSummaryIsComplete(byKey[t.trackKey])) {
+        t.status = LoreGenerateTrackStatus.done;
+        t.error = null;
+        t.clearStreamProgress();
       }
-      await _lore.regenerateSection(
-        work: job.work,
-        pack: current,
-        section: LoreRegenSection.track,
-        trackKey: progress.trackKey,
-        tracks: allTracks,
-        onProgress: (stage, p) => _setProgress(job, stage, p),
-        onWaiting: onWaiting,
-        cancelToken: cancelToken,
-      );
-      current = await _lore.load(job.workId) ?? current;
     }
   }
 
@@ -573,7 +571,25 @@ class LoreGenerateQueueService extends ChangeNotifier {
 
   void _applyStageToTracks(LoreGenerateQueueJob job, String stage) {
     final match = RegExp(r'^track:(\d+)/(\d+)').firstMatch(stage);
-    if (match == null) return;
+    if (match == null) {
+      // secrets:<trackKey> also marks a running episode
+      final secrets = RegExp(r'^secrets:(.+)$').firstMatch(stage);
+      if (secrets == null) return;
+      final key = secrets.group(1);
+      if (key == null || key == 'seed') return;
+      for (final t in job.tracks) {
+        if (t.trackKey == key) {
+          if (t.status != LoreGenerateTrackStatus.running) {
+            t.clearStreamProgress();
+          }
+          t.status = LoreGenerateTrackStatus.running;
+        } else if (t.status == LoreGenerateTrackStatus.running) {
+          t.status = LoreGenerateTrackStatus.done;
+          t.clearStreamProgress();
+        }
+      }
+      return;
+    }
     final oneBased = int.tryParse(match.group(1) ?? '') ?? 0;
     if (oneBased <= 0) return;
     final idx = oneBased - 1;
@@ -585,12 +601,50 @@ class LoreGenerateQueueService extends ChangeNotifier {
       }
       if (t.index < idx && t.status == LoreGenerateTrackStatus.running) {
         t.status = LoreGenerateTrackStatus.done;
+        t.clearStreamProgress();
       } else if (t.index == idx) {
+        // Resume skip: already-complete episodes stay done.
+        if (t.status == LoreGenerateTrackStatus.done ||
+            t.status == LoreGenerateTrackStatus.skipped) {
+          continue;
+        }
+        if (t.status != LoreGenerateTrackStatus.running) {
+          t.clearStreamProgress();
+        }
         if (t.status == LoreGenerateTrackStatus.pending) {
           t.attempts = t.attempts <= 0 ? 1 : t.attempts;
         }
         t.status = LoreGenerateTrackStatus.running;
       }
+    }
+  }
+
+  void _setTrackPartial(LoreGenerateQueueJob job, LoreTrackPartial partial) {
+    LoreGenerateTrackProgress? running;
+    for (final t in job.tracks) {
+      if (t.status == LoreGenerateTrackStatus.running) {
+        running = t;
+        break;
+      }
+    }
+    running ??= job.tracks.isEmpty ? null : job.tracks.last;
+    if (running == null) return;
+
+    final title = partial.lastEventTitle?.trim();
+    final changed = running.streamEventsSeen != partial.eventCount ||
+        running.streamLastEventTitle != title ||
+        (partial.summary != null &&
+            partial.summary!.trim().isNotEmpty &&
+            !running.streamGotSummary);
+    running.streamEventsSeen = partial.eventCount;
+    if (title != null && title.isNotEmpty) {
+      running.streamLastEventTitle = title;
+    }
+    if (partial.summary != null && partial.summary!.trim().isNotEmpty) {
+      running.streamGotSummary = true;
+    }
+    if (changed) {
+      _softNotify();
     }
   }
 
@@ -607,9 +661,7 @@ class LoreGenerateQueueService extends ChangeNotifier {
         continue;
       }
       final summary = byKey[t.trackKey];
-      final emptySoft = summary == null ||
-          (summary.summary.trim().isEmpty && summary.lowConfidence);
-      if (emptySoft) {
+      if (!loreTrackSummaryIsComplete(summary)) {
         t.status = LoreGenerateTrackStatus.failed;
         t.error ??= 'empty summary';
       } else {

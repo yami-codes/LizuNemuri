@@ -673,6 +673,12 @@ class Strings {
   static String get loreProgressSubsTranslate =>
       _l10n.loreProgressSubsTranslate;
   static String get loreProgressWaitingLlm => _l10n.loreProgressWaitingLlm;
+  static String get loreProgressStreamSummary =>
+      _l10n.loreProgressStreamSummary;
+  static String loreProgressStreamEvent(int count, String title) =>
+      _l10n.loreProgressStreamEvent(count, title);
+  static String loreProgressStreamEvents(int count) =>
+      _l10n.loreProgressStreamEvents(count);
   static String loreProgressElapsed(int seconds) =>
       _l10n.loreProgressElapsed(seconds);
   static String get loreLowConfidence => _l10n.loreLowConfidence;
@@ -714,6 +720,18 @@ class Strings {
   static String get loreQueueStatusCancelled => _l10n.loreQueueStatusCancelled;
   static String loreQueuePartialSummary(int done, int failed) =>
       _l10n.loreQueuePartialSummary(done, failed);
+  static String get loreQueueKindFullGenerate =>
+      _l10n.loreQueueKindFullGenerate;
+  static String get loreQueueKindSecretsOnly =>
+      _l10n.loreQueueKindSecretsOnly;
+  static String get loreQueueKindRegenerateWork =>
+      _l10n.loreQueueKindRegenerateWork;
+  static String get loreQueueKindRegenerateTrack =>
+      _l10n.loreQueueKindRegenerateTrack;
+  static String get loreQueueKindRegenerateCharacter =>
+      _l10n.loreQueueKindRegenerateCharacter;
+  static String loreQueueActiveCount(int count) =>
+      _l10n.loreQueueActiveCount(count);
   static String loreQueueMiniProgress(int done, int total, String name) =>
       _l10n.loreQueueMiniProgress(done, total, name);
   static String loreQueueMiniIdle(int done, int total) =>

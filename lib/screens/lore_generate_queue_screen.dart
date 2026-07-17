@@ -6,6 +6,9 @@ import 'package:lizunemu/core/lore/lore_generate_queue_service.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 import 'package:lizunemu/widgets/common/back_leading.dart';
 import 'package:lizunemu/widgets/lore/lore_progress_labels.dart';
+import 'package:lizunemu/widgets/queue/queue_empty_state.dart';
+import 'package:lizunemu/widgets/queue/queue_item_row.dart';
+import 'package:lizunemu/widgets/queue/queue_work_header.dart';
 
 void openLoreGenerateQueueScreen(BuildContext context) {
   Navigator.of(context, rootNavigator: true).push(
@@ -22,18 +25,32 @@ class LoreGenerateQueueScreen extends StatelessWidget {
     return ListenableBuilder(
       listenable: queue,
       builder: (context, _) {
-        final hasTrackFailures = queue.jobs.any(
+        final hasFailures = queue.jobs.any(
           (j) =>
               j.status == LoreGenerateQueueJobStatus.failed ||
               j.tracksFailed > 0,
         );
+        final activeCount = queue.jobs.where((j) => j.isActive).length;
+
         return Scaffold(
           appBar: AppBar(
             leading: const BackLeading(),
             automaticallyImplyLeading: false,
-            title: Text(Strings.loreQueueTitle),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(Strings.loreQueueTitle),
+                if (activeCount > 0)
+                  Text(
+                    Strings.loreQueueActiveCount(activeCount),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+              ],
+            ),
             actions: [
-              if (hasTrackFailures)
+              if (hasFailures)
                 TextButton(
                   onPressed: () => queue.retryFailed(),
                   child: Text(Strings.loreQueueRetryFailed),
@@ -52,13 +69,15 @@ class LoreGenerateQueueScreen extends StatelessWidget {
             ],
           ),
           body: queue.jobs.isEmpty
-              ? Center(child: Text(Strings.loreQueueEmpty))
+              ? QueueEmptyState(
+                  message: Strings.loreQueueEmpty,
+                  icon: Icons.auto_awesome_outlined,
+                )
               : ListView.builder(
                   padding: const EdgeInsets.only(bottom: AppSpacing.space64),
                   itemCount: queue.jobs.length,
                   itemBuilder: (context, index) {
-                    final job = queue.jobs[index];
-                    return _JobSection(job: job, queue: queue);
+                    return _JobBlock(job: queue.jobs[index], queue: queue);
                   },
                 ),
         );
@@ -67,158 +86,170 @@ class LoreGenerateQueueScreen extends StatelessWidget {
   }
 }
 
-class _JobSection extends StatelessWidget {
+class _JobBlock extends StatelessWidget {
   final LoreGenerateQueueJob job;
   final LoreGenerateQueueService queue;
 
-  const _JobSection({required this.job, required this.queue});
-
-  String _jobStatusLabel() {
-    if (job.hasPartialFailures) {
-      return Strings.loreQueuePartialSummary(job.tracksDone, job.tracksFailed);
-    }
-    return switch (job.status) {
-      LoreGenerateQueueJobStatus.pending => Strings.loreQueueStatusPending,
-      LoreGenerateQueueJobStatus.running => Strings.loreQueueStatusRunning,
-      LoreGenerateQueueJobStatus.done => Strings.loreQueueStatusDone,
-      LoreGenerateQueueJobStatus.failed => Strings.loreQueueStatusFailed,
-      LoreGenerateQueueJobStatus.cancelled => Strings.loreQueueStatusCancelled,
-    };
-  }
+  const _JobBlock({required this.job, required this.queue});
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final stage = job.progressStage.isEmpty
-        ? null
-        : LoreProgressLabels.forStage(job.progressStage);
-    final elapsed = job.stageStartedAt == null
-        ? null
-        : DateTime.now().difference(job.stageStartedAt!).inSeconds;
+    final kindLabel = LoreProgressLabels.forKind(job.kind);
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.space16,
-            AppSpacing.space16,
-            AppSpacing.space16,
-            AppSpacing.space8,
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      job.workTitle,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: scheme.primary,
-                          ),
-                    ),
-                    const SizedBox(height: AppSpacing.space4),
-                    Text(
-                      [
-                        _jobStatusLabel(),
-                        if (job.waitingOnLlm) Strings.loreProgressWaitingLlm,
-                        if (stage != null &&
-                            job.status == LoreGenerateQueueJobStatus.running)
-                          stage,
-                        if (elapsed != null &&
-                            job.status == LoreGenerateQueueJobStatus.running)
-                          Strings.loreProgressElapsed(elapsed),
-                        if (job.lastError != null &&
-                            job.status == LoreGenerateQueueJobStatus.failed)
-                          job.lastError!,
-                      ].join(' · '),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: scheme.onSurfaceVariant,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-              if (job.isActive)
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => queue.cancelJob(job.id),
-                ),
-            ],
-          ),
+        QueueWorkHeader(
+          work: job.work,
+          title: job.workTitle,
+          kindLabel: kindLabel,
+          onCancel: job.isActive ? () => queue.cancelJob(job.id) : null,
+          cancelTooltip: Strings.downloadCancel,
         ),
         if (job.tracks.isEmpty)
-          ListTile(
-            dense: true,
-            title: Text(
-              job.kind.name,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            subtitle: Text(_jobStatusLabel()),
-          )
+          _PrepOrJobRow(job: job)
         else
           ...job.tracks.map(
-            (track) => _TrackTile(job: job, track: track, queue: queue),
+            (track) => _EpisodeRow(job: job, track: track, queue: queue),
           ),
+        Divider(
+          height: 1,
+          color: scheme.outlineVariant.withValues(alpha: 0.5),
+        ),
       ],
     );
   }
 }
 
-class _TrackTile extends StatelessWidget {
+class _PrepOrJobRow extends StatelessWidget {
+  final LoreGenerateQueueJob job;
+
+  const _PrepOrJobRow({required this.job});
+
+  @override
+  Widget build(BuildContext context) {
+    final isRunning = job.status == LoreGenerateQueueJobStatus.running;
+    final isFailed = job.status == LoreGenerateQueueJobStatus.failed;
+    final stage = job.progressStage.isEmpty
+        ? null
+        : LoreProgressLabels.forStage(job.progressStage);
+
+    final String statusLabel;
+    if (isFailed && job.lastError != null) {
+      statusLabel = job.lastError!;
+    } else if (isRunning && stage != null) {
+      statusLabel = stage;
+    } else {
+      statusLabel = switch (job.status) {
+        LoreGenerateQueueJobStatus.pending => Strings.loreQueueStatusPending,
+        LoreGenerateQueueJobStatus.running => Strings.loreQueueStatusRunning,
+        LoreGenerateQueueJobStatus.done => Strings.loreQueueStatusDone,
+        LoreGenerateQueueJobStatus.failed => Strings.loreQueueStatusFailed,
+        LoreGenerateQueueJobStatus.cancelled =>
+          Strings.loreQueueStatusCancelled,
+      };
+    }
+
+    final elapsed = job.stageStartedAt == null || !isRunning
+        ? null
+        : DateTime.now().difference(job.stageStartedAt!).inSeconds;
+
+    return QueueItemRow(
+      title: LoreProgressLabels.forKind(job.kind),
+      statusLabel: statusLabel,
+      statusIsError: isFailed,
+      showProgress: isRunning,
+      progressIndeterminate: true,
+      progressTrailing:
+          elapsed == null ? null : Strings.loreProgressElapsed(elapsed),
+    );
+  }
+}
+
+class _EpisodeRow extends StatelessWidget {
   final LoreGenerateQueueJob job;
   final LoreGenerateTrackProgress track;
   final LoreGenerateQueueService queue;
 
-  const _TrackTile({
+  const _EpisodeRow({
     required this.job,
     required this.track,
     required this.queue,
   });
 
-  String _statusLabel() {
-    return switch (track.status) {
-      LoreGenerateTrackStatus.pending => Strings.loreQueueStatusPending,
-      LoreGenerateTrackStatus.running => Strings.loreQueueStatusRunning,
-      LoreGenerateTrackStatus.done => Strings.loreQueueStatusDone,
-      LoreGenerateTrackStatus.failed => Strings.loreQueueStatusFailed,
-      LoreGenerateTrackStatus.skipped => Strings.loreQueueStatusCancelled,
-      LoreGenerateTrackStatus.cancelled => Strings.loreQueueStatusCancelled,
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final isRunning = track.status == LoreGenerateTrackStatus.running;
     final isFailed = track.status == LoreGenerateTrackStatus.failed;
+    final isPending = track.status == LoreGenerateTrackStatus.pending;
 
-    return ListTile(
-      title: Text(
-        track.title,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
-      subtitle: Text(
-        [
-          _statusLabel(),
-          if (track.attempts > 1)
-            Strings.translationQueueAttempts(track.attempts),
-          if (track.error != null && isFailed) track.error!,
-        ].join(' · '),
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: isFailed ? scheme.error : scheme.onSurfaceVariant,
-            ),
-      ),
-      trailing: isFailed
-          ? IconButton(
-              tooltip: Strings.translationQueueRetry,
-              onPressed: () => queue.retryTrack(job.id, track.trackKey),
-              icon: Icon(Icons.refresh, color: scheme.primary),
-            )
+    final statusLabel = switch (track.status) {
+      LoreGenerateTrackStatus.pending => Strings.loreQueueStatusPending,
+      LoreGenerateTrackStatus.running => _runningStatus(job, track),
+      LoreGenerateTrackStatus.done => Strings.loreQueueStatusDone,
+      LoreGenerateTrackStatus.failed =>
+        track.error ?? Strings.loreQueueStatusFailed,
+      LoreGenerateTrackStatus.skipped ||
+      LoreGenerateTrackStatus.cancelled =>
+        Strings.loreQueueStatusCancelled,
+    };
+
+    final total = job.tracks.length;
+    final indexOneBased = track.index + 1;
+    final elapsed = job.stageStartedAt == null || !isRunning
+        ? null
+        : DateTime.now().difference(job.stageStartedAt!).inSeconds;
+
+    String? trailing;
+    if (isRunning || isPending && job.status == LoreGenerateQueueJobStatus.running) {
+      final parts = <String>[
+        if (total > 0) '$indexOneBased/$total',
+        if (track.streamEventsSeen > 0)
+          Strings.loreProgressStreamEvents(track.streamEventsSeen),
+        if (elapsed != null) Strings.loreProgressElapsed(elapsed),
+      ];
+      if (parts.isNotEmpty) trailing = parts.join(' · ');
+    } else if (total > 0 && track.status == LoreGenerateTrackStatus.done) {
+      trailing = '$indexOneBased/$total';
+    }
+
+    final doneRatio = total <= 0
+        ? 0.0
+        : (job.tracksDone + (isRunning ? 0.5 : 0)) / total;
+
+    return QueueItemRow(
+      title: track.title,
+      statusLabel: statusLabel,
+      statusIsError: isFailed,
+      showProgress: isRunning,
+      progressIndeterminate: job.waitingOnLlm,
+      progressValue: doneRatio,
+      progressTrailing: trailing,
+      onRetry: isFailed
+          ? () => queue.retryTrack(job.id, track.trackKey)
           : null,
+      retryTooltip: Strings.translationQueueRetry,
     );
+  }
+
+  static String _runningStatus(
+    LoreGenerateQueueJob job,
+    LoreGenerateTrackProgress track,
+  ) {
+    if (track.streamEventsSeen > 0) {
+      final title = track.streamLastEventTitle?.trim();
+      if (title != null && title.isNotEmpty) {
+        return Strings.loreProgressStreamEvent(track.streamEventsSeen, title);
+      }
+      return Strings.loreProgressStreamEvents(track.streamEventsSeen);
+    }
+    if (track.streamGotSummary) {
+      return Strings.loreProgressStreamSummary;
+    }
+    if (job.waitingOnLlm) {
+      return Strings.loreProgressWaitingLlm;
+    }
+    return Strings.loreQueueStatusRunning;
   }
 }

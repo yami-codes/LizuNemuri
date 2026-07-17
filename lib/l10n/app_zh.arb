@@ -2708,6 +2708,20 @@
   "loreProgressSubsResolve": "正在解析字幕…",
   "loreProgressSubsTranslate": "正在翻译字幕…",
   "loreProgressWaitingLlm": "等待模型回复…",
+  "loreProgressStreamSummary": "已收到摘要…",
+  "loreProgressStreamEvent": "事件 {count}：{title}",
+  "@loreProgressStreamEvent": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "title": { "type": "String" }
+    }
+  },
+  "loreProgressStreamEvents": "{count} 个事件",
+  "@loreProgressStreamEvents": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "loreProgressElapsed": "{seconds} 秒",
   "@loreProgressElapsed": {
     "placeholders": {
@@ -2755,6 +2769,17 @@
     "placeholders": {
       "done": {"type": "int"},
       "failed": {"type": "int"}
+    }
+  },
+  "loreQueueKindFullGenerate": "完整生成",
+  "loreQueueKindSecretsOnly": "仅秘密",
+  "loreQueueKindRegenerateWork": "重新生成作品",
+  "loreQueueKindRegenerateTrack": "重新生成曲目",
+  "loreQueueKindRegenerateCharacter": "重新生成角色",
+  "loreQueueActiveCount": "{count} 进行中",
+  "@loreQueueActiveCount": {
+    "placeholders": {
+      "count": {"type": "int"}
     }
   },
   "loreQueueMiniProgress": "设定 {done}/{total}：{name}",

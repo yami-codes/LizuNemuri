@@ -10,6 +10,49 @@ import 'package:lizunemu/core/lore/models/work_lore_pack.dart';
 import 'package:lizunemu/core/lore/work_lore_service.dart';
 
 void main() {
+  group('LoreTimelineEvent.fromJson', () {
+    test('accepts deltas as a list', () {
+      final e = LoreTimelineEvent.fromJson({
+        'id': 'e1',
+        'trackKey': 't1',
+        'title': 'x',
+        'detail': 'y',
+        'deltas': [
+          {'key': 'arousal', 'from': 0, 'to': 10},
+        ],
+      });
+      expect(e.deltas, hasLength(1));
+      expect(e.deltas.first.key, 'arousal');
+      expect(e.deltas.first.to, 10);
+    });
+
+    test('accepts deltas as a map (LLM shape)', () {
+      final e = LoreTimelineEvent.fromJson({
+        'id': 'e1',
+        'trackKey': 't1',
+        'title': 'x',
+        'detail': 'y',
+        'deltas': {
+          'arousal': {'from': 0, 'to': 40},
+          'wetness': 12,
+        },
+      });
+      expect(e.deltas, hasLength(2));
+      final byKey = {for (final d in e.deltas) d.key: d};
+      expect(byKey['arousal']?.to, 40);
+      expect(byKey['wetness']?.to, 12);
+    });
+
+    test('null or bad deltas become empty', () {
+      final e = LoreTimelineEvent.fromJson({
+        'id': 'e1',
+        'trackKey': 't1',
+        'deltas': 'nope',
+      });
+      expect(e.deltas, isEmpty);
+    });
+  });
+
   group('LoreJsonUtils', () {
     test('extracts JSON object from fenced LLM reply', () {
       const raw = 'Sure!\n```json\n{"a":1,"b":"x"}\n```\n';

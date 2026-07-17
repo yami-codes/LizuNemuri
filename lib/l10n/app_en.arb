@@ -2708,6 +2708,20 @@
   "loreProgressSubsResolve": "Resolving subtitles…",
   "loreProgressSubsTranslate": "Translating subtitles…",
   "loreProgressWaitingLlm": "Waiting on model…",
+  "loreProgressStreamSummary": "Got summary…",
+  "loreProgressStreamEvent": "Event {count}: {title}",
+  "@loreProgressStreamEvent": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "title": { "type": "String" }
+    }
+  },
+  "loreProgressStreamEvents": "{count} events",
+  "@loreProgressStreamEvents": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "loreProgressElapsed": "{seconds}s",
   "@loreProgressElapsed": {
     "placeholders": {
@@ -2755,6 +2769,17 @@
     "placeholders": {
       "done": {"type": "int"},
       "failed": {"type": "int"}
+    }
+  },
+  "loreQueueKindFullGenerate": "Full generate",
+  "loreQueueKindSecretsOnly": "Secrets only",
+  "loreQueueKindRegenerateWork": "Regenerate work",
+  "loreQueueKindRegenerateTrack": "Regenerate episode",
+  "loreQueueKindRegenerateCharacter": "Regenerate character",
+  "loreQueueActiveCount": "{count} active",
+  "@loreQueueActiveCount": {
+    "placeholders": {
+      "count": {"type": "int"}
     }
   },
   "loreQueueMiniProgress": "Lore {done}/{total}: {name}",

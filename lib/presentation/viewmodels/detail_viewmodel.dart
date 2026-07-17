@@ -101,6 +101,11 @@ class DetailViewModel extends ChangeNotifier {
   String? _error;
   bool _disposed = false;
 
+  void _safeNotify() {
+    if (_disposed) return;
+    notifyListeners();
+  }
+
   WorkInfo? _workInfo;
   bool _isLoadingInfo = false;
 
@@ -252,8 +257,11 @@ class DetailViewModel extends ChangeNotifier {
 
     if (!_disposed) {
       notifyListeners(); // Single notify for "loading complete"
+    } else {
+      return;
     }
     await _maybeAutoTranslateWorkTitle();
+    if (_disposed) return;
     await _maybeAutoTranslateTrackNames();
   }
 
@@ -492,7 +500,7 @@ class DetailViewModel extends ChangeNotifier {
     if (_disposed) return;
     if (cached != null) {
       _translatedTitle = cached;
-      notifyListeners();
+      _safeNotify();
     }
   }
 
@@ -501,29 +509,32 @@ class DetailViewModel extends ChangeNotifier {
     final workId = work.id?.toString();
     if (source == null || source.isEmpty) return Strings.llmErrorNoTitle;
     if (workId == null) return Strings.llmErrorNoTitle;
+    if (_disposed) return null;
 
     _isTitleTranslating = true;
     _showOriginalTitle = false;
-    notifyListeners();
+    _safeNotify();
 
     final result = await _titleTranslationService.translate(
       workId: workId,
       sourceTitle: source,
       forceRefresh: forceRefresh,
       onPartial: (_, text) {
+        if (_disposed) return;
         _translatedTitle = text;
-        notifyListeners();
+        _safeNotify();
       },
     );
 
+    if (_disposed) return null;
     _isTitleTranslating = false;
     if (result.isFailure) {
-      notifyListeners();
+      _safeNotify();
       return result.error!.userMessage;
     }
 
     _translatedTitle = result.title;
-    notifyListeners();
+    _safeNotify();
     return result.fromCache ? Strings.llmTitleFromCache : null;
   }
 
@@ -564,8 +575,9 @@ class DetailViewModel extends ChangeNotifier {
       file: file,
       patchInto: _files,
       onTreePatched: (patched) {
+        if (_disposed) return;
         _files = patched;
-        notifyListeners();
+        _safeNotify();
       },
     );
   }
@@ -575,13 +587,14 @@ class DetailViewModel extends ChangeNotifier {
     if (workId == null || _files == null) {
       return Strings.metadataTrackTranslationFailed;
     }
+    if (_disposed) return null;
 
     final titles = _collectTreeLabels(_files!.children);
     if (titles.isEmpty) return Strings.metadataTrackTranslationFailed;
 
     _isTranslatingTracks = true;
     _showOriginalTrackNames = false;
-    notifyListeners();
+    _safeNotify();
 
     try {
       await _metadataTranslationService.translateTrackNames(
@@ -589,10 +602,12 @@ class DetailViewModel extends ChangeNotifier {
         fileKeyToTitle: titles,
         force: force,
         onPartial: (fileKey, text) {
+          if (_disposed) return;
           _translatedTrackNames[fileKey] = text;
-          notifyListeners();
+          _safeNotify();
         },
       );
+      if (_disposed) return null;
       return _translatedTrackNames.isEmpty
           ? Strings.metadataTrackTranslationFailed
           : null;
@@ -602,6 +617,7 @@ class DetailViewModel extends ChangeNotifier {
         error: e,
         tag: AppLogTags.translation,
       );
+      if (_disposed) return null;
       if (_translatedTrackNames.isNotEmpty) return null;
       return e.userMessage;
     } catch (e) {
@@ -610,11 +626,12 @@ class DetailViewModel extends ChangeNotifier {
         error: e,
         tag: AppLogTags.translation,
       );
+      if (_disposed) return null;
       if (_translatedTrackNames.isNotEmpty) return null;
       return Strings.metadataTrackTranslationFailed;
     } finally {
       _isTranslatingTracks = false;
-      notifyListeners();
+      _safeNotify();
     }
   }
 

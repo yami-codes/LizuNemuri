@@ -7,6 +7,9 @@ import 'package:lizunemu/core/llm/translation_queue_models.dart';
 import 'package:lizunemu/core/llm/translation_queue_service.dart';
 import 'package:lizunemu/core/theme/app_spacing.dart';
 import 'package:lizunemu/widgets/common/back_leading.dart';
+import 'package:lizunemu/widgets/queue/queue_empty_state.dart';
+import 'package:lizunemu/widgets/queue/queue_item_row.dart';
+import 'package:lizunemu/widgets/queue/queue_work_header.dart';
 
 /// Full-page translation queue (sidebar + mini-indicator entry).
 class TranslationQueueScreen extends StatelessWidget {
@@ -18,11 +21,36 @@ class TranslationQueueScreen extends StatelessWidget {
     return ListenableBuilder(
       listenable: queue,
       builder: (context, _) {
+        final activeCount =
+            queue.snapshot.runningTracks +
+            (queue.jobs.fold<int>(
+              0,
+              (n, j) =>
+                  n +
+                  j.tracks
+                      .where(
+                        (t) => t.status == TranslationQueueTrackStatus.pending,
+                      )
+                      .length,
+            ));
+
         return Scaffold(
           appBar: AppBar(
             leading: const BackLeading(),
             automaticallyImplyLeading: false,
-            title: Text(Strings.translationQueueTitle),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(Strings.translationQueueTitle),
+                if (activeCount > 0)
+                  Text(
+                    Strings.loreQueueActiveCount(activeCount),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+              ],
+            ),
             actions: [
               if (queue.jobs.any((j) => j.failedCount > 0))
                 TextButton(
@@ -43,13 +71,12 @@ class TranslationQueueScreen extends StatelessWidget {
             ],
           ),
           body: queue.jobs.isEmpty
-              ? Center(child: Text(Strings.translationQueueEmpty))
+              ? QueueEmptyState(message: Strings.translationQueueEmpty)
               : ListView.builder(
                   padding: const EdgeInsets.only(bottom: AppSpacing.space64),
                   itemCount: queue.jobs.length,
                   itemBuilder: (context, index) {
-                    final job = queue.jobs[index];
-                    return _JobSection(job: job, queue: queue);
+                    return _JobBlock(job: queue.jobs[index], queue: queue);
                   },
                 ),
         );
@@ -58,51 +85,49 @@ class TranslationQueueScreen extends StatelessWidget {
   }
 }
 
-class _JobSection extends StatelessWidget {
+class _JobBlock extends StatelessWidget {
   final TranslationQueueJob job;
   final TranslationQueueService queue;
 
-  const _JobSection({required this.job, required this.queue});
+  const _JobBlock({required this.job, required this.queue});
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.space16,
-            AppSpacing.space16,
-            AppSpacing.space16,
-            AppSpacing.space8,
-          ),
-          child: Text(
-            job.workTitle,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: scheme.primary,
-                ),
-          ),
+        QueueWorkHeader(
+          work: job.work,
+          title: job.workTitle,
         ),
-        ...job.tracks.map((track) => _TrackTile(track: track, queue: queue)),
+        ...job.tracks.map(
+          (track) => _TrackRow(track: track, queue: queue),
+        ),
+        Divider(
+          height: 1,
+          color: scheme.outlineVariant.withValues(alpha: 0.5),
+        ),
       ],
     );
   }
 }
 
-class _TrackTile extends StatelessWidget {
+class _TrackRow extends StatelessWidget {
   final TranslationQueueTrack track;
   final TranslationQueueService queue;
 
-  const _TrackTile({required this.track, required this.queue});
+  const _TrackRow({required this.track, required this.queue});
 
   String _statusLabel() {
     return switch (track.status) {
-      TranslationQueueTrackStatus.pending => Strings.translationQueueStatusPending,
+      TranslationQueueTrackStatus.pending =>
+        Strings.translationQueueStatusPending,
       TranslationQueueTrackStatus.running => _runningLabel(),
       TranslationQueueTrackStatus.done => Strings.translationQueueStatusDone,
       TranslationQueueTrackStatus.cached => Strings.batchTranslatePhaseCached,
-      TranslationQueueTrackStatus.failed => Strings.translationQueueStatusFailed,
+      TranslationQueueTrackStatus.failed =>
+        track.lastError ?? Strings.translationQueueStatusFailed,
       TranslationQueueTrackStatus.cancelled =>
         Strings.translationQueueStatusCancelled,
     };
@@ -130,47 +155,30 @@ class _TrackTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     final isFailed = track.status == TranslationQueueTrackStatus.failed;
+    final isRunning = track.status == TranslationQueueTrackStatus.running;
     final canCancel = track.status == TranslationQueueTrackStatus.pending ||
         track.status == TranslationQueueTrackStatus.running;
 
-    return ListTile(
-      title: Text(
-        track.trackName,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
-      subtitle: Text(
-        [
-          _statusLabel(),
-          if (track.attempts > 1)
-            Strings.translationQueueAttempts(track.attempts),
-          if (track.lastError != null && isFailed) track.lastError!,
-        ].join(' · '),
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: isFailed ? scheme.error : scheme.onSurfaceVariant,
-            ),
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (isFailed)
-            IconButton(
-              tooltip: Strings.translationQueueRetry,
-              onPressed: () => queue.retryTrack(track.id),
-              icon: Icon(Icons.refresh, color: scheme.primary),
-            ),
-          if (canCancel)
-            IconButton(
-              tooltip: Strings.downloadCancel,
-              onPressed: () => queue.cancelTrack(track.id),
-              icon: Icon(Icons.close, color: scheme.onSurfaceVariant),
-            ),
-        ],
-      ),
+    final batchTotal = track.llmBatchTotal;
+    final batchIndex = track.llmBatchIndex;
+    final hasBatch = isRunning &&
+        batchTotal != null &&
+        batchTotal > 0 &&
+        batchIndex != null;
+
+    return QueueItemRow(
+      title: track.trackName,
+      statusLabel: _statusLabel(),
+      statusIsError: isFailed,
+      showProgress: isRunning,
+      progressIndeterminate: !hasBatch,
+      progressValue: hasBatch ? batchIndex / batchTotal : null,
+      progressTrailing: hasBatch ? '$batchIndex/$batchTotal' : null,
+      onRetry: isFailed ? () => queue.retryTrack(track.id) : null,
+      retryTooltip: Strings.translationQueueRetry,
+      onCancel: canCancel ? () => queue.cancelTrack(track.id) : null,
+      cancelTooltip: Strings.downloadCancel,
     );
   }
 }

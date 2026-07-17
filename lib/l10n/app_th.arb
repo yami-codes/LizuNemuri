@@ -2708,6 +2708,20 @@
   "loreProgressSubsResolve": "กำลังดึงซับไตเติล…",
   "loreProgressSubsTranslate": "กำลังแปลซับไตเติล…",
   "loreProgressWaitingLlm": "รอโมเดลตอบ…",
+  "loreProgressStreamSummary": "ได้สรุปแล้ว…",
+  "loreProgressStreamEvent": "เหตุการณ์ {count}: {title}",
+  "@loreProgressStreamEvent": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "title": { "type": "String" }
+    }
+  },
+  "loreProgressStreamEvents": "{count} เหตุการณ์",
+  "@loreProgressStreamEvents": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "loreProgressElapsed": "{seconds} วินาที",
   "@loreProgressElapsed": {
     "placeholders": {
@@ -2755,6 +2769,17 @@
     "placeholders": {
       "done": {"type": "int"},
       "failed": {"type": "int"}
+    }
+  },
+  "loreQueueKindFullGenerate": "สร้างทั้งหมด",
+  "loreQueueKindSecretsOnly": "เฉพาะความลับ",
+  "loreQueueKindRegenerateWork": "สร้างงานใหม่",
+  "loreQueueKindRegenerateTrack": "สร้างตอนใหม่",
+  "loreQueueKindRegenerateCharacter": "สร้างตัวละครใหม่",
+  "loreQueueActiveCount": "{count} กำลังทำ",
+  "@loreQueueActiveCount": {
+    "placeholders": {
+      "count": {"type": "int"}
     }
   },
   "loreQueueMiniProgress": "Lore {done}/{total}: {name}",

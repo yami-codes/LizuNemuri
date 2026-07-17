@@ -88,7 +88,12 @@ class _QueueAwareLoreBodyState extends State<_QueueAwareLoreBody> {
     super.didUpdateWidget(oldWidget);
     final job = widget.queue.activeJobForWork(widget.vm.workId);
     if (_wasQueued && job == null) {
-      widget.vm.load();
+      // load() notifies listeners — never do that synchronously during build.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        if (widget.queue.activeJobForWork(widget.vm.workId) != null) return;
+        widget.vm.load();
+      });
     }
     _wasQueued = job != null;
   }
