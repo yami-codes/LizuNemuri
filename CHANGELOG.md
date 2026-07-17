@@ -8,6 +8,19 @@ All user-visible and developer-visible changes in Xuro since v1.1.11. Version nu
 
 ---
 
+## v2.0.0-rc.27 — 2026-07-18
+
+### Added
+- **Lore track NDJSON streaming**: when LLM streaming is on, track/secrets passes emit live summary/event lines; queue episodes show event count instead of a dead “waiting on model” spinner.
+- **Lore intelligent resume**: checkpoint the pack after cast and each finished track; retry/relaunch skips complete EPs (empty soft stubs still redo).
+- **Tachiyomi-style queue UI**: shared work header / episode rows for lore and translation queues.
+
+### Fixed
+- **LLM `deltas` map shape**: accept map-shaped param deltas from the model without crashing the track pass.
+- **Detail metadata after pop**: stop notifying a disposed `DetailViewModel` during Google track-name translate.
+
+---
+
 ## v2.0.0-rc.26 — 2026-07-17
 
 ### Added
